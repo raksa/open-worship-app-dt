@@ -5,23 +5,38 @@ import appProvider from '../server/appProvider';
 import EventHandler from './EventHandler';
 import { AppWidgetType } from './WindowEventListener';
 
-export type KeyboardType = (
-    'ArrowUp' | 'ArrowRight' | 'ArrowDown' | 'ArrowLeft' | 'Enter' | 'Tab' |
-    'Escape' | ' '
-);
+export type KeyboardType =
+    | 'ArrowUp'
+    | 'ArrowRight'
+    | 'ArrowDown'
+    | 'ArrowLeft'
+    | 'Enter'
+    | 'Tab'
+    | 'Escape'
+    | ' ';
 export const allArrows: KeyboardType[] = [
-    'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
+    'ArrowLeft',
+    'ArrowRight',
+    'ArrowUp',
+    'ArrowDown',
 ];
 export type WindowsControlType = 'Ctrl' | 'Alt' | 'Shift';
 export type LinuxControlType = 'Ctrl' | 'Alt' | 'Shift';
 export type MacControlType = 'Ctrl' | 'Option' | 'Shift' | 'Meta';
 export type AllControlType = 'Ctrl' | 'Shift';
 
+export enum PlatformEnum {
+    Windows = 'Windows',
+    Mac = 'Mac',
+    Linux = 'Linux',
+}
+
 export interface EventMapper {
     wControlKey?: WindowsControlType[];
     mControlKey?: MacControlType[];
     lControlKey?: LinuxControlType[];
     allControlKey?: AllControlType[];
+    platforms?: PlatformEnum[];
     key: string;
 }
 export interface RegisteredEventMapper extends EventMapper {
@@ -56,20 +71,40 @@ export default class KeyboardEventListener extends EventHandler<string> {
     static addControlKey(option: EventMapper, event: KeyboardEvent) {
         if (appProvider.systemUtils.isWindows) {
             option.wControlKey = [];
-            event.ctrlKey && option.wControlKey.push('Ctrl');
-            event.altKey && option.wControlKey.push('Alt');
-            event.shiftKey && option.wControlKey.push('Shift');
+            if (event.ctrlKey) {
+                option.wControlKey.push('Ctrl');
+            }
+            if (event.altKey) {
+                option.wControlKey.push('Alt');
+            }
+            if (event.shiftKey) {
+                option.wControlKey.push('Shift');
+            }
         } else if (appProvider.systemUtils.isMac) {
             option.mControlKey = [];
-            event.ctrlKey && option.mControlKey.push('Ctrl');
-            event.altKey && option.mControlKey.push('Option');
-            event.shiftKey && option.mControlKey.push('Shift');
-            event.metaKey && option.mControlKey.push('Meta');
+            if (event.ctrlKey) {
+                option.mControlKey.push('Ctrl');
+            }
+            if (event.altKey) {
+                option.mControlKey.push('Option');
+            }
+            if (event.shiftKey) {
+                option.mControlKey.push('Shift');
+            }
+            if (event.metaKey) {
+                option.mControlKey.push('Meta');
+            }
         } else if (appProvider.systemUtils.isLinux) {
             option.lControlKey = [];
-            event.ctrlKey && option.lControlKey.push('Ctrl');
-            event.altKey && option.lControlKey.push('Alt');
-            event.shiftKey && option.lControlKey.push('Shift');
+            if (event.ctrlKey) {
+                option.lControlKey.push('Ctrl');
+            }
+            if (event.altKey) {
+                option.lControlKey.push('Alt');
+            }
+            if (event.shiftKey) {
+                option.lControlKey.push('Shift');
+            }
         }
     }
     static toShortcutKey(eventMapper: EventMapper) {
@@ -80,16 +115,15 @@ export default class KeyboardEventListener extends EventHandler<string> {
         if (key.length === 1) {
             key = key.toUpperCase();
         }
-        const {
-            wControlKey, mControlKey, lControlKey, allControlKey,
-        } = eventMapper;
-        const allControls: string[] = allControlKey || [];
+        const { wControlKey, mControlKey, lControlKey, allControlKey } =
+            eventMapper;
+        const allControls: string[] = allControlKey ?? [];
         if (appProvider.systemUtils.isWindows) {
-            allControls.push(...(wControlKey || []));
+            allControls.push(...(wControlKey ?? []));
         } else if (appProvider.systemUtils.isMac) {
-            allControls.push(...(mControlKey || []));
+            allControls.push(...(mControlKey ?? []));
         } else if (appProvider.systemUtils.isLinux) {
-            allControls.push(...(lControlKey || []));
+            allControls.push(...(lControlKey ?? []));
         }
         if (allControls.length > 0) {
             const sorted = [...allControls].sort((a, b) => {
@@ -106,22 +140,41 @@ export default class KeyboardEventListener extends EventHandler<string> {
 }
 
 export function useKeyboardRegistering(
-    eventMappers: EventMapper[], listener: ListenerType,
-    deps?: DependencyList
+    eventMappers: EventMapper[],
+    listener: ListenerType,
+    deps: DependencyList,
 ) {
     useAppEffect(() => {
-        const eventNames = eventMappers.map((eventMapper) => {
-            return KeyboardEventListener.toEventMapperKey(eventMapper);
-        });
+        const eventNames = eventMappers
+            .filter((eventMapper) => {
+                const { platforms } = eventMapper;
+                if (platforms) {
+                    if (
+                        (platforms.includes(PlatformEnum.Windows) &&
+                            appProvider.systemUtils.isWindows) ||
+                        (platforms.includes(PlatformEnum.Mac) &&
+                            appProvider.systemUtils.isMac) ||
+                        (platforms.includes(PlatformEnum.Linux) &&
+                            appProvider.systemUtils.isLinux)
+                    ) {
+                        return true;
+                    }
+                    return false;
+                }
+                return true;
+            })
+            .map((eventMapper) => {
+                return KeyboardEventListener.toEventMapperKey(eventMapper);
+            });
         const registeredEvents = KeyboardEventListener.registerEventListener(
-            eventNames, listener,
+            eventNames,
+            listener,
         );
         return () => {
             KeyboardEventListener.unregisterEventListener(registeredEvents);
         };
-    }, deps);
+    }, [listener, ...deps]);
 }
-
 
 document.onkeydown = function (event) {
     if (['Meta', 'Alt', 'Control', 'Shift'].includes(event.key)) {

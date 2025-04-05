@@ -2,8 +2,10 @@ import { getAllShowingScreenIds } from '../screenHelpers';
 import ScreenManager from './ScreenManager';
 import ScreenManagerBase from './ScreenManagerBase';
 import {
-    getAllScreenManagerBases, getScreenManagersInstanceSetting,
-    saveScreenManagersSetting, screenManagerBaseCache,
+    getAllScreenManagerBases,
+    getScreenManagersInstanceSetting,
+    saveScreenManagersSetting,
+    cache,
     setScreenManagerBaseCache,
 } from './screenManagerBaseHelpers';
 
@@ -40,12 +42,12 @@ export function initNewScreenManager(screenId: number) {
 
 export function createScreenManager(screenId: number) {
     const key = screenId.toString();
-    if (!screenManagerBaseCache.has(key)) {
+    if (!cache.has(key)) {
         const screenManager = initNewScreenManager(screenId);
         setScreenManagerBaseCache(screenManager);
         saveScreenManagersSetting();
     }
-    return screenManagerBaseCache.get(key) as ScreenManager;
+    return cache.get(key) as ScreenManager;
 }
 
 export function genNewScreenManagerBase() {

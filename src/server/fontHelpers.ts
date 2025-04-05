@@ -6,7 +6,6 @@ import { showSimpleToast } from '../toast/toastHelpers';
 import { FontListType } from './appProvider';
 import { getFontListByNodeFont } from './appHelpers';
 
-
 function showLoadingFontFail() {
     showSimpleToast('Loading Fonts', 'Fail to load font list');
 }
@@ -22,7 +21,7 @@ export function useFontList() {
                 setFontList(fonts);
             }
         }
-    });
+    }, [fontList]);
     return fontList;
 }
 

@@ -1,15 +1,16 @@
 import { CSSProperties } from 'react';
 
 import { DragTypeEnum, DroppedDataType } from '../../helper/DragInf';
-import {
-    getImageDim, getVideoDim,
-} from '../../helper/helpers';
+import { getImageDim, getVideoDim } from '../../helper/helpers';
 import { setSetting } from '../../helper/settingHelpers';
 import appProviderScreen from '../appProviderScreen';
 import { genHtmlBackground } from '../ScreenBackgroundComp';
 import {
-    BackgroundSrcType, BackgroundType, BasicScreenMessageType,
-    getBackgroundSrcListOnScreenSetting, ScreenMessageType,
+    BackgroundSrcType,
+    BackgroundType,
+    BasicScreenMessageType,
+    getBackgroundSrcListOnScreenSetting,
+    ScreenMessageType,
 } from '../screenHelpers';
 import { handleError } from '../../helper/errorHelpers';
 import { screenManagerSettingNames } from '../../helper/constants';
@@ -20,9 +21,7 @@ import ScreenEffectManager from './ScreenEffectManager';
 
 export type ScreenBackgroundManagerEventType = 'update';
 
-export default class ScreenBackgroundManager
-    extends ScreenEventHandler<ScreenBackgroundManagerEventType> {
-
+class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManagerEventType> {
     static readonly eventNamePrefix: string = 'screen-bg-m';
     private _backgroundSrc: BackgroundSrcType | null = null;
     private _div: HTMLDivElement | null = null;
@@ -36,7 +35,7 @@ export default class ScreenBackgroundManager
         this.backgroundEffectManager = backgroundEffectManager;
         if (appProviderScreen.isPagePresenter) {
             const allBackgroundSrcList = getBackgroundSrcListOnScreenSetting();
-            this._backgroundSrc = allBackgroundSrcList[this.key] || null;
+            this._backgroundSrc = allBackgroundSrcList[this.key] ?? null;
         }
     }
 
@@ -100,18 +99,19 @@ export default class ScreenBackgroundManager
     }
 
     static getSelectBackgroundSrcList(
-        src: string, backgroundType: BackgroundType,
+        src: string,
+        backgroundType: BackgroundType,
     ) {
-        const keyBackgroundSrcList = this.getBackgroundSrcListByType(
-            backgroundType,
-        );
+        const keyBackgroundSrcList =
+            this.getBackgroundSrcListByType(backgroundType);
         return keyBackgroundSrcList.filter(([_, backgroundSrc]) => {
             return backgroundSrc.src === src;
         });
     }
 
     static async initBackgroundSrcDim(
-        src: string, backgroundType: BackgroundType,
+        src: string,
+        backgroundType: BackgroundType,
     ) {
         const backgroundSrc: BackgroundSrcType = {
             type: backgroundType,
@@ -132,7 +132,8 @@ export default class ScreenBackgroundManager
 
     static async handleBackgroundSelecting(
         event: React.MouseEvent<HTMLElement, MouseEvent>,
-        backgroundType: BackgroundType, src: string | null,
+        backgroundType: BackgroundType,
+        src: string | null,
         isForceChoosing = false,
     ) {
         const screenIds = await this.chooseScreenIds(event, isForceChoosing);
@@ -145,7 +146,8 @@ export default class ScreenBackgroundManager
                 screenBackgroundManager.applyBackgroundSrcWithSyncGroup(null);
             } else {
                 const backgroundSrc = await this.initBackgroundSrcDim(
-                    src, backgroundType,
+                    src,
+                    backgroundType,
                 );
                 screenBackgroundManager.applyBackgroundSrcWithSyncGroup(
                     backgroundSrc,
@@ -155,8 +157,9 @@ export default class ScreenBackgroundManager
         this.fireUpdateEvent();
     }
 
-    static async extractDim(backgroundSrc: BackgroundSrcType)
-        : Promise<[number | undefined, number | undefined]> {
+    static async extractDim(
+        backgroundSrc: BackgroundSrcType,
+    ): Promise<[number | undefined, number | undefined]> {
         if (backgroundSrc.type === 'image') {
             try {
                 return await getImageDim(backgroundSrc.src);
@@ -179,9 +182,7 @@ export default class ScreenBackgroundManager
         }
         const aminData = this.backgroundEffectManager.styleAnim;
         if (this.backgroundSrc !== null) {
-            const newDiv = genHtmlBackground(
-                this.backgroundSrc, this.screenId,
-            );
+            const newDiv = genHtmlBackground(this.backgroundSrc, this.screenId);
             const childList = Array.from(this.div.children);
             this.div.appendChild(newDiv);
             aminData.animIn(newDiv).then(() => {
@@ -213,11 +214,11 @@ export default class ScreenBackgroundManager
             [DragTypeEnum.BACKGROUND_VIDEO]: 'video',
         };
         if (type in backgroundTypeMap) {
-            const backgroundSrc = (
+            const backgroundSrc =
                 await ScreenBackgroundManager.initBackgroundSrcDim(
-                    item.src, backgroundTypeMap[type],
-                )
-            );
+                    item.src,
+                    backgroundTypeMap[type],
+                );
             this.applyBackgroundSrcWithSyncGroup(backgroundSrc);
         } else if (type === DragTypeEnum.BACKGROUND_COLOR) {
             this.applyBackgroundSrcWithSyncGroup({
@@ -240,5 +241,6 @@ export default class ScreenBackgroundManager
     static getInstance(screenId: number) {
         return super.getInstanceBase<ScreenBackgroundManager>(screenId);
     }
-
 }
+
+export default ScreenBackgroundManager;

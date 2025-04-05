@@ -10,21 +10,22 @@ export default class CountdownController {
         this.count();
     }
 
-    get diff() {
+    get timeDiff() {
         return Math.max(0, this.targetDateTime.getTime() - Date.now());
     }
 
     get hours() {
         return Math.floor(
-            (this.diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            (this.timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+        );
     }
 
     get minutes() {
-        return Math.floor((this.diff % (1000 * 60 * 60)) / (1000 * 60));
+        return Math.floor((this.timeDiff % (1000 * 60 * 60)) / (1000 * 60));
     }
 
     get seconds() {
-        return Math.floor((this.diff % (1000 * 60)) / 1000);
+        return Math.floor((this.timeDiff % (1000 * 60)) / 1000);
     }
 
     getDivChild(divId: string) {
@@ -64,7 +65,7 @@ export default class CountdownController {
             if (this.countdownInterval === null) {
                 return;
             }
-            if (this.diff > 0) {
+            if (this.timeDiff > 0) {
                 this.setHtml(false);
             } else {
                 this.stop();

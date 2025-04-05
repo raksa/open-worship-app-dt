@@ -1,4 +1,4 @@
-import { provider } from './fullProvider.js';
-import { initProvider } from './providerHelpers.js';
+import { provider } from './fullProvider';
+import { initProvider } from './providerHelpers';
 
 initProvider(provider);

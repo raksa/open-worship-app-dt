@@ -13,7 +13,7 @@ if (container !== null) {
     root.render(
         <StrictMode>
             <ScreenAppComp />
-        </StrictMode>
+        </StrictMode>,
     );
 }
 
@@ -24,7 +24,8 @@ document.addEventListener('keyup', function (event) {
     ) {
         const isNext = event.key === 'ArrowRight';
         appProviderScreen.messageUtils.sendData(
-            'screen:app:change-bible', isNext,
+            'screen:app:change-bible',
+            isNext,
         );
     }
 });

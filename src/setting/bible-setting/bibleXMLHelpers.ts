@@ -2,34 +2,43 @@ import { showSimpleToast } from '../../toast/toastHelpers';
 import { handleError } from '../../helper/errorHelpers';
 import appProvider from '../../server/appProvider';
 import { writeStreamToFile } from '../../helper/bible-helpers/downloadHelpers';
-import { getUserWritablePath, showExplorer } from '../../server/appHelpers';
 import {
-    fsDeleteFile, fsReadFile, fsWriteFile, pathJoin,
-} from '../../server/fileHelpers';
+    getUserWritablePath,
+    showExplorer,
+    trashFile,
+} from '../../server/appHelpers';
+import { fsDeleteFile, pathJoin } from '../../server/fileHelpers';
 import { allLocalesMap } from '../../lang';
+import { showAppInput } from '../../popup-widget/popupWidgetHelpers';
 import {
-    showAppInput,
-} from '../../popup-widget/popupWidgetHelpers';
-import {
-    genBibleBooksMapXMLInput, genBibleNumbersMapXMLInput,
+    genBibleBooksMapXMLInput,
+    genBibleNumbersMapXMLInput,
 } from './bibleXMLAttributesGuessing';
 import { getBibleInfo } from '../../helper/bible-helpers/bibleInfoHelpers';
 import {
-    ContextMenuItemType, showAppContextMenu,
-} from '../../others/AppContextMenuComp';
+    ContextMenuItemType,
+    showAppContextMenu,
+} from '../../context-menu/appContextMenuHelpers';
 import { useState, useTransition } from 'react';
 import { useAppEffect } from '../../helper/debuggerHelpers';
-import BibleDatabaseController from
-    '../../helper/bible-helpers/BibleDatabaseController';
+import BibleDatabaseController from '../../helper/bible-helpers/BibleDatabaseController';
 import { toBibleFileName } from '../../helper/bible-helpers/serverBibleHelpers';
 import {
-    bibleKeyToFilePath, BibleJsonInfoType, BibleJsonType, jsonToXMLText,
-    xmlToJson, xmlTextToBibleElement, getBibleInfoJson,
+    bibleKeyToFilePath,
+    BibleJsonInfoType,
+    BibleJsonType,
+    jsonToXMLText,
+    xmlToJson,
+    xmlTextToBibleElement,
+    getBibleInfoJson,
     getAllXMLFileKeys,
 } from './bibleXMLJsonDataHelpers';
 import {
-    bibleDataReader, BibleInfoType,
+    bibleDataReader,
+    BibleInfoType,
 } from '../../helper/bible-helpers/BibleDataReader';
+import FileSource from '../../helper/FileSource';
+import { menuTitleRealFile } from '../../helper/helpers';
 
 type MessageCallbackType = (message: string | null) => void;
 
@@ -42,7 +51,8 @@ export function getInputByName(form: HTMLFormElement, name: string) {
 }
 
 export function readFromFile(
-    form: HTMLFormElement, messageCallback: MessageCallbackType,
+    form: HTMLFormElement,
+    messageCallback: MessageCallbackType,
 ) {
     return new Promise<string | null>((resolve, reject) => {
         const inputFile = getInputByName(form, 'file');
@@ -56,8 +66,12 @@ export function readFromFile(
         messageCallback('Reading file...');
         const reader = new FileReader();
         reader.onload = function (event1) {
-            messageCallback(null);;
-            resolve(event1.target?.result?.toString() ?? null);
+            messageCallback(null);
+            resolve(
+                typeof event1.target?.result === 'string'
+                    ? event1.target.result
+                    : null,
+            );
         };
         reader.onerror = function (error) {
             handleError(error);
@@ -69,20 +83,23 @@ export function readFromFile(
 
 function initHttpRequest(url: URL) {
     return new Promise<any>((resolve, reject) => {
-        const request = appProvider.httpUtils.request({
-            port: 443,
-            path: url.pathname + url.search,
-            method: 'GET',
-            hostname: url.hostname,
-        }, (response) => {
-            if (response.statusCode === 302 && response.headers.location) {
-                initHttpRequest(new URL(response.headers.location)).then(
-                    resolve,
-                );
-                return;
-            }
-            resolve(response);
-        });
+        const request = appProvider.httpUtils.request(
+            {
+                port: 443,
+                path: url.pathname + url.search,
+                method: 'GET',
+                hostname: url.hostname,
+            },
+            (response) => {
+                if (response.statusCode === 302 && response.headers.location) {
+                    initHttpRequest(new URL(response.headers.location)).then(
+                        resolve,
+                    );
+                    return;
+                }
+                resolve(response);
+            },
+        );
         request.on('error', (event: Error) => {
             reject(event);
         });
@@ -91,42 +108,44 @@ function initHttpRequest(url: URL) {
 }
 
 function downloadXMLToFile(
-    filePath: string, response: any, messageCallback: MessageCallbackType
+    filePath: string,
+    response: any,
+    messageCallback: MessageCallbackType,
 ) {
     return new Promise<void>((resolve, reject) => {
-        writeStreamToFile(filePath, {
-            onStart: (total) => {
-                const fileSize = parseInt(total.toFixed(2));
-                messageCallback(
-                    `Start downloading (File size: ${fileSize}MB)...`
-                );
-            },
-            onProgress: (progress) => {
-                messageCallback(
-                    `${(progress * 100).toFixed(2)}% done`
-                );
-            },
-            onDone: (error, filePath) => {
-                if (error) {
-                    showSimpleToast(
-                        'Download Error',
-                        `Error: ${error}`,
+        writeStreamToFile(
+            filePath,
+            {
+                onStart: (total) => {
+                    const fileSize = parseInt(total.toFixed(2));
+                    messageCallback(
+                        `Start downloading (File size: ${fileSize}MB)...`,
                     );
-                    reject(error);
-                    return;
-                }
-                showSimpleToast(
-                    'Download Completed',
-                    `File saved at: ${filePath}`,
-                );
-                resolve();
+                },
+                onProgress: (progress) => {
+                    messageCallback(`${(progress * 100).toFixed(2)}% done`);
+                },
+                onDone: (error, filePath) => {
+                    if (error) {
+                        showSimpleToast('Download Error', `Error: ${error}`);
+                        reject(error);
+                        return;
+                    }
+                    showSimpleToast(
+                        'Download Completed',
+                        `File saved at: ${filePath}`,
+                    );
+                    resolve();
+                },
             },
-        }, response);
+            response,
+        );
     });
 }
 
 export async function readFromUrl(
-    form: HTMLFormElement, messageCallback: MessageCallbackType,
+    form: HTMLFormElement,
+    messageCallback: MessageCallbackType,
 ) {
     const inputText = getInputByName(form, 'url');
     if (!inputText?.value) {
@@ -142,11 +161,13 @@ export async function readFromUrl(
             fileFullName += '.xml';
         }
         const filePath = appProvider.pathUtils.resolve(
-            userWritablePath, 'temp-xml', fileFullName,
+            userWritablePath,
+            'temp-xml',
+            fileFullName,
         );
         await downloadXMLToFile(filePath, response, messageCallback);
         messageCallback('Reading file...');
-        const xmlText = await fsReadFile(filePath);
+        const xmlText = await FileSource.readFileData(filePath);
         messageCallback('Deleting file...');
         await fsDeleteFile(filePath);
         messageCallback(null);
@@ -165,17 +186,17 @@ export function checkIsValidUrl(urlText: string) {
     try {
         new URL(urlText);
         return true;
-    } catch (
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    error
-    ) {
+    } catch (_error) {
         return false;
     }
 }
 
 export async function getBibleXMLInfo(bibleKey: string) {
     const filePath = await bibleKeyToFilePath(bibleKey);
-    const xmlText = await fsReadFile(filePath);
+    const xmlText = await FileSource.readFileData(filePath);
+    if (xmlText === null) {
+        return null;
+    }
     const bible = xmlTextToBibleElement(xmlText);
     if (!bible) {
         return null;
@@ -197,101 +218,113 @@ export async function getBibleXMLCacheInfoList() {
 
 export async function saveXMLText(bibleKey: string, xmlText: string) {
     const filePath = await bibleKeyToFilePath(bibleKey);
-    await fsWriteFile(filePath, xmlText);
+    const fileSource = FileSource.getInstance(filePath);
+    return await fileSource.saveFileData(xmlText);
 }
 
-export function handBibleKeyContextMenuOpening(
-    bibleKey: string, event: any,
-) {
-    const contextMenuItems: ContextMenuItemType[] = [{
-        menuTitle: (
-            `Reveal in ${appProvider.systemUtils.isMac ?
-                'Finder' : 'File Explorer'}`
-        ),
-        onClick: async () => {
-            const filePath = await bibleKeyToFilePath(bibleKey);
-            showExplorer(filePath);
+export function handBibleKeyContextMenuOpening(bibleKey: string, event: any) {
+    const contextMenuItems: ContextMenuItemType[] = [
+        {
+            menuTitle: menuTitleRealFile,
+            onSelect: async () => {
+                const filePath = await bibleKeyToFilePath(bibleKey);
+                showExplorer(filePath);
+            },
         },
-    }];
+    ];
     showAppContextMenu(event, contextMenuItems);
-};
+}
 
 export function handBibleInfoContextMenuOpening(
-    event: any, bibleInfo: BibleJsonInfoType,
+    event: any,
+    bibleInfo: BibleJsonInfoType,
     setBibleInfo: (bibleInfo: BibleJsonInfoType) => void,
 ) {
-    const contextMenuItems: ContextMenuItemType[] = [{
-        menuTitle: 'Chose Locale',
-        onClick: () => {
-            showAppContextMenu(event, Object.entries(allLocalesMap).map(
-                ([locale]) => {
-                    return {
-                        menuTitle: locale,
-                        onClick: () => {
-                            setBibleInfo({
-                                ...bibleInfo,
-                                locale,
-                            });
+    const contextMenuItems: ContextMenuItemType[] = [
+        {
+            menuTitle: 'Chose Locale',
+            onSelect: () => {
+                showAppContextMenu(
+                    event,
+                    Object.entries(allLocalesMap).map(([locale]) => {
+                        return {
+                            menuTitle: locale,
+                            onSelect: () => {
+                                setBibleInfo({
+                                    ...bibleInfo,
+                                    locale,
+                                });
+                            },
+                        };
+                    }),
+                );
+            },
+        },
+        {
+            menuTitle: 'Edit Numbers Map',
+            onSelect: async () => {
+                let numbersMap = Object.keys(bibleInfo.numbersMap);
+                const isConfirmInput = await showAppInput(
+                    'Numbers map',
+                    genBibleNumbersMapXMLInput(
+                        numbersMap,
+                        bibleInfo.locale,
+                        (newNumbers) => {
+                            numbersMap = newNumbers;
                         },
-                    };
-                }),
-            );
-        },
-    }, {
-        menuTitle: 'Edit Numbers Map',
-        onClick: async () => {
-            let numbersMap = Object.keys(bibleInfo.numbersMap);
-            const isConfirmInput = await showAppInput(
-                'Numbers map',
-                genBibleNumbersMapXMLInput(numbersMap, bibleInfo.locale,
-                    (newNumbers) => {
-                        numbersMap = newNumbers;
-                    },
-                ),
-            );
-            if (isConfirmInput) {
-                setBibleInfo({
-                    ...bibleInfo,
-                    numbersMap: Object.fromEntries(numbersMap.map(
-                        (value, index) => [index.toString(), value],
-                    )),
-                });
-            }
-        },
-    }, {
-        menuTitle: 'Edit Books Map',
-        onClick: async () => {
-            let booksMap = Object.values(bibleInfo.booksMap);
-            const isConfirmInput = await showAppInput(
-                'Books map',
-                genBibleBooksMapXMLInput(
-                    booksMap, bibleInfo.locale, (newNumbers) => {
-                        booksMap = newNumbers;
-                    },
-                ),
-            );
-            if (isConfirmInput) {
-                setBibleInfo({
-                    ...bibleInfo,
-                    booksMap: Object.fromEntries(
-                        Object.keys(bibleInfo.booksMap).map(
-                            (value, index) => [value, booksMap[index]],
-                        ),
                     ),
-                });
-            }
+                );
+                if (isConfirmInput) {
+                    setBibleInfo({
+                        ...bibleInfo,
+                        numbersMap: Object.fromEntries(
+                            numbersMap.map((value, index) => [
+                                index.toString(),
+                                value,
+                            ]),
+                        ),
+                    });
+                }
+            },
         },
-    }, {
-        menuTitle: 'Copy to Clipboard',
-        onClick: () => {
-            navigator.clipboard.writeText(
-                JSON.stringify(bibleInfo, null, 2),
-            );
-            showSimpleToast('Copied', 'Bible info copied');
+        {
+            menuTitle: 'Edit Books Map',
+            onSelect: async () => {
+                let booksMap = Object.values(bibleInfo.booksMap);
+                const isConfirmInput = await showAppInput(
+                    'Books map',
+                    genBibleBooksMapXMLInput(
+                        booksMap,
+                        bibleInfo.locale,
+                        (newNumbers) => {
+                            booksMap = newNumbers;
+                        },
+                    ),
+                );
+                if (isConfirmInput) {
+                    setBibleInfo({
+                        ...bibleInfo,
+                        booksMap: Object.fromEntries(
+                            Object.keys(bibleInfo.booksMap).map(
+                                (value, index) => [value, booksMap[index]],
+                            ),
+                        ),
+                    });
+                }
+            },
         },
-    }];
+        {
+            menuTitle: 'Copy to Clipboard',
+            onSelect: () => {
+                navigator.clipboard.writeText(
+                    JSON.stringify(bibleInfo, null, 2),
+                );
+                showSimpleToast('Copied', 'Bible info copied');
+            },
+        },
+    ];
     showAppContextMenu(event, contextMenuItems);
-};
+}
 
 export async function cacheBibleXMLData(jsonData: BibleJsonType) {
     const databaseController = await BibleDatabaseController.getInstance();
@@ -305,25 +338,37 @@ export async function cacheBibleXMLData(jsonData: BibleJsonType) {
         const filePath = pathJoin(biblePath, fileName);
         const b64Data = appProvider.appUtils.base64Encode(data);
         await databaseController.addItem({
-            id: filePath, data: b64Data, isForceOverride: true,
+            id: filePath,
+            data: b64Data,
+            isForceOverride: true,
             secondaryId: bibleKey,
         });
     };
-    await addItem('_info', JSON.stringify({
-        ...bibleInfo, books: bibleInfo.booksMap,
-        numList: Array.from({
-            length: 10,
-        }, (_, i) => bibleInfo.numbersMap?.[i]),
-    } as BibleInfoType));
+    await addItem(
+        '_info',
+        JSON.stringify({
+            ...bibleInfo,
+            books: bibleInfo.booksMap,
+            numList: Array.from(
+                {
+                    length: 10,
+                },
+                (_, i) => bibleInfo.numbersMap?.[i],
+            ),
+        } as BibleInfoType),
+    );
     for (const [bookKey, book] of Object.entries(jsonData.books)) {
         const bookName = bibleInfo.booksMap[bookKey];
         for (const [chapterKey, verses] of Object.entries(book)) {
             const chapterNumber = parseInt(chapterKey);
             const fileName = toBibleFileName(bookKey, chapterNumber);
-            await addItem(fileName, JSON.stringify({
-                title: `${bookName} ${chapterKey}`,
-                verses,
-            }));
+            await addItem(
+                fileName,
+                JSON.stringify({
+                    title: `${bookName} ${chapterKey}`,
+                    verses,
+                }),
+            );
         }
     }
     return true;
@@ -343,18 +388,19 @@ export async function saveJsonDataToXMLfile(jsonData: BibleJsonType) {
 export async function deleteBibleXML(bibleKey: string) {
     await bibleDataReader.clearBibleDatabaseData(bibleKey);
     const filePath = await bibleKeyToFilePath(bibleKey);
-    await fsDeleteFile(filePath);
+    await trashFile(filePath);
 }
 
 export async function getBibleXMLDataFromKey(bibleKey: string) {
     const filePath = await bibleKeyToFilePath(bibleKey);
-    const xmlText = await fsReadFile(filePath);
+    const xmlText = await FileSource.readFileData(filePath);
+    if (xmlText === null) {
+        return null;
+    }
     return await xmlToJson(xmlText);
 }
 
-export async function updateBibleXMLInfo(
-    bibleInfo: BibleJsonInfoType,
-) {
+export async function updateBibleXMLInfo(bibleInfo: BibleJsonInfoType) {
     const dataJson = await getBibleXMLDataFromKey(bibleInfo.key);
     if (dataJson === null) {
         showSimpleToast('Error', 'Error occurred during reading file');
@@ -365,9 +411,7 @@ export async function updateBibleXMLInfo(
 }
 
 export function useBibleXMLInfo(bibleKey: string) {
-    const [bibleInfo, setBibleInfo] = (
-        useState<BibleJsonInfoType | null>(null)
-    );
+    const [bibleInfo, setBibleInfo] = useState<BibleJsonInfoType | null>(null);
     const [isPending, startTransition] = useTransition();
     const loadBibleKeys = () => {
         startTransition(async () => {
@@ -380,9 +424,9 @@ export function useBibleXMLInfo(bibleKey: string) {
 }
 
 export function useBibleXMLKeys() {
-    const [bibleKeysMap, setBibleKeysMap] = (
-        useState<{ [key: string]: string } | null>(null)
-    );
+    const [bibleKeysMap, setBibleKeysMap] = useState<{
+        [key: string]: string;
+    } | null>(null);
     const [isPending, startTransition] = useTransition();
     const loadBibleKeys = () => {
         startTransition(async () => {

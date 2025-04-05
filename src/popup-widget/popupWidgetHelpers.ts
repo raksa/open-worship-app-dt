@@ -50,16 +50,15 @@ export function showAppConfirm(title: string, message: string) {
     });
 }
 
-export function showAppInput(
-    title: string, body: ReactElement,
-) {
+export function showAppInput(title: string, body: ReactElement) {
     const openInput = popupWidgetManager.openInput;
     if (openInput === null) {
         return Promise.resolve(false);
     }
     return new Promise<boolean>((resolve) => {
         openInput({
-            title, body,
+            title,
+            body,
             onConfirm: (isOk) => {
                 resolve(isOk);
             },
@@ -74,7 +73,8 @@ export function showAppAlert(title: string, message: string) {
     }
     return new Promise<void>((resolve) => {
         openAlert({
-            title, message,
+            title,
+            message,
             onClose: () => {
                 resolve();
             },

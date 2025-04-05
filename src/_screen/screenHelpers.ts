@@ -6,38 +6,40 @@ import { handleError } from '../helper/errorHelpers';
 import { isValidJson } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelpers';
 import { checkIsValidLocale } from '../lang';
-import { createMouseEvent } from '../others/AppContextMenuComp';
-import { SlideItemType } from '../slide-list/SlideItem';
+import { createMouseEvent } from '../context-menu/appContextMenuHelpers';
 import appProviderScreen from './appProviderScreen';
 import {
-    BibleItemRenderedType, LyricRenderedType,
+    BibleItemRenderedType,
+    LyricRenderedType,
 } from './fullTextScreenComps';
 import {
-    ScreenTransitionEffectType, TargetType,
+    ScreenTransitionEffectType,
+    TargetType,
 } from './transitionEffectHelpers';
 import { electronSendAsync, unlocking } from '../server/appHelpers';
 import { getValidOnScreen } from './managers/screenManagerBaseHelpers';
+import { VaryAppDocumentItemDataType } from '../app-document-list/appDocumentHelpers';
 
 export const fullTextDataTypeList = ['bible-item', 'lyric'] as const;
-export type FullTextDataType = typeof fullTextDataTypeList[number];
+export type FullTextDataType = (typeof fullTextDataTypeList)[number];
 export type FullTextItemDataType = {
-    type: FullTextDataType,
+    type: FullTextDataType;
     bibleItemData?: {
-        renderedList: BibleItemRenderedType[],
-        bibleItem: BibleItemType,
-    },
+        renderedList: BibleItemRenderedType[];
+        bibleItem: BibleItemType;
+    };
     lyricData?: {
-        renderedList: LyricRenderedType[],
-    },
-    scroll: number,
-    selectedIndex: number | null,
+        renderedList: LyricRenderedType[];
+    };
+    scroll: number;
+    selectedIndex: number | null;
 };
 export type FullTextListType = {
     [key: string]: FullTextItemDataType;
 };
 
 const _backgroundTypeList = ['color', 'image', 'video', 'sound'] as const;
-export type BackgroundType = typeof _backgroundTypeList[number];
+export type BackgroundType = (typeof _backgroundTypeList)[number];
 export type BackgroundSrcType = {
     type: BackgroundType;
     src: string;
@@ -50,65 +52,79 @@ export type BackgroundSrcListType = {
 
 export type AlertDataType = {
     marqueeData: {
-        text: string,
+        text: string;
     } | null;
     countdownData: {
-        dateTime: Date,
+        dateTime: Date;
     } | null;
 };
 export type AlertSrcListType = {
     [key: string]: AlertDataType;
 };
 
-export type SlideItemDataType = {
-    slideFilePath: string;
-    slideItemJson: SlideItemType
+export type VaryAppDocumentItemScreenDataType = {
+    filePath: string;
+    itemJson: VaryAppDocumentItemDataType;
 };
-export type SlideListType = {
-    [key: string]: SlideItemDataType;
+export type AppDocumentListType = {
+    [key: string]: VaryAppDocumentItemScreenDataType;
 };
 
 export type BoundsType = {
-    x: number,
-    y: number,
-    width: number,
-    height: number,
+    x: number;
+    y: number;
+    width: number;
+    height: number;
 };
 export type DisplayType = {
-    id: number,
-    bounds: BoundsType,
+    id: number;
+    bounds: BoundsType;
 };
 export type AllDisplayType = {
-    primaryDisplay: DisplayType,
-    displays: DisplayType[],
-}
+    primaryDisplay: DisplayType;
+    displays: DisplayType[];
+};
 
 export const screenTypeList = [
-    'background', 'slide', 'full-text', 'full-text-scroll',
-    'full-text-text-style', 'alert',
-    'full-text-selected-index', 'display-change', 'visible',
-    'init', 'effect',
+    'background',
+    'vary-app-document',
+    'full-text',
+    'full-text-scroll',
+    'full-text-text-style',
+    'alert',
+    'full-text-selected-index',
+    'display-change',
+    'visible',
+    'init',
+    'effect',
 ] as const;
-export type ScreenType = typeof screenTypeList[number];
+export type ScreenType = (typeof screenTypeList)[number];
 export type BasicScreenMessageType = {
-    type: ScreenType,
-    data: any,
+    type: ScreenType;
+    data: any;
 };
 export type ScreenMessageType = BasicScreenMessageType & {
-    screenId: number,
+    screenId: number;
 };
 
 const messageUtils = appProviderScreen.messageUtils;
 
-export function calMediaSizes({
-    parentWidth, parentHeight,
-}: {
-    parentWidth: number,
-    parentHeight: number,
-}, { width, height }: {
-    width?: number,
-    height?: number,
-}) {
+export function calMediaSizes(
+    {
+        parentWidth,
+        parentHeight,
+    }: {
+        parentWidth: number;
+        parentHeight: number;
+    },
+    {
+        width,
+        height,
+    }: {
+        width?: number;
+        height?: number;
+    },
+) {
     if (width === undefined || height === undefined) {
         return {
             width: parentWidth,
@@ -131,12 +147,13 @@ export function calMediaSizes({
 }
 
 type SetDisplayType = {
-    screenId: number,
-    displayId: number,
-}
+    screenId: number;
+    displayId: number;
+};
 export function setDisplay({ screenId, displayId }: SetDisplayType) {
     messageUtils.sendData('main:app:set-screen-display', {
-        screenId, displayId,
+        screenId,
+        displayId,
     });
 }
 
@@ -148,12 +165,13 @@ export function getAllDisplays(): AllDisplayType {
 }
 
 type ShowScreenDataType = {
-    screenId: number,
-    displayId: number,
+    screenId: number;
+    displayId: number;
 };
 export function showScreen({ screenId, displayId }: SetDisplayType) {
     return electronSendAsync<void>('main:app:show-screen', {
-        screenId, displayId,
+        screenId,
+        displayId,
     } as ShowScreenDataType);
 }
 
@@ -162,17 +180,15 @@ export function hideScreen(screenId: number) {
 }
 
 export type PTEffectDataType = {
-    target: TargetType,
-    effect: ScreenTransitionEffectType,
+    target: TargetType;
+    effect: ScreenTransitionEffectType;
 };
 
 export function genScreenMouseEvent(event?: any): MouseEvent {
     if (event) {
         return event;
     }
-    const miniScreen = document.getElementsByClassName(
-        'mini-screen',
-    )[0];
+    const miniScreen = document.getElementsByClassName('mini-screen')[0];
     if (miniScreen !== undefined) {
         const rect = miniScreen.getBoundingClientRect();
         return createMouseEvent(rect.x, rect.y);
@@ -217,9 +233,11 @@ export function getBackgroundSrcListOnScreenSetting(): BackgroundSrcListType {
     if (isValidJson(str, true)) {
         const json = JSON.parse(str);
         const items = Object.values(json);
-        if (items.every((item: any) => {
-            return item.type && item.src;
-        })) {
+        if (
+            items.every((item: any) => {
+                return item.type && item.src;
+            })
+        ) {
             return getValidOnScreen(json);
         }
     }
@@ -237,9 +255,7 @@ const validateBible = ({ renderedList, bibleItem }: any) => {
                 typeof title !== 'string' ||
                 !Array.isArray(verses) ||
                 verses.some(({ num, text }: any) => {
-                    return (
-                        typeof num !== 'string' || typeof text !== 'string'
-                    );
+                    return typeof num !== 'string' || typeof text !== 'string';
                 })
             );
         })
@@ -247,10 +263,12 @@ const validateBible = ({ renderedList, bibleItem }: any) => {
 };
 const validateLyric = ({ renderedList }: any) => {
     return (
-        !Array.isArray(renderedList) || renderedList.some((item: any) => {
+        !Array.isArray(renderedList) ||
+        renderedList.some((item: any) => {
             const { title, items } = item;
             return (
-                typeof title !== 'string' || !Array.isArray(items) ||
+                typeof title !== 'string' ||
+                !Array.isArray(items) ||
                 items.some(({ num, text }: any) => {
                     return typeof num !== 'number' || typeof text !== 'string';
                 })
@@ -269,10 +287,8 @@ export function getFullTextListOnScreenSetting(): FullTextListType {
         Object.values(json).forEach((item: any) => {
             if (
                 !fullTextDataTypeList.includes(item.type) ||
-                (
-                    item.type === 'bible-item' &&
-                    validateBible(item.bibleItemData)
-                ) ||
+                (item.type === 'bible-item' &&
+                    validateBible(item.bibleItemData)) ||
                 (item.type === 'lyric' && validateLyric(item.lyricData))
             ) {
                 loggerHelpers.error(item);
@@ -288,4 +304,3 @@ export function getFullTextListOnScreenSetting(): FullTextListType {
     }
     return {};
 }
-

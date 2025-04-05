@@ -3,8 +3,6 @@
         "type": "OpenWorship Bible",
         "title": "Json file for OpenWorship bible",
         "mimetypeSignature": "application/json",
-        "extensions": [
-            ".owb"
-        ]
+        "extensions": [".owb"]
     }
 ]

@@ -3,16 +3,25 @@ import { useState } from 'react';
 import { useAppEffect } from './debuggerHelpers';
 import { handleError } from './errorHelpers';
 import FileSource from './FileSource';
-import ItemSource from './ItemSource';
+import AppDocumentSourceAbs from './DocumentSourceAbs';
 import { trace } from './loggerHelpers';
+import appProvider from '../server/appProvider';
+import {
+    pathJoin,
+    fsCheckFileExist,
+    fsDeleteFile,
+    fsCopyFilePathToPath,
+} from '../server/fileHelpers';
 
 export type AnyObjectType = {
     [key: string]: any;
 };
 
 export function getRandomUUID() {
-    return Math.random().toString(36).substring(2) +
-        (new Date()).getTime().toString(36);
+    return (
+        Math.random().toString(36).substring(2) +
+        new Date().getTime().toString(36)
+    );
 }
 
 export function getRandomColor() {
@@ -40,9 +49,11 @@ export function isVisible(elem: any) {
         return false;
     }
     if (
-        elem.offsetWidth + elem.offsetHeight +
-        elem.getBoundingClientRect().height +
-        elem.getBoundingClientRect().width === 0
+        elem.offsetWidth +
+            elem.offsetHeight +
+            elem.getBoundingClientRect().height +
+            elem.getBoundingClientRect().width ===
+        0
     ) {
         return false;
     }
@@ -83,13 +94,12 @@ export const removePX = (str: string) => {
 
 export function genRandomString(length: number = 5) {
     let result = '';
-    const characters = (
-        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-    );
+    const characters =
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const charactersLength = characters.length;
     for (let i = 0; i < length; i++) {
-        result += (
-            characters.charAt(Math.floor(Math.random() * charactersLength))
+        result += characters.charAt(
+            Math.floor(Math.random() * charactersLength),
         );
     }
     return result;
@@ -97,14 +107,14 @@ export function genRandomString(length: number = 5) {
 
 export function getWindowDim() {
     const { documentElement } = document;
-    const width = (
-        window.innerWidth || documentElement.clientWidth ||
-        document.body.clientWidth
-    );
-    const height = (
-        window.innerHeight || documentElement.clientHeight ||
-        document.body.clientHeight
-    );
+    const width =
+        window.innerWidth ||
+        documentElement.clientWidth ||
+        document.body.clientWidth;
+    const height =
+        window.innerHeight ||
+        documentElement.clientHeight ||
+        document.body.clientHeight;
     return { width, height };
 }
 export function validateAppMeta(meta: any) {
@@ -117,14 +127,14 @@ export function validateAppMeta(meta: any) {
     }
     return false;
 }
-export function useReadFileToData<T extends ItemSource<any>>(
+export function useReadFileToData<T extends AppDocumentSourceAbs>(
     filePath: string | null,
 ) {
     const [data, setData] = useState<T | null | undefined>(null);
     useAppEffect(() => {
         if (filePath !== null) {
             const fileSource = FileSource.getInstance(filePath);
-            fileSource.readFileToJsonData().then((itemSource: any) => {
+            fileSource.readFileJsonData().then((itemSource: any) => {
                 setData(itemSource);
             });
         }
@@ -133,7 +143,7 @@ export function useReadFileToData<T extends ItemSource<any>>(
 }
 
 export function getLastItem<T>(arr: T[]) {
-    return arr[arr.length - 1] || null;
+    return arr[arr.length - 1] ?? null;
 }
 
 export function getImageDim(src: string) {
@@ -152,9 +162,13 @@ export function getImageDim(src: string) {
 export function getVideoDim(src: string) {
     return new Promise<[number, number]>((resolve, reject) => {
         const video = document.createElement('video');
-        video.addEventListener('loadedmetadata', () => {
-            resolve([video.videoWidth, video.videoHeight]);
-        }, false);
+        video.addEventListener(
+            'loadedmetadata',
+            () => {
+                resolve([video.videoWidth, video.videoHeight]);
+            },
+            false,
+        );
         video.onerror = () => {
             reject(new Error('Fail to load video:' + src));
         };
@@ -165,7 +179,7 @@ export function getVideoDim(src: string) {
 export function toMaxId(ids: number[]) {
     if (ids.length === 0) {
         return 0;
-    };
+    }
     return Math.max(...ids);
 }
 
@@ -207,11 +221,120 @@ export function freezeObject(obj: any) {
 }
 
 export function getHTMLChild<T extends HTMLElement>(
-    parent: HTMLElement, tag: string,
+    parent: HTMLElement,
+    tag: string,
 ) {
     const child = parent.querySelector(tag);
     if (!child) {
         throw new Error('Invalid child');
     }
     return child as T;
+}
+
+export function checkIsSameArrays(arr1: any, arr2: any) {
+    if (!Array.isArray(arr1) || !Array.isArray(arr2)) {
+        return false;
+    }
+    if (arr1.length !== arr2.length) {
+        return false;
+    }
+    for (let i = 0; i < arr1.length; i++) {
+        if (!checkIsSameObjects(arr1[i], arr2[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+
+export function checkIsSameObjects(json1: any, json2: any) {
+    if (!(json1 instanceof Object && json2 instanceof Object)) {
+        return false;
+    }
+    for (const [key, value1] of Object.entries(json1)) {
+        const value2 = json2[key];
+        if (Array.isArray(value1)) {
+            if (!checkIsSameArrays(value1, value2)) {
+                return false;
+            }
+        } else if (value1 instanceof Object) {
+            if (!checkIsSameObjects(value1, value2)) {
+                return false;
+            }
+        } else if (value1 !== value2) {
+            return false;
+        }
+    }
+    return true;
+}
+
+export function checkIsSameValues(value1: any, value2: any) {
+    if (Array.isArray(value1)) {
+        return checkIsSameArrays(value1, value2);
+    }
+    if (value1 instanceof Object) {
+        return checkIsSameObjects(value1, value2);
+    }
+    return value1 === value2;
+}
+
+export const menuTitleRealFile = `Reveal in ${
+    appProvider.systemUtils.isMac ? 'Finder' : 'File Explorer'
+}`;
+
+export function genTimeoutAttempt(timeMilliseconds: number = 1e3) {
+    let timeoutId: any = null;
+    return function (func: () => void, isImmediate: boolean = false) {
+        if (timeoutId !== null) {
+            clearTimeout(timeoutId);
+            timeoutId = null;
+        }
+        if (isImmediate) {
+            func();
+            return;
+        }
+        timeoutId = setTimeout(() => {
+            timeoutId = null;
+            func();
+        }, timeMilliseconds);
+    };
+}
+
+export function downloadFile(
+    url: string,
+    filename: string,
+    type: string,
+    destinationPath: string,
+    isOverwrite = true,
+) {
+    return new Promise<string>((resolve, reject) => {
+        fetch(url)
+            .then((response) => response.blob())
+            .then(async (blob) => {
+                const file = new File([blob], filename, { type });
+                const dllPath = pathJoin(destinationPath, filename);
+
+                if (isOverwrite && (await fsCheckFileExist(dllPath))) {
+                    await fsDeleteFile(dllPath);
+                }
+                if (!(await fsCheckFileExist(dllPath))) {
+                    await fsCopyFilePathToPath(file, destinationPath, filename);
+                }
+                resolve(dllPath);
+            })
+            .catch(reject);
+    });
+}
+
+export function cumulativeOffset(element: HTMLElement | null) {
+    let top = 0;
+    let left = 0;
+    do {
+        if (!element) {
+            break;
+        }
+        top += element.offsetTop ?? 0;
+        left += element.offsetLeft ?? 0;
+        element = element.offsetParent as HTMLElement;
+    } while (element);
+    return { top, left };
 }

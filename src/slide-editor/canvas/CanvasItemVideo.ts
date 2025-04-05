@@ -5,26 +5,19 @@ import {
     genTextDefaultBoxStyle,
     validateMediaProps,
 } from './canvasHelpers';
-import CanvasItem, {
-    CanvasItemError,
-    CanvasItemPropsType,
-} from './CanvasItem';
+import CanvasItem, { CanvasItemError, CanvasItemPropsType } from './CanvasItem';
 import { handleError } from '../../helper/errorHelpers';
 
-export type CanvasItemVideoPropsType = (
-    CanvasItemPropsType & CanvasItemMediaPropsType
-);
-export default class CanvasItemVideo
-    extends CanvasItem<CanvasItemVideoPropsType> {
+export type CanvasItemVideoPropsType = CanvasItemPropsType &
+    CanvasItemMediaPropsType;
+class CanvasItemVideo extends CanvasItem<CanvasItemVideoPropsType> {
     static gegStyle(_props: CanvasItemVideoPropsType) {
         return {};
     }
     getStyle() {
         return CanvasItemVideo.gegStyle(this.props);
     }
-    static async genFromInsertion(
-        x: number, y: number, filePath: string,
-    ) {
+    static async genFromInsertion(x: number, y: number, filePath: string) {
         const fileSource = FileSource.getInstance(filePath);
         const [mediaWidth, mediaHeight] = await getVideoDim(fileSource.src);
         const srcData = await fileSource.getSrcData();
@@ -63,3 +56,5 @@ export default class CanvasItemVideo
         validateMediaProps(json);
     }
 }
+
+export default CanvasItemVideo;

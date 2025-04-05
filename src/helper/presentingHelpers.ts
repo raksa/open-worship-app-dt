@@ -8,14 +8,16 @@ export function renderFG(htmlString: string) {
         script: `
 const shadow = getShadow('foreground');
 shadow.innerHTML = \`${htmlString}\`;
-`});
+`,
+    });
 }
 export function clearForeground() {
     renderPresent({
         script: `
 const shadow = getShadow('foreground');
 shadow.innerHTML = '';
-    ` });
+    `,
+    });
 }
 
 function getBackgroundStyle() {
@@ -27,7 +29,7 @@ ele.style.height = '100%';
 }
 
 export function renderBackgroundImage(path: string) {
-    const src = (new URL(path)).toString();
+    const src = new URL(path).toString();
     renderPresent({
         script: `
 const shadow = getShadow('background');
@@ -36,7 +38,8 @@ ${getBackgroundStyle()}
 ele.src = '${src}';
 shadow.appendChild(ele);
 clearOldBackground();
-` });
+`,
+    });
 }
 
 export function renderBackgroundColor(color: AppColorType) {
@@ -48,7 +51,8 @@ ${getBackgroundStyle()}
 ele.style.backgroundColor = '${color}';
 shadow.appendChild(ele);
 clearOldBackground();
-    ` });
+    `,
+    });
 }
 
 export function renderBackgroundVideo(src: string) {
@@ -65,7 +69,8 @@ ele.playsinline = true;
 ele.muted = true;
 shadow.appendChild(ele);
 clearOldBackground();
-` });
+`,
+    });
 }
 
 export function clearBackground() {
@@ -73,5 +78,6 @@ export function clearBackground() {
         script: `
 const shadow = getShadow('background');
 shadow.innerHTML = '';
-` });
+`,
+    });
 }

@@ -1,7 +1,9 @@
 import { useState } from 'react';
 
 import {
-    getBibleInfo, getBookKVList,
+    checkIsBookAvailable,
+    getBibleInfo,
+    getBookKVList,
 } from './bibleInfoHelpers';
 import bibleJson from './bible.json';
 import { getOnlineBibleInfoList } from './bibleDownloadHelpers';
@@ -14,37 +16,44 @@ import { freezeObject } from '../helpers';
 freezeObject(bibleJson);
 
 export const bibleObj = bibleJson as {
-    booksOrder: string[],
-    books: { [key: string]: BookType },
-    kjvKeyValue: { [key: string]: string },
+    booksOrder: string[];
+    books: { [key: string]: BookType };
+    kjvKeyValue: { [key: string]: string };
 };
 
 export type BibleStatusType = [string, boolean, string];
 
 export type BookType = {
-    key: string,
-    chapterCount: number
+    key: string;
+    chapterCount: number;
 };
 
 export const toLocaleNum = (n: number, numList: string[]) => {
     if (!numList) {
         return n;
     }
-    return `${n}`.split('').map((n1) => {
-        return numList[parseInt(n1)];
-    }).join('');
+    return `${n}`
+        .split('')
+        .map((n1) => {
+            return numList[parseInt(n1)];
+        })
+        .join('');
 };
 
 export async function genChapterMatches(
-    bibleKey: string, bookKey: string, guessingChapter: string | null,
+    bibleKey: string,
+    bookKey: string,
+    guessingChapter: string | null,
 ) {
     const chapterCount = getKJVChapterCount(bookKey);
     const chapterList = Array.from({ length: chapterCount }, (_, i) => {
         return i + 1;
     });
-    const chapterNumStrList = await Promise.all(chapterList.map((chapter) => {
-        return toLocaleNumBible(bibleKey, chapter);
-    }));
+    const chapterNumStrList = await Promise.all(
+        chapterList.map((chapter) => {
+            return toLocaleNumBible(bibleKey, chapter);
+        }),
+    );
     const newList = chapterNumStrList.map((chapterNumStr, i) => {
         return [chapterList[i], chapterNumStr];
     });
@@ -76,48 +85,109 @@ export async function genChapterMatches(
     return filteredList;
 }
 export function useChapterMatch(
-    bibleKey: string, bookKey: string, guessingChapter: string | null,
+    bibleKey: string,
+    bookKey: string,
+    guessingChapter: string | null,
 ) {
     const [matches, setMatches] = useState<[number, string][] | null>(null);
-    useAppEffectAsync(async (methodContext) => {
-        const chapterNumStrList = await genChapterMatches(
-            bibleKey, bookKey, guessingChapter,
-        );
-        methodContext.setMatches(chapterNumStrList);
-    }, [bookKey, guessingChapter], { setMatches });
+    useAppEffectAsync(
+        async (methodContext) => {
+            if (!(await checkIsBookAvailable(bibleKey, bookKey))) {
+                return;
+            }
+            const chapterNumStrList = await genChapterMatches(
+                bibleKey,
+                bookKey,
+                guessingChapter,
+            );
+            methodContext.setMatches(chapterNumStrList);
+        },
+        [bookKey, guessingChapter],
+        { setMatches },
+    );
     return matches;
 }
 
+type BookMatchDataType = {
+    bookKey: string;
+    book: string;
+    bookKJV: string;
+    isAvailable: boolean;
+};
 export async function genBookMatches(
-    bibleKey: string, guessingBook: string,
-): Promise<[string, string, string][] | null> {
-    const bookKVList = await getBookKVList(bibleKey);
+    bibleKey: string,
+    guessingBook: string,
+): Promise<BookMatchDataType[] | null> {
+    const info = await getBibleInfo(bibleKey);
+    if (info === null) {
+        return null;
+    }
+    const bookKVList = info.books;
+    const booksAvailable = info.booksAvailable;
     if (bookKVList === null) {
         return null;
     }
-    const check = (v1: string, v2: string) => {
+    const check = (v1: string, v2: string, isStartsWith = false) => {
+        if (isStartsWith) {
+            const v1Lower = v1.toLowerCase();
+            const v2Lower = v2.toLowerCase();
+            return (
+                v1Lower.startsWith(v2Lower) ||
+                v1Lower.replace(/ /g, '').startsWith(v2Lower)
+            );
+        }
         if (v1.toLowerCase().includes(v2.toLowerCase())) {
             return true;
         }
     };
     const keys = Object.entries(bookKVList);
     const kjvKeyValue = getKJVKeyValue();
-    return keys.filter(([bookKey, book]) => {
+    const bestMatchIndices = keys.map(([bookKey, book]) => {
         const kjvValue = kjvKeyValue[bookKey];
-        if (check(kjvValue, guessingBook) || check(guessingBook, kjvValue) ||
-            check(kjvValue, guessingBook) || check(guessingBook, kjvValue) ||
-            check(book, guessingBook) || check(guessingBook, book)) {
+        if (
+            check(book, guessingBook, true) ||
+            check(guessingBook, book, true) ||
+            check(kjvValue, guessingBook, true)
+        ) {
             return true;
         }
         return false;
-    }).map(([bookKey, book]) => {
-        return [bookKey, book, kjvKeyValue[bookKey]];
     });
-};
+    const bestMatchKeys = keys.filter((_, i) => {
+        return bestMatchIndices[i];
+    });
+    const mappedKeys = bestMatchKeys
+        .concat(
+            keys.filter(([bookKey, book], i) => {
+                if (bestMatchIndices[i]) {
+                    return false;
+                }
+                const kjvValue = kjvKeyValue[bookKey];
+                if (
+                    check(kjvValue, guessingBook) ||
+                    check(guessingBook, kjvValue) ||
+                    check(kjvValue, guessingBook) ||
+                    check(guessingBook, kjvValue) ||
+                    check(book, guessingBook) ||
+                    check(guessingBook, book)
+                ) {
+                    return true;
+                }
+                return false;
+            }),
+        )
+        .map(([bookKey, book]) => {
+            return {
+                bookKey,
+                book,
+                bookKJV: kjvKeyValue[bookKey],
+                isAvailable: booksAvailable.includes(bookKey),
+            };
+        });
+    return mappedKeys;
+}
 export function useBookMatch(bibleKey: string, guessingBook: string) {
-    const [matches, setMatches] = useState<[string, string, string][] | null>(
-        null,
-    );
+    const [matches, setMatches] = useState<BookMatchDataType[] | null>(null);
     useAppEffect(() => {
         genBookMatches(bibleKey, guessingBook).then((bookMatches) => {
             setMatches(bookMatches);
@@ -161,8 +231,9 @@ export function getKJVKeyValue() {
     return bibleObj.kjvKeyValue;
 }
 
-async function getBibleInfoWithStatus(bibleKey: string):
-    Promise<BibleStatusType> {
+async function getBibleInfoWithStatus(
+    bibleKey: string,
+): Promise<BibleStatusType> {
     const bibleInfo = await getBibleInfo(bibleKey);
     const isAvailable = bibleInfo !== null;
     return [bibleKey, isAvailable, `${!isAvailable ? '🚫' : ''}${bibleKey}`];
@@ -180,18 +251,22 @@ export async function getBibleInfoWithStatusList() {
     return list;
 }
 
-async function toChapter(bibleKey: string, bookKey: string,
-    chapterNum: number) {
+async function toChapter(
+    bibleKey: string,
+    bookKey: string,
+    chapterNum: number,
+) {
     // KJV, GEN, 1
     const info = await getBibleInfo(bibleKey);
     if (info === null) {
         return null;
     }
     const book = info.books[bookKey];
-    return (
-        `${book} ${info.numList === undefined ? chapterNum :
-            toLocaleNum(chapterNum, info.numList)}`
-    );
+    return `${book} ${
+        info.numList === undefined
+            ? chapterNum
+            : await toLocaleNum(chapterNum, info.numList)
+    }`;
 }
 
 export function getKJVChapterCount(bookKey: string) {
@@ -212,8 +287,7 @@ function toIndex(bookKey: string, chapterNum: number) {
     let bIndex = 0;
     while (bibleObj.booksOrder[bIndex]) {
         const bookKey1 = bibleObj.booksOrder[bIndex];
-        const chapterCount = bibleObj
-            .books[bookKey1].chapterCount;
+        const chapterCount = bibleObj.books[bookKey1].chapterCount;
         if (bookKey1 === bookKey) {
             if (chapterNum > chapterCount) {
                 return -1;

@@ -1,14 +1,13 @@
-/* eslint-disable max-len */
 import { LanguageType } from '..';
 
 const numList = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
 const dictionary = {
-    'bible-search': 'Bible Search',
+    'bible-lookup': 'Bible Lookup',
     'bible-presenter': 'Bible Presenter',
-    'general': 'General',
-    'bible': 'Bible',
-    'about': 'About',
+    general: 'General',
+    bible: 'Bible',
+    about: 'About',
 };
 const en: LanguageType = {
     numList,
@@ -23,6 +22,19 @@ const en: LanguageType = {
     <path fill="#C8102E" d="M0 193v96h640v-96H0zM273 0v480h96V0h-96z"/>
   </svg>
   `,
+    sanitizeSearchingText: (text) => {
+        return text
+            .toLowerCase()
+            .replace(/[^a-z0-9 ]/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+    },
+    trimText: (text: string) => {
+        return text.trim();
+    },
+    endWord: (text: string) => {
+        return text + ' ';
+    },
 };
 
 export default en;

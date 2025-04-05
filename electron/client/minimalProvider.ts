@@ -1,8 +1,8 @@
-import fileUtils from './fileUtils.js';
-import messageUtils from './messageUtils.js';
-import systemUtils from './systemUtils.js';
-import pathUtils from './pathUtils.js';
-import appUtils from './appUtils.js';
+import fileUtils from './fileUtils';
+import messageUtils from './messageUtils';
+import systemUtils from './systemUtils';
+import pathUtils from './pathUtils';
+import appUtils from './appUtils';
 
 export const provider = {
     isPresenter: false,
@@ -14,4 +14,3 @@ export const provider = {
     systemUtils,
     appUtils,
 };
-

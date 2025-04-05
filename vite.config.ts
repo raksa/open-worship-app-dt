@@ -1,8 +1,9 @@
-import { defineConfig } from 'vite';
 import { resolve } from 'node:path';
+import { readdirSync } from 'node:fs';
+
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import basicSsl from '@vitejs/plugin-basic-ssl';
-import { readdirSync } from 'node:fs';
 
 const htmlPlugin = () => {
     return {
@@ -17,13 +18,16 @@ const htmlPlugin = () => {
             <meta ..>
             <!-- close-dev -->
             */
-            html = html.split('<!-- open-dev -->').map((htmlChunk) => {
-                const htmlChunkArr = htmlChunk.split('<!-- close-dev -->');
-                if (htmlChunkArr.length > 1) {
-                    htmlChunkArr.shift();
-                }
-                return htmlChunkArr.join('');
-            }).join('');
+            html = html
+                .split('<!-- open-dev -->')
+                .map((htmlChunk) => {
+                    const htmlChunkArr = htmlChunk.split('<!-- close-dev -->');
+                    if (htmlChunkArr.length > 1) {
+                        htmlChunkArr.shift();
+                    }
+                    return htmlChunkArr.join('');
+                })
+                .join('');
             return html;
         },
     };
@@ -35,6 +39,7 @@ const htmlFiles = readdirSync(__dirname).filter((fileName) => {
 
 // https://vitejs.dev/config/
 export default defineConfig({
+    assetsInclude: ['**/*.dll'],
     plugins: [
         react(),
         htmlPlugin(),
@@ -56,7 +61,7 @@ export default defineConfig({
     },
     build: {
         rollupOptions: {
-            input: htmlFiles.map(item => resolve(item)),
+            input: htmlFiles.map((item) => resolve(item)),
         },
     },
 });

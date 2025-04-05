@@ -2,7 +2,9 @@ import { useState } from 'react';
 
 import { handleError } from '../../helper/errorHelpers';
 import {
-    BIBLE_DOWNLOAD_TOAST_TITLE, BibleMinimalInfoType, downloadBible,
+    BIBLE_DOWNLOAD_TOAST_TITLE,
+    BibleMinimalInfoType,
+    downloadBible,
     extractDownloadedBible,
 } from '../../helper/bible-helpers/bibleDownloadHelpers';
 import { getBibleInfo } from '../../helper/bible-helpers/bibleInfoHelpers';
@@ -21,11 +23,12 @@ async function syncBibleLanguage(bibleKey: string) {
 }
 
 export function useDownloadBible(
-    bibleInfo: BibleMinimalInfoType, onDownloaded: () => void,
+    bibleInfo: BibleMinimalInfoType,
+    onDownloaded: () => void,
 ): [number | null, () => void] {
-    const [
-        downloadingProgress, setDownloadingProgress,
-    ] = useState<number | null>(null);
+    const [downloadingProgress, setDownloadingProgress] = useState<
+        number | null
+    >(null);
     const handleDoneDownloaded = async (error: any, filePath?: string) => {
         if (error) {
             handleError(error);
@@ -50,10 +53,8 @@ export function useDownloadBible(
                     const fileSize = parseInt(total.toFixed(2));
                     showSimpleToast(
                         BIBLE_DOWNLOAD_TOAST_TITLE,
-                        (
-                            `Start downloading "${bibleInfo.key}". ` +
-                            `File size ${fileSize}mb`
-                        ),
+                        `Start downloading "${bibleInfo.key}". ` +
+                            `File size ${fileSize}mb`,
                     );
                 },
                 onProgress: (percentage) => {
@@ -67,4 +68,4 @@ export function useDownloadBible(
         });
     };
     return [downloadingProgress, startDownloadBible];
-};
+}

@@ -14,12 +14,14 @@
   *::-webkit-scrollbar-thumb {
     border-radius: 10px;
     background-color: var(--bs-gray-600);
-    background-image: gradient(linear,
-        40% 0%,
-        75% 84%,
-        from(var(--bs-gray-800)),
-        to(var(--bs-gray-800)),
-        color-stop(.6, var(--bs-gray-600)))
+    background-image: gradient(
+      linear,
+      40% 0%,
+      75% 84%,
+      from(var(--bs-gray-800)),
+      to(var(--bs-gray-800)),
+      color-stop(0.6, var(--bs-gray-600))
+    );
   }
 
   *::-webkit-scrollbar-corner {

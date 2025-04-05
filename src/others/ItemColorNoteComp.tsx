@@ -1,40 +1,46 @@
 import { useMemo, useState } from 'react';
 
-import {
-    ContextMenuItemType, showAppContextMenu,
-} from './AppContextMenuComp';
+import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
 import colorList from './color-list.json';
 import ColorNoteInf from '../helper/ColorNoteInf';
-import { useAppEffect } from '../helper/debuggerHelpers';
+import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { freezeObject } from '../helper/helpers';
+import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 
 freezeObject(colorList);
 
 // https://www.w3.org/wiki/CSS/Properties/color/keywords
 
-export default function ItemColorNoteComp({ item }: Readonly<{
-    item: ColorNoteInf,
+export default function ItemColorNoteComp({
+    item,
+}: Readonly<{
+    item: ColorNoteInf;
 }>) {
     const [colorNote, setColorNote] = useState('');
-    useAppEffect(() => {
-        item.getColorNote().then((colorNote) => {
-            setColorNote(colorNote || '');
-        });
-    }, [item]);
+    useAppEffectAsync(
+        async (contextMethods) => {
+            const colorNote = await item.getColorNote();
+            contextMethods.setColorNote(colorNote ?? '');
+        },
+        [item],
+        { setColorNote },
+    );
     const setColorNote1 = (colorNote: string | null) => {
-        setColorNote(colorNote || '');
+        setColorNote(colorNote ?? '');
         item.setColorNote(colorNote);
     };
     const title = useMemo(() => {
-        const reverseColorMap: Record<string, string> =
-            Object.entries({
-                ...colorList.main,
-                ...colorList.extension,
-            }).reduce((acc, [name, colorCode]) => {
+        const reverseColorMap: Record<string, string> = Object.entries({
+            ...colorList.main,
+            ...colorList.extension,
+        }).reduce(
+            (acc, [name, colorCode]) => {
                 acc[colorCode] = name;
                 return acc;
-            }, {} as Record<string, string>);
-        return reverseColorMap[colorNote] || 'no color';
+            },
+            {} as Record<string, string>,
+        );
+        return reverseColorMap[colorNote] ?? 'no color';
     }, [colorNote]);
     const handleColorSelecting = (event: any) => {
         event.stopPropagation();
@@ -47,7 +53,7 @@ export default function ItemColorNoteComp({ item }: Readonly<{
             {
                 menuTitle: 'no color',
                 disabled: colorNote === null,
-                onClick: () => {
+                onSelect: () => {
                     setColorNote1(null);
                 },
             },
@@ -55,29 +61,38 @@ export default function ItemColorNoteComp({ item }: Readonly<{
                 return {
                     menuTitle: name,
                     disabled: colorNote === colorCode,
-                    onClick: () => {
+                    onSelect: () => {
                         setColorNote1(colorCode);
                     },
                     otherChild: (
-                        <div className='flex-fill'>
-                            <i className='bi bi-record-circle float-end'
+                        <div className="flex-fill">
+                            <i
+                                className="bi bi-record-circle float-end"
                                 style={{ color: colorCode }}
                             />
                         </div>
                     ),
                 };
-            })];
+            }),
+        ];
         showAppContextMenu(event, items);
     };
 
     return (
-        <span className={`color-note pointer ${colorNote ? 'active' : ''}`}
+        <span
+            className={`color-note pointer ${colorNote ? 'active' : ''}`}
             title={title}
-            onClick={handleColorSelecting} >
-            <i className='bi bi-record-circle'
-                style={colorNote ? {
-                    color: colorNote,
-                } : {}}
+            onClick={handleColorSelecting}
+        >
+            <i
+                className="bi bi-record-circle"
+                style={
+                    colorNote
+                        ? {
+                              color: colorNote,
+                          }
+                        : {}
+                }
             />
         </span>
     );

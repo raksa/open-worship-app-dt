@@ -2,14 +2,15 @@ import HandleAlertComp from './popup-widget/HandleAlertComp';
 import { main } from './appInitHelpers';
 import TopProgressBarComp from './progress-bar/TopProgressBarComp';
 import SettingComp from './setting/SettingComp';
-import Toast from './toast/Toast';
-import AppContextMenuComp from './others/AppContextMenuComp';
+import ToastComp from './toast/ToastComp';
+import AppContextMenuComp from './context-menu/AppContextMenuComp';
 
-main(<>
-    <SettingComp />
-    <TopProgressBarComp />
-    <Toast />
-    <HandleAlertComp />
-    <AppContextMenuComp />
-</>
+main(
+    <>
+        <SettingComp />
+        <TopProgressBarComp />
+        <ToastComp />
+        <HandleAlertComp />
+        <AppContextMenuComp />
+    </>,
 );

@@ -9,7 +9,8 @@ import { useAppEffect } from '../helper/debuggerHelpers';
 import { BackgroundSrcType } from './screenHelpers';
 import { getScreenManagerBase } from './managers/screenManagerBaseHelpers';
 import {
-    useScreenManagerContext, ScreenManagerBaseContext,
+    useScreenManagerContext,
+    ScreenManagerBaseContext,
     useScreenManagerEvents,
 } from './managers/screenManagerHooks';
 
@@ -26,14 +27,17 @@ export default function ScreenBackgroundComp() {
         }
     }, [div.current]);
     return (
-        <div id='background' ref={div}
+        <div
+            id="background"
+            ref={div}
             style={screenBackgroundManager.containerStyle}
         />
     );
 }
 
 export function genHtmlBackground(
-    backgroundSrc: BackgroundSrcType, screenId: number,
+    backgroundSrc: BackgroundSrcType,
+    screenId: number,
 ) {
     const screenManagerBase = getScreenManagerBase(screenId);
     const htmlStr = ReactDOMServer.renderToStaticMarkup(
@@ -50,35 +54,37 @@ export function genHtmlBackground(
     return child;
 }
 
-export function RenderBackground({ backgroundSrc }: Readonly<{
-    backgroundSrc: BackgroundSrcType,
+export function RenderBackground({
+    backgroundSrc,
+}: Readonly<{
+    backgroundSrc: BackgroundSrcType;
 }>) {
     const screenManager = useScreenManagerContext();
     const { screenBackgroundManager } = screenManager;
     return (
-        <div style={{
-            ...screenBackgroundManager.containerStyle,
-        }}>
+        <div
+            style={{
+                ...screenBackgroundManager.containerStyle,
+            }}
+        >
             <RenderScreenBackground backgroundSrc={backgroundSrc} />
         </div>
     );
 }
 
-function RenderScreenBackground({ backgroundSrc }: Readonly<{
-    backgroundSrc: BackgroundSrcType,
+function RenderScreenBackground({
+    backgroundSrc,
+}: Readonly<{
+    backgroundSrc: BackgroundSrcType;
 }>) {
     if (backgroundSrc === null) {
         return null;
     }
     switch (backgroundSrc.type) {
         case 'image':
-            return (
-                <ScreenBackgroundImageComp backgroundSrc={backgroundSrc} />
-            );
+            return <ScreenBackgroundImageComp backgroundSrc={backgroundSrc} />;
         case 'video':
-            return (
-                <ScreenBackgroundVideoComp backgroundSrc={backgroundSrc} />
-            );
+            return <ScreenBackgroundVideoComp backgroundSrc={backgroundSrc} />;
         case 'color':
             return (
                 <ScreenBackgroundColorComp

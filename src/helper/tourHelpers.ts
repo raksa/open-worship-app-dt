@@ -18,7 +18,8 @@ function getDefaultDataDir() {
 async function selectDefaultData() {
     const defaultDataDir = getDefaultDataDir();
     const isOk = await showAppConfirm(
-        'Select Default Data Folder', `This will select "${defaultDataDir}"`,
+        'Select Default Data Folder',
+        `This will select "${defaultDataDir}"`,
     );
     if (!isOk) {
         return;
@@ -54,10 +55,10 @@ async function selectDefaultData() {
 
 export function useCheckSelectedDir() {
     useAppEffect(() => {
-        const isSomeSelected = (
-            Object.values(dirSourceSettingNames).some((settingName) => {
+        const isSomeSelected = Object.values(dirSourceSettingNames).some(
+            (settingName) => {
                 return !!getSetting(settingName);
-            })
+            },
         );
         if (!isSomeSelected) {
             selectDefaultData();
@@ -66,7 +67,8 @@ export function useCheckSelectedDir() {
 }
 
 export async function selectDefaultDataDirName(
-    dirSource: DirSource, dirName: string,
+    dirSource: DirSource,
+    dirName: string,
 ) {
     const defaultDataDir = getDefaultDataDir();
     const dirPath = appProvider.pathUtils.join(defaultDataDir, dirName);
@@ -84,7 +86,8 @@ export async function selectDefaultDataDirName(
             handleError(error);
         }
         showSimpleToast(
-            'Creating Default Folder', `Fail to create folder "${dirPath}"`
+            'Creating Default Folder',
+            `Fail to create folder "${dirPath}"`,
         );
         return;
     }

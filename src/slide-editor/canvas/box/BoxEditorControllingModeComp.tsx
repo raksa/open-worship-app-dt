@@ -1,7 +1,9 @@
 import './BoxEditorControllingModeComp.scss';
 
 import {
-    useCanvasItemContext, useCanvasItemPropsContext, useSetEditingCanvasItem,
+    useCanvasItemContext,
+    useCanvasItemPropsContext,
+    useSetEditingCanvasItem,
 } from '../CanvasItem';
 import { BoxEditorNormalImageRender } from './BoxEditorNormalViewImageModeComp';
 import { BoxEditorNormalTextRender } from './BoxEditorNormalViewTextModeComp';
@@ -9,34 +11,22 @@ import { BoxEditorNormalBibleRender } from './BoxEditorNormalViewBibleModeComp';
 import { useCanvasControllerContext } from '../CanvasController';
 import { BoxEditorNormalVideoRender } from './BoxEditorNormalViewVideoModeComp';
 import { BENViewErrorRender } from './BoxEditorNormalViewErrorComp';
-import {
-    useKeyboardRegistering,
-} from '../../../event/KeyboardEventListener';
+import { useKeyboardRegistering } from '../../../event/KeyboardEventListener';
 import { useBoxEditorControllerContext } from '../../BoxEditorController';
 
 function BoxEditorCanvasItemRender() {
     const canvasItem = useCanvasItemContext();
     switch (canvasItem.type) {
         case 'image':
-            return (
-                <BoxEditorNormalImageRender />
-            );
+            return <BoxEditorNormalImageRender />;
         case 'video':
-            return (
-                <BoxEditorNormalVideoRender />
-            );
+            return <BoxEditorNormalVideoRender />;
         case 'text':
-            return (
-                <BoxEditorNormalTextRender />
-            );
+            return <BoxEditorNormalTextRender />;
         case 'bible':
-            return (
-                <BoxEditorNormalBibleRender />
-            );
+            return <BoxEditorNormalBibleRender />;
         default:
-            return (
-                <BENViewErrorRender />
-            );
+            return <BENViewErrorRender />;
     }
 }
 
@@ -46,24 +36,32 @@ export default function BoxEditorControllingModeComp() {
     const canvasItem = useCanvasItemContext();
     const boxEditorController = useBoxEditorControllerContext();
     const handleCanvasItemEditing = useSetEditingCanvasItem();
-    useKeyboardRegistering([{ key: 'Delete' }], () => {
-        canvasController.deleteItem(canvasItem);
-    });
+    useKeyboardRegistering(
+        [{ key: 'Delete' }],
+        () => {
+            canvasController.deleteItem(canvasItem);
+        },
+        [canvasController, canvasItem],
+    );
     const props = useCanvasItemPropsContext();
     return (
-        <div className='editor-controller-box-wrapper'
+        <div
+            className="editor-controller-box-wrapper"
             ref={(div) => {
-                if (div !== null) {
-                    boxEditorController.release();
-                    boxEditorController.initEvent(div);
-                    boxEditorController.onDone = async () => {
-                        const info = boxEditorController.getInfo();
-                        if (info !== null) {
-                            canvasItem.applyProps(info);
-                            canvasController.fireEditEvent(canvasItem);
-                        }
-                    };
+                if (div === null) {
+                    return;
                 }
+                boxEditorController.initEvent(div, async () => {
+                    const info = boxEditorController.getInfo();
+                    if (info === null) {
+                        return;
+                    }
+                    canvasItem.applyProps(info);
+                    canvasController.applyEditItem(canvasItem);
+                });
+                return () => {
+                    boxEditorController.release();
+                };
             }}
             style={{
                 width: '0',
@@ -71,17 +69,17 @@ export default function BoxEditorControllingModeComp() {
                 top: `${props.top + props.height / 2}px`,
                 left: `${props.left + props.width / 2}px`,
                 transform: `rotate(${props.rotate}deg)`,
-            }}>
-            <div className={'app-box-editor controllable'}
+            }}
+        >
+            <div
+                className={'app-box-editor controllable'}
                 onClick={(event) => {
                     event.stopPropagation();
                 }}
-                onContextMenu={
-                    canvasController.genHandleContextMenuOpening(
-                        canvasItem,
-                        handleCanvasItemEditing.bind(null, canvasItem),
-                    )
-                }
+                onContextMenu={canvasController.genHandleContextMenuOpening(
+                    canvasItem,
+                    handleCanvasItemEditing.bind(null, canvasItem),
+                )}
                 onDoubleClick={(event) => {
                     event.stopPropagation();
                     handleCanvasItemEditing(canvasItem);
@@ -92,24 +90,21 @@ export default function BoxEditorControllingModeComp() {
                     width: `${props.width}px`,
                     height: `${props.height}px`,
                     backgroundColor: props.backgroundColor ?? 'transparent',
-                }}>
+                }}
+            >
                 <BoxEditorCanvasItemRender />
-                <div className='tools'>
-                    <div className={
-                        `object ${boxEditorController.rotatorCN}`
-                    } />
-                    <div className='rotate-link' />
+                <div className="tools">
+                    <div
+                        className={`object ${boxEditorController.rotatorCN}`}
+                    />
+                    <div className="rotate-link" />
                     {Object.keys(boxEditorController.resizeActorList).map(
                         (cn) => {
-                            return (
-                                <div key={cn} className={`object ${cn}`} />
-                            );
+                            return <div key={cn} className={`object ${cn}`} />;
                         },
-                    )
-                    }
+                    )}
                 </div>
             </div>
         </div>
     );
 }
-

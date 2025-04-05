@@ -21,40 +21,48 @@ const tabTypeList = [
     ['b', 'Bible', LazySettingBibleComp],
     ['a', 'About', LazySettingAboutComp],
 ] as const;
-type TabType = typeof tabTypeList[number][0];
+type TabType = (typeof tabTypeList)[number][0];
 export default function SettingComp() {
     const [tabType, setTabType] = useStateSettingString<TabType>(
-        'popup-setting-tab', 'b',
+        'popup-setting-tab',
+        'b',
     );
     return (
-        <div id='app-setting'
-            className='shadow card w-100 h-100 overflow-hidden'>
-            <div className='card-body d-flex flex-column'>
-                <div className='setting-header d-flex'>
+        <div
+            id="app-setting"
+            className="shadow card w-100 h-100 overflow-hidden"
+        >
+            <div className="card-body d-flex flex-column">
+                <div className="setting-header d-flex">
                     <TabRenderComp<TabType>
                         tabs={tabTypeList.map(([type, name]) => {
                             return [type, name];
                         })}
                         activeTab={tabType}
-                        setActiveTab={setTabType} />
+                        setActiveTab={setTabType}
+                    />
                 </div>
-                <div className='setting-body flex-fill'>
-                    <div style={{
-                        margin: 'auto',
-                        maxWidth: '600px',
-                    }}>
+                <div className="setting-body flex-fill">
+                    <div
+                        style={{
+                            margin: 'auto',
+                            maxWidth: '600px',
+                        }}
+                    >
                         {tabTypeList.map(([type, _, target]) => {
                             return genTabBody<TabType>(tabType, [type, target]);
                         })}
                     </div>
                 </div>
             </div>
-            <div style={{
-                position: 'fixed',
-                top: 0,
-                right: 0,
-            }}>
-                <QuickOrBackButtonComp title='Quit Setting' />
+            <div
+                style={{
+                    position: 'fixed',
+                    top: 0,
+                    right: 0,
+                }}
+            >
+                <QuickOrBackButtonComp title="Quit Setting" />
             </div>
         </div>
     );

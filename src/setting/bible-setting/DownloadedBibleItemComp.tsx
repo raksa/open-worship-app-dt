@@ -1,22 +1,21 @@
-import {
-    fsCheckDirExist, fsDeleteDir,
-} from '../../server/fileHelpers';
-import {
-    BibleMinimalInfoType,
-} from '../../helper/bible-helpers/bibleDownloadHelpers';
+import { fsCheckDirExist, fsDeleteDir } from '../../server/fileHelpers';
+import { BibleMinimalInfoType } from '../../helper/bible-helpers/bibleDownloadHelpers';
 import { showSimpleToast } from '../../toast/toastHelpers';
 import {
-    hideProgressBard, showProgressBard,
+    hideProgressBard,
+    showProgressBard,
 } from '../../progress-bar/progressBarHelpers';
 import { showAppConfirm } from '../../popup-widget/popupWidgetHelpers';
 import { bibleDataReader } from '../../helper/bible-helpers/BibleDataReader';
 
 export default function DownloadedBibleItemComp({
-    bibleInfo, onDeleted, onUpdate,
+    bibleInfo,
+    onDeleted,
+    onUpdate,
 }: Readonly<{
-    bibleInfo: BibleMinimalInfoType & { isUpdatable: boolean },
-    onDeleted: () => void,
-    onUpdate: () => void,
+    bibleInfo: BibleMinimalInfoType & { isUpdatable: boolean };
+    onDeleted: () => void;
+    onUpdate: () => void;
 }>) {
     const { key, title } = bibleInfo;
     const handleBibleDeleting = async () => {
@@ -33,7 +32,7 @@ export default function DownloadedBibleItemComp({
             const bibleDestination = await bibleDataReader.toBiblePath(key);
             if (
                 bibleDestination !== null &&
-                await fsCheckDirExist(bibleDestination)
+                (await fsCheckDirExist(bibleDestination))
             ) {
                 await fsDeleteDir(bibleDestination);
                 await bibleDataReader.clearBibleDatabaseData(key);
@@ -45,21 +44,26 @@ export default function DownloadedBibleItemComp({
         }
     };
     return (
-        <li className='list-group-item'>
+        <li className="list-group-item">
             <div>
-                <span>({key}) {title}</span>
-                <div className='float-end'>
-                    <div className='btn-group'>
-                        <button className='btn btn-danger'
-                            onClick={handleBibleDeleting}>
+                <span>
+                    ({key}) {title}
+                </span>
+                <div className="float-end">
+                    <div className="btn-group">
+                        <button
+                            className="btn btn-danger"
+                            onClick={handleBibleDeleting}
+                        >
                             Delete
                         </button>
                         {bibleInfo.isUpdatable && (
                             <button
-                                className='btn btn-warning'
+                                className="btn btn-warning"
                                 onClick={() => {
                                     onUpdate();
-                                }}>
+                                }}
+                            >
                                 Update
                             </button>
                         )}

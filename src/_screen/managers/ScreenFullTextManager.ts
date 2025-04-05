@@ -1,22 +1,23 @@
 import { CSSProperties } from 'react';
 
 import BibleItem from '../../bible-list/BibleItem';
-import {
-    DroppedDataType, DragTypeEnum,
-} from '../../helper/DragInf';
-import {
-    AnyObjectType, isValidJson,
-} from '../../helper/helpers';
+import { DroppedDataType, DragTypeEnum } from '../../helper/DragInf';
+import { AnyObjectType, isValidJson } from '../../helper/helpers';
 import { getSetting, setSetting } from '../../helper/settingHelpers';
 import appProviderScreen from '../appProviderScreen';
 import fullTextScreenHelper from '../fullTextScreenHelpers';
 import {
-    ScreenFTManagerEventType, SCREEN_FT_SETTING_PREFIX,
-    renderScreenFullTextManager, bibleItemToFtData,
+    ScreenFTManagerEventType,
+    SCREEN_FT_SETTING_PREFIX,
+    renderScreenFullTextManager,
+    bibleItemToFtData,
 } from '../screenFullTextHelpers';
 import {
-    BasicScreenMessageType, FullTextItemDataType, genScreenMouseEvent,
-    getFullTextListOnScreenSetting, ScreenMessageType,
+    BasicScreenMessageType,
+    FullTextItemDataType,
+    genScreenMouseEvent,
+    getFullTextListOnScreenSetting,
+    ScreenMessageType,
 } from '../screenHelpers';
 import * as loggerHelpers from '../../helper/loggerHelpers';
 import { handleError } from '../../helper/errorHelpers';
@@ -27,9 +28,7 @@ import ScreenManagerBase from './ScreenManagerBase';
 import { getAllScreenManagerBases } from './screenManagerBaseHelpers';
 
 let textStyle: AnyObjectType = {};
-export default class ScreenFullTextManager
-    extends ScreenEventHandler<ScreenFTManagerEventType> {
-
+class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType> {
     static readonly eventNamePrefix: string = 'screen-ft-m';
     private _ftItemData: FullTextItemDataType | null = null;
     private _div: HTMLDivElement | null = null;
@@ -40,10 +39,11 @@ export default class ScreenFullTextManager
         super(screenManagerBase);
         if (appProviderScreen.isPagePresenter) {
             const allFTList = getFullTextListOnScreenSetting();
-            this._ftItemData = allFTList[this.key] || null;
+            this._ftItemData = allFTList[this.key] ?? null;
 
             const str = getSetting(
-                `${SCREEN_FT_SETTING_PREFIX}-style-text`, '',
+                `${SCREEN_FT_SETTING_PREFIX}-style-text`,
+                '',
             );
             try {
                 if (isValidJson(str, true)) {
@@ -70,7 +70,7 @@ export default class ScreenFullTextManager
         }
         this.scroll = this.div.scrollTop / this.div.scrollHeight;
         this.sendSyncScroll();
-    };
+    }
 
     get isLineSync() {
         const screenId = this.screenId;
@@ -86,7 +86,7 @@ export default class ScreenFullTextManager
     }
 
     get div() {
-        return this._div || null;
+        return this._div;
     }
 
     set div(div: HTMLDivElement | null) {
@@ -109,7 +109,7 @@ export default class ScreenFullTextManager
     set fullTextItemData(ftItemData: FullTextItemDataType | null) {
         this._ftItemData = ftItemData;
         this.render();
-        unlocking(screenManagerSettingNames.FULL_TEXT, () => {
+        unlocking(`set-${screenManagerSettingNames.FULL_TEXT}`, () => {
             const allFTList = getFullTextListOnScreenSetting();
             if (ftItemData === null) {
                 delete allFTList[this.key];
@@ -127,12 +127,15 @@ export default class ScreenFullTextManager
         if (this._ftItemData !== null) {
             (this._ftItemData as any)[key] = value;
             if (!appProviderScreen.isScreen) {
-                unlocking(screenManagerSettingNames.FULL_TEXT, () => {
-                    const allFTList = getFullTextListOnScreenSetting();
-                    allFTList[this.key] = this._ftItemData as any;
-                    const string = JSON.stringify(allFTList);
-                    setSetting(screenManagerSettingNames.FULL_TEXT, string);
-                });
+                unlocking(
+                    `set-meta-${screenManagerSettingNames.FULL_TEXT}`,
+                    () => {
+                        const allFTList = getFullTextListOnScreenSetting();
+                        allFTList[this.key] = this._ftItemData as any;
+                        const string = JSON.stringify(allFTList);
+                        setSetting(screenManagerSettingNames.FULL_TEXT, string);
+                    },
+                );
             }
         }
     }
@@ -148,9 +151,9 @@ export default class ScreenFullTextManager
     }
 
     get selectedIndex() {
-        return (
-            this._ftItemData === null ? null : this._ftItemData.selectedIndex
-        );
+        return this._ftItemData === null
+            ? null
+            : this._ftItemData.selectedIndex;
     }
 
     set selectedIndex(selectedIndex: number | null) {
@@ -176,20 +179,21 @@ export default class ScreenFullTextManager
         if (this._divScrollListenerBind === null) {
             return;
         }
-        this.div?.removeEventListener(
-            'scroll', this._divScrollListenerBind,
-        );
+        this.div?.removeEventListener('scroll', this._divScrollListenerBind);
         this._divScrollListenerBind = null;
     }
 
     async sendSyncScroll() {
-        this.screenManagerBase.sendScreenMessage({
-            screenId: this.screenId,
-            type: 'full-text-scroll',
-            data: {
-                scroll: this.scroll,
+        this.screenManagerBase.sendScreenMessage(
+            {
+                screenId: this.screenId,
+                type: 'full-text-scroll',
+                data: {
+                    scroll: this.scroll,
+                },
             },
-        }, true);
+            true,
+        );
     }
 
     static receiveSyncScroll(message: ScreenMessageType) {
@@ -210,20 +214,24 @@ export default class ScreenFullTextManager
             screenFTManager.registerScrollListener();
         };
         screenFTManager._syncScrollTimeout = setTimeout(
-            reRegisterScrollListener, 3e3,
+            reRegisterScrollListener,
+            3e3,
         );
         screenFTManager.scroll = data.scroll;
         screenFTManager.renderScroll();
     }
 
     sendSyncSelectedIndex() {
-        this.screenManagerBase.sendScreenMessage({
-            screenId: this.screenId,
-            type: 'full-text-selected-index',
-            data: {
-                selectedIndex: this.selectedIndex,
+        this.screenManagerBase.sendScreenMessage(
+            {
+                screenId: this.screenId,
+                type: 'full-text-selected-index',
+                data: {
+                    selectedIndex: this.selectedIndex,
+                },
             },
-        }, true);
+            true,
+        );
     }
 
     static receiveSyncSelectedIndex(message: ScreenMessageType) {
@@ -234,7 +242,6 @@ export default class ScreenFullTextManager
         }
         screenFTManager.selectedIndex = data.selectedIndex;
     }
-
 
     toSyncMessage(): BasicScreenMessageType {
         return {
@@ -268,21 +275,24 @@ export default class ScreenFullTextManager
         fontSize += isUp ? 1 : -1;
         this.applyTextStyle({
             fontSize: Math.min(
-                this.maxTextStyleTextFontSize, Math.max(1, fontSize),
+                this.maxTextStyleTextFontSize,
+                Math.max(1, fontSize),
             ),
         });
     }
 
     static get textStyleTextColor(): string {
         const textStyle = this.textStyle;
-        return typeof textStyle.color !== 'string' ?
-            '#ffffff' : textStyle.color;
+        return typeof textStyle.color !== 'string'
+            ? '#ffffff'
+            : textStyle.color;
     }
 
     static get textStyleTextTextShadow(): string {
         const textStyle = this.textStyle;
-        return typeof textStyle.textShadow !== 'string' ?
-            'none' : textStyle.textShadow;
+        return typeof textStyle.textShadow !== 'string'
+            ? 'none'
+            : textStyle.textShadow;
     }
 
     static get textStyleText(): string {
@@ -329,12 +339,14 @@ export default class ScreenFullTextManager
     }
 
     static async handleBibleItemSelecting(
-        event: React.MouseEvent | null, bibleItems: BibleItem[],
+        event: React.MouseEvent | null,
+        bibleItems: BibleItem[],
         isForceChoosing = false,
     ) {
         const ftItemData = await bibleItemToFtData(bibleItems);
         const screenIds = await this.chooseScreenIds(
-            genScreenMouseEvent(event) as any, isForceChoosing,
+            genScreenMouseEvent(event) as any,
+            isForceChoosing,
         );
         screenIds.forEach((screenId) => {
             const screenFullTextManager = this.getInstance(screenId);
@@ -346,12 +358,12 @@ export default class ScreenFullTextManager
         renderScreenFullTextManager(this);
     }
 
-    renderScroll(isQuick?: boolean) {
+    renderScroll(isImmediate?: boolean) {
         if (this.div === null) {
             return;
         }
         const scrollTop = this.scroll * this.div.scrollHeight;
-        if (isQuick) {
+        if (isImmediate) {
             this.div.scrollTop = scrollTop;
         }
         this.div.scroll({
@@ -367,15 +379,18 @@ export default class ScreenFullTextManager
         }
         fullTextScreenHelper.removeClassName(this.div, 'selected');
         fullTextScreenHelper.resetClassName(
-            this.div, 'selected', true, `${this.selectedIndex}`,
+            this.div,
+            'selected',
+            true,
+            `${this.selectedIndex}`,
         );
     }
 
     async receiveScreenDropped(droppedData: DroppedDataType) {
         if (droppedData.type === DragTypeEnum.BIBLE_ITEM) {
-            const newFullTextItemData = await bibleItemToFtData(
-                [droppedData.item],
-            );
+            const newFullTextItemData = await bibleItemToFtData([
+                droppedData.item,
+            ]);
             this.applyFullDataSrcWithSyncGroup(newFullTextItemData);
         } else {
             loggerHelpers.log(droppedData);
@@ -396,3 +411,5 @@ export default class ScreenFullTextManager
         return super.getInstanceBase<ScreenFullTextManager>(screenId);
     }
 }
+
+export default ScreenFullTextManager;

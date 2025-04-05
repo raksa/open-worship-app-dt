@@ -1,25 +1,24 @@
-/* eslint-disable max-len */
 import { LanguageType } from '..';
 
 const numList = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
 
 const dictionary = {
-    'bible-search': 'ស្វែងរកខគម្ពីរ',
+    'bible-lookup': 'ស្វែងរកខគម្ពីរ',
     'bible-presenter': 'បទបង្ហាញ​ព្រះ​គម្ពីរ',
-    'General': 'ទូទៅ',
-    'Bible': 'ព្រះគម្ពីរ',
-    'About': 'អារម្មណ៏កថា',
-    'Editor': 'ការកែលំអ',
-    'Presenter': 'ធ្វើបទបង្ហាញ',
-    'Colors': 'ពណ៌',
-    'Images': 'រូបភាព',
-    'Videos': 'វីដេអូ',
-    'Text': 'អក្សរ',
-    'Box': 'ប្រអប់',
-    'Appearance': 'រូបរាង',
-    'Shadow': 'ស្រមោល',
-    'Lyric': 'ចំរៀង',
-    'Slide': 'ស្លាយ',
+    General: 'ទូទៅ',
+    Bible: 'ព្រះគម្ពីរ',
+    About: 'អារម្មណ៏កថា',
+    Editor: 'ការកែលំអ',
+    Presenter: 'ធ្វើបទបង្ហាញ',
+    Colors: 'ពណ៌',
+    Images: 'រូបភាព',
+    Videos: 'វីដេអូ',
+    Text: 'អក្សរ',
+    Box: 'ប្រអប់',
+    Appearance: 'រូបរាង',
+    Shadow: 'ស្រមោល',
+    Lyric: 'ចំរៀង',
+    Slide: 'ស្លាយ',
     'Full Text': 'បង្ហាញពេញ',
 };
 const km: LanguageType = {
@@ -88,6 +87,121 @@ const km: LanguageType = {
       <path fill="none" d="M99 664.2h193M115.8 713h9.2m-9.2-6.3h9.2m-9.2-6.2h9.2m-9.2-6.3h9.2m-9.2-6.2h9.2m-9.2-6.3h9.2m-9.2-6.2h9.2m65.8 37.5h8.6m-8.6-6.3h8.6m-8.6-6.2h8.6m-8.6-6.3h8.6m-8.6-6.2h8.6m-8.6-6.3h8.6m-8.6-6.2h8.6m66.2 37.5h9.2m-9.2-6.3h9.2m-9.2-6.2h9.2m-9.2-6.3h9.2m-9.2-6.2h9.2m-9.2-6.3h9.2m-9.2-6.2h9.2"/>
     </g>
   </svg>`,
+    sanitizeSearchingText: (text: string) => {
+        // khmer characters from https://en.wikipedia.org/wiki/Khmer_script
+        const chars = [
+            'ក',
+            'ខ',
+            'គ',
+            'ឃ',
+            'ង',
+            'ច',
+            'ឆ',
+            'ជ',
+            'ឈ',
+            'ញ',
+            'ដ',
+            'ឋ',
+            'ឌ',
+            'ឍ',
+            'ណ',
+            'ត',
+            'ថ',
+            'ទ',
+            'ធ',
+            'ន',
+            'ប',
+            'ផ',
+            'ព',
+            'ភ',
+            'ម',
+            'យ',
+            'រ',
+            'ល',
+            'វ',
+            'ឝ',
+            'ឞ',
+            'ស',
+            'ហ',
+            'ឡ',
+            'អ',
+            '្',
+            'ឣ',
+            'ឤ',
+            'ឥ',
+            'ឦ',
+            'ឧ',
+            'ឨ',
+            'ឩ',
+            'ឪ',
+            'ឫ',
+            'ឬ',
+            'ឭ',
+            'ឮ',
+            'ឯ',
+            'ឰ',
+            'ឱ',
+            'ឲ',
+            'ឳ',
+            'ា',
+            'ិ',
+            'ី',
+            'ឹ',
+            'ឺ',
+            'ុ',
+            'ូ',
+            'ួ',
+            'ើ',
+            'ឿ',
+            'ៀ',
+            'េ',
+            'ែ',
+            'ៃ',
+            'ោ',
+            'ៅ',
+            'ំ',
+            'ះ',
+            'ៈ',
+            '៉',
+            '៊',
+            '់',
+            '៌',
+            '៍',
+            '៎',
+            '៏',
+            '័',
+            '៑',
+            '្',
+            '៓',
+            '០',
+            '១',
+            '២',
+            '៣',
+            '៤',
+            '៥',
+            '៦',
+            '៧',
+            '៨',
+            '៩',
+        ];
+        let newText = '';
+        for (const c of text) {
+            if (chars.includes(c)) {
+                newText += c;
+            } else {
+                newText += ' ';
+            }
+        }
+        newText = newText.replace(/\s+/g, ' ');
+        newText = km.trimText(newText);
+        return newText;
+    },
+    trimText: (text: string) => {
+        return text.trim().replace(/^[\u200B]+|[\u200B]+$/g, '');
+    },
+    endWord: (text: string) => {
+        return text + '\u200B';
+    },
 };
 
 export default km;

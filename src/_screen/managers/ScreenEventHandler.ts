@@ -1,20 +1,21 @@
 import EventHandler from '../../event/EventHandler';
 import {
-    ContextMenuItemType, showAppContextMenu,
-} from '../../others/AppContextMenuComp';
+    ContextMenuItemType,
+    showAppContextMenu,
+} from '../../context-menu/appContextMenuHelpers';
 import appProvider from '../../server/appProvider';
 import { BasicScreenMessageType, ScreenMessageType } from '../screenHelpers';
 import ScreenManagerBase from './ScreenManagerBase';
 import {
-    getSelectedScreenManagerBases, getAllScreenManagerBases,
+    getSelectedScreenManagerBases,
+    getAllScreenManagerBases,
     getScreenManagerBase,
 } from './screenManagerBaseHelpers';
 
 const cache = new Map<string, ScreenEventHandler<any>>();
-export default abstract class
-    ScreenEventHandler<T extends string>
-    extends EventHandler<T> {
-
+export default abstract class ScreenEventHandler<
+    T extends string,
+> extends EventHandler<T> {
     static readonly eventNamePrefix: string = 'screen-em';
     screenManagerBase: ScreenManagerBase;
     constructor(screenManagerBase: ScreenManagerBase) {
@@ -76,9 +77,8 @@ export default abstract class
 
     delete() {
         cache.delete(this.toCacheKey());
-        this.screenManagerBase = (
-            this.screenManagerBase.createScreenManagerBaseGhost(this.screenId)
-        );
+        this.screenManagerBase =
+            this.screenManagerBase.createScreenManagerBaseGhost(this.screenId);
     }
 
     static getInstanceBase<T extends ScreenEventHandler<any>>(
@@ -96,14 +96,15 @@ export default abstract class
     }
 
     static async chooseScreenIds(
-        event: React.MouseEvent, isForceChoosing: boolean,
+        event: React.MouseEvent,
+        isForceChoosing: boolean,
     ) {
         if (!appProvider.isPagePresenter) {
             return [];
         }
-        const selectedScreenManagerBases = isForceChoosing ? [] : (
-            getSelectedScreenManagerBases()
-        );
+        const selectedScreenManagerBases = isForceChoosing
+            ? []
+            : getSelectedScreenManagerBases();
         if (selectedScreenManagerBases.length > 0) {
             return selectedScreenManagerBases.map((screenManagerBase) => {
                 return screenManagerBase.screenId;
@@ -115,13 +116,13 @@ export default abstract class
                 (screenManagerBase) => {
                     return {
                         menuTitle: `Screen id: ${screenManagerBase.screenId}`,
-                        onClick: () => {
+                        onSelect: () => {
                             resolve([screenManagerBase.screenId]);
                         },
                     };
                 },
             );
-            showAppContextMenu(event as any, menuItems).then(() => {
+            showAppContextMenu(event as any, menuItems).promiseDone.then(() => {
                 resolve([]);
             });
         });

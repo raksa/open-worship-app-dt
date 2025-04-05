@@ -4,7 +4,6 @@ import { IndexedDbController, ItemParamsType } from '../../db/databaseHelpers';
 const { base64Encode } = appProvider.appUtils;
 
 export default class BibleDatabaseController extends IndexedDbController {
-
     get storeName() {
         return 'bible';
     }

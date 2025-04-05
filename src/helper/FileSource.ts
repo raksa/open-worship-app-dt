@@ -1,12 +1,20 @@
 import DirSource from './DirSource';
 import {
-    checkIsAppFile, getFileExtension, fsCheckFileExist, fsCreateFile,
-    fsDeleteFile, fsReadFile, fsRenameFile, fsWriteFile, getFileMetaData,
-    pathBasename, pathJoin, pathSeparator,
+    checkIsAppFile,
+    getFileExtension,
+    fsCheckFileExist,
+    fsCreateFile,
+    fsReadFile,
+    fsRenameFile,
+    fsWriteFile,
+    getFileMetaData,
+    pathBasename,
+    pathJoin,
+    pathSeparator,
     getFileName,
 } from '../server/fileHelpers';
 import { AnyObjectType, isValidJson } from './helpers';
-import ItemSource from './ItemSource';
+import AppDocumentSourceAbs from './DocumentSourceAbs';
 import { pathToFileURL } from '../server/helpers';
 import EventHandler from '../event/EventHandler';
 import appProvider from '../server/appProvider';
@@ -18,14 +26,13 @@ import ColorNoteInf from './ColorNoteInf';
 
 export type SrcData = `data:${string}`;
 
-export type FileSourceEventType = (
-    'select' | 'update' | 'new' | 'history-update' | 'edit' | 'delete' |
-    'delete-cache'
-);
+export type FileSourceEventType = 'select' | 'update' | 'delete';
 
 const cache = new Map<string, FileSource>();
-export default class FileSource extends EventHandler<FileSourceEventType>
-    implements DragInf<string>, ColorNoteInf {
+export default class FileSource
+    extends EventHandler<FileSourceEventType>
+    implements DragInf<string>, ColorNoteInf
+{
     static readonly eventNamePrefix: string = 'file-source';
     basePath: string;
     fileFullName: string;
@@ -34,7 +41,10 @@ export default class FileSource extends EventHandler<FileSourceEventType>
     colorNote: string | null = null;
 
     constructor(
-        basePath: string, fileFullName: string, filePath: string, src: string,
+        basePath: string,
+        fileFullName: string,
+        filePath: string,
+        src: string,
     ) {
         super();
         this.basePath = basePath;
@@ -49,21 +59,25 @@ export default class FileSource extends EventHandler<FileSourceEventType>
 
     getSrcData() {
         return new Promise<SrcData>((resolve, reject) => {
-            appProvider.fileUtils.readFile(this.filePath, {
-                encoding: 'base64',
-            }, (err, data) => {
-                if (err) {
-                    reject(err);
-                    return;
-                }
-                const metadata = this.metadata;
-                if (metadata === null) {
-                    reject(new Error('metadata not found'));
-                    return;
-                }
-                const { mimetypeSignature } = metadata.appMimetype;
-                resolve(`data:${mimetypeSignature};base64,${data}`);
-            });
+            appProvider.fileUtils.readFile(
+                this.filePath,
+                {
+                    encoding: 'base64',
+                },
+                (err, data) => {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+                    const metadata = this.metadata;
+                    if (metadata === null) {
+                        reject(new Error('metadata not found'));
+                        return;
+                    }
+                    const { mimetypeSignature } = metadata.appMimetype;
+                    resolve(`data:${mimetypeSignature};base64,${data}`);
+                },
+            );
         });
     }
 
@@ -92,29 +106,45 @@ export default class FileSource extends EventHandler<FileSourceEventType>
         return DirSource.getInstanceByDirPath(this.basePath);
     }
 
-    deleteCache() {
-        cache.delete(this.filePath);
-        ItemSource.deleteCache(this.filePath);
-        this.fireDeleteCacheEvent();
-    }
-
-    async readFileToJsonData() {
+    static async readFileData(filePath: string, isSilent?: boolean) {
         try {
-            const str = await fsReadFile(this.filePath);
-            if (isValidJson(str)) {
-                return JSON.parse(str) as AnyObjectType;
-            }
+            const dataText = await fsReadFile(filePath);
+            return dataText;
         } catch (error: any) {
-            showSimpleToast(
-                'Reader File Data',
-                'Error occurred during reading ' +
-                `file: "${this.filePath}", error: ${error.message}`
-            );
+            if (!isSilent) {
+                showSimpleToast(
+                    'Reader File Data',
+                    'Error occurred during reading ' +
+                        `file: "${filePath}", error: ${error.message}`,
+                );
+            }
         }
         return null;
     }
 
-    async saveData(data: string) {
+    async readFileData() {
+        if ((await fsCheckFileExist(this.filePath)) === false) {
+            return null;
+        }
+        return await FileSource.readFileData(this.filePath);
+    }
+
+    async readFileJsonData() {
+        try {
+            const dataText = await this.readFileData();
+            if (dataText !== null && isValidJson(dataText)) {
+                return JSON.parse(dataText) as AnyObjectType;
+            }
+        } catch (_error) {}
+        return null;
+    }
+
+    static async saveFileData(filePath: string, data: string) {
+        const fileSource = this.getInstance(filePath);
+        return await fileSource.saveFileData(data);
+    }
+
+    async saveFileData(data: string) {
         try {
             const isFileExist = await fsCheckFileExist(this.filePath);
             if (isFileExist) {
@@ -130,21 +160,9 @@ export default class FileSource extends EventHandler<FileSourceEventType>
         return false;
     }
 
-    async saveDataFromItem(item: ItemSource<any>) {
+    async saveDataFromItem(item: AppDocumentSourceAbs) {
         const content = JSON.stringify(item.toJson());
-        return this.saveData(content);
-    }
-
-    async delete() {
-        try {
-            await fsDeleteFile(this.filePath);
-            this.fireDeleteEvent();
-            this.deleteCache();
-            return true;
-        } catch (error: any) {
-            showSimpleToast('Saving File', error.message);
-        }
-        return false;
+        return this.saveFileData(content);
     }
 
     static getInstanceNoCache(filePath: string, fileFullName?: string) {
@@ -158,12 +176,18 @@ export default class FileSource extends EventHandler<FileSourceEventType>
             fileFullName = pathBasename(filePath);
         }
         return new FileSource(
-            basePath, fileFullName, filePath, pathToFileURL(filePath),
+            basePath,
+            fileFullName,
+            filePath,
+            pathToFileURL(filePath),
         );
     }
 
-    static getInstance(filePath: string, fileFullName?: string,
-        refreshCache?: boolean) {
+    static getInstance(
+        filePath: string,
+        fileFullName?: string,
+        refreshCache?: boolean,
+    ) {
         const fileSource = this.getInstanceNoCache(filePath, fileFullName);
         if (refreshCache) {
             cache.delete(fileSource.filePath);
@@ -188,30 +212,40 @@ export default class FileSource extends EventHandler<FileSourceEventType>
 
     async renameTo(newName: string) {
         if (newName === this.name) {
-            return false;
+            return null;
         }
         try {
-            await fsRenameFile(this.basePath, this.fileFullName,
-                newName + this.extension);
-            return true;
+            await fsRenameFile(
+                this.basePath,
+                this.fileFullName,
+                newName + this.extension,
+            );
+            const newFilePath = pathJoin(
+                this.basePath,
+                newName + this.extension,
+            );
+            return FileSource.getInstance(newFilePath);
         } catch (error: any) {
             handleError(error);
-            showSimpleToast('Renaming File',
-                `Unable to rename file: ${error.message}`);
+            showSimpleToast(
+                'Renaming File',
+                `Unable to rename file: ${error.message}`,
+            );
         }
-        return false;
+        return null;
     }
 
     private async _duplicate() {
         let i = 1;
         let newName = this.name + ' (Copy)';
-        while (await fsCheckFileExist(
-            this.basePath, newName + this.extension)) {
+        while (
+            await fsCheckFileExist(this.basePath, newName + this.extension)
+        ) {
             newName = this.name + ' (Copy ' + i + ')';
             i++;
         }
         const newFilePath = pathJoin(this.basePath, newName + this.extension);
-        const data = await this.readFileToJsonData();
+        const data = await this.readFileJsonData();
         if (data !== null) {
             await fsCreateFile(newFilePath, JSON.stringify(data));
         }
@@ -227,7 +261,8 @@ export default class FileSource extends EventHandler<FileSourceEventType>
     }
 
     static registerFileSourceEventListener<T>(
-        events: FileSourceEventType[], callback: (data: T) => void,
+        events: FileSourceEventType[],
+        callback: (data: T) => void,
         filePath?: string,
     ) {
         const newEvents = events.map((event) => {
@@ -237,7 +272,9 @@ export default class FileSource extends EventHandler<FileSourceEventType>
     }
 
     static addFileSourcePropEvent(
-        eventName: FileSourceEventType, filePath: string, data?: any,
+        eventName: FileSourceEventType,
+        filePath: string,
+        data?: any,
     ): void {
         const newEventName = `${eventName}@${filePath}` as FileSourceEventType;
         super.addPropEvent(eventName, data);
@@ -248,29 +285,11 @@ export default class FileSource extends EventHandler<FileSourceEventType>
         FileSource.addFileSourcePropEvent('select', this.filePath, data);
     }
 
-    fireHistoryUpdateEvent(data?: any) {
-        FileSource.addFileSourcePropEvent(
-            'history-update', this.filePath, data,
-        );
-    }
-
     fireUpdateEvent(data?: any) {
         FileSource.addFileSourcePropEvent('update', this.filePath, data);
     }
 
-    fireNewEvent(data?: any) {
-        FileSource.addFileSourcePropEvent('new', this.filePath, data);
-    }
-
-    fireEditEvent(data?: any) {
-        FileSource.addFileSourcePropEvent('edit', this.filePath, data);
-    }
-
-    fireDeleteEvent(data?: any) {
-        FileSource.addFileSourcePropEvent('delete', this.filePath, data);
-    }
-
-    fireDeleteCacheEvent(data?: any) {
-        FileSource.addFileSourcePropEvent('delete-cache', this.filePath, data);
+    fireDeleteEvent() {
+        FileSource.addFileSourcePropEvent('delete', this.filePath);
     }
 }

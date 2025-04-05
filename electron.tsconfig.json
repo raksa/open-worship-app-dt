@@ -17,14 +17,9 @@
         "sourceMap": false,
         "baseUrl": ".",
         "paths": {
-            "*": [
-                "node_modules/*"
-            ]
+            "*": ["node_modules/*"]
         },
         "outDir": "electron-build/"
     },
-    "include": [
-        "electron/**/*.ts",
-        "electron/**/*.json"
-    ]
+    "include": ["electron/**/*.ts", "electron/**/*.json"]
 }

@@ -1,16 +1,17 @@
 import { useAppEffect } from '../helper/debuggerHelpers';
 import Lyric from '../lyric-list/Lyric';
-import Slide from '../slide-list/Slide';
+import AppDocument from '../app-document-list/AppDocument';
 import EventHandler, { ListenerType } from './EventHandler';
+import { VaryAppDocumentType } from '../app-document-list/appDocumentHelpers';
+import { DependencyList } from 'react';
 
 export type PreviewingType =
-    'select-lyric'
+    | 'select-lyric'
     | 'update-lyric'
-    | 'select-slide'
-    | 'update-slide';
+    | 'select-app-document'
+    | 'update-app-document';
 
-export default class PreviewingEventListener extends
-    EventHandler<PreviewingType> {
+class PreviewingEventListener extends EventHandler<PreviewingType> {
     static readonly eventNamePrefix: string = 'previewing';
     selectLyric(lyric: Lyric | null) {
         this.addPropEvent('select-lyric', lyric);
@@ -18,53 +19,69 @@ export default class PreviewingEventListener extends
     updateLyric(lyric: Lyric) {
         this.addPropEvent('update-lyric', lyric);
     }
-    showSlide(slide: Slide | null) {
-        this.addPropEvent('select-slide', slide);
+    showVaryAppDocument(varyAppDocument: VaryAppDocumentType | null) {
+        this.addPropEvent('select-app-document', varyAppDocument);
     }
-    updateSlide(slide: Slide) {
-        this.addPropEvent('update-slide', slide);
+    updateVaryAppDocument(varyAppDocument: VaryAppDocumentType) {
+        this.addPropEvent('update-app-document', varyAppDocument);
     }
 }
 
 export const previewingEventListener = new PreviewingEventListener();
 
-export function useLyricSelecting(listener: ListenerType<Lyric | null>) {
+export function useLyricSelecting(
+    listener: ListenerType<Lyric | null>,
+    deps: DependencyList,
+) {
     useAppEffect(() => {
         const event = previewingEventListener.registerEventListener(
-            ['select-lyric'], listener,
+            ['select-lyric'],
+            listener,
         );
         return () => {
             previewingEventListener.unregisterEventListener(event);
         };
-    });
+    }, deps);
 }
+
 export function useLyricUpdating(listener: ListenerType<Lyric>) {
     useAppEffect(() => {
         const event = previewingEventListener.registerEventListener(
-            ['update-lyric'], listener,
+            ['update-lyric'],
+            listener,
         );
         return () => {
             previewingEventListener.unregisterEventListener(event);
         };
-    });
+    }, [listener]);
 }
-export function useSlideSelecting(listener: ListenerType<Slide | null>) {
+
+export function useVaryAppDocumentSelecting(
+    listener: ListenerType<AppDocument | null>,
+) {
     useAppEffect(() => {
         const event = previewingEventListener.registerEventListener(
-            ['select-slide'], listener,
+            ['select-app-document'],
+            listener,
         );
         return () => {
             previewingEventListener.unregisterEventListener(event);
         };
-    });
+    }, [listener]);
 }
-export function useSlideUpdating(listener: ListenerType<Slide>) {
+
+export function useVaryAppDocumentUpdating(
+    listener: ListenerType<AppDocument>,
+) {
     useAppEffect(() => {
         const event = previewingEventListener.registerEventListener(
-            ['update-slide'], listener,
+            ['update-app-document'],
+            listener,
         );
         return () => {
             previewingEventListener.unregisterEventListener(event);
         };
-    });
+    }, [listener]);
 }
+
+export default PreviewingEventListener;

@@ -2,20 +2,18 @@ import './BoxEditorComp.scss';
 
 import BoxEditorNormalModeComp from './BoxEditorNormalModeComp';
 import BoxEditorControllingModeComp from './BoxEditorControllingModeComp';
-import {
-    useSlideItemCanvasScale,
-} from '../canvasEventHelpers';
+import { useSlideCanvasScale } from '../canvasEventHelpers';
 import BoxEditorController, {
     BoxEditorControllerContext,
 } from '../../BoxEditorController';
 import { useIsCanvasItemSelected } from '../CanvasItem';
 
 export function BoxEditorComp() {
-    const scale = useSlideItemCanvasScale();
+    const scale = useSlideCanvasScale();
     const boxEditorController = new BoxEditorController(scale);
     const isSelected = useIsCanvasItemSelected();
     // TODO: switch box by tab, shift
-    // TODO: key => ctl+d, delete, copy&paste, paste across slideItem
+    // TODO: key => ctl+d, delete, copy&paste, paste across slide
     // TODO: ruler, snap
     // TODO: ctrl|alt resize => anchor center base
 
@@ -26,7 +24,5 @@ export function BoxEditorComp() {
             </BoxEditorControllerContext>
         );
     }
-    return (
-        <BoxEditorNormalModeComp />
-    );
+    return <BoxEditorNormalModeComp />;
 }

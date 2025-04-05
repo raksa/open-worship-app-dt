@@ -9,8 +9,10 @@ import { useCanvasItemPropsContext } from '../CanvasItem';
 import BoxEditorNormalWrapperComp from './BoxEditorNormalWrapperComp';
 import { CanvasItemTextPropsType } from '../CanvasItemText';
 
-export default function BoxEditorNormalViewBibleModeComp({ style }: Readonly<{
-    style: CSSProperties
+export default function BoxEditorNormalViewBibleModeComp({
+    style,
+}: Readonly<{
+    style: CSSProperties;
 }>) {
     return (
         <BoxEditorNormalWrapperComp style={style}>
@@ -25,16 +27,15 @@ export function BoxEditorNormalBibleRender() {
         CanvasItemBibleItem.validate(props);
     } catch (error) {
         handleError(error);
-        return (
-            <BENViewErrorRender />
-        );
+        return <BENViewErrorRender />;
     }
-    const bibleRenderedList = (
-        (props as CanvasItemBiblePropsType).bibleRenderedList
-    );
+    const bibleRenderedList = (props as CanvasItemBiblePropsType)
+        .bibleRenderedList;
     return (
-        <div className='w-100 h-100'
-            style={CanvasItemBibleItem.genStyle(props)}>
+        <div
+            className="w-100 h-100"
+            style={CanvasItemBibleItem.genStyle(props)}
+        >
             {bibleRenderedList.map((bibleRendered) => {
                 return (
                     <div key={bibleRendered.title}>

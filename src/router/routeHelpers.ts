@@ -1,12 +1,14 @@
+import { OptionalPromise } from '../others/otherHelpers';
 import { showAppAlert } from '../popup-widget/popupWidgetHelpers';
 import appProvider from '../server/appProvider';
-import Slide from '../slide-list/Slide';
+import { getSelectedVaryAppDocument } from '../app-document-list/appDocumentHelpers';
+import AppDocument from '../app-document-list/AppDocument';
 
 export type TabOptionType = {
-    title: string,
-    routePath: string,
-    preCheck?: () => Promise<boolean>,
-}
+    title: string;
+    routePath: string;
+    preCheck?: () => OptionalPromise<boolean>;
+};
 
 export enum WindowModEnum {
     Editor = 0,
@@ -18,15 +20,15 @@ export const editorTab: TabOptionType = {
     title: 'Editor↗️',
     routePath: appProvider.editorHomePage,
     preCheck: async () => {
-        const slide = await Slide.readFileToData(Slide.getSelectedFilePath());
-        if (slide && !slide.isPdf) {
-            return true;
+        const varyAppDocument = await getSelectedVaryAppDocument();
+        if (!AppDocument.checkIsThisType(varyAppDocument)) {
+            showAppAlert(
+                'No slide selected',
+                'Please select an Open Worship slide first',
+            );
+            return false;
         }
-        showAppAlert(
-            'No slide selected', 
-            'Please select an Open Worship slide first',
-        );
-        return false;
+        return true;
     },
 };
 export const presenterTab: TabOptionType = {
@@ -36,6 +38,10 @@ export const presenterTab: TabOptionType = {
 export const readerTab: TabOptionType = {
     title: 'Reader↗️',
     routePath: appProvider.readerHomePage,
+};
+export const experimentTab: TabOptionType = {
+    title: '(dev)Experiment↗️',
+    routePath: appProvider.experimentHomePage,
 };
 
 export function goToPath(pathname: string) {

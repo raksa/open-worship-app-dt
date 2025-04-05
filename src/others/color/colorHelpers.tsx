@@ -15,10 +15,13 @@ export const transparentColor = (n: number): string => {
 };
 
 export function compareColor(
-    color1: AppColorType, color2: AppColorType,
+    color1: AppColorType,
+    color2: AppColorType,
 ): boolean {
-    return color1.substring(0, 7).toLowerCase() ===
-        color2.substring(0, 7).toLocaleLowerCase();
+    return (
+        color1.substring(0, 7).toLowerCase() ===
+        color2.substring(0, 7).toLocaleLowerCase()
+    );
 }
 
 export function colorDeserialize(data: AppColorType) {

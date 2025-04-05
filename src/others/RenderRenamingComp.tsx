@@ -1,23 +1,32 @@
 import AskingNewNameComp from './AskingNewNameComp';
 import FileSource from '../helper/FileSource';
 
-
 export default function RenderRenamingComp({
-    setIsRenaming, filePath,
+    setIsRenaming,
+    filePath,
+    renamedCallback,
 }: Readonly<{
-    setIsRenaming: (value: boolean) => void,
-    filePath: string,
+    setIsRenaming: (value: boolean) => void;
+    filePath: string;
+    renamedCallback?: (newFileSource: FileSource) => void;
 }>) {
-    const handleNameApplying = async (name: string | null) => {
-        if (name === null) {
+    const handleNameApplying = async (newName: string | null) => {
+        if (newName === null) {
             setIsRenaming(false);
             return;
         }
         const fileSource = FileSource.getInstance(filePath);
-        const isSuccess = await fileSource.renameTo(name);
-        setIsRenaming(!isSuccess);
+        const newFileSource = await fileSource.renameTo(newName);
+        if (newFileSource !== null && renamedCallback !== undefined) {
+            renamedCallback(newFileSource);
+        }
+        setIsRenaming(!newFileSource);
     };
     const fileSource = FileSource.getInstance(filePath);
-    return <AskingNewNameComp defaultName={fileSource.name}
-        applyName={handleNameApplying} />;
+    return (
+        <AskingNewNameComp
+            defaultName={fileSource.name}
+            applyName={handleNameApplying}
+        />
+    );
 }

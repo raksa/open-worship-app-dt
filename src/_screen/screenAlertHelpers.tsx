@@ -4,7 +4,7 @@ import { getHTMLChild } from '../helper/helpers';
 import ScreenManagerBase from './managers/ScreenManagerBase';
 
 const _alertTypeList = ['marquee', 'countdown', 'toast'] as const;
-export type AlertType = typeof _alertTypeList[number];
+export type AlertType = (typeof _alertTypeList)[number];
 
 const classNameMapper = {
     marquee: 'marquee-actor',
@@ -13,10 +13,11 @@ const classNameMapper = {
 };
 
 export function genHtmlAlertMarquee(
-    marqueeData: { text: string }, screenManagerBase: ScreenManagerBase,
+    marqueeData: { text: string },
+    screenManagerBase: ScreenManagerBase,
 ) {
     const { text } = marqueeData;
-    const duration = (text.length || 0) / 6;
+    const duration = text.length / 6;
     const scale = screenManagerBase.height / 768;
     const fontSize = 75 * scale;
     const actorClass = classNameMapper.marquee;
@@ -28,7 +29,8 @@ export function genHtmlAlertMarquee(
                 width: '100%',
                 left: '0px',
                 bottom: '0px',
-            }}>
+            }}
+        >
             <style>{`
                 .${actorClass} {
                     width: 100%;
@@ -78,7 +80,7 @@ export function genHtmlAlertMarquee(
             <p className={`marquee ${actorClass}`}>
                 <span>{text}</span>
             </p>
-        </div>
+        </div>,
     );
     const div = document.createElement('div');
     div.innerHTML = htmlString;
@@ -86,24 +88,27 @@ export function genHtmlAlertMarquee(
 }
 
 export function genHtmlAlertCountdown(
-    countdownData: { dateTime: Date }, screenManagerBase: ScreenManagerBase,
+    countdownData: { dateTime: Date },
+    screenManagerBase: ScreenManagerBase,
 ) {
     const { dateTime } = countdownData;
     const scale = screenManagerBase.height / 768;
     const fontSize = 100 * scale;
     const chunkSize = Math.floor(fontSize / 10);
     const actorClass = classNameMapper.countdown;
-    const htmlString = ReactDOMServer.renderToStaticMarkup(<div
-        data-alert-cn={actorClass}
-        style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            fontSize: `${fontSize}px`,
-            color: 'white',
-        }}>
-        <style>{`
+    const htmlString = ReactDOMServer.renderToStaticMarkup(
+        <div
+            data-alert-cn={actorClass}
+            style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                fontSize: `${fontSize}px`,
+                color: 'white',
+            }}
+        >
+            <style>{`
                 .${actorClass} {
                     background-color: blue;
                     box-shadow:
@@ -124,12 +129,12 @@ export function genHtmlAlertCountdown(
                     display: none;
                 }
             `}</style>
-        <div className={`countdown ${actorClass}`}>
-            <div id='hour'>00</div>:
-            <div id='minute'>00</div>:
-            <div id='second' >00</div>
-        </div>
-    </div>);
+            <div className={`countdown ${actorClass}`}>
+                <div id="hour">00</div>:<div id="minute">00</div>:
+                <div id="second">00</div>
+            </div>
+        </div>,
+    );
     const div = document.createElement('div');
     div.innerHTML = htmlString;
     const divContainer = getHTMLChild<HTMLDivElement>(div, 'div');
@@ -139,8 +144,7 @@ export function genHtmlAlertCountdown(
 
 export function removeAlert(div: ChildNode) {
     const remove = () => div.remove();
-    if (div instanceof HTMLDivElement
-        && div.dataset['alertCn'] !== undefined) {
+    if (div instanceof HTMLDivElement && div.dataset['alertCn'] !== undefined) {
         const actorClassName = div.dataset['alertCn'];
         const targets = div.getElementsByClassName(actorClassName);
         Array.from(targets).forEach((target) => {
@@ -153,7 +157,8 @@ export function removeAlert(div: ChildNode) {
 }
 
 export function checkIsCountdownDatesEq(
-    date1: Date | null, date2: Date | null,
+    date1: Date | null,
+    date2: Date | null,
 ) {
     if (date1 === null || date2 === null) {
         return false;

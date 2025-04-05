@@ -1,8 +1,7 @@
 import { useAppEffect } from '../helper/debuggerHelpers';
 import EventHandler, { ListenerType } from './EventHandler';
 
-export default class ProgressBarEventListener extends
-    EventHandler<string> {
+export default class ProgressBarEventListener extends EventHandler<string> {
     static readonly eventNamePrefix: string = 'progress-bar';
 
     static showProgressBard(progressKey: string) {
@@ -16,21 +15,23 @@ export default class ProgressBarEventListener extends
 export function useShowProgressBar(listener: ListenerType<string>) {
     useAppEffect(() => {
         const event = ProgressBarEventListener.registerEventListener(
-            ['show'], listener,
+            ['show'],
+            listener,
         );
         return () => {
             ProgressBarEventListener.unregisterEventListener(event);
         };
-    });
+    }, [listener]);
 }
 
 export function useHideProgressBar(listener: ListenerType<string>) {
     useAppEffect(() => {
         const event = ProgressBarEventListener.registerEventListener(
-            ['hide'], listener,
+            ['hide'],
+            listener,
         );
         return () => {
             ProgressBarEventListener.unregisterEventListener(event);
         };
-    });
+    }, [listener]);
 }

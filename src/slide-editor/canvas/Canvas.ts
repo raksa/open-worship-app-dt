@@ -1,23 +1,18 @@
-import { AnyObjectType, toMaxId } from '../../helper/helpers';
-import SlideItem from '../../slide-list/SlideItem';
+import { toMaxId } from '../../helper/helpers';
 import CanvasItem, { CanvasItemError } from './CanvasItem';
 import CanvasItemBibleItem from './CanvasItemBibleItem';
 import CanvasItemImage from './CanvasItemImage';
 import CanvasItemText from './CanvasItemText';
 import CanvasItemVideo from './CanvasItemVideo';
-import { handleError } from '../../helper/errorHelpers';
-import { getDefaultScreenDisplay } from '../../_screen/managers/screenHelpers';
+import Slide from '../../app-document-list/Slide';
 
-type CanvasPropsType = {
-    width: number,
-    height: number,
-    canvasItems: CanvasItem<any>[],
-};
 export default class Canvas {
-    props: CanvasPropsType;
-    constructor(props: CanvasPropsType) {
-        this.props = props;
+    slide: Slide;
+
+    constructor(slide: Slide) {
+        this.slide = slide;
     }
+
     get maxItemId() {
         if (this.canvasItems.length) {
             const ids = this.canvasItems.map((item) => item.id);
@@ -25,33 +20,32 @@ export default class Canvas {
         }
         return 0;
     }
-    get newCanvasItems() {
-        return [...this.canvasItems];
-    }
-    get width() {
-        return this.props.width;
-    }
-    get height() {
-        return this.props.height;
-    }
+
+    // TODO: get and set async from file
     get canvasItems() {
-        return this.props.canvasItems;
+        return this.slide.canvasItemsJson
+            .map((json: any) => {
+                return Canvas.canvasItemFromJson(json);
+            })
+            .filter((item) => {
+                return item !== null;
+            });
     }
-    set canvasItems(canvasItems: CanvasItem<any>[]) {
-        this.props.canvasItems = canvasItems;
-    }
-    static genDefaultCanvas() {
-        const { width, height } = Canvas.getDefaultDim();
-        return new Canvas({
-            width, height,
-            canvasItems: [],
+
+    set canvasItems(newCanvasItems: CanvasItem<any>[]) {
+        this.slide.canvasItemsJson = newCanvasItems.map((item) => {
+            return item.toJson();
         });
     }
-    static getDefaultDim() {
-        const display = getDefaultScreenDisplay();
-        const { width, height } = display.bounds;
-        return { width, height };
+
+    get width() {
+        return this.slide.width;
     }
+
+    get height() {
+        return this.slide.height;
+    }
+
     static canvasItemFromJson(json: any) {
         switch (json.type) {
             case 'image':
@@ -66,23 +60,6 @@ export default class Canvas {
                 return CanvasItemError.fromJsonError(json);
         }
     }
-    static fromJson({ metadata, canvasItems: canvasItemsJson }: {
-        metadata: AnyObjectType,
-        canvasItems: AnyObjectType[],
-    }) {
-        const canvasItems = canvasItemsJson.map((json: any) => {
-            return this.canvasItemFromJson(json);
-        }).filter((item) => item !== null) as CanvasItem<any>[];
-        return new Canvas({
-            width: metadata.width,
-            height: metadata.height,
-            canvasItems,
-        });
-    }
-
-    static fromSlideItem(slideItem: SlideItem) {
-        return Canvas.fromJson(slideItem.toJson());
-    }
 
     static clipboardDeserializeCanvasItem(json: string) {
         if (!json) {
@@ -94,9 +71,7 @@ export default class Canvas {
             if (canvasItem.type !== 'error') {
                 return canvasItem;
             }
-        } catch (error) {
-            handleError(error);
-        }
+        } catch (_error) {}
         return null;
     }
 
@@ -105,14 +80,15 @@ export default class Canvas {
         const copiedCanvasItems: CanvasItem<any>[] = [];
         const textPlainType = 'text/plain';
         for (const clipboardItem of clipboardItems) {
-            if (clipboardItem.types.some((type) => {
-                return type === textPlainType;
-            })) {
+            if (
+                clipboardItem.types.some((type) => {
+                    return type === textPlainType;
+                })
+            ) {
                 const blob = await clipboardItem.getType(textPlainType);
                 const json = await blob.text();
-                const copiedCanvasItem = this.clipboardDeserializeCanvasItem(
-                    json,
-                );
+                const copiedCanvasItem =
+                    this.clipboardDeserializeCanvasItem(json);
                 if (copiedCanvasItem !== null) {
                     copiedCanvasItems.push(copiedCanvasItem);
                 }

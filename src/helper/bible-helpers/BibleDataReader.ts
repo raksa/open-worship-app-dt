@@ -1,30 +1,34 @@
 import appProvider from '../../server/appProvider';
-import { fsCreateDir, fsReadFile, pathJoin } from '../../server/fileHelpers';
+import { fsCreateDir, pathJoin } from '../../server/fileHelpers';
 import { LocaleType } from '../../lang';
 import { getUserWritablePath } from '../../server/appHelpers';
 import { is_dev, decrypt } from '../../_owa-crypto';
 import { handleError } from '../errorHelpers';
 import {
-    hideProgressBard, showProgressBard,
+    hideProgressBard,
+    showProgressBard,
 } from '../../progress-bar/progressBarHelpers';
 import BibleDatabaseController from './BibleDatabaseController';
+import FileSource from '../FileSource';
+import { AnyObjectType } from '../helpers';
 
 const { base64Decode } = appProvider.appUtils;
 
 export type BibleInfoType = {
-    title: string,
-    key: string,
-    locale: LocaleType,
-    legalNote: string,
-    publisher: string,
-    copyRights: string,
-    books: { [key: string]: string },
-    numList?: string[],
-    version: number,
+    title: string;
+    key: string;
+    locale: LocaleType;
+    legalNote: string;
+    publisher: string;
+    copyRights: string;
+    books: { [key: string]: string };
+    booksAvailable: string[];
+    numList?: string[];
+    version: number;
 };
 export type BookList = { [key: string]: string };
 export type VerseList = { [key: string]: string };
-export type ChapterType = { title: string, verses: VerseList };
+export type ChapterType = { title: string; verses: VerseList };
 
 type ReaderBibleDataType = BibleInfoType | null;
 type CallbackType = (data: ReaderBibleDataType) => void;
@@ -36,13 +40,13 @@ export default class BibleDataReader {
         this.callbackMapper = new Map();
     }
     private _pushCallback(key: string, callback: CallbackType) {
-        const callbackList = this.callbackMapper.get(key) || [];
+        const callbackList = this.callbackMapper.get(key) ?? [];
         callbackList.push(callback);
         this.callbackMapper.set(key, callbackList);
         return callbackList.length === 1;
     }
     private fullfilCallback(key: string, data: ReaderBibleDataType) {
-        const callbackList = this.callbackMapper.get(key) || [];
+        const callbackList = this.callbackMapper.get(key) ?? [];
         this.callbackMapper.delete(key);
         callbackList.forEach((callback) => {
             callback(data);
@@ -50,9 +54,7 @@ export default class BibleDataReader {
     }
     async getDatabaseController() {
         if (this._dbController === null) {
-            this._dbController = (
-                await BibleDatabaseController.getInstance()
-            );
+            this._dbController = await BibleDatabaseController.getInstance();
         }
         return this._dbController;
     }
@@ -67,10 +69,15 @@ export default class BibleDataReader {
             if (record !== null) {
                 b64Data = record.data;
             } else {
-                const fileData = await fsReadFile(filePath);
+                const fileData = await FileSource.readFileData(filePath, true);
+                if (fileData === null) {
+                    return null;
+                }
                 b64Data = decrypt(fileData);
                 await databaseController.addItem({
-                    id: filePath, data: b64Data, isForceOverride: true,
+                    id: filePath,
+                    data: b64Data,
+                    isForceOverride: true,
                     secondaryId: bibleKey,
                 });
             }
@@ -83,11 +90,9 @@ export default class BibleDataReader {
         } finally {
             hideProgressBard(progressKey);
         }
-        return data;
+        return data as AnyObjectType | null;
     }
-    async _genBibleData(
-        bibleKey: string, key: string, callback: CallbackType,
-    ) {
+    async _genBibleData(bibleKey: string, key: string, callback: CallbackType) {
         const biblePath = await this.toBiblePath(bibleKey);
         if (biblePath === null) {
             return callback(null);
@@ -98,7 +103,7 @@ export default class BibleDataReader {
             return;
         }
         const data = await this._readBibleData(filePath, bibleKey);
-        this.fullfilCallback(filePath, data);
+        this.fullfilCallback(filePath, data as ReaderBibleDataType);
     }
     readBibleData(bibleKey: string, key: string) {
         return new Promise<ReaderBibleDataType>((resolve) => {
@@ -115,8 +120,10 @@ export default class BibleDataReader {
     async getWritableBiblePath() {
         if (this._writableBiblePath === null) {
             const userWritablePath = getUserWritablePath();
-            const dirPath = pathJoin(userWritablePath,
-                `bibles${is_dev() ? '-dev' : ''}`);
+            const dirPath = pathJoin(
+                userWritablePath,
+                `bibles${is_dev() ? '-dev' : ''}`,
+            );
             try {
                 await fsCreateDir(dirPath);
             } catch (error: any) {
@@ -124,7 +131,7 @@ export default class BibleDataReader {
                     handleError(error);
                 }
             }
-            this._writableBiblePath = pathJoin(userWritablePath, 'bibles');
+            this._writableBiblePath = dirPath;
         }
         return this._writableBiblePath;
     }
