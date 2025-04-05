@@ -357,7 +357,7 @@ export default class BibleSearchController {
                             this.locale,
                             quickTrimText(
                                 this.locale,
-                                `${this._searchText}${text} `,
+                                `${this._searchText.trim()} ${text} `,
                             ),
                         );
                         this.input?.focus();

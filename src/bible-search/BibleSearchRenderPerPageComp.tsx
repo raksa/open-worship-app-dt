@@ -1,8 +1,14 @@
 import BibleItem from '../bible-list/BibleItem';
+import { useBibleItemRenderTitle } from '../bible-list/bibleItemHelpers';
 import { LookupBibleItemViewController } from '../bible-reader/BibleItemViewController';
 import { BibleSearchResultType, breakItem } from './bibleSearchHelpers';
 
 export const APP_FOUND_PAGE_CLASS = 'app-found-page';
+
+function BibleViewTitleComp({ bibleItem }: Readonly<{ bibleItem: BibleItem }>) {
+    const title = useBibleItemRenderTitle(bibleItem);
+    return <span className="title app-border-white-round m-1 px-1">{title}</span>;
+}
 
 export default function BibleSearchRenderPerPageComp({
     pageNumber,
@@ -31,31 +37,27 @@ export default function BibleSearchRenderPerPageComp({
             </div>
             <div className="w-100">
                 {data.content.map(({ text, uniqueKey }) => {
-                    const { newItem, kjvTitle, bibleItem } = breakItem(
+                    const { newItem, bibleItem } = breakItem(
                         searchText,
                         text,
                         bibleKey,
                     );
                     return (
-                        <button
-                            className={
-                                'btn btn-sm btn-outline-info ' +
-                                'app-ellipsis w-100 overflow-hidden-x'
-                            }
+                        <div
+                            className="w-100 app-border-white-round my-2 p-2 pointer"
+                            key={uniqueKey}
+                            title={text}
                             onClick={(event) => {
                                 handleClicking(event, bibleItem);
                             }}
-                            title="Shift + Click to append"
-                            style={{ textAlign: 'left' }}
-                            key={uniqueKey}
                         >
-                            <span>{kjvTitle}</span> ...{' '}
+                            <BibleViewTitleComp bibleItem={bibleItem} />
                             <span
                                 dangerouslySetInnerHTML={{
                                     __html: newItem,
                                 }}
                             />
-                        </button>
+                        </div>
                     );
                 })}
             </div>
