@@ -20,7 +20,11 @@ import {
     BibleSearchResultType,
     searchOnline,
 } from './bibleSearchHelpers';
-import { showAppContextMenu } from '../others/AppContextMenuComp';
+import {
+    AppContextMenuControlType,
+    ContextMenuItemType,
+    showAppContextMenu,
+} from '../context-menu/appContextMenuHelpers';
 import { cumulativeOffset } from '../helper/helpers';
 
 const DEFAULT_ROW_LIMIT = 20;
@@ -196,12 +200,10 @@ export default class BibleSearchController {
     input: HTMLInputElement | null = null;
     private _searchText: string = '';
     locale: LocaleType;
+    isAddedByEnter: boolean = false;
     onTextChange: () => void = () => {};
     private _oldInputText: string = '';
-    menuControllerSession: {
-        closeMenu: () => void;
-        promiseDone: Promise<void>;
-    } | null = null;
+    menuControllerSession: AppContextMenuControlType | null = null;
     constructor(bibleKey: string, locale: LocaleType) {
         this._bibleKey = bibleKey;
         this.locale = locale;
@@ -344,19 +346,24 @@ export default class BibleSearchController {
         const { top, left } = cumulativeOffset(this.input);
         this.menuControllerSession = showAppContextMenu(
             event,
-            suggestWords.map((text) => ({
-                menuTitle: text,
-                onClick: () => {
-                    this.searchText = quickEndWord(
-                        this.locale,
-                        quickTrimText(
+            suggestWords.map((text) => {
+                return {
+                    menuTitle: text,
+                    onSelect: (event: any) => {
+                        if (event.key === 'Enter') {
+                            this.isAddedByEnter = true;
+                        }
+                        this.searchText = quickEndWord(
                             this.locale,
-                            `${this._searchText} ${text} `,
-                        ),
-                    );
-                    this.input?.focus();
-                },
-            })),
+                            quickTrimText(
+                                this.locale,
+                                `${this._searchText}${text} `,
+                            ),
+                        );
+                        this.input?.focus();
+                    },
+                } as ContextMenuItemType;
+            }),
             {
                 coord: { x: left, y: top + this.input!.offsetHeight },
                 maxHeigh: 200,

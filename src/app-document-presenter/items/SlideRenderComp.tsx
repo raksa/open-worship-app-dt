@@ -1,6 +1,6 @@
 import './VaryAppDocumentItem.scss';
 
-import { ContextMenuEventType } from '../../others/AppContextMenuComp';
+import { ContextMenuEventType } from '../../context-menu/appContextMenuHelpers';
 import Slide from '../../app-document-list/Slide';
 import SlideRendererHtmlComp from './SlideRendererHtmlComp';
 import ScreenVaryAppDocumentManager from '../../_screen/managers/ScreenVaryAppDocumentManager';

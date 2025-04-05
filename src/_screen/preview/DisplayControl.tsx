@@ -1,7 +1,7 @@
 import {
     ContextMenuItemType,
     showAppContextMenu,
-} from '../../others/AppContextMenuComp';
+} from '../../context-menu/appContextMenuHelpers';
 import ScreenManagerBase from '../managers/ScreenManagerBase';
 import {
     useScreenManagerBaseContext,
@@ -27,7 +27,7 @@ function handleDisplayChoosing(
             (isPrimary ? ' (primary)' : '');
         return {
             menuTitle,
-            onClick: () => {
+            onSelect: () => {
                 screenManagerBase.displayId = display.id;
             },
         } as ContextMenuItemType;

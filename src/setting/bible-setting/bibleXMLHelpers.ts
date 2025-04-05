@@ -18,7 +18,7 @@ import { getBibleInfo } from '../../helper/bible-helpers/bibleInfoHelpers';
 import {
     ContextMenuItemType,
     showAppContextMenu,
-} from '../../others/AppContextMenuComp';
+} from '../../context-menu/appContextMenuHelpers';
 import { useState, useTransition } from 'react';
 import { useAppEffect } from '../../helper/debuggerHelpers';
 import BibleDatabaseController from '../../helper/bible-helpers/BibleDatabaseController';
@@ -226,7 +226,7 @@ export function handBibleKeyContextMenuOpening(bibleKey: string, event: any) {
     const contextMenuItems: ContextMenuItemType[] = [
         {
             menuTitle: menuTitleRealFile,
-            onClick: async () => {
+            onSelect: async () => {
                 const filePath = await bibleKeyToFilePath(bibleKey);
                 showExplorer(filePath);
             },
@@ -243,13 +243,13 @@ export function handBibleInfoContextMenuOpening(
     const contextMenuItems: ContextMenuItemType[] = [
         {
             menuTitle: 'Chose Locale',
-            onClick: () => {
+            onSelect: () => {
                 showAppContextMenu(
                     event,
                     Object.entries(allLocalesMap).map(([locale]) => {
                         return {
                             menuTitle: locale,
-                            onClick: () => {
+                            onSelect: () => {
                                 setBibleInfo({
                                     ...bibleInfo,
                                     locale,
@@ -262,7 +262,7 @@ export function handBibleInfoContextMenuOpening(
         },
         {
             menuTitle: 'Edit Numbers Map',
-            onClick: async () => {
+            onSelect: async () => {
                 let numbersMap = Object.keys(bibleInfo.numbersMap);
                 const isConfirmInput = await showAppInput(
                     'Numbers map',
@@ -289,7 +289,7 @@ export function handBibleInfoContextMenuOpening(
         },
         {
             menuTitle: 'Edit Books Map',
-            onClick: async () => {
+            onSelect: async () => {
                 let booksMap = Object.values(bibleInfo.booksMap);
                 const isConfirmInput = await showAppInput(
                     'Books map',
@@ -315,7 +315,7 @@ export function handBibleInfoContextMenuOpening(
         },
         {
             menuTitle: 'Copy to Clipboard',
-            onClick: () => {
+            onSelect: () => {
                 navigator.clipboard.writeText(
                     JSON.stringify(bibleInfo, null, 2),
                 );

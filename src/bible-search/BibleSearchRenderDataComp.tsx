@@ -3,7 +3,7 @@ import { useAppEffect } from '../helper/debuggerHelpers';
 import {
     ContextMenuItemType,
     showAppContextMenu,
-} from '../others/AppContextMenuComp';
+} from '../context-menu/appContextMenuHelpers';
 import LoadingComp from '../others/LoadingComp';
 import { showSimpleToast } from '../toast/toastHelpers';
 import {
@@ -29,7 +29,7 @@ async function selectBookKey(
     showAppContextMenu(event, [
         {
             menuTitle: 'all books',
-            onClick: () => {
+            onSelect: () => {
                 setSelectedBook(null);
             },
         },
@@ -38,7 +38,7 @@ async function selectBookKey(
             return {
                 menuTitle: `${book}${extraName}`,
                 disabled: !isAvailable || selectedBook?.bookKey === bookKey,
-                onClick: () => {
+                onSelect: () => {
                     setSelectedBook({ bookKey, book });
                 },
             } as ContextMenuItemType;

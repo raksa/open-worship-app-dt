@@ -19,6 +19,20 @@ export default function BibleSearchHeaderComp({
             bibleSearchController.onTextChange = () => {};
         };
     }, [bibleSearchController]);
+    const keyUpHandling = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+            if (bibleSearchController.isAddedByEnter) {
+                bibleSearchController.isAddedByEnter =
+                    false;
+                return;
+            }
+            event.preventDefault();
+            event.stopPropagation();
+            handleSearch(true);
+            return;
+        }
+        bibleSearchController.handleKeyUp(event);
+    };
     return (
         <>
             <input
@@ -30,18 +44,7 @@ export default function BibleSearchHeaderComp({
                 }}
                 type="text"
                 className="form-control"
-                onKeyUp={(event) => {
-                    if (
-                        event.key === 'Enter' &&
-                        bibleSearchController.menuControllerSession === null
-                    ) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        handleSearch(true);
-                        return;
-                    }
-                    bibleSearchController.handleKeyUp(event);
-                }}
+                onKeyUp={keyUpHandling}
             />
             <button
                 className="btn btn-sm"

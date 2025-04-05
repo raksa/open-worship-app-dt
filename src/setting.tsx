@@ -3,7 +3,7 @@ import { main } from './appInitHelpers';
 import TopProgressBarComp from './progress-bar/TopProgressBarComp';
 import SettingComp from './setting/SettingComp';
 import ToastComp from './toast/ToastComp';
-import AppContextMenuComp from './others/AppContextMenuComp';
+import AppContextMenuComp from './context-menu/AppContextMenuComp';
 
 main(
     <>

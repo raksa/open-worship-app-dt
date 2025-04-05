@@ -5,7 +5,7 @@ import { getSetting } from '../../helper/settingHelpers';
 import {
     ContextMenuItemType,
     showAppContextMenu,
-} from '../../others/AppContextMenuComp';
+} from '../../context-menu/appContextMenuHelpers';
 import Slide from '../../app-document-list/Slide';
 import ScreenManager from '../managers/ScreenManager';
 import {
@@ -48,7 +48,7 @@ export function openContextMenu(event: any, screenManager: ScreenManager) {
             : [
                   {
                       menuTitle: 'Solo',
-                      onClick() {
+                      onSelect() {
                           getSelectedScreenManagerBases().forEach(
                               (screenManager1) => {
                                   screenManager1.isSelected = false;
@@ -65,13 +65,13 @@ export function openContextMenu(event: any, screenManager: ScreenManager) {
                       menuTitle: screenManager.isSelected
                           ? 'Deselect'
                           : 'Select',
-                      onClick() {
+                      onSelect() {
                           screenManager.isSelected = !screenManager.isSelected;
                       },
                   },
                   {
                       menuTitle: 'Delete',
-                      onClick: () => {
+                      onSelect: () => {
                           screenManager.delete();
                       },
                   },
@@ -79,7 +79,7 @@ export function openContextMenu(event: any, screenManager: ScreenManager) {
         ...extraMenuItems,
         {
             menuTitle: 'Refresh Preview',
-            onClick() {
+            onSelect() {
                 getAllScreenManagers().forEach((screenManager) => {
                     screenManager.fireResizeEvent();
                 });

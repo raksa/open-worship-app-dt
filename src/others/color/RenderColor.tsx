@@ -1,14 +1,15 @@
-import { ContextMenuItemType, showAppContextMenu } from '../AppContextMenuComp';
+import { showAppContextMenu } from '../../context-menu/AppContextMenuComp';
 import { copyToClipboard } from '../../server/appHelpers';
 import { AppColorType, serializeForDragging } from './colorHelpers';
 import { genShowOnScreensContextMenu } from '../FileItemHandlerComp';
 import ScreenBackgroundManager from '../../_screen/managers/ScreenBackgroundManager';
+import { ContextMenuItemType } from '../../context-menu/appContextMenuHelpers';
 
 function showContextMenu(event: any, color: AppColorType) {
     const menuItems: ContextMenuItemType[] = [
         {
             menuTitle: `Copy to '${color}' to clipboard`,
-            onClick: () => {
+            onSelect: () => {
                 copyToClipboard(color);
             },
         },

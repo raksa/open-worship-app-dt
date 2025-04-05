@@ -3,7 +3,7 @@ import './BibleSelectionComp.scss';
 import {
     ContextMenuItemType,
     showAppContextMenu,
-} from '../others/AppContextMenuComp';
+} from '../context-menu/appContextMenuHelpers';
 import { useLocalBibleInfoList } from '../setting/bible-setting/bibleSettingHelpers';
 import {
     BibleMinimalInfoType,
@@ -48,7 +48,7 @@ export async function showBibleOption(
                     return {
                         menuTitle: `(${bibleInfo.key}) ${bibleInfo.title}`,
                         title: bibleInfo.title,
-                        onClick: () => {
+                        onSelect: () => {
                             onSelect(bibleInfo.key);
                         },
                     };

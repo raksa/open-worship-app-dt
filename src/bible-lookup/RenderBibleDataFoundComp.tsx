@@ -6,7 +6,7 @@ import {
     BibleViewTextComp,
     RenderTitleMaterialComp,
 } from '../bible-reader/BibleViewExtra';
-import { showAppContextMenu } from '../others/AppContextMenuComp';
+import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
 import { genDefaultBibleItemContextMenu } from '../bible-list/bibleItemHelpers';
 import {
     closeEventMapper,

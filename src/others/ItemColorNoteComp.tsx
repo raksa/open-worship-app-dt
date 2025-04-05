@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react';
 
-import { ContextMenuItemType, showAppContextMenu } from './AppContextMenuComp';
+import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
 import colorList from './color-list.json';
 import ColorNoteInf from '../helper/ColorNoteInf';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { freezeObject } from '../helper/helpers';
+import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 
 freezeObject(colorList);
 
@@ -52,7 +53,7 @@ export default function ItemColorNoteComp({
             {
                 menuTitle: 'no color',
                 disabled: colorNote === null,
-                onClick: () => {
+                onSelect: () => {
                     setColorNote1(null);
                 },
             },
@@ -60,7 +61,7 @@ export default function ItemColorNoteComp({
                 return {
                     menuTitle: name,
                     disabled: colorNote === colorCode,
-                    onClick: () => {
+                    onSelect: () => {
                         setColorNote1(colorCode);
                     },
                     otherChild: (

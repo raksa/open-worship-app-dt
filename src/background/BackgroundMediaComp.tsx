@@ -1,4 +1,4 @@
-import { showAppContextMenu } from '../others/AppContextMenuComp';
+import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
 import FileListHandlerComp from '../others/FileListHandlerComp';
 import {
     genCommonMenu,

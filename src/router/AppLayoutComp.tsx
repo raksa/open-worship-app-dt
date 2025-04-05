@@ -17,7 +17,7 @@ import { tran } from '../lang';
 import appProvider from '../server/appProvider';
 import { MultiContextRender } from '../helper/MultiContextRender';
 import AppPopupWindowsComp from '../app-modal/AppPopupWindowsComp';
-import AppContextMenuComp from '../others/AppContextMenuComp';
+import AppContextMenuComp from '../context-menu/AppContextMenuComp';
 import HandleAlertComp from '../popup-widget/HandleAlertComp';
 import ToastComp from '../toast/ToastComp';
 import AppDocument from '../app-document-list/AppDocument';

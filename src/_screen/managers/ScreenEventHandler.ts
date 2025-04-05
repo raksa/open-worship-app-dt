@@ -2,7 +2,7 @@ import EventHandler from '../../event/EventHandler';
 import {
     ContextMenuItemType,
     showAppContextMenu,
-} from '../../others/AppContextMenuComp';
+} from '../../context-menu/appContextMenuHelpers';
 import appProvider from '../../server/appProvider';
 import { BasicScreenMessageType, ScreenMessageType } from '../screenHelpers';
 import ScreenManagerBase from './ScreenManagerBase';
@@ -116,13 +116,13 @@ export default abstract class ScreenEventHandler<
                 (screenManagerBase) => {
                     return {
                         menuTitle: `Screen id: ${screenManagerBase.screenId}`,
-                        onClick: () => {
+                        onSelect: () => {
                             resolve([screenManagerBase.screenId]);
                         },
                     };
                 },
             );
-            showAppContextMenu(event as any, menuItems).then(() => {
+            showAppContextMenu(event as any, menuItems).promiseDone.then(() => {
                 resolve([]);
             });
         });

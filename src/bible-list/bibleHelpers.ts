@@ -18,7 +18,7 @@ import { showSimpleToast } from '../toast/toastHelpers';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import DirSource from '../helper/DirSource';
 import FileSource from '../helper/FileSource';
-import { showAppContextMenu } from '../others/AppContextMenuComp';
+import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
 import { addExtension } from '../server/fileHelpers';
 import appProvider from '../server/appProvider';
 import { VerseList } from '../helper/bible-helpers/BibleDataReader';
@@ -223,7 +223,7 @@ export async function moveBibleItemTo(
             targetNames.map((name) => {
                 return {
                     menuTitle: name,
-                    onClick: async () => {
+                    onSelect: async () => {
                         const bibleFileSource = FileSource.getInstance(
                             bible.filePath,
                         );

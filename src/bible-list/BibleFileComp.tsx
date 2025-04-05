@@ -10,7 +10,7 @@ import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { moveBibleItemTo } from './bibleHelpers';
 import { copyToClipboard } from '../server/appHelpers';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
-import { ContextMenuItemType } from '../others/AppContextMenuComp';
+import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 
 const LazyRenderBibleItems = lazy(() => {
     return import('./RenderBibleItemsComp');
@@ -25,7 +25,7 @@ function genContextMenu(
     return [
         {
             menuTitle: '(*T) ' + 'Empty',
-            onClick: () => {
+            onSelect: () => {
                 showAppConfirm(
                     'Empty Bible List',
                     'Are you sure to empty this bible list?',
@@ -40,7 +40,7 @@ function genContextMenu(
         },
         {
             menuTitle: '(*T) ' + 'Copy All Items',
-            onClick: async () => {
+            onSelect: async () => {
                 const promises = bible.items.map((item) => {
                     return item.toTitleText();
                 });
@@ -53,7 +53,7 @@ function genContextMenu(
         },
         {
             menuTitle: '(*T) ' + 'Move All Items To',
-            onClick: (event: any) => {
+            onSelect: (event: any) => {
                 moveBibleItemTo(event, bible);
             },
         },

@@ -7,16 +7,14 @@ import { addBibleItem, updateBibleItem } from '../bible-list/bibleHelpers';
 import ScreenFullTextManager from '../_screen/managers/ScreenFullTextManager';
 import { getPopupWindowTypeData } from '../app-modal/helpers';
 import BibleItem from '../bible-list/BibleItem';
-import {
-    genContextMenuItemShortcutKey,
-    ContextMenuItemType,
-} from '../others/AppContextMenuComp';
+import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { getIsKeepingPopup } from './RenderExtraButtonsRightComp';
 import { LookupBibleItemViewController } from '../bible-reader/BibleItemViewController';
 import { useBibleItemContext } from '../bible-reader/BibleItemContext';
 import appProvider from '../server/appProvider';
 import { useShowBibleLookupContext } from '../others/commonButtons';
+import { genContextMenuItemShortcutKey } from '../context-menu/AppContextMenuComp';
 
 const presenterEventMapper: KBEventMapper = {
     allControlKey: ['Ctrl', 'Shift'],
@@ -145,7 +143,7 @@ export function genFoundBibleItemContextMenu(
             otherChild: isKeyboardShortcut
                 ? genContextMenuItemShortcutKey(addListEventMapper)
                 : undefined,
-            onClick: async () => {
+            onSelect: async () => {
                 const addedBibleItem = await addBibleItem(bibleItem, onDone);
                 if (addedBibleItem === null) {
                     showAddingBibleItemFail();
@@ -156,7 +154,7 @@ export function genFoundBibleItemContextMenu(
             ? [
                   {
                       menuTitle: 'Show bible item',
-                      onClick: (event: any) => {
+                      onSelect: (event: any) => {
                           ScreenFullTextManager.handleBibleItemSelecting(
                               event,
                               [bibleItem],
@@ -168,7 +166,7 @@ export function genFoundBibleItemContextMenu(
                           ? genContextMenuItemShortcutKey(presenterEventMapper)
                           : undefined,
                       menuTitle: 'Add bible item and show on screen',
-                      onClick: async (event: any) => {
+                      onSelect: async (event: any) => {
                           addBibleItemAndPresent(event, bibleItem, onDone);
                       },
                   },
