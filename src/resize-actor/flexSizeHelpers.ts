@@ -40,48 +40,51 @@ export function clearWidgetSizeSetting() {
         setSetting(`${toSettingString(name)}`, '');
     });
 }
-export function toSettingString(fSizeName: string) {
-    return `${settingPrefix}-${fSizeName}`;
+export function toSettingString(flexSizeName: string) {
+    return `${settingPrefix}-${flexSizeName}`;
 }
-export function dataFSizeKeyToKey(fSizeName: string, dataFSizeKey: string) {
-    return dataFSizeKey.replace(`${fSizeName}-`, '');
+export function dataFlexSizeKeyToKey(
+    flexSizeName: string,
+    dataFlexSizeKey: string,
+) {
+    return dataFlexSizeKey.replace(`${flexSizeName}-`, '');
 }
-export function keyToDataFSizeKey(fSizeName: string, key: string) {
-    return `${fSizeName}-${key}`;
+export function keyToDataFlexSizeKey(flexSizeName: string, key: string) {
+    return `${flexSizeName}-${key}`;
 }
 
 export const setDisablingSetting = (
-    fSizeName: string,
+    flexSizeName: string,
     defaultSize: FlexSizeType,
-    dataFSizeKey: string,
+    dataFlexSizeKey: string,
     target?: DisabledType,
 ) => {
-    const settingString = toSettingString(fSizeName);
-    const flexSize = getFlexSizeSetting(fSizeName, defaultSize);
-    const key = dataFSizeKeyToKey(fSizeName, dataFSizeKey);
+    const settingString = toSettingString(flexSizeName);
+    const flexSize = getFlexSizeSetting(flexSizeName, defaultSize);
+    const key = dataFlexSizeKeyToKey(flexSizeName, dataFlexSizeKey);
     flexSize[key][1] = target;
     setSetting(settingString, JSON.stringify(flexSize));
     return flexSize;
 };
 
-export function clearFlexSizeSetting(fSizeName: string) {
-    const settingString = toSettingString(fSizeName);
+export function clearFlexSizeSetting(flexSizeName: string) {
+    const settingString = toSettingString(flexSizeName);
     setSetting(settingString, '');
 }
 
 export const genFlexSizeSetting = (
-    fSizeName: string,
+    flexSizeName: string,
     defaultSize: FlexSizeType,
 ) => {
-    const selectorString = `[data-fs^="${fSizeName}"]`;
+    const selectorString = `[data-fs^="${flexSizeName}"]`;
     const collection =
         document.querySelectorAll<HTMLDivElement>(selectorString);
     const items = Array.from(collection);
-    const flexSize = getFlexSizeSetting(fSizeName, defaultSize);
+    const flexSize = getFlexSizeSetting(flexSizeName, defaultSize);
     items.forEach((item) => {
-        const dataFSizeKey = item.getAttribute('data-fs');
-        if (dataFSizeKey !== null) {
-            const key = dataFSizeKeyToKey(fSizeName, dataFSizeKey);
+        const dataFlexSizeKey = item.getAttribute('data-fs');
+        if (dataFlexSizeKey !== null) {
+            const key = dataFlexSizeKeyToKey(flexSizeName, dataFlexSizeKey);
             if (flexSize[key]) {
                 flexSize[key][0] = item.style.flex;
             }
@@ -91,18 +94,18 @@ export const genFlexSizeSetting = (
 };
 
 export const setFlexSizeSetting = (
-    fSizeName: string,
+    flexSizeName: string,
     flexSize: FlexSizeType,
 ) => {
-    const settingString = toSettingString(fSizeName);
+    const settingString = toSettingString(flexSizeName);
     setSetting(settingString, JSON.stringify(flexSize));
 };
 
 export function getFlexSizeSetting(
-    fSizeName: string,
+    flexSizeName: string,
     defaultSize: FlexSizeType,
 ): FlexSizeType {
-    const settingString = toSettingString(fSizeName);
+    const settingString = toSettingString(flexSizeName);
     const str = getSetting(settingString, '');
     try {
         if (isValidJson(str, true)) {
@@ -129,7 +132,7 @@ export function getFlexSizeSetting(
         handleError(error);
     }
     setSetting(settingString, JSON.stringify(defaultSize));
-    return getFlexSizeSetting(fSizeName, defaultSize);
+    return getFlexSizeSetting(flexSizeName, defaultSize);
 }
 
 function checkIsHiddenWidget(
@@ -160,12 +163,12 @@ export function checkIsThereNotHiddenWidget(
 export function calcShowingHiddenWidget(
     event: any,
     key: string,
-    fSizeName: string,
+    flexSizeName: string,
     defaultFlexSize: FlexSizeType,
     flexSizeDisabled: DisabledType,
 ) {
-    const dataFSizeKey = keyToDataFSizeKey(fSizeName, key);
-    setDisablingSetting(fSizeName, defaultFlexSize, dataFSizeKey);
+    const dataFlexSizeKey = keyToDataFlexSizeKey(flexSizeName, key);
+    setDisablingSetting(flexSizeName, defaultFlexSize, dataFlexSizeKey);
     const current = event.currentTarget;
     const target = (
         flexSizeDisabled[0] === 'first'
@@ -175,6 +178,6 @@ export function calcShowingHiddenWidget(
     const targetFGrow = Number(target.style.flexGrow);
     const flexGrow = targetFGrow - flexSizeDisabled[1];
     target.style.flexGrow = `${flexGrow < targetFGrow / 10 ? targetFGrow : flexGrow}`;
-    const size = genFlexSizeSetting(fSizeName, defaultFlexSize);
+    const size = genFlexSizeSetting(flexSizeName, defaultFlexSize);
     return size;
 }

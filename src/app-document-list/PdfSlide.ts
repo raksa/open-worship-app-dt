@@ -81,8 +81,7 @@ export default class PdfSlide
         try {
             this.validate(json);
             return true;
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (error) {}
+        } catch (_error) {}
         return false;
     }
 

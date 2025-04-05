@@ -7,7 +7,7 @@ import FlexResizeActorComp, {
 } from './FlexResizeActorComp';
 import {
     DisabledType,
-    keyToDataFSizeKey,
+    keyToDataFlexSizeKey,
     setDisablingSetting,
     genFlexSizeSetting,
     checkIsThereNotHiddenWidget,
@@ -34,7 +34,7 @@ export default function RenderResizeActorItemComp({
     setFlexSize,
     restoreFlexSize,
     defaultFlexSize,
-    fSizeName,
+    flexSizeName,
     dataInput,
     isDisableQuickResize,
     isHorizontal,
@@ -44,26 +44,26 @@ export default function RenderResizeActorItemComp({
     flexSize: FlexSizeType;
     restoreFlexSize: FlexSizeType;
     defaultFlexSize: FlexSizeType;
-    fSizeName: string;
+    flexSizeName: string;
     dataInput: DataInputType[];
     isDisableQuickResize: boolean;
     isHorizontal: boolean;
     setFlexSize: (flexSize: FlexSizeType) => void;
 }>) {
     const handleDisabling = (
-        targetDataFSizeKey: string,
+        targetDataFlexSizeKey: string,
         target: DisabledType,
     ) => {
         const size = setDisablingSetting(
-            fSizeName,
+            flexSizeName,
             restoreFlexSize,
-            targetDataFSizeKey,
+            targetDataFlexSizeKey,
             target,
         );
         setFlexSize(size);
     };
     const handleSizeChecking = () => {
-        const size = genFlexSizeSetting(fSizeName, restoreFlexSize);
+        const size = genFlexSizeSetting(flexSizeName, restoreFlexSize);
         setFlexSize(size);
     };
 
@@ -75,7 +75,7 @@ export default function RenderResizeActorItemComp({
               const size = calcShowingHiddenWidget(
                   event,
                   key,
-                  fSizeName,
+                  flexSizeName,
                   restoreFlexSize,
                   flexSizeDisabled,
               );
@@ -83,41 +83,30 @@ export default function RenderResizeActorItemComp({
           }
         : null;
 
-    let isShowingFSizeActor = false;
+    let isShowingFlexSizeActor = false;
     if (
         index !== 0 &&
         onHiddenWidgetClick === null &&
         (checkIsThereNotHiddenWidget(dataInput, flexSize, 0, index) ||
             checkIsThereNotHiddenWidget(dataInput, flexSize, index + 1))
     ) {
-        isShowingFSizeActor = true;
+        isShowingFlexSizeActor = true;
     }
     const type = isHorizontal ? 'h' : 'v';
+    const isWidgetHidden = onHiddenWidgetClick !== null;
     return (
         <Fragment key={index}>
-            {isShowingFSizeActor && (
+            {isShowingFlexSizeActor && (
                 <FlexResizeActorComp
                     isDisableQuickResize={isDisableQuickResize}
-                    disable={handleDisabling}
+                    disableWidget={handleDisabling}
                     checkSize={handleSizeChecking}
                     type={type}
                 />
             )}
-            {onHiddenWidgetClick !== null ? (
+            {isWidgetHidden ? null : (
                 <div
-                    title={`Enable ${widgetName}`}
-                    className={
-                        `${ACTIVE_HIDDEN_WIDGET_CLASS} ` +
-                        `${HIDDEN_WIDGET_CLASS} pointer bar-type-${type}`
-                    }
-                    style={{ color: 'green' }}
-                    onClick={onHiddenWidgetClick}
-                >
-                    <div className="hidden-context">{widgetName}</div>
-                </div>
-            ) : (
-                <div
-                    data-fs={keyToDataFSizeKey(fSizeName, key)}
+                    data-fs={keyToDataFlexSizeKey(flexSizeName, key)}
                     data-fs-default={defaultFlexSize[key][0]}
                     data-min-size={50}
                     className={`${className} overflow-hidden`}
@@ -129,6 +118,21 @@ export default function RenderResizeActorItemComp({
                     {renderChildren(children)}
                 </div>
             )}
+            {isWidgetHidden ? (
+                <div
+                    title={`Enable ${widgetName}`}
+                    className={
+                        `${ACTIVE_HIDDEN_WIDGET_CLASS} ` +
+                        `${HIDDEN_WIDGET_CLASS} pointer bar-type-${type}`
+                    }
+                    style={{
+                        color: 'green',
+                    }}
+                    onClick={onHiddenWidgetClick ?? (() => {})}
+                >
+                    <div className="hidden-context">{widgetName}</div>
+                </div>
+            ) : null}
         </Fragment>
     );
 }

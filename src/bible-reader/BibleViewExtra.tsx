@@ -1,7 +1,7 @@
 import { createContext, Fragment, use } from 'react';
 
 import BibleItem from '../bible-list/BibleItem';
-import { BibleSelectionMiniComp } from '../bible-search/BibleSelectionComp';
+import { BibleSelectionMiniComp } from '../bible-lookup/BibleSelectionComp';
 import { useGetBibleRef } from '../others/bibleRefsHelpers';
 import {
     useBibleItemRenderTitle,
@@ -34,7 +34,12 @@ export function RenderTitleMaterialComp({
         },
     };
     return (
-        <div className="d-flex text-nowrap w-100">
+        <div
+            className="d-flex text-nowrap w-100 h-100"
+            style={{
+                overflowX: 'auto',
+            }}
+        >
             <ItemColorNoteComp item={colorNoteHandler} />
             <div className="d-flex flex-fill">
                 <div className="d-flex ps-1">
@@ -61,7 +66,6 @@ export function RenderHeaderComp({
     onClose: () => void;
 }>) {
     const fontSize = useBibleViewFontSizeContext();
-    // TODO: reduce size of the header
     return (
         <div
             className="card-header d-flex"

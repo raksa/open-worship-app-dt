@@ -2,7 +2,6 @@ import { createContext, lazy, useState } from 'react';
 
 import PathSelectorComp from './PathSelectorComp';
 import { MimetypeNameType, fsCheckDirExist } from '../server/fileHelpers';
-import { ContextMenuItemType } from './AppContextMenuComp';
 import FileSource from '../helper/FileSource';
 import RenderListComp from './RenderListComp';
 import DirSource from '../helper/DirSource';
@@ -19,6 +18,7 @@ import appProvider from '../server/appProvider';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { handleError } from '../helper/errorHelpers';
 import NoDirSelectedComp from './NoDirSelectedComp';
+import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 
 const LazyAskingNewName = lazy(() => {
     return import('./AskingNewNameComp');
@@ -134,7 +134,7 @@ export default function FileListHandlerComp({
                     </div>
                 )}
                 <div
-                    className="card-body d-flex flex-column"
+                    className="card-body d-flex flex-column pb-5"
                     onContextMenu={genOnContextMenu(
                         contextMenu,
                         handleItemsAdding,

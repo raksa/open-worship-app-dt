@@ -4,7 +4,7 @@ import Bible from './Bible';
 import {
     ContextMenuItemType,
     showAppContextMenu,
-} from '../others/AppContextMenuComp';
+} from '../context-menu/appContextMenuHelpers';
 import { moveBibleItemTo } from './bibleHelpers';
 import BibleItem from './BibleItem';
 import { showSimpleToast } from '../toast/toastHelpers';
@@ -28,19 +28,19 @@ export function genDefaultBibleItemContextMenu(
     return [
         {
             menuTitle: '(*T) ' + 'Copy Title',
-            onClick: () => {
+            onSelect: () => {
                 bibleItem.copyTitleToClipboard();
             },
         },
         {
             menuTitle: '(*T) ' + 'Copy Text',
-            onClick: () => {
+            onSelect: () => {
                 bibleItem.copyTextToClipboard();
             },
         },
         {
             menuTitle: '(*T) ' + 'Copy All',
-            onClick: () => {
+            onSelect: () => {
                 bibleItem.copyToClipboard();
             },
         },
@@ -51,7 +51,7 @@ export async function openBibleItemContextMenu(
     event: any,
     bibleItem: BibleItem,
     index: number,
-    openBibleSearch: (() => void) | null,
+    openBibleLookup: (() => void) | null,
 ) {
     const bible = bibleItem.filePath
         ? await Bible.fromFilePath(bibleItem.filePath)
@@ -62,19 +62,19 @@ export async function openBibleItemContextMenu(
     }
     const menuItem: ContextMenuItemType[] = [
         ...genDefaultBibleItemContextMenu(bibleItem),
-        ...(openBibleSearch !== null
+        ...(openBibleLookup !== null
             ? [
                   {
                       menuTitle: '(*T) ' + 'Quick Edit',
-                      onClick: () => {
-                          openBibleSearch();
+                      onSelect: () => {
+                          openBibleLookup();
                       },
                   },
               ]
             : []),
         {
             menuTitle: '(*T) ' + 'Duplicate',
-            onClick: () => {
+            onSelect: () => {
                 bible.duplicate(index);
                 bible.save();
             },
@@ -88,13 +88,13 @@ export async function openBibleItemContextMenu(
         }),
         {
             menuTitle: '(*T) ' + 'Move To',
-            onClick: (event1: any) => {
+            onSelect: (event1: any) => {
                 moveBibleItemTo(event1, bible, index);
             },
         },
         {
             menuTitle: '(*T) ' + 'Delete',
-            onClick: () => {
+            onSelect: () => {
                 bible.deleteItemAtIndex(index);
                 bible.save();
             },
@@ -103,7 +103,7 @@ export async function openBibleItemContextMenu(
     if (index !== 0) {
         menuItem.push({
             menuTitle: '(*T) ' + 'Move up',
-            onClick: () => {
+            onSelect: () => {
                 bible.swapItem(index, index - 1);
                 bible.save();
             },
@@ -112,7 +112,7 @@ export async function openBibleItemContextMenu(
     if (index !== bible.itemsLength - 1) {
         menuItem.push({
             menuTitle: '(*T) ' + 'Move down',
-            onClick: () => {
+            onSelect: () => {
                 bible.swapItem(index, index + 1);
                 bible.save();
             },

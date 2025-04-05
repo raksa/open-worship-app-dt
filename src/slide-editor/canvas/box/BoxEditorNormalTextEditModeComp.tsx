@@ -8,8 +8,9 @@ import {
     useSetEditingCanvasItem,
 } from '../CanvasItem';
 import { CanvasItemTextPropsType } from '../CanvasItemText';
+import { genTimeoutAttempt } from '../../../helper/helpers';
 
-let timeoutId: any = null;
+const attemptTimeout = genTimeoutAttempt(1e3);
 export default function BoxEditorNormalTextEditModeComp({
     style,
 }: Readonly<{
@@ -18,14 +19,10 @@ export default function BoxEditorNormalTextEditModeComp({
     const canvasController = useCanvasControllerContext();
     const canvasItem = useCanvasItemContext();
     const handleTextSetting = (text: string) => {
-        if (timeoutId) {
-            clearTimeout(timeoutId);
-        }
-        timeoutId = setTimeout(() => {
-            timeoutId = null;
+        attemptTimeout(() => {
             canvasItem.applyProps({ text });
             canvasController.applyEditItem(canvasItem);
-        }, 1e3);
+        });
     };
     const props = useCanvasItemPropsContext<CanvasItemTextPropsType>();
     const handleCanvasItemEditing = useSetEditingCanvasItem();

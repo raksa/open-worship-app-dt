@@ -3,10 +3,11 @@ import {
     isSupportedExt,
     MimetypeNameType,
 } from '../server/fileHelpers';
-import { ContextMenuItemType, showAppContextMenu } from './AppContextMenuComp';
+import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
 import DirSource from '../helper/DirSource';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { selectFiles } from '../server/appHelpers';
+import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 
 function changeDragEventStyle(
     event: React.DragEvent<HTMLDivElement>,
@@ -183,7 +184,7 @@ export function genOnContextMenu(
         if (addItems !== undefined) {
             menuItems.push({
                 menuTitle: 'Add Items',
-                onClick: addItems,
+                onSelect: addItems,
             });
         }
         if (menuItems.length === 0) {

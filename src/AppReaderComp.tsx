@@ -13,8 +13,8 @@ import BibleItemViewController, {
 const LazyBibleList = lazy(() => {
     return import('./bible-list/BibleListComp');
 });
-const LazyRenderBibleSearch = lazy(() => {
-    return import('./bible-search/RenderBibleSearchComp');
+const LazyRenderBibleLookup = lazy(() => {
+    return import('./bible-lookup/RenderBibleLookupComp');
 });
 
 const flexSizeDefault: FlexSizeType = {
@@ -28,7 +28,7 @@ const dataInput: DataInputType[] = [
         widgetName: 'Bible List',
     },
     {
-        children: LazyRenderBibleSearch,
+        children: LazyRenderBibleLookup,
         key: 'h2',
         widgetName: 'Bible Previewer',
     },

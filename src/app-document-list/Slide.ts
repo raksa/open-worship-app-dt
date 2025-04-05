@@ -162,8 +162,7 @@ export default class Slide
             const { filePath, data } = JSON.parse(json);
             Slide.validate(data);
             return Slide.fromJson(data, filePath);
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (error) {}
+        } catch (_error) {}
         return null;
     }
 

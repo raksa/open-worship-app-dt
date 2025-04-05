@@ -12,15 +12,6 @@ export function getDefaultScreenDisplay() {
     );
 }
 
-export function getDisplayById(displayId: number) {
-    const { displays } = getAllDisplays();
-    return (
-        displays.find((display) => {
-            return display.id === displayId;
-        })?.id ?? 0
-    );
-}
-
 export function getDisplayByScreenId(screenId: number) {
     const displayId = getDisplayIdByScreenId(screenId);
     const { displays } = getAllDisplays();

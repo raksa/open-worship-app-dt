@@ -2,7 +2,7 @@ import BibleItem from '../bible-list/BibleItem';
 import {
     ContextMenuItemType,
     showAppContextMenu,
-} from '../others/AppContextMenuComp';
+} from '../context-menu/appContextMenuHelpers';
 import { BibleItemRenderedType } from './fullTextScreenComps';
 import fullTextScreenHelper from './fullTextScreenHelpers';
 import ScreenFullTextManager from './managers/ScreenFullTextManager';
@@ -69,7 +69,7 @@ async function onBibleSelect(
                   {
                       menuTitle:
                           'Remove(' + bibleRenderedList[index].bibleKey + ')',
-                      onClick: async () => {
+                      onSelect: async () => {
                           bibleItemingList.splice(index, 1);
                           applyBibleItems(bibleItemingList);
                       },
@@ -91,7 +91,7 @@ async function onBibleSelect(
             const bibleKey = bibleInfo.key;
             return {
                 menuTitle: bibleKey,
-                onClick: async (event1: any) => {
+                onSelect: async (event1: any) => {
                     if (event1.shiftKey) {
                         bibleItemingList.push(bibleKey);
                     } else {

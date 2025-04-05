@@ -4,7 +4,7 @@ import KeyboardEventListener from './KeyboardEventListener';
 
 export type AppWidgetType =
     | 'root'
-    | 'bible-search'
+    | 'bible-lookup'
     | 'slide-edit'
     | 'setting'
     | 'context-menu';

@@ -84,15 +84,15 @@ export function selectFiles(
     ) as string[];
 }
 
-export function getUserWritablePath() {
+export function getUserWritablePath(): string {
     return appProvider.messageUtils.sendDataSync('main:app:get-data-path');
 }
 
-export function getDesktopPath() {
+export function getDesktopPath(): string {
     return appProvider.messageUtils.sendDataSync('main:app:get-desktop-path');
 }
 
-export function getTempPath() {
+export function getTempPath(): string {
     return appProvider.messageUtils.sendDataSync('main:app:get-temp-path');
 }
 

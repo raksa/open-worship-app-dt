@@ -11,7 +11,7 @@ async function readJsonData(filePath: string) {
     const json = await fileSource.readFileJsonData();
     if (json === null) {
         appProvider.appUtils.handleError(
-            new Error(`Unable to read file from ${filePath}}`),
+            new Error(`Unable to read data from ${filePath}}`),
         );
         ToastEventListener.showSimpleToast({
             title: 'Color Note',
@@ -58,6 +58,9 @@ function setColorNoteSetting(filePath: string, color: string | null) {
 }
 export default class FileSourceMetaManager {
     static async getColorNote(filePath: string) {
+        if ((await fsCheckFileExist(filePath)) === false) {
+            return null;
+        }
         const fileSource = FileSource.getInstance(filePath);
         const isAppFile = checkIsAppFile(fileSource.fileFullName);
         if (!isAppFile) {
@@ -74,6 +77,9 @@ export default class FileSourceMetaManager {
         return null;
     }
     static async setColorNote(filePath: string, color: string | null) {
+        if ((await fsCheckFileExist(filePath)) === false) {
+            return null;
+        }
         const fileSource = FileSource.getInstance(filePath);
         const isAppFile = checkIsAppFile(fileSource.fileFullName);
         if (!isAppFile) {

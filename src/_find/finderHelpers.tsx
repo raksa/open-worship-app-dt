@@ -18,13 +18,13 @@ export function useHandleFind() {
     );
 }
 
-export type SearchingOptions = {
+export type LookupOptions = {
     forward?: boolean;
     findNext?: boolean;
     matchCase?: boolean;
 };
 
-export function findString(text: string, options: SearchingOptions = {}) {
+export function findString(text: string, options: LookupOptions = {}) {
     if (!text) {
         appProvider.messageUtils.sendData(
             'finder:app:stop-search-in-page',

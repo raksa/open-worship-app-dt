@@ -1,8 +1,11 @@
 # OpenWorship app (PSA.150.6, Praise the Lord)
 
-Open source and always free for worship presenter.
+Simple all in one, free and open-source app for church.
 
 <img src="screenshots/Screenshot 2025-03-05 at 11.02.34 PM.png" alt="Screenshot 2025-03-05 at 11.02.34 PM" style="max-width: 400px;">
+
+
+<img src="screenshots/Screenshot 2025-04-04 220931.png" alt="Screenshot 2025-04-04 220931" style="max-width: 400px;">
 
 ## Tech Stack
 
@@ -15,8 +18,6 @@ Open source and always free for worship presenter.
 Special thanks for others frameworks and tools in [npm package](./package.json)
 
 ## Install
-
-- copy .env.example to .env
 
 ```bash
 $ npm i

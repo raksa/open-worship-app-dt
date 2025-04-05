@@ -16,9 +16,11 @@ import ScreenManagerInf from '../preview/ScreenManagerInf';
 import ScreenVaryAppDocumentManager from './ScreenVaryAppDocumentManager';
 import ColorNoteInf from '../../helper/ColorNoteInf';
 import {
+    getDisplayByScreenId,
     getDisplayIdByScreenId,
     SCREEN_MANAGER_SETTING_NAME,
 } from './screenHelpers';
+import appProviderScreen from '../appProviderScreen';
 
 export type ScreenManagerEventType =
     | 'instance'
@@ -34,8 +36,8 @@ export default class ScreenManagerBase
     static readonly eventNamePrefix: string = 'screen-m';
     readonly screenId: number;
     isDeleted: boolean;
-    width: number;
-    height: number;
+    width = 1;
+    height = 1;
     _isSelected: boolean = false;
     colorNote: string | null = null;
     private _isShowing: boolean;
@@ -45,14 +47,12 @@ export default class ScreenManagerBase
         super();
         this.screenId = screenId;
         this.isDeleted = false;
-        const dim = getWindowDim();
-        this.width = dim.width;
-        this.height = dim.height;
         this.noSyncGroupMap = new Map();
         const ids = getAllShowingScreenIds();
         this._isShowing = ids.some((id) => {
             return id === screenId;
         });
+        this.updateDim();
     }
     get key() {
         return this.screenId.toString();
@@ -60,6 +60,10 @@ export default class ScreenManagerBase
 
     get displayId() {
         return getDisplayIdByScreenId(this.screenId);
+    }
+
+    get display() {
+        return getDisplayByScreenId(this.screenId);
     }
 
     get isSelected() {
@@ -72,6 +76,15 @@ export default class ScreenManagerBase
 
     get isShowing() {
         return this._isShowing;
+    }
+
+    updateDim() {
+        const display = this.display;
+        const dim = appProviderScreen.isScreen
+            ? getWindowDim()
+            : display.bounds;
+        this.width = dim.width;
+        this.height = dim.height;
     }
 
     async getColorNote() {
@@ -107,8 +120,10 @@ export default class ScreenManagerBase
             screenId: this.screenId,
             displayId: id,
         };
+        this.updateDim();
         this.addPropEvent('display-id', data);
         ScreenManagerBase.addPropEvent('display-id', data);
+        this.fireResizeEvent();
     }
 
     set isShowing(isShowing: boolean) {

@@ -1,4 +1,4 @@
-import { showAppContextMenu } from '../others/AppContextMenuComp';
+import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
 import ScreenEffectManager from './managers/ScreenEffectManager';
 import {
     ScreenTransitionEffectType,
@@ -14,7 +14,7 @@ function openContextMenu(event: any, screenEffectManager: ScreenEffectManager) {
             const isSelected = effect === screenEffectManager.effectType;
             return {
                 menuTitle: effect,
-                onClick: () => {
+                onSelect: () => {
                     screenEffectManager.effectType =
                         effect as ScreenTransitionEffectType;
                 },

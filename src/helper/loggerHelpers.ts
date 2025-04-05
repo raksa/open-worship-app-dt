@@ -10,7 +10,9 @@ function callConsole(method: string, ...args: any[]) {
     if (!logLevelList.includes(method)) {
         return;
     }
-    const callable = (console as any)[method] as Function | undefined;
+    const callable = (console as any)[method] as
+        | ((...args: any) => void)
+        | undefined;
     callable?.call(console, ...args);
 }
 

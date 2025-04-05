@@ -9,7 +9,7 @@ import {
     useStateSettingBoolean,
     useStateSettingNumber,
 } from '../../helper/settingHelpers';
-import { showAppContextMenu } from '../../others/AppContextMenuComp';
+import { showAppContextMenu } from '../../context-menu/AppContextMenuComp';
 import ScreenPreviewerTools from './ScreenPreviewerTools';
 import { handleCtrlWheel } from '../../others/AppRangeComp';
 import {
@@ -27,13 +27,13 @@ function openContextMenu(event: any) {
     showAppContextMenu(event, [
         {
             menuTitle: 'Add New Screen',
-            onClick() {
+            onSelect() {
                 genNewScreenManagerBase();
             },
         },
         {
             menuTitle: 'Refresh Preview',
-            onClick() {
+            onSelect() {
                 getAllScreenManagers().forEach((screenManager) => {
                     screenManager.fireResizeEvent();
                 });

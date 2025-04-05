@@ -3,7 +3,7 @@ import {
     getMimetypeExtensions,
     isSupportedMimetype,
 } from '../../server/fileHelpers';
-import { showAppContextMenu } from '../../others/AppContextMenuComp';
+import { showAppContextMenu } from '../../context-menu/AppContextMenuComp';
 import CanvasItem from './CanvasItem';
 import CanvasController from './CanvasController';
 import { showSimpleToast } from '../../toast/toastHelpers';
@@ -27,7 +27,7 @@ export async function showCanvasContextMenu(
     showAppContextMenu(event, [
         {
             menuTitle: 'New',
-            onClick: () => {
+            onSelect: () => {
                 canvasController.addNewTextItem();
             },
         },
@@ -35,7 +35,7 @@ export async function showCanvasContextMenu(
             ? [
                   {
                       menuTitle: 'Paste',
-                      onClick: () => {
+                      onSelect: () => {
                           for (const copiedCanvasItem of copiedCanvasItems) {
                               canvasController.addNewItem(copiedCanvasItem);
                           }
@@ -45,7 +45,7 @@ export async function showCanvasContextMenu(
             : []),
         {
             menuTitle: 'Insert Medias',
-            onClick: () => {
+            onSelect: () => {
                 const imageExts = getMimetypeExtensions('image');
                 const videoExts = getMimetypeExtensions('video');
                 const filePaths = selectFiles([
@@ -69,7 +69,7 @@ export async function showCanvasContextMenu(
             ? [
                   {
                       menuTitle: 'Paste Image',
-                      onClick: async () => {
+                      onSelect: async () => {
                           const clipboardItems =
                               await navigator.clipboard.read();
                           for (const clipboardItem of clipboardItems) {
@@ -107,26 +107,26 @@ export function showCanvasItemContextMenu(
     showAppContextMenu(event, [
         {
             menuTitle: 'Copy',
-            onClick: () => {
+            onSelect: () => {
                 navigator.clipboard.writeText(canvasItem.clipboardSerialize());
                 showSimpleToast('Copied', 'Canvas item copied');
             },
         },
         {
             menuTitle: 'Duplicate',
-            onClick: () => {
+            onSelect: () => {
                 canvasController.duplicate(canvasItem);
             },
         },
         {
             menuTitle: 'Edit',
-            onClick: () => {
+            onSelect: () => {
                 handleCanvasItemEditing();
             },
         },
         {
             menuTitle: 'Delete',
-            onClick: () => {
+            onSelect: () => {
                 canvasController.deleteItem(canvasItem);
             },
         },

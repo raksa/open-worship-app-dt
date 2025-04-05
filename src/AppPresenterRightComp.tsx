@@ -16,8 +16,8 @@ export default function AppPresenterRightComp() {
             flexSizeName={resizeSettingNames.appPresenterRight}
             isHorizontal={false}
             flexSizeDefault={{
-                v1: ['1'],
-                v2: ['1'],
+                v1: ['4'],
+                v2: ['5'],
             }}
             dataInput={[
                 {

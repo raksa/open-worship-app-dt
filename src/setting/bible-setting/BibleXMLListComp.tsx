@@ -66,8 +66,7 @@ function PreviewBibleXMLInfoComp({
                     try {
                         setBibleInfo(JSON.parse(event.target.value));
                         setIsChanged(true);
-                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    } catch (error) {}
+                    } catch (_error) {}
                 }}
             />
         </div>

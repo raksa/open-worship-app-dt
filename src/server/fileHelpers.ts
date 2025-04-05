@@ -225,7 +225,10 @@ export type FileResultType = {
     filePath: string;
 };
 
-function fsFilePromise<T>(fn: Function, ...args: any): Promise<T> {
+function fsFilePromise<T>(
+    fn: (...args: any) => void,
+    ...args: any
+): Promise<T> {
     return new Promise<T>((resolve, reject) => {
         args = args || [];
         args.push(function (error: any, ...args1: any) {
@@ -277,7 +280,7 @@ function _fsWriteFile(filePath: string, data: string, options?: any) {
     );
 }
 
-export function fsMoveFile(oldPath: string, newPath: string) {
+export function fsMove(oldPath: string, newPath: string) {
     return fsFilePromise<void>(appProvider.fileUtils.rename, oldPath, newPath);
 }
 
@@ -294,13 +297,14 @@ export function fsCloneFile(src: File | string, dest: string) {
                     writeStream.write(chunk);
                 },
                 close() {
-                    resolve();
+                    writeStream.end();
                 },
                 abort() {
-                    reject(new Error('Error during copying file'));
+                    writeStream.destroy();
                 },
             });
-            src.stream().pipeTo(writableStream).then(resolve).catch(reject);
+            writeStream.once('close', resolve);
+            src.stream().pipeTo(writableStream).catch(reject);
         });
     }
     return fsFilePromise<void>(appProvider.fileUtils.copyFile, src, dest);
@@ -346,28 +350,19 @@ export async function fsList(dir: string) {
     if (!dir) {
         return [];
     }
-    try {
-        const list = await _fsReaddir(dir);
-        const fileList = [];
-        for (const file of list) {
-            try {
-                const filePath = pathJoin(dir, file);
-                const fileStat = await _fsStat(filePath);
-                fileList.push({
-                    isFile: fileStat.isFile(),
-                    isDirectory: fileStat.isDirectory(),
-                    name: file,
-                    filePath,
-                });
-            } catch (error) {
-                handleError(error);
-            }
-        }
-        return fileList;
-    } catch (error) {
-        handleError(error);
-        throw new Error('Error occurred during listing file');
+    const list = await _fsReaddir(dir);
+    const fileList = [];
+    for (const file of list) {
+        const filePath = pathJoin(dir, file);
+        const fileStat = await _fsStat(filePath);
+        fileList.push({
+            isFile: fileStat.isFile(),
+            isDirectory: fileStat.isDirectory(),
+            name: file,
+            filePath,
+        });
     }
+    return fileList;
 }
 
 export async function fsListFiles(dirPath: string) {
@@ -427,9 +422,13 @@ export function fsCreateDir(dirPath: string, isRecursive = true) {
     return _fsMkdir(dirPath, isRecursive);
 }
 
-export async function fsWriteFile(filePath: string, txt: string) {
+export async function fsWriteFile(
+    filePath: string,
+    txt: string,
+    encoding?: string,
+) {
     await _fsWriteFile(filePath, txt, {
-        encoding: 'utf8',
+        encoding: encoding ?? 'utf8',
         flag: 'w',
     });
     return filePath;
@@ -463,7 +462,7 @@ export async function fsRenameFile(
     } else if (await fsCheckFileExist(newFilePath)) {
         throw new Error('File exist');
     }
-    return fsMoveFile(oldFilePath, newFilePath);
+    return fsMove(oldFilePath, newFilePath);
 }
 
 export async function fsDeleteFile(filePath: string) {

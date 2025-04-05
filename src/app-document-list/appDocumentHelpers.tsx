@@ -10,7 +10,7 @@ import { handleError } from '../helper/errorHelpers';
 import {
     ContextMenuItemType,
     showAppContextMenu,
-} from '../others/AppContextMenuComp';
+} from '../context-menu/appContextMenuHelpers';
 import appProvider from '../server/appProvider';
 import {
     fsCheckFileExist,
@@ -86,14 +86,14 @@ export function showAppDocumentContextMenu(
     const menuItems: ContextMenuItemType[] = [
         {
             menuTitle: 'Copy',
-            onClick: async () => {
+            onSelect: async () => {
                 navigator.clipboard.writeText(slide.clipboardSerialize());
                 showSimpleToast('Copied', 'Slide is copied');
             },
         },
         {
             menuTitle: 'Duplicate',
-            onClick: () => {
+            onSelect: () => {
                 appDocument.duplicateSlide(slide);
             },
         },
@@ -101,7 +101,7 @@ export function showAppDocumentContextMenu(
             ? [
                   {
                       menuTitle: 'Quick Edit',
-                      onClick: () => {
+                      onSelect: () => {
                           if (appProvider.isPageEditor) {
                               AppDocumentListEventListener.selectAppDocumentItem(
                                   slide,
@@ -116,7 +116,7 @@ export function showAppDocumentContextMenu(
         ...menuItemOnScreens,
         {
             menuTitle: 'Delete',
-            onClick: () => {
+            onSelect: () => {
                 appDocument.deleteSlide(slide);
             },
         },
@@ -287,7 +287,7 @@ export async function selectSlide(event: any, currentFilePath: string) {
                 return {
                     menuTitle: pathBasename(filePath),
                     title: filePath,
-                    onClick: () => {
+                    onSelect: () => {
                         const appDocument = AppDocument.getInstance(filePath);
                         resolve(appDocument);
                     },

@@ -7,16 +7,17 @@ import { getSetting, setSetting } from '../helper/settingHelpers';
 import { handleError } from '../helper/errorHelpers';
 import { BibleItemType } from '../bible-list/bibleItemHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
-import {
-    ContextMenuItemType,
-    genContextMenuItemShortcutKey,
-} from '../others/AppContextMenuComp';
-import { showBibleOption } from '../bible-search/BibleSelectionComp';
-import { genFoundBibleItemContextMenu } from '../bible-search/RenderActionButtonsComp';
+import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
+import { showBibleOption } from '../bible-lookup/BibleSelectionComp';
+import { genFoundBibleItemContextMenu } from '../bible-lookup/RenderActionButtonsComp';
 import { closeCurrentEditingBibleItem } from './readBibleHelpers';
-import { attemptAddingHistory } from '../bible-search/InputHistoryComp';
+import {
+    applyPendingText,
+    attemptAddingHistory,
+} from '../bible-lookup/InputHistoryComp';
 import { EventMapper } from '../event/KeyboardEventListener';
 import { finalRenderer } from './BibleViewComp';
+import { genContextMenuItemShortcutKey } from '../context-menu/AppContextMenuComp';
 
 export type UpdateEventType = 'update';
 export const RESIZE_SETTING_NAME = 'bible-previewer-render';
@@ -447,14 +448,14 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
         return [
             {
                 menuTitle: 'Split Horizontal',
-                onClick: () => {
+                onSelect: () => {
                     this.addBibleItemLeft(bibleItem, bibleItem);
                 },
                 id: splitHorizontalId,
             },
             {
                 menuTitle: 'Split Horizontal To',
-                onClick: (event: any) => {
+                onSelect: (event: any) => {
                     showBibleOption(event, [], (newBibleKey: string) => {
                         const newBibleItem = bibleItem.clone();
                         newBibleItem.bibleKey = newBibleKey;
@@ -464,14 +465,14 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
             },
             {
                 menuTitle: 'Split Vertical',
-                onClick: () => {
+                onSelect: () => {
                     this.addBibleItemBottom(bibleItem, bibleItem);
                 },
                 id: splitVerticalId,
             },
             {
                 menuTitle: 'Split Vertical To',
-                onClick: (event: any) => {
+                onSelect: (event: any) => {
                     showBibleOption(event, [], (newBibleKey: string) => {
                         const newBibleItem = bibleItem.clone();
                         newBibleItem.bibleKey = newBibleKey;
@@ -493,13 +494,13 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
     }
 }
 
-let instance: SearchBibleItemViewController | null = null;
-export class SearchBibleItemViewController extends BibleItemViewController {
+let instance: LookupBibleItemViewController | null = null;
+export class LookupBibleItemViewController extends BibleItemViewController {
     private _nestedBibleItems: NestedBibleItemsType;
     selectedBibleItem: BibleItem;
     setInputText = (_: string) => {};
     setBibleKey = (_: string | null) => {};
-    onSearchAddBibleItem = () => {};
+    onLookupAddBibleItem = () => {};
 
     constructor() {
         super('');
@@ -543,7 +544,8 @@ export class SearchBibleItemViewController extends BibleItemViewController {
         return instance;
     }
 
-    async setSearchingContentFromBibleItem(bibleItem: BibleItem) {
+    async setLookupContentFromBibleItem(bibleItem: BibleItem) {
+        applyPendingText();
         this.setBibleKey(bibleItem.bibleKey);
         const bibleText = await bibleItem.toTitle();
         this.setInputText(bibleText);
@@ -556,13 +558,13 @@ export class SearchBibleItemViewController extends BibleItemViewController {
         const newBibleItem = bibleItem.clone(true);
         this.changeBibleItem(bibleItem, newBibleItem);
         this.selectedBibleItem = newBibleItem;
-        this.setSearchingContentFromBibleItem(newBibleItem);
+        this.setLookupContentFromBibleItem(newBibleItem);
     }
     genContextMenu(bibleItem: BibleItem): ContextMenuItemType[] {
         const isBibleItemSelected = this.checkIsBibleItemSelected(bibleItem);
         const menu1 = genFoundBibleItemContextMenu(
             bibleItem,
-            this.onSearchAddBibleItem,
+            this.onLookupAddBibleItem,
             isBibleItemSelected,
         );
         const menus2 = super.genContextMenu(bibleItem);
@@ -570,7 +572,7 @@ export class SearchBibleItemViewController extends BibleItemViewController {
             menus2.push({
                 menuTitle: 'Edit',
                 title: 'Double click on header to edit',
-                onClick: () => {
+                onSelect: () => {
                     this.editBibleItem(bibleItem);
                 },
             });
@@ -602,7 +604,7 @@ export class SearchBibleItemViewController extends BibleItemViewController {
                       otherChild: isBibleItemSelected
                           ? genContextMenuItemShortcutKey(closeEventMapper)
                           : undefined,
-                      onClick: () => {
+                      onSelect: () => {
                           if (bibleItem === this.selectedBibleItem) {
                               closeCurrentEditingBibleItem();
                           } else {

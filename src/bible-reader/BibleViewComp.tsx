@@ -1,7 +1,7 @@
 import './BibleViewComp.scss';
 
 import BibleItem from '../bible-list/BibleItem';
-import { showAppContextMenu } from '../others/AppContextMenuComp';
+import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
 import { useBibleItemViewControllerContext } from './BibleItemViewController';
 import {
     applyDragged,

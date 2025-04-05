@@ -1,10 +1,10 @@
-import BibleSearchPopupComp from '../bible-search/BibleSearchPopupComp';
-import { useBibleSearchShowingContext } from '../others/commonButtons';
+import BibleLookupPopupComp from '../bible-lookup/BibleLookupPopupComp';
+import { useBibleLookupShowingContext } from '../others/commonButtons';
 
 export default function AppPopupWindowsComp() {
-    const { isShowing: isBibleSearchShowing } = useBibleSearchShowingContext();
-    if (isBibleSearchShowing) {
-        return <BibleSearchPopupComp />;
+    const { isShowing: isBibleLookupShowing } = useBibleLookupShowingContext();
+    if (isBibleLookupShowing) {
+        return <BibleLookupPopupComp />;
     }
     return null;
 }

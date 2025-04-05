@@ -1,6 +1,6 @@
 import Slide, { SlideType } from './Slide';
 import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
-import { showAppContextMenu } from '../others/AppContextMenuComp';
+import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
 import { showAppDocumentContextMenu } from './appDocumentHelpers';
 import { AnyObjectType, checkIsSameValues, toMaxId } from '../helper/helpers';
 import { MimetypeNameType } from '../server/fileHelpers';
@@ -292,7 +292,7 @@ export default class AppDocument
         showAppContextMenu(event, [
             {
                 menuTitle: 'New Slide',
-                onClick: () => {
+                onSelect: () => {
                     this.addNewSlide();
                 },
             },
@@ -300,7 +300,7 @@ export default class AppDocument
                 ? [
                       {
                           menuTitle: 'Paste',
-                          onClick: () => {
+                          onSelect: () => {
                               for (const copiedSlide of copiedSlides) {
                                   this.addSlide(copiedSlide);
                               }

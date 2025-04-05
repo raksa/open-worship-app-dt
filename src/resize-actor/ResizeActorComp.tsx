@@ -66,7 +66,10 @@ export default function ResizeActorComp({
 
     return (
         <div
-            className={`w-100 h-100 flex ${isHorizontal ? 'h' : 'v'} overflow-hidden`}
+            className={
+                `w-100 h-100 flex ${isHorizontal ? 'h' : 'v'} ` +
+                'overflow-hidden'
+            }
         >
             {dataInput.map((data, i) => {
                 const { key, className } = data;
@@ -79,7 +82,7 @@ export default function ResizeActorComp({
                         setFlexSize={setFlexSize1}
                         restoreFlexSize={restoreFlexSize}
                         defaultFlexSize={flexSizeDefault}
-                        fSizeName={flexSizeName}
+                        flexSizeName={flexSizeName}
                         dataInput={dataInput}
                         isDisableQuickResize={!!isDisableQuickResize}
                         isHorizontal={isHorizontal}

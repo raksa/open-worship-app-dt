@@ -18,7 +18,7 @@ import { showSimpleToast } from '../toast/toastHelpers';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import DirSource from '../helper/DirSource';
 import FileSource from '../helper/FileSource';
-import { showAppContextMenu } from '../others/AppContextMenuComp';
+import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
 import { addExtension } from '../server/fileHelpers';
 import appProvider from '../server/appProvider';
 import { VerseList } from '../helper/bible-helpers/BibleDataReader';
@@ -128,7 +128,7 @@ export async function genInputText(
 
 export async function updateBibleItem(bibleItem: BibleItem, data: string) {
     const messageTitle = 'Saving Bible Item Failed';
-    const oldBibleItem = BibleItem.parseBibleSearchData(data);
+    const oldBibleItem = BibleItem.parseBibleLookupData(data);
     if (!oldBibleItem?.filePath) {
         showSimpleToast(messageTitle, 'Invalid bible item data');
         return null;
@@ -138,7 +138,7 @@ export async function updateBibleItem(bibleItem: BibleItem, data: string) {
         showSimpleToast(messageTitle, 'Fail to read bible file');
         return null;
     }
-    const isSaved = await BibleItem.saveFromBibleSearch(
+    const isSaved = await BibleItem.saveFromBibleLookup(
         bible,
         oldBibleItem,
         bibleItem,
@@ -223,7 +223,7 @@ export async function moveBibleItemTo(
             targetNames.map((name) => {
                 return {
                     menuTitle: name,
-                    onClick: async () => {
+                    onSelect: async () => {
                         const bibleFileSource = FileSource.getInstance(
                             bible.filePath,
                         );

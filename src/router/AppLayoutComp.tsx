@@ -9,15 +9,15 @@ import {
     readerTab,
 } from './routeHelpers';
 import {
-    BibleSearchButtonComp,
-    BibleSearchShowingContext,
+    BibleLookupButtonComp,
+    BibleLookupShowingContext,
     SettingButtonComp,
 } from '../others/commonButtons';
 import { tran } from '../lang';
 import appProvider from '../server/appProvider';
 import { MultiContextRender } from '../helper/MultiContextRender';
 import AppPopupWindowsComp from '../app-modal/AppPopupWindowsComp';
-import AppContextMenuComp from '../others/AppContextMenuComp';
+import AppContextMenuComp from '../context-menu/AppContextMenuComp';
 import HandleAlertComp from '../popup-widget/HandleAlertComp';
 import ToastComp from '../toast/ToastComp';
 import AppDocument from '../app-document-list/AppDocument';
@@ -173,17 +173,17 @@ export default function AppLayoutComp({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const [isBibleSearchShowing, setIsBibleSearchShowing] = useState(false);
+    const [isBibleLookupShowing, setIsBibleLookupShowing] = useState(false);
     const { varyAppDocumentContextValue, editingSlideContextValue } =
         useAppDocumentContextValues();
     return (
         <MultiContextRender
             contexts={[
                 {
-                    context: BibleSearchShowingContext,
+                    context: BibleLookupShowingContext,
                     value: {
-                        isShowing: isBibleSearchShowing,
-                        setIsShowing: setIsBibleSearchShowing,
+                        isShowing: isBibleLookupShowing,
+                        setIsShowing: setIsBibleLookupShowing,
                     },
                 },
                 {
@@ -205,7 +205,7 @@ export default function AppLayoutComp({
                         ' justify-content-center flex-fill'
                     }
                 >
-                    <BibleSearchButtonComp />
+                    <BibleLookupButtonComp />
                 </div>
                 <div className="highlight-border-bottom">
                     <SettingButtonComp />

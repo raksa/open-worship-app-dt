@@ -231,21 +231,21 @@ export default class BibleItem
         }
         return null;
     }
-    static genBibleSearchData(bibleItem: BibleItem) {
+    static genBibleLookupData(bibleItem: BibleItem) {
         if (bibleItem.filePath) {
             const json = bibleItem.toJson() as any;
             json.filePath = bibleItem.filePath;
             return JSON.stringify(json);
         }
     }
-    static parseBibleSearchData(data?: string) {
+    static parseBibleLookupData(data?: string) {
         if (!data) {
             return null;
         }
         const json = JSON.parse(data);
         return BibleItem.fromJson(json, json.filePath);
     }
-    static saveFromBibleSearch(
+    static saveFromBibleLookup(
         bible: ItemSourceInfBasic<BibleItem> & DocumentInf,
         oldBibleItem: BibleItem,
         newBibleItem: BibleItem,

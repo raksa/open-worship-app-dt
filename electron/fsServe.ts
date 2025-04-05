@@ -39,8 +39,7 @@ function toFileFullPath(filePath: string) {
         if (result.isFile()) {
             return filePath;
         }
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {}
+    } catch (_error) {}
     return null;
 }
 

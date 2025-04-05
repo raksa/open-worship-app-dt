@@ -7,7 +7,7 @@ import { getIsShowingVaryAppDocumentPreviewer } from '../app-document-presenter/
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
-import { ContextMenuItemType } from '../others/AppContextMenuComp';
+import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 import { editorTab, goToPath } from '../router/routeHelpers';
 import { previewPdf } from '../server/appHelpers';
 import { removePdfImagesPreview } from '../helper/pdfHelpers';
@@ -32,13 +32,13 @@ function genContextMenuItems(
         return [
             {
                 menuTitle: 'Preview PDF',
-                onClick: () => {
+                onSelect: () => {
                     previewPdf(varyAppDocument.fileSource.src);
                 },
             },
             {
                 menuTitle: 'Refresh PDF Images',
-                onClick: async () => {
+                onSelect: async () => {
                     await removePdfImagesPreview(varyAppDocument.filePath);
                     varyAppDocument.fileSource.fireUpdateEvent();
                 },
@@ -48,7 +48,7 @@ function genContextMenuItems(
     return [
         {
             menuTitle: 'Edit',
-            onClick: () => {
+            onSelect: () => {
                 if (varyAppDocument) {
                     setSelectedSlide(varyAppDocument);
                     goToPath(editorTab.routePath);
@@ -141,6 +141,18 @@ export default function AppDocumentFileComp({
         [varyAppDocument],
         filePath,
     );
+    const handleRenaming = async (newFileSource: FileSource) => {
+        await EditingHistoryManager.moveFilePath(
+            filePath,
+            newFileSource.filePath,
+        );
+        if (isSelected) {
+            const newVaryAppDocument = varyAppDocumentFromFilePath(
+                newFileSource.filePath,
+            );
+            setSelectedAppDocument(newVaryAppDocument);
+        }
+    };
 
     return (
         <FileItemHandlerComp
@@ -157,6 +169,7 @@ export default function AppDocumentFileComp({
             )}
             onTrashed={handleSlideDeleting}
             isSelected={isSelected}
+            renamedCallback={handleRenaming}
         />
     );
 }

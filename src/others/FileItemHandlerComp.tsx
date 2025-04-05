@@ -1,7 +1,7 @@
 import { lazy, useState } from 'react';
 
 import FileReadErrorComp from './FileReadErrorComp';
-import { ContextMenuItemType, showAppContextMenu } from './AppContextMenuComp';
+import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
 import { copyToClipboard, showExplorer, trashFile } from '../server/appHelpers';
 import FileSource from '../helper/FileSource';
 import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
@@ -10,6 +10,7 @@ import { useFileSourceRefreshEvents } from '../helper/dirSourceHelpers';
 import { showAppConfirm } from '../popup-widget/popupWidgetHelpers';
 import ItemColorNoteComp from './ItemColorNoteComp';
 import { menuTitleRealFile } from '../helper/helpers';
+import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 const LazyRenderRenaming = lazy(() => {
     return import('./RenderRenamingComp');
 });
@@ -18,13 +19,13 @@ export const genCommonMenu = (filePath: string): ContextMenuItemType[] => {
     return [
         {
             menuTitle: 'Copy Path to Clipboard',
-            onClick: () => {
+            onSelect: () => {
                 copyToClipboard(filePath);
             },
         },
         {
             menuTitle: menuTitleRealFile,
-            onClick: () => {
+            onSelect: () => {
                 showExplorer(filePath);
             },
         },
@@ -39,19 +40,19 @@ function genContextMenu(
     return [
         {
             menuTitle: 'Duplicate',
-            onClick: () => {
+            onSelect: () => {
                 FileSource.getInstance(filePath).duplicate();
             },
         },
         {
             menuTitle: 'Rename',
-            onClick: () => {
+            onSelect: () => {
                 setIsRenaming(true);
             },
         },
         {
             menuTitle: 'Reload',
-            onClick: () => {
+            onSelect: () => {
                 reload();
             },
         },
@@ -65,7 +66,7 @@ export function genTrashContextMenu(
     return [
         {
             menuTitle: 'Move to Trash',
-            onClick: async () => {
+            onSelect: async () => {
                 const fileSource = FileSource.getInstance(filePath);
                 const isOk = await showAppConfirm(
                     'Moving File to Trash',
@@ -90,7 +91,7 @@ export function genShowOnScreensContextMenu(
     return [
         {
             menuTitle: 'Show on Screens',
-            onClick,
+            onSelect: onClick,
         },
     ];
 }
@@ -110,6 +111,7 @@ export default function FileItemHandlerComp({
     isDisabledColorNote,
     userClassName,
     isSelected,
+    renamedCallback,
 }: Readonly<{
     data: AppDocumentSourceAbs | null | undefined;
     reload: () => void;
@@ -125,6 +127,7 @@ export default function FileItemHandlerComp({
     isDisabledColorNote?: boolean;
     userClassName?: string;
     isSelected: boolean;
+    renamedCallback?: (newFileSource: FileSource) => void;
 }>) {
     const [isRenaming, setIsRenaming] = useState(false);
     useFileSourceRefreshEvents(['select']);
@@ -189,6 +192,7 @@ export default function FileItemHandlerComp({
                 <LazyRenderRenaming
                     setIsRenaming={setIsRenaming}
                     filePath={filePath}
+                    renamedCallback={renamedCallback}
                 />
             ) : (
                 <>

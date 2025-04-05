@@ -123,6 +123,9 @@ export default class FileSource
     }
 
     async readFileData() {
+        if ((await fsCheckFileExist(this.filePath)) === false) {
+            return null;
+        }
         return await FileSource.readFileData(this.filePath);
     }
 
@@ -132,8 +135,7 @@ export default class FileSource
             if (dataText !== null && isValidJson(dataText)) {
                 return JSON.parse(dataText) as AnyObjectType;
             }
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (error) {}
+        } catch (_error) {}
         return null;
     }
 
@@ -210,7 +212,7 @@ export default class FileSource
 
     async renameTo(newName: string) {
         if (newName === this.name) {
-            return false;
+            return null;
         }
         try {
             await fsRenameFile(
@@ -218,7 +220,11 @@ export default class FileSource
                 this.fileFullName,
                 newName + this.extension,
             );
-            return true;
+            const newFilePath = pathJoin(
+                this.basePath,
+                newName + this.extension,
+            );
+            return FileSource.getInstance(newFilePath);
         } catch (error: any) {
             handleError(error);
             showSimpleToast(
@@ -226,7 +232,7 @@ export default class FileSource
                 `Unable to rename file: ${error.message}`,
             );
         }
-        return false;
+        return null;
     }
 
     private async _duplicate() {
