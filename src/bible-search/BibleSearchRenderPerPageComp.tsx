@@ -39,7 +39,7 @@ function RenderFoundItemComp({
     return (
         <div
             className="w-100 app-border-white-round my-2 p-2 pointer"
-            title={text}
+            title="shift + click to append"
             onClick={(event) => {
                 handleClicking(event, bibleItem);
             }}
