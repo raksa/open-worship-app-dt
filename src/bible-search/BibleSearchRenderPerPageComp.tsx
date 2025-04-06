@@ -1,13 +1,57 @@
 import BibleItem from '../bible-list/BibleItem';
 import { useBibleItemRenderTitle } from '../bible-list/bibleItemHelpers';
 import { LookupBibleItemViewController } from '../bible-reader/BibleItemViewController';
+import { useAppAsync } from '../helper/helpers';
+import { useBibleSearchController } from './BibleSearchController';
 import { BibleSearchResultType, breakItem } from './bibleSearchHelpers';
 
 export const APP_FOUND_PAGE_CLASS = 'app-found-page';
 
 function BibleViewTitleComp({ bibleItem }: Readonly<{ bibleItem: BibleItem }>) {
     const title = useBibleItemRenderTitle(bibleItem);
-    return <span className="title app-border-white-round m-1 px-1">{title}</span>;
+    return (
+        <span className="title app-border-white-round m-1 px-1">{title}</span>
+    );
+}
+
+function RenderFoundItemComp({
+    searchText,
+    text,
+    bibleKey,
+    handleClicking,
+}: Readonly<{
+    searchText: string;
+    text: string;
+    bibleKey: string;
+    handleClicking: (event: any, bibleItem: BibleItem) => void;
+}>) {
+    const bibleSearchController = useBibleSearchController();
+    const data = useAppAsync(
+        breakItem(bibleSearchController.locale, searchText, text, bibleKey),
+    );
+    if (data === undefined) {
+        return <div>Loading...</div>;
+    }
+    if (data === null) {
+        return <div>Fail to get data</div>;
+    }
+    const { newItem, bibleItem } = data;
+    return (
+        <div
+            className="w-100 app-border-white-round my-2 p-2 pointer"
+            title={text}
+            onClick={(event) => {
+                handleClicking(event, bibleItem);
+            }}
+        >
+            <BibleViewTitleComp bibleItem={bibleItem} />
+            <span
+                dangerouslySetInnerHTML={{
+                    __html: newItem,
+                }}
+            />
+        </div>
+    );
 }
 
 export default function BibleSearchRenderPerPageComp({
@@ -37,27 +81,14 @@ export default function BibleSearchRenderPerPageComp({
             </div>
             <div className="w-100">
                 {data.content.map(({ text, uniqueKey }) => {
-                    const { newItem, bibleItem } = breakItem(
-                        searchText,
-                        text,
-                        bibleKey,
-                    );
                     return (
-                        <div
-                            className="w-100 app-border-white-round my-2 p-2 pointer"
+                        <RenderFoundItemComp
                             key={uniqueKey}
-                            title={text}
-                            onClick={(event) => {
-                                handleClicking(event, bibleItem);
-                            }}
-                        >
-                            <BibleViewTitleComp bibleItem={bibleItem} />
-                            <span
-                                dangerouslySetInnerHTML={{
-                                    __html: newItem,
-                                }}
-                            />
-                        </div>
+                            searchText={searchText}
+                            text={text}
+                            bibleKey={bibleKey}
+                            handleClicking={handleClicking}
+                        />
                     );
                 })}
             </div>

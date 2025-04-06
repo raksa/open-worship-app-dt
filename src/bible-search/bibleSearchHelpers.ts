@@ -3,6 +3,7 @@ import { handleError } from '../helper/errorHelpers';
 import * as loggerHelpers from '../helper/loggerHelpers';
 import BibleItem from '../bible-list/BibleItem';
 import { BibleItemType } from '../bible-list/bibleItemHelpers';
+import { LocaleType, sanitizeSearchingText } from '../lang';
 
 export type SelectedBookKeyType = {
     bookKey: string;
@@ -85,14 +86,23 @@ export function calcPaging(data: BibleSearchResultType | null): PagingDataTye {
     return { pages, currentPage, pageSize, perPage };
 }
 
-export function breakItem(text: string, item: string, bibleKey: string) {
-    const indexText = item.toLowerCase().indexOf(text.toLowerCase());
+export async function breakItem(
+    locale: LocaleType,
+    text: string,
+    item: string,
+    bibleKey: string,
+): Promise<{
+    newItem: string;
+    bibleItem: BibleItem;
+    kjvTitle: string;
+}> {
+    const sanitizedSearchText =
+        (await sanitizeSearchingText(locale, text)) ?? text;
     const [bookKeyChapter, verse, ...newItems] = item.split(':');
     let newItem = newItems.join(':');
-    if (indexText > 10) {
-        newItem = item.substring(indexText - 10, indexText + 20);
+    for (const subText of sanitizedSearchText.split(' ')) {
         newItem = newItem.replace(
-            new RegExp(`(${text})`, 'ig'),
+            new RegExp(`(${subText})`, 'ig'),
             '<span style="color:red">$1</span>',
         );
     }

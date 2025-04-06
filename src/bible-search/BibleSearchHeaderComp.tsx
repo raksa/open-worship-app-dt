@@ -22,8 +22,7 @@ export default function BibleSearchHeaderComp({
     const keyUpHandling = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
             if (bibleSearchController.isAddedByEnter) {
-                bibleSearchController.isAddedByEnter =
-                    false;
+                bibleSearchController.isAddedByEnter = false;
                 return;
             }
             event.preventDefault();

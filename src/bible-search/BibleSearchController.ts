@@ -122,6 +122,8 @@ class DatabaseSearchHandler {
         this.database = database;
     }
     async doSearch(bibleKey: string, searchData: BibleSearchForType) {
+        // TODO: use dictionary to break text text to words.
+        // e.g: Khmer language has no space between words so we need to break it to words
         const { bookKey, isFresh, text } = searchData;
         if (!text) {
             return null;

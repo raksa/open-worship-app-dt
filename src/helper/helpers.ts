@@ -338,3 +338,25 @@ export function cumulativeOffset(element: HTMLElement | null) {
     } while (element);
     return { top, left };
 }
+
+export function useAppAsync<T>(
+    promise: Promise<T>,
+    onError?: (error: any) => void,
+) {
+    const [state, setState] = useState<T | null | undefined>(undefined);
+    useAppEffect(() => {
+        if (state !== undefined) {
+            return;
+        }
+        promise
+            .then((data) => {
+                setState(data);
+            })
+            .catch((error) => {
+                onError?.(error);
+                setState(null);
+            });
+    }, [state, promise]);
+
+    return state;
+}
