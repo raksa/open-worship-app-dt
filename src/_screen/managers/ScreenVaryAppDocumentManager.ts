@@ -3,7 +3,7 @@ import { CSSProperties } from 'react';
 import { DroppedDataType } from '../../helper/DragInf';
 import { getSetting, setSetting } from '../../helper/settingHelpers';
 import { SlideType } from '../../app-document-list/Slide';
-import { genPdfSlide } from '../../app-document-presenter/items/PdfSlideRenderContentComp';
+import { genPdfSlide } from '../../app-document-presenter/items/PdfSlideRenderComp';
 import { genHtmlSlide } from '../../app-document-presenter/items/SlideRendererComp';
 import appProviderScreen from '../appProviderScreen';
 import {

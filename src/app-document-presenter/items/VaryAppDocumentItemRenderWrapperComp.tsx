@@ -2,7 +2,7 @@ import { Fragment } from 'react';
 
 import SlideRenderComp from './SlideRenderComp';
 import SlideDragReceiverComp from './SlideDragReceiverComp';
-import PdfAppDocumentItemRenderComp from './PdfSlideRenderContentComp';
+import PdfAppDocumentItemRenderComp from './PdfSlideRenderComp';
 import { handleAppDocumentItemSelecting } from './varyAppDocumentHelpers';
 import {
     useSelectedEditingSlideSetterContext,

@@ -7,7 +7,7 @@ import { getHTMLChild } from '../../helper/helpers';
 import { handleDragStart } from '../../helper/dragHelpers';
 import PdfSlide from '../../app-document-list/PdfSlide';
 
-export function PdfSlideRenderContentComp({
+function PdfSlideRenderContentComp({
     pdfImageSrc,
     isFullWidth = false,
 }: Readonly<{
@@ -65,19 +65,21 @@ export default function PdfSlideRenderComp({
     useScreenVaryAppDocumentManagerEvents(['update']);
     const { activeCN, presenterCN } = toClassNameHighlight(pdfSlide);
     const pdfPreviewSrc = pdfSlide.pdfPreviewSrc;
+    const dragStartHandling = (event: any) => {
+        handleDragStart(event, pdfSlide);
+        onDragStart(event);
+    };
+    const dragEndHandling = (event: any) => {
+        onDragEnd(event);
+    };
     return (
         <div
             className={`data-vary-app-document-item card pointer ${activeCN} ${presenterCN}`}
             style={{ width: `${width}px` }}
             data-vary-app-document-item-id={pdfSlide.id}
             draggable
-            onDragStart={(event) => {
-                handleDragStart(event, pdfSlide);
-                onDragStart(event);
-            }}
-            onDragEnd={(event) => {
-                onDragEnd(event);
-            }}
+            onDragStart={dragStartHandling}
+            onDragEnd={dragEndHandling}
             onClick={onClick}
             onContextMenu={onContextMenu}
         >

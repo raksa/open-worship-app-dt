@@ -1,6 +1,5 @@
 import './VaryAppDocumentItem.scss';
 
-import { ContextMenuEventType } from '../../context-menu/appContextMenuHelpers';
 import Slide from '../../app-document-list/Slide';
 import SlideRendererHtmlComp from './SlideRendererHtmlComp';
 import ScreenVaryAppDocumentManager from '../../_screen/managers/ScreenVaryAppDocumentManager';
@@ -115,7 +114,7 @@ export default function SlideRenderComp({
     width: number;
     index: number;
     onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
-    onContextMenu: (event: ContextMenuEventType) => void;
+    onContextMenu: (event: any) => void;
     onCopy: () => void;
     onDragStart: (event: React.DragEvent<HTMLDivElement>) => void;
     onDragEnd: (event: React.DragEvent<HTMLDivElement>) => void;
@@ -127,25 +126,23 @@ export default function SlideRenderComp({
         slide,
         selectedSlide,
     );
+    const dragStartHandling = (event: any) => {
+        handleDragStart(event, slide);
+        onDragStart(event);
+    };
+    const dragEndHandling = (event: any) => {
+        onDragEnd(event);
+    };
     return (
         <div
             className={`data-vary-app-document-item card pointer ${activeCN} ${presenterCN}`}
+            style={{ width: `${width}px` }}
             data-vary-app-document-item-id={slide.id}
             draggable
-            onDragStart={(event) => {
-                handleDragStart(event, slide);
-                onDragStart(event);
-            }}
-            onDragEnd={(event) => {
-                onDragEnd(event);
-            }}
-            style={{
-                width: `${width}px`,
-            }}
+            onDragStart={dragStartHandling}
+            onDragEnd={dragEndHandling}
             onClick={onClick}
-            onContextMenu={(event) => {
-                onContextMenu(event as any);
-            }}
+            onContextMenu={onContextMenu}
             onCopy={onCopy}
         >
             <div className="card-header d-flex" style={{ height: '35px' }}>
