@@ -11,7 +11,11 @@ import {
     showVaryAppDocumentItemInViewport,
 } from './varyAppDocumentHelpers';
 import VaryAppDocumentItemRenderWrapperComp from './VaryAppDocumentItemRenderWrapperComp';
-import { useAppEffect, useAppStateAsync } from '../../helper/debuggerHelpers';
+import {
+    useAppEffect,
+    useAppEffectAsync,
+    useAppStateAsync,
+} from '../../helper/debuggerHelpers';
 import { useFileSourceEvents } from '../../helper/dirSourceHelpers';
 import LoadingComp from '../../others/LoadingComp';
 import {
@@ -31,9 +35,19 @@ function useAppDocumentItems() {
             [selectedAppDocument],
         );
 
-    const startLoading = async () => {
-        const newVaryAppDocumentItems = await selectedAppDocument.getItems();
-        setVaryAppDocumentItems(newVaryAppDocumentItems);
+    useAppEffectAsync(
+        async (context) => {
+            if (varyAppDocumentItems === undefined) {
+                const newVaryAppDocumentItems =
+                    await selectedAppDocument.getItems();
+                context.setVaryAppDocumentItems(newVaryAppDocumentItems);
+            }
+        },
+        [varyAppDocumentItems],
+        { setVaryAppDocumentItems },
+    );
+    const startLoading = () => {
+        setVaryAppDocumentItems(undefined);
     };
 
     useFileSourceEvents(

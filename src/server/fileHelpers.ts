@@ -354,13 +354,17 @@ export async function fsList(dir: string) {
     const fileList = [];
     for (const file of list) {
         const filePath = pathJoin(dir, file);
-        const fileStat = await _fsStat(filePath);
-        fileList.push({
-            isFile: fileStat.isFile(),
-            isDirectory: fileStat.isDirectory(),
-            name: file,
-            filePath,
-        });
+        try {
+            const fileStat = await _fsStat(filePath);
+            fileList.push({
+                isFile: fileStat.isFile(),
+                isDirectory: fileStat.isDirectory(),
+                name: file,
+                filePath,
+            });
+        } catch (error) {
+            handleError(error);
+        }
     }
     return fileList;
 }

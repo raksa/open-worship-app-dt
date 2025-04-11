@@ -339,7 +339,7 @@ export function cumulativeOffset(element: HTMLElement | null) {
     return { top, left };
 }
 
-export function useAppAsync<T>(
+export function useAppPromise<T>(
     promise: Promise<T>,
     onError?: (error: any) => void,
 ) {
