@@ -13,6 +13,7 @@ import PdfSlide from '../../app-document-list/PdfSlide';
 import AppDocument from '../../app-document-list/AppDocument';
 import { showSimpleToast } from '../../toast/toastHelpers';
 import Slide from '../../app-document-list/Slide';
+import { ContextMenuItemType } from '../../context-menu/appContextMenuHelpers';
 
 export default function VaryAppDocumentItemRenderWrapperComp({
     draggingIndex,
@@ -47,10 +48,14 @@ export default function VaryAppDocumentItemRenderWrapperComp({
             },
         );
     };
-    const handleContextMenuOpening = (event: any) => {
+    const handleContextMenuOpening = (
+        event: any,
+        extraMenuItems: ContextMenuItemType[],
+    ) => {
         selectedAppDocument.showItemContextMenu(
             event,
             varyAppDocumentItem as any,
+            extraMenuItems,
         );
     };
     const handleCopying = async () => {

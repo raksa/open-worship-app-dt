@@ -4,6 +4,7 @@ import { getHTMLChild } from '../../helper/helpers';
 import { handleDragStart } from '../../helper/dragHelpers';
 import PdfSlide from '../../app-document-list/PdfSlide';
 import ItemRenderComp, { RenderInfoComp } from './ItemRenderComp';
+import { ContextMenuItemType } from '../../context-menu/appContextMenuHelpers';
 
 function PdfSlideRenderContentComp({
     pdfImageSrc,
@@ -56,7 +57,7 @@ export default function PdfSlideRenderComp({
     width: number;
     index: number;
     onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
-    onContextMenu: (event: any) => void;
+    onContextMenu: (event: any, extraMenuItems: ContextMenuItemType[]) => void;
     onDragStart: (event: React.DragEvent<HTMLDivElement>) => void;
     onDragEnd: (event: React.DragEvent<HTMLDivElement>) => void;
 }>) {
@@ -79,7 +80,13 @@ export default function PdfSlideRenderComp({
             onContextMenu={onContextMenu}
             onClick={onClick}
         >
-            <div className="card-header d-flex" style={{ height: '35px' }}>
+            <div
+                className="card-header d-flex"
+                style={{
+                    height: '35px',
+                    backgroundColor: 'var(--bs-gray-800)',
+                }}
+            >
                 <i className="bi bi-filetype-pdf" />
                 <RenderInfoComp
                     viewIndex={index + 1}

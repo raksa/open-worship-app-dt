@@ -6,7 +6,7 @@ import ShowHideScreen from './ShowHideScreen';
 import MiniScreenClearControlComp from './MiniScreenClearControlComp';
 import DisplayControl from './DisplayControl';
 import ScreenEffectControlComp from './ScreenEffectControlComp';
-import { handleDrop } from '../../helper/dragHelpers';
+import { extractDropData } from '../../helper/dragHelpers';
 import { openContextMenu } from './screenPreviewerHelpers';
 import ItemColorNoteComp from '../../others/ItemColorNoteComp';
 import {
@@ -96,7 +96,7 @@ export default function ScreenPreviewerItemComp({
             }}
             onDrop={async (event) => {
                 event.currentTarget.classList.remove('receiving-child');
-                const droppedData = await handleDrop(event);
+                const droppedData = await extractDropData(event);
                 if (droppedData === null) {
                     return;
                 }

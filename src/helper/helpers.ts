@@ -360,3 +360,11 @@ export function useAppPromise<T>(
 
     return state;
 }
+
+export function changeDragEventStyle(
+    event: React.DragEvent<HTMLDivElement>,
+    key: string,
+    value: string,
+) {
+    (event.currentTarget.style as any)[key] = value;
+}

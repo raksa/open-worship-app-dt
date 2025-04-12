@@ -3,10 +3,14 @@ import './VaryAppDocumentItem.scss';
 import Slide from '../../app-document-list/Slide';
 import ScreenVaryAppDocumentManager from '../../_screen/managers/ScreenVaryAppDocumentManager';
 import { useScreenVaryAppDocumentManagerEvents } from '../../_screen/managers/screenEventHelpers';
-import { handleDragStart } from '../../helper/dragHelpers';
+import { extractDropData, handleDragStart } from '../../helper/dragHelpers';
 import ShowingScreenIcon from '../../_screen/preview/ShowingScreenIcon';
 import appProvider from '../../server/appProvider';
 import { VaryAppDocumentItemType } from '../../app-document-list/appDocumentHelpers';
+import { changeDragEventStyle, useAppPromise } from '../../helper/helpers';
+import { DragTypeEnum, DroppedDataType } from '../../helper/DragInf';
+import { attachBackgroundManager } from '../../others/AttachBackgroundManager';
+import { ContextMenuItemType } from '../../context-menu/appContextMenuHelpers';
 
 function RenderScreenInfoComp({
     varyAppDocumentItem,
@@ -95,6 +99,52 @@ export function toClassNameHighlight(
     };
 }
 
+async function onDropHandling(
+    event: React.DragEvent<HTMLDivElement>,
+    item: VaryAppDocumentItemType,
+) {
+    event.preventDefault();
+    changeDragEventStyle(event, 'opacity', '1');
+    const droppedData = await extractDropData(event);
+    if (
+        droppedData !== null &&
+        [
+            DragTypeEnum.BACKGROUND_COLOR,
+            DragTypeEnum.BACKGROUND_IMAGE,
+            DragTypeEnum.BACKGROUND_VIDEO,
+        ].includes(droppedData.type)
+    ) {
+        await attachBackgroundManager.attachDroppedBackground(
+            droppedData,
+            item.filePath,
+            item.id.toString(),
+        );
+    }
+}
+
+function genAttachedBackgroundStyle(
+    droppedData: DroppedDataType | null | undefined,
+) {
+    if (droppedData === null || droppedData === undefined) {
+        return {};
+    }
+    const style: React.CSSProperties = {
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+    };
+    if (droppedData.type === DragTypeEnum.BACKGROUND_COLOR) {
+        style.backgroundColor = droppedData.item;
+    } else if (droppedData.type === DragTypeEnum.BACKGROUND_IMAGE) {
+        style.backgroundImage = `url(${droppedData.item.src})`;
+    } else if (droppedData.type === DragTypeEnum.BACKGROUND_VIDEO) {
+        // style.backgroundImage = `url(${droppedData.item.src})`;
+        // TODO: implement video background
+        style.backgroundImage =
+            'radial-gradient(circle at top right, #ff8a00, red, #e52e71)';
+    }
+    return style;
+}
+
 export default function ItemRenderComp({
     item,
     width,
@@ -110,7 +160,7 @@ export default function ItemRenderComp({
     width: number;
     index: number;
     onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
-    onContextMenu: (event: any) => void;
+    onContextMenu: (event: any, extraMenuItems: ContextMenuItemType[]) => void;
     onCopy?: () => void;
     onDragStart: (event: React.DragEvent<HTMLDivElement>) => void;
     onDragEnd: (event: React.DragEvent<HTMLDivElement>) => void;
@@ -119,23 +169,58 @@ export default function ItemRenderComp({
 }>) {
     useScreenVaryAppDocumentManagerEvents(['update']);
     const { activeCN, presenterCN } = toClassNameHighlight(item, selectedItem);
-    const dragStartHandling = (event: any) => {
-        handleDragStart(event, item);
-        onDragStart(event);
-    };
-    const dragEndHandling = (event: any) => {
-        onDragEnd(event);
-    };
+    const attachedBackgroundData = useAppPromise(
+        attachBackgroundManager.getAttachedBackground(
+            item.filePath,
+            item.id.toString(),
+        ),
+    );
+    const attachedBackgroundStyle = genAttachedBackgroundStyle(
+        attachedBackgroundData,
+    );
     return (
         <div
             className={`data-vary-app-document-item card pointer ${activeCN} ${presenterCN}`}
-            style={{ width: `${width}px` }}
+            title={
+                attachedBackgroundData?.item?.src ??
+                attachedBackgroundData?.item ??
+                ''
+            }
+            style={{ width: `${width}px`, ...attachedBackgroundStyle }}
             data-vary-app-document-item-id={item.id}
             draggable
-            onDragStart={dragStartHandling}
-            onDragEnd={dragEndHandling}
+            onDragOver={(event) => {
+                event.preventDefault();
+                changeDragEventStyle(event, 'opacity', '0.5');
+            }}
+            onDragLeave={(event) => {
+                event.preventDefault();
+                changeDragEventStyle(event, 'opacity', '1');
+            }}
+            onDrop={(event) => {
+                onDropHandling(event, item);
+            }}
+            onDragStart={(event) => {
+                handleDragStart(event, item);
+                onDragStart(event);
+            }}
+            onDragEnd={onDragEnd}
             onClick={onClick}
-            onContextMenu={onContextMenu}
+            onContextMenu={(event) => {
+                const menuItems: ContextMenuItemType[] = [];
+                if (attachedBackgroundData) {
+                    menuItems.push({
+                        menuTitle: 'Remove background',
+                        onSelect: () => {
+                            attachBackgroundManager.detachBackground(
+                                item.filePath,
+                                item.id.toString(),
+                            );
+                        },
+                    });
+                }
+                onContextMenu(event, menuItems);
+            }}
             onCopy={onCopy ?? (() => {})}
         >
             {children}

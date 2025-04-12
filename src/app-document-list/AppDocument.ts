@@ -10,6 +10,7 @@ import EditingHistoryManager from '../others/EditingHistoryManager';
 import ItemSourceInf from '../others/ItemSourceInf';
 import { OptionalPromise } from '../others/otherHelpers';
 import { handleError } from '../helper/errorHelpers';
+import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 
 type AppDocumentMetadataType = {
     app: string;
@@ -283,8 +284,12 @@ export default class AppDocument
         this.editingHistoryManager.addHistory(jsonString);
     }
 
-    showItemContextMenu(event: any, slide: Slide) {
-        showAppDocumentContextMenu(event, this, slide);
+    showItemContextMenu(
+        event: any,
+        slide: Slide,
+        extraMenuItems: ContextMenuItemType[] = [],
+    ) {
+        showAppDocumentContextMenu(event, this, slide, extraMenuItems);
     }
 
     async showContextMenu(event: any) {

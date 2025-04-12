@@ -6,6 +6,7 @@ import PdfSlide from './PdfSlide';
 import { AnyObjectType } from '../helper/helpers';
 import { OptionalPromise } from '../others/otherHelpers';
 import { showPdfDocumentContextMenu } from './appDocumentHelpers';
+import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 
 export default class PdfAppDocument
     extends AppDocumentSourceAbs
@@ -27,8 +28,12 @@ export default class PdfAppDocument
         throw new Error('Method not implemented.');
     }
 
-    showItemContextMenu(event: any, item: PdfSlide) {
-        showPdfDocumentContextMenu(event, item);
+    showItemContextMenu(
+        event: any,
+        item: PdfSlide,
+        extraMenuItems: ContextMenuItemType[] = [],
+    ) {
+        showPdfDocumentContextMenu(event, item, extraMenuItems);
     }
 
     async showContextMenu(_event: any) {

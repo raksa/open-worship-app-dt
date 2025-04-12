@@ -5,6 +5,7 @@ import { handleDragStart } from '../../helper/dragHelpers';
 import { use } from 'react';
 import { SelectedEditingSlideContext } from '../../app-document-list/appDocumentHelpers';
 import ItemRenderComp, { RenderInfoComp } from './ItemRenderComp';
+import { ContextMenuItemType } from '../../context-menu/appContextMenuHelpers';
 
 export default function SlideRenderComp({
     slide,
@@ -20,7 +21,7 @@ export default function SlideRenderComp({
     width: number;
     index: number;
     onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
-    onContextMenu: (event: any) => void;
+    onContextMenu: (event: any, extraMenuItems: ContextMenuItemType[]) => void;
     onCopy: () => void;
     onDragStart: (event: React.DragEvent<HTMLDivElement>) => void;
     onDragEnd: (event: React.DragEvent<HTMLDivElement>) => void;

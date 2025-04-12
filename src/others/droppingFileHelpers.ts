@@ -8,14 +8,7 @@ import DirSource from '../helper/DirSource';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { selectFiles } from '../server/appHelpers';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
-
-function changeDragEventStyle(
-    event: React.DragEvent<HTMLDivElement>,
-    key: string,
-    value: string,
-) {
-    (event.currentTarget.style as any)[key] = value;
-}
+import { changeDragEventStyle } from '../helper/helpers';
 
 export function genOnDragOver(dirSource: DirSource) {
     return (event: React.DragEvent<HTMLDivElement>) => {

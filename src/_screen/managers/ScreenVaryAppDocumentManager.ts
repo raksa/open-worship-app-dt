@@ -23,6 +23,7 @@ import {
     VaryAppDocumentItemType,
 } from '../../app-document-list/appDocumentHelpers';
 import PdfSlide, { PdfSlideType } from '../../app-document-list/PdfSlide';
+import { attachBackgroundManager } from '../../others/AttachBackgroundManager';
 
 export type ScreenVaryAppDocumentManagerEventType = 'update';
 
@@ -168,12 +169,26 @@ class ScreenVaryAppDocumentManager extends ScreenEventHandler<ScreenVaryAppDocum
         isForceChoosing = false,
     ) {
         const screenIds = await this.chooseScreenIds(event, isForceChoosing);
+        const droppedData = await attachBackgroundManager.getAttachedBackground(
+            filePath,
+            itemJson.id.toString(),
+        );
         screenIds.forEach((screenId) => {
             const screenVaryAppDocumentManager = this.getInstance(screenId);
             screenVaryAppDocumentManager.handleSlideSelecting(
                 filePath,
                 itemJson,
             );
+            const { screenBackgroundManager } =
+                screenVaryAppDocumentManager.screenManagerBase as any;
+            // TODO: move this logic outside
+            if (
+                droppedData !== null &&
+                screenBackgroundManager &&
+                screenBackgroundManager.receiveScreenDropped
+            ) {
+                screenBackgroundManager?.receiveScreenDropped(droppedData);
+            }
         });
     }
 
