@@ -1,11 +1,9 @@
-import './VaryAppDocumentItem.scss';
-
 import { useScreenVaryAppDocumentManagerEvents } from '../../_screen/managers/screenEventHelpers';
-import { RenderInfoComp, toClassNameHighlight } from './SlideRenderComp';
 import ReactDOMServer from 'react-dom/server';
 import { getHTMLChild } from '../../helper/helpers';
 import { handleDragStart } from '../../helper/dragHelpers';
 import PdfSlide from '../../app-document-list/PdfSlide';
+import ItemRenderComp, { RenderInfoComp } from './ItemRenderComp';
 
 function PdfSlideRenderContentComp({
     pdfImageSrc,
@@ -63,7 +61,6 @@ export default function PdfSlideRenderComp({
     onDragEnd: (event: React.DragEvent<HTMLDivElement>) => void;
 }>) {
     useScreenVaryAppDocumentManagerEvents(['update']);
-    const { activeCN, presenterCN } = toClassNameHighlight(pdfSlide);
     const pdfPreviewSrc = pdfSlide.pdfPreviewSrc;
     const dragStartHandling = (event: any) => {
         handleDragStart(event, pdfSlide);
@@ -73,15 +70,14 @@ export default function PdfSlideRenderComp({
         onDragEnd(event);
     };
     return (
-        <div
-            className={`data-vary-app-document-item card pointer ${activeCN} ${presenterCN}`}
-            style={{ width: `${width}px` }}
-            data-vary-app-document-item-id={pdfSlide.id}
-            draggable
+        <ItemRenderComp
+            item={pdfSlide}
+            width={width}
+            index={index}
             onDragStart={dragStartHandling}
             onDragEnd={dragEndHandling}
-            onClick={onClick}
             onContextMenu={onContextMenu}
+            onClick={onClick}
         >
             <div className="card-header d-flex" style={{ height: '35px' }}>
                 <i className="bi bi-filetype-pdf" />
@@ -102,6 +98,6 @@ export default function PdfSlideRenderComp({
                     <PdfSlideRenderContentComp pdfImageSrc={pdfPreviewSrc} />
                 </div>
             )}
-        </div>
+        </ItemRenderComp>
     );
 }
