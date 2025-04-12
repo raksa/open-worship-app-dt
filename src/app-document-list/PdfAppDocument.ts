@@ -7,6 +7,7 @@ import { AnyObjectType } from '../helper/helpers';
 import { OptionalPromise } from '../others/otherHelpers';
 import { showPdfDocumentContextMenu } from './appDocumentHelpers';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
+import { handleError } from '../helper/errorHelpers';
 
 export default class PdfAppDocument
     extends AppDocumentSourceAbs
@@ -45,18 +46,25 @@ export default class PdfAppDocument
     }
 
     async getItems() {
-        const imageFileInfoList = await genPdfImagesPreview(this.filePath);
-        if (imageFileInfoList === null) {
-            return [];
+        try {
+            const imageFileInfoList = await genPdfImagesPreview(this.filePath);
+            if (imageFileInfoList === null) {
+                return [];
+            }
+            return imageFileInfoList.map(
+                ({ src, pageNumber, width, height }) => {
+                    return new PdfSlide(this.filePath, {
+                        id: pageNumber,
+                        imagePreviewSrc: src,
+                        pdfPageNumber: pageNumber,
+                        metadata: { width, height },
+                    });
+                },
+            );
+        } catch (error) {
+            handleError(error);
         }
-        return imageFileInfoList.map(({ src, pageNumber, width, height }) => {
-            return new PdfSlide(this.filePath, {
-                id: pageNumber,
-                imagePreviewSrc: src,
-                pdfPageNumber: pageNumber,
-                metadata: { width, height },
-            });
-        });
+        return [];
     }
 
     async getItemByIndex(index: number) {
