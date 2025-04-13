@@ -91,6 +91,7 @@ const fullTextScreenHelper = {
                 currentBlock.classList.remove(className);
             }
         }
+        return currentBlocks;
     },
     registerHighlight(
         div: HTMLDivElement,
@@ -98,7 +99,10 @@ const fullTextScreenHelper = {
             onSelectIndex,
             onBibleSelect,
         }: {
-            onSelectIndex: (selectedIndex: number | null) => void;
+            onSelectIndex: (
+                selectedIndex: number | null,
+                isToCenter: boolean,
+            ) => void;
             onBibleSelect: (event: MouseEvent, index: number) => void;
         },
     ) {
@@ -133,17 +137,23 @@ const fullTextScreenHelper = {
                     span.dataset.highlight,
                 );
             });
-            span.addEventListener('click', () => {
+            const clickHandler = (isToCenter: boolean) => {
                 const arrChildren = this.removeClassName(div, 'selected');
                 if (
                     !arrChildren.includes(span) &&
                     span.dataset.highlight &&
                     !isNaN(parseInt(span.dataset.highlight))
                 ) {
-                    onSelectIndex(parseInt(span.dataset.highlight));
+                    onSelectIndex(parseInt(span.dataset.highlight), isToCenter);
                 } else {
-                    onSelectIndex(null);
+                    onSelectIndex(null, false);
                 }
+            };
+            span.addEventListener('click', () => {
+                clickHandler(false);
+            });
+            span.addEventListener('dblclick', () => {
+                clickHandler(true);
             });
         });
     },

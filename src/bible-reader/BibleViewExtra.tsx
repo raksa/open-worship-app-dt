@@ -15,6 +15,7 @@ import ItemColorNoteComp from '../others/ItemColorNoteComp';
 import ColorNoteInf from '../helper/ColorNoteInf';
 import { useBibleItemViewControllerContext } from './BibleItemViewController';
 import { useBibleItemContext } from './BibleItemContext';
+import { bringDomToNearestView, handleToViewBringing } from '../helper/helpers';
 
 export function RenderTitleMaterialComp({
     editingBibleItem,
@@ -111,6 +112,20 @@ export function BibleViewTitleComp() {
     );
 }
 
+function handleVersesSelecting(event: any) {
+    const currentTarget = event.currentTarget;
+    const classList = currentTarget.classList;
+    if (classList.contains('selected')) {
+        classList.remove('selected');
+    } else {
+        currentTarget.parentElement?.childNodes.forEach((element: any) => {
+            element.classList.remove('selected');
+        });
+        classList.add('selected');
+        bringDomToNearestView(currentTarget);
+    }
+}
+
 export function BibleViewTextComp() {
     const bibleItem = useBibleItemContext();
     const fontSize = useBibleViewFontSizeContext();
@@ -118,18 +133,6 @@ export function BibleViewTextComp() {
     if (result === null) {
         return null;
     }
-    const handleVersesSelecting = (event: any) => {
-        const currentTarget = event.currentTarget;
-        const classList = currentTarget.classList;
-        if (classList.contains('selected')) {
-            classList.remove('selected');
-        } else {
-            currentTarget.parentElement?.childNodes.forEach((element: any) => {
-                element.classList.remove('selected');
-            });
-            classList.add('selected');
-        }
-    };
     return (
         <div
             className="bible-view-text app-selectable-text pt-3"
@@ -144,6 +147,7 @@ export function BibleViewTextComp() {
                         <div
                             className="verse-text"
                             onClick={handleVersesSelecting}
+                            onDoubleClick={handleToViewBringing}
                         >
                             {text}
                         </div>

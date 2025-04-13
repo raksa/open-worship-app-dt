@@ -2,7 +2,13 @@ import { CSSProperties } from 'react';
 
 import BibleItem from '../../bible-list/BibleItem';
 import { DroppedDataType, DragTypeEnum } from '../../helper/DragInf';
-import { AnyObjectType, cloneJson, isValidJson } from '../../helper/helpers';
+import {
+    AnyObjectType,
+    bringDomToCenterView,
+    bringDomToNearestView,
+    cloneJson,
+    isValidJson,
+} from '../../helper/helpers';
 import { getSetting, setSetting } from '../../helper/settingHelpers';
 import fullTextScreenHelper from '../fullTextScreenHelpers';
 import {
@@ -34,6 +40,7 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
     private _div: HTMLDivElement | null = null;
     private _syncScrollTimeout: any = null;
     private _divScrollListenerBind: (() => void) | null = null;
+    public isToCenter = false;
 
     constructor(screenManagerBase: ScreenManagerBase) {
         super(screenManagerBase);
@@ -378,12 +385,21 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
             return;
         }
         fullTextScreenHelper.removeClassName(this.div, 'selected');
-        fullTextScreenHelper.resetClassName(
+        const isToCenter = this.isToCenter;
+        this.isToCenter = false;
+        const selectedBlocks = fullTextScreenHelper.resetClassName(
             this.div,
             'selected',
             true,
             `${this.selectedIndex}`,
         );
+        selectedBlocks.forEach((block) => {
+            if (isToCenter) {
+                bringDomToCenterView(block);
+            } else {
+                bringDomToNearestView(block);
+            }
+        });
     }
 
     async receiveScreenDropped(droppedData: DroppedDataType) {

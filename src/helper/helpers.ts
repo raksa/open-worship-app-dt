@@ -368,3 +368,27 @@ export function changeDragEventStyle(
 ) {
     (event.currentTarget.style as any)[key] = value;
 }
+
+export function bringDomToNearestView(dom: Element) {
+    dom.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'nearest',
+    });
+}
+
+export function bringDomToCenterView(dom: Element) {
+    dom.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'center',
+    });
+}
+
+export function handleToViewBringing(event: any) {
+    event.stopPropagation();
+    const selection = window.getSelection();
+    selection?.removeAllRanges();
+    bringDomToCenterView(event.currentTarget);
+    event.currentTarget.classList.add('selected');
+}
