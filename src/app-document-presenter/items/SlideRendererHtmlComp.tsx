@@ -1,26 +1,19 @@
-import { useState } from 'react';
-
 import Slide from '../../app-document-list/Slide';
 import SlideRendererComp from './SlideRendererComp';
+import { useScale } from './ItemRenderComp';
 
 export default function SlideRendererHtmlComp({
     slide,
 }: Readonly<{
     slide: Slide;
 }>) {
-    const [parentWidth, setParentWidth] = useState(0);
+    const { scale, parentWidth, setParentDiv } = useScale(slide);
     if (slide.isError) {
         return <div className="alert alert-danger">Error</div>;
     }
-    const scale = parentWidth / slide.width;
     return (
         <div
-            ref={(div) => {
-                if (div === null) {
-                    return;
-                }
-                setParentWidth(div.parentElement?.clientWidth ?? 0);
-            }}
+            ref={setParentDiv}
             style={{
                 width: `${parentWidth}px`,
                 height: `${slide.height * scale}px`,

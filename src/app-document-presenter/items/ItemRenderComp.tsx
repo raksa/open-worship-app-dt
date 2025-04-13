@@ -15,7 +15,7 @@ import AttachBackgroundManager, {
 import { ContextMenuItemType } from '../../context-menu/appContextMenuHelpers';
 import { useMemo, useState } from 'react';
 import { useFileSourceEvents } from '../../helper/dirSourceHelpers';
-import { useAppEffectAsync } from '../../helper/debuggerHelpers';
+import { useAppEffect, useAppEffectAsync } from '../../helper/debuggerHelpers';
 
 function RenderScreenInfoComp({
     varyAppDocumentItem,
@@ -37,7 +37,7 @@ function RenderScreenInfoComp({
     );
 }
 
-export function RenderInfoComp({
+function RenderInfoComp({
     viewIndex,
     varyAppDocumentItem,
 }: Readonly<{
@@ -75,6 +75,22 @@ export function RenderInfoComp({
                 </span>
                 {isChanged && <span style={{ color: 'red' }}>*</span>}
             </div>
+        </div>
+    );
+}
+
+function RenderHeaderInfoComp({
+    item,
+}: Readonly<{ item: VaryAppDocumentItemType }>) {
+    return (
+        <div
+            className="card-header d-flex"
+            style={{
+                height: '35px',
+                backgroundColor: 'var(--bs-gray-800)',
+            }}
+        >
+            <RenderInfoComp viewIndex={1} varyAppDocumentItem={item} />
         </div>
     );
 }
@@ -127,25 +143,46 @@ async function onDropHandling(
     }
 }
 
-function genStyle(droppedData: DroppedDataType | null | undefined) {
+function genAttachBackgroundComponent(
+    droppedData: DroppedDataType | null | undefined,
+) {
     if (droppedData === null || droppedData === undefined) {
         return {};
     }
-    const style: React.CSSProperties = {
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-    };
+    let element = null;
     if (droppedData.type === DragTypeEnum.BACKGROUND_COLOR) {
-        style.backgroundColor = droppedData.item;
+        element = (
+            <div
+                className="w-100 h-100"
+                style={{ backgroundColor: droppedData.item }}
+            />
+        );
     } else if (droppedData.type === DragTypeEnum.BACKGROUND_IMAGE) {
-        style.backgroundImage = `url(${droppedData.item.src})`;
+        element = (
+            <img
+                className="w-100 h-100"
+                alt={droppedData.item.src}
+                src={droppedData.item.src}
+            />
+        );
     } else if (droppedData.type === DragTypeEnum.BACKGROUND_VIDEO) {
-        // style.backgroundImage = `url(${droppedData.item.src})`;
-        // TODO: implement video background
-        style.backgroundImage =
-            'radial-gradient(circle at top right, #ff8a00, red, #e52e71)';
+        element = (
+            <video
+                className="w-100 h-100"
+                onMouseEnter={(event) => {
+                    event.currentTarget.play();
+                }}
+                onMouseLeave={(event) => {
+                    event.currentTarget.pause();
+                    event.currentTarget.currentTime = 0;
+                }}
+                loop
+                muted
+                src={droppedData.item.src}
+            />
+        );
     }
-    return style;
+    return { style: {}, element };
 }
 
 function useAttachedBackgroundData(filePath: string, id: string) {
@@ -169,12 +206,39 @@ function useAttachedBackgroundData(filePath: string, id: string) {
     useFileSourceEvents(
         ['update'],
         () => {
-            setDroppedData(undefined);
+            attachBackgroundManager
+                .getAttachedBackground(filePath, id)
+                .then((data) => {
+                    setDroppedData(data);
+                });
         },
         [],
         AttachBackgroundManager.genMetaDataFilePath(filePath),
     );
     return droppedData;
+}
+
+export function useScale(item: VaryAppDocumentItemType) {
+    const [targetDiv, setTargetDiv] = useState<HTMLDivElement | null>(null);
+    const [parentWidth, setParentWidth] = useState(0);
+    useAppEffect(() => {
+        setParentWidth(targetDiv?.clientWidth ?? 0);
+    }, [targetDiv]);
+    const scale = useMemo(() => {
+        return parentWidth / item.width;
+    }, [parentWidth, item]);
+    return {
+        parentWidth,
+        scale,
+        setTargetDiv,
+        setParentDiv: (div: HTMLDivElement | null) => {
+            if (div === null) {
+                setTargetDiv(null);
+            } else {
+                setTargetDiv(div.parentElement as HTMLDivElement);
+            }
+        },
+    };
 }
 
 export default function ItemRenderComp({
@@ -199,23 +263,28 @@ export default function ItemRenderComp({
     selectedItem?: VaryAppDocumentItemType | null;
     children: React.ReactNode;
 }>) {
+    const { scale, setTargetDiv } = useScale(item);
     useScreenVaryAppDocumentManagerEvents(['update']);
     const { activeCN, presenterCN } = toClassNameHighlight(item, selectedItem);
     const attachedBackgroundData = useAttachedBackgroundData(
         item.filePath,
         item.id.toString(),
     );
-    const attachedBackgroundStyle = useMemo(() => {
-        return genStyle(attachedBackgroundData);
+    const {
+        style: attachedBackgroundStyle,
+        element: attachedBackgroundElement,
+    } = useMemo(() => {
+        return genAttachBackgroundComponent(attachedBackgroundData);
     }, [attachedBackgroundData]);
+    const style: React.CSSProperties = {
+        padding: 0,
+        margin: 0,
+        height: `${item.height * scale}px`,
+    };
     return (
         <div
             className={`data-vary-app-document-item card pointer ${activeCN} ${presenterCN}`}
-            title={
-                attachedBackgroundData?.item?.src ??
-                attachedBackgroundData?.item ??
-                ''
-            }
+            ref={setTargetDiv}
             style={{ width: `${width}px`, ...attachedBackgroundStyle }}
             data-vary-app-document-item-id={item.id}
             draggable
@@ -253,7 +322,30 @@ export default function ItemRenderComp({
             }}
             onCopy={onCopy ?? (() => {})}
         >
-            {children}
+            <RenderHeaderInfoComp item={item} />
+            <div className="card-body overflow-hidden w-100" style={style}>
+                {attachedBackgroundElement && (
+                    <div
+                        className="w-100"
+                        style={{
+                            ...style,
+                            position: 'absolute',
+                        }}
+                    >
+                        {attachedBackgroundElement}
+                    </div>
+                )}
+                <div
+                    className="w-100"
+                    style={{
+                        ...style,
+                        position: 'absolute',
+                        pointerEvents: 'none',
+                    }}
+                >
+                    {children}
+                </div>
+            </div>
         </div>
     );
 }

@@ -3,7 +3,7 @@ import ReactDOMServer from 'react-dom/server';
 import { getHTMLChild } from '../../helper/helpers';
 import { handleDragStart } from '../../helper/dragHelpers';
 import PdfSlide from '../../app-document-list/PdfSlide';
-import ItemRenderComp, { RenderInfoComp } from './ItemRenderComp';
+import ItemRenderComp, { useScale } from './ItemRenderComp';
 import { ContextMenuItemType } from '../../context-menu/appContextMenuHelpers';
 
 function PdfSlideRenderContentComp({
@@ -61,6 +61,7 @@ export default function PdfSlideRenderComp({
     onDragStart: (event: React.DragEvent<HTMLDivElement>) => void;
     onDragEnd: (event: React.DragEvent<HTMLDivElement>) => void;
 }>) {
+    const { scale, parentWidth, setParentDiv } = useScale(pdfSlide);
     useScreenVaryAppDocumentManagerEvents(['update']);
     const pdfPreviewSrc = pdfSlide.pdfPreviewSrc;
     const dragStartHandling = (event: any) => {
@@ -81,30 +82,20 @@ export default function PdfSlideRenderComp({
             onClick={onClick}
         >
             <div
-                className="card-header d-flex"
+                ref={setParentDiv}
                 style={{
-                    height: '35px',
-                    backgroundColor: 'var(--bs-gray-800)',
+                    width: `${parentWidth}px`,
+                    height: `${pdfSlide.height * scale}px`,
                 }}
             >
-                <i className="bi bi-filetype-pdf" />
-                <RenderInfoComp
-                    viewIndex={index + 1}
-                    varyAppDocumentItem={pdfSlide}
-                />
-            </div>
-            {pdfPreviewSrc === null ? (
-                <div className="alert alert-danger">
-                    Unable to preview right now
-                </div>
-            ) : (
-                <div
-                    className="card-body overflow-hidden"
-                    style={{ padding: '0px' }}
-                >
+                {pdfPreviewSrc === null ? (
+                    <div className="alert alert-danger">
+                        Unable to preview right now
+                    </div>
+                ) : (
                     <PdfSlideRenderContentComp pdfImageSrc={pdfPreviewSrc} />
-                </div>
-            )}
+                )}
+            </div>
         </ItemRenderComp>
     );
 }

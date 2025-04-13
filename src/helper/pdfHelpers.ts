@@ -1,3 +1,4 @@
+import CacheManager from '../others/CacheManager';
 import { electronSendAsync } from '../server/appHelpers';
 import appProvider from '../server/appProvider';
 import {
@@ -29,10 +30,35 @@ type PdfItemViewInfoType = {
     height: number;
 };
 
-function genPdfImagePreviewInfo(filePath: string): PdfItemViewInfoType {
+const srcSizeCacheManager = new CacheManager<{ width: number; height: number }>(
+    100,
+    60 * 60 * 24 * 30,
+);
+async function getImageSize(src: string) {
+    let size = await srcSizeCacheManager.get(src);
+    if (size !== null) {
+        return size;
+    }
+    size = await new Promise<{ width: number; height: number }>((resolve) => {
+        const img = new Image();
+        img.onload = function () {
+            resolve({ width: img.width, height: img.height });
+        };
+        img.onerror = function () {
+            resolve({ width: 0, height: 0 });
+        };
+        img.src = src;
+    });
+    await srcSizeCacheManager.set(src, size);
+    return size;
+}
+async function genPdfImagePreviewInfo(
+    filePath: string,
+): Promise<PdfItemViewInfoType> {
     const fileSource = FileSource.getInstance(filePath);
     const pageNumber = parseInt(fileSource.name.split('-')[1]);
-    return { src: fileSource.src, pageNumber, width: 0, height: 0 };
+    const { width, height } = await getImageSize(fileSource.src);
+    return { src: fileSource.src, pageNumber, width, height };
 }
 
 function sortPdfImagePreviewInfo(items: PdfItemViewInfoType[]) {
@@ -70,9 +96,10 @@ export async function genPdfImagesPreview(
             if (fileList.length !== pagesCount) {
                 return null;
             }
-            return sortPdfImagePreviewInfo(
+            const imageFileInfoList = await Promise.all(
                 fileList.map(genPdfImagePreviewInfo),
             );
+            return sortPdfImagePreviewInfo(imageFileInfoList);
         }
     }
     showSimpleToast(
@@ -93,7 +120,9 @@ export async function genPdfImagesPreview(
     if (!previewData.isSuccessful || !previewData.filePaths) {
         return null;
     }
-    const imageFileInfoList = previewData.filePaths.map(genPdfImagePreviewInfo);
+    const imageFileInfoList = await Promise.all(
+        previewData.filePaths.map(genPdfImagePreviewInfo),
+    );
     if (imageFileInfoList.some((imageFileInfo) => imageFileInfo === null)) {
         return null;
     }

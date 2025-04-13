@@ -4,7 +4,7 @@ import { useScreenVaryAppDocumentManagerEvents } from '../../_screen/managers/sc
 import { handleDragStart } from '../../helper/dragHelpers';
 import { use } from 'react';
 import { SelectedEditingSlideContext } from '../../app-document-list/appDocumentHelpers';
-import ItemRenderComp, { RenderInfoComp } from './ItemRenderComp';
+import ItemRenderComp from './ItemRenderComp';
 import { ContextMenuItemType } from '../../context-menu/appContextMenuHelpers';
 
 export default function SlideRenderComp({
@@ -48,24 +48,7 @@ export default function SlideRenderComp({
             onClick={onClick}
             onCopy={onCopy}
         >
-            <div
-                className="card-header d-flex"
-                style={{
-                    height: '35px',
-                    backgroundColor: 'var(--bs-gray-800)',
-                }}
-            >
-                <RenderInfoComp
-                    viewIndex={index + 1}
-                    varyAppDocumentItem={slide}
-                />
-            </div>
-            <div
-                className="card-body overflow-hidden"
-                style={{ padding: '0px' }}
-            >
-                <SlideRendererHtmlComp slide={slide} />
-            </div>
+            <SlideRendererHtmlComp slide={slide} />
         </ItemRenderComp>
     );
 }

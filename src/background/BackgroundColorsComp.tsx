@@ -39,39 +39,39 @@ export default function BackgroundColorsComp() {
     if (selectedBackgroundSrcList === null) {
         return null;
     }
-    if (selectedBackgroundSrcList.length === 0) {
-        return (
-            <ColorPicker
-                color={null}
-                defaultColor={'#000000'}
-                onNoColor={handleNoColoring}
-                onColorChange={handleColorChanging}
-            />
-        );
-    }
     return (
         <div
-            className={
-                'd-flex align-content-start flex-wrap w-100 overflow-hidden'
-            }
+            className={'d-flex align-content-start flex-wrap w-100'}
+            style={{
+                overflowY: 'auto',
+            }}
         >
-            {selectedBackgroundSrcList.map(([key, backgroundSrc], i) => {
-                const screenId = parseInt(key);
-                return (
-                    <div
-                        key={backgroundSrc.src + i}
-                        className="p-1 m-1 app-border-white-round"
-                    >
-                        <ShowingScreenIcon screenId={screenId} />
-                        <ColorPicker
-                            color={backgroundSrc.src as AppColorType}
-                            defaultColor={backgroundSrc.src as AppColorType}
-                            onNoColor={handleNoColoring}
-                            onColorChange={handleColorChanging}
-                        />
-                    </div>
-                );
-            })}
+            {selectedBackgroundSrcList.length === 0 ? (
+                <ColorPicker
+                    color={null}
+                    defaultColor={'#000000'}
+                    onNoColor={handleNoColoring}
+                    onColorChange={handleColorChanging}
+                />
+            ) : (
+                selectedBackgroundSrcList.map(([key, backgroundSrc], i) => {
+                    const screenId = parseInt(key);
+                    return (
+                        <div
+                            key={backgroundSrc.src + i}
+                            className="p-1 m-1 app-border-white-round"
+                        >
+                            <ShowingScreenIcon screenId={screenId} />
+                            <ColorPicker
+                                color={backgroundSrc.src as AppColorType}
+                                defaultColor={backgroundSrc.src as AppColorType}
+                                onNoColor={handleNoColoring}
+                                onColorChange={handleColorChanging}
+                            />
+                        </div>
+                    );
+                })
+            )}
         </div>
     );
 }
