@@ -8,8 +8,10 @@ import { AppWidgetType } from './WindowEventListener';
 export type KeyboardType =
     | 'ArrowUp'
     | 'ArrowRight'
+    | 'PageUp'
     | 'ArrowDown'
     | 'ArrowLeft'
+    | 'PageDown'
     | 'Enter'
     | 'Tab'
     | 'Escape'

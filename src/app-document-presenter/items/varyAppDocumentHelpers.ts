@@ -86,7 +86,7 @@ export function handleArrowing(
     ) {
         return;
     }
-    const isLeft = event.key === 'ArrowLeft';
+    const isLeft = ['ArrowLeft', 'ArrowUp', 'PageUp'].includes(event.key);
     const divSelectedList = document.activeElement.querySelectorAll(
         `[${DATA_QUERY_KEY}].highlight-selected`,
     );

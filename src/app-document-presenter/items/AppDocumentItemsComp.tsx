@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import {
+    allArrows,
     KeyboardType,
     useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
@@ -57,7 +58,7 @@ function useAppDocumentItems() {
         selectedAppDocument.filePath,
     );
 
-    const arrows: KeyboardType[] = ['ArrowLeft', 'ArrowRight'];
+    const arrows: KeyboardType[] = [...allArrows, 'PageUp', 'PageDown'];
     useKeyboardRegistering(
         arrows.map((key) => {
             return { key };
