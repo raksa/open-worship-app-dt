@@ -13,7 +13,7 @@ function toPdfImagesPreviewDirPath(filePath: string) {
     const fileSource = FileSource.getInstance(filePath);
     return appProvider.pathUtils.resolve(
         fileSource.basePath,
-        `.${fileSource.fileFullName}-images`,
+        `${fileSource.fileFullName}-images`,
     );
 }
 

@@ -23,6 +23,7 @@ import {
 } from './appDocumentHelpers';
 import PdfAppDocument from './PdfAppDocument';
 import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
+import { attachBackgroundManager } from '../others/AttachBackgroundManager';
 
 function genContextMenuItems(
     varyAppDocument: VaryAppDocumentDynamicType,
@@ -125,6 +126,7 @@ export default function AppDocumentFileComp({
         if (PdfAppDocument.checkIsThisType(varyAppDocument)) {
             removePdfImagesPreview(filePath);
         }
+        attachBackgroundManager.deleteMetaDataFile(filePath);
     };
     useAppEffect(() => {
         if (varyAppDocument !== null) {

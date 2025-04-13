@@ -1,6 +1,10 @@
 import { DroppedDataType } from '../helper/DragInf';
 import FileSource from '../helper/FileSource';
-import { fsCheckFileExist, fsWriteFile } from '../server/fileHelpers';
+import {
+    fsCheckFileExist,
+    fsDeleteFile,
+    fsWriteFile,
+} from '../server/fileHelpers';
 
 export type AttachBackgroundType = { [key: string]: DroppedDataType };
 
@@ -15,7 +19,7 @@ export default class AttachBackgroundManager {
         await FileSource.getInstance(metaDataFilePath).saveFileData(
             JSON.stringify(data),
         );
-        FileSource.getInstance(filePath).fireUpdateEvent();
+        FileSource.getInstance(metaDataFilePath).fireUpdateEvent();
     }
 
     public async getAttachedBackgrounds(
@@ -56,6 +60,12 @@ export default class AttachBackgroundManager {
         const data = await this.getAttachedBackgrounds(filePath);
         delete data[id];
         await AttachBackgroundManager.saveData(filePath, data);
+    }
+
+    public async deleteMetaDataFile(filePath: string) {
+        const metaDataFilePath =
+            AttachBackgroundManager.genMetaDataFilePath(filePath);
+        await fsDeleteFile(metaDataFilePath);
     }
 }
 

@@ -24,6 +24,7 @@ import {
 } from '../../app-document-list/appDocumentHelpers';
 import PdfSlide, { PdfSlideType } from '../../app-document-list/PdfSlide';
 import { attachBackgroundManager } from '../../others/AttachBackgroundManager';
+import ScreenBackgroundManager from './ScreenBackgroundManager';
 
 export type ScreenVaryAppDocumentManagerEventType = 'update';
 
@@ -81,9 +82,29 @@ class ScreenVaryAppDocumentManager extends ScreenEventHandler<ScreenVaryAppDocum
         setIsPdfFullWidth(isFullWidth);
     }
 
+    async applyAttachBackground(filePath: string, id: string) {
+        const droppedData = await attachBackgroundManager.getAttachedBackground(
+            filePath,
+            id,
+        );
+        if (droppedData === null) {
+            return;
+        }
+        const screenBackgroundManager = ScreenBackgroundManager.getInstance(
+            this.screenId,
+        );
+        screenBackgroundManager.receiveScreenDropped(droppedData);
+    }
+
     set varyAppDocumentItemData(
         appDocumentItemData: VaryAppDocumentItemScreenDataType | null,
     ) {
+        if (appDocumentItemData !== null && appDocumentItemData.itemJson) {
+            this.applyAttachBackground(
+                appDocumentItemData.filePath,
+                appDocumentItemData.itemJson.id.toString(),
+            );
+        }
         this._varyAppDocumentItemData = appDocumentItemData;
         unlocking(screenManagerSettingNames.VARY_APP_DOCUMENT, () => {
             const allSlideList = getAppDocumentListOnScreenSetting();
@@ -169,26 +190,12 @@ class ScreenVaryAppDocumentManager extends ScreenEventHandler<ScreenVaryAppDocum
         isForceChoosing = false,
     ) {
         const screenIds = await this.chooseScreenIds(event, isForceChoosing);
-        const droppedData = await attachBackgroundManager.getAttachedBackground(
-            filePath,
-            itemJson.id.toString(),
-        );
         screenIds.forEach((screenId) => {
             const screenVaryAppDocumentManager = this.getInstance(screenId);
             screenVaryAppDocumentManager.handleSlideSelecting(
                 filePath,
                 itemJson,
             );
-            const { screenBackgroundManager } =
-                screenVaryAppDocumentManager.screenManagerBase as any;
-            // TODO: move this logic outside
-            if (
-                droppedData !== null &&
-                screenBackgroundManager &&
-                screenBackgroundManager.receiveScreenDropped
-            ) {
-                screenBackgroundManager?.receiveScreenDropped(droppedData);
-            }
         });
     }
 

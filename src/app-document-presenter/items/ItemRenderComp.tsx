@@ -7,10 +7,15 @@ import { extractDropData, handleDragStart } from '../../helper/dragHelpers';
 import ShowingScreenIcon from '../../_screen/preview/ShowingScreenIcon';
 import appProvider from '../../server/appProvider';
 import { VaryAppDocumentItemType } from '../../app-document-list/appDocumentHelpers';
-import { changeDragEventStyle, useAppPromise } from '../../helper/helpers';
+import { changeDragEventStyle } from '../../helper/helpers';
 import { DragTypeEnum, DroppedDataType } from '../../helper/DragInf';
-import { attachBackgroundManager } from '../../others/AttachBackgroundManager';
+import AttachBackgroundManager, {
+    attachBackgroundManager,
+} from '../../others/AttachBackgroundManager';
 import { ContextMenuItemType } from '../../context-menu/appContextMenuHelpers';
+import { useMemo, useState } from 'react';
+import { useFileSourceEvents } from '../../helper/dirSourceHelpers';
+import { useAppEffectAsync } from '../../helper/debuggerHelpers';
 
 function RenderScreenInfoComp({
     varyAppDocumentItem,
@@ -122,9 +127,7 @@ async function onDropHandling(
     }
 }
 
-function genAttachedBackgroundStyle(
-    droppedData: DroppedDataType | null | undefined,
-) {
+function genStyle(droppedData: DroppedDataType | null | undefined) {
     if (droppedData === null || droppedData === undefined) {
         return {};
     }
@@ -143,6 +146,35 @@ function genAttachedBackgroundStyle(
             'radial-gradient(circle at top right, #ff8a00, red, #e52e71)';
     }
     return style;
+}
+
+function useAttachedBackgroundData(filePath: string, id: string) {
+    const [droppedData, setDroppedData] = useState<
+        DroppedDataType | null | undefined
+    >(undefined);
+    useAppEffectAsync(
+        async (contextMethods) => {
+            if (droppedData !== undefined) {
+                return;
+            }
+            const data = await attachBackgroundManager.getAttachedBackground(
+                filePath,
+                id,
+            );
+            contextMethods.setDroppedData(data);
+        },
+        [droppedData],
+        { setDroppedData },
+    );
+    useFileSourceEvents(
+        ['update'],
+        () => {
+            setDroppedData(undefined);
+        },
+        [],
+        AttachBackgroundManager.genMetaDataFilePath(filePath),
+    );
+    return droppedData;
 }
 
 export default function ItemRenderComp({
@@ -169,15 +201,13 @@ export default function ItemRenderComp({
 }>) {
     useScreenVaryAppDocumentManagerEvents(['update']);
     const { activeCN, presenterCN } = toClassNameHighlight(item, selectedItem);
-    const attachedBackgroundData = useAppPromise(
-        attachBackgroundManager.getAttachedBackground(
-            item.filePath,
-            item.id.toString(),
-        ),
+    const attachedBackgroundData = useAttachedBackgroundData(
+        item.filePath,
+        item.id.toString(),
     );
-    const attachedBackgroundStyle = genAttachedBackgroundStyle(
-        attachedBackgroundData,
-    );
+    const attachedBackgroundStyle = useMemo(() => {
+        return genStyle(attachedBackgroundData);
+    }, [attachedBackgroundData]);
     return (
         <div
             className={`data-vary-app-document-item card pointer ${activeCN} ${presenterCN}`}
