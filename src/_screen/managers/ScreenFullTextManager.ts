@@ -2,7 +2,7 @@ import { CSSProperties } from 'react';
 
 import BibleItem from '../../bible-list/BibleItem';
 import { DroppedDataType, DragTypeEnum } from '../../helper/DragInf';
-import { AnyObjectType, isValidJson } from '../../helper/helpers';
+import { AnyObjectType, cloneJson, isValidJson } from '../../helper/helpers';
 import { getSetting, setSetting } from '../../helper/settingHelpers';
 import fullTextScreenHelper from '../fullTextScreenHelpers';
 import {
@@ -73,8 +73,7 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
     }
 
     get isLineSync() {
-        const screenId = this.screenId;
-        const settingKey = `${SCREEN_FT_SETTING_PREFIX}-line-sync-${screenId}`;
+        const settingKey = `${SCREEN_FT_SETTING_PREFIX}-line-sync-${this.screenId}`;
         return getSetting(settingKey) === 'true';
     }
 
@@ -83,6 +82,7 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
             `${SCREEN_FT_SETTING_PREFIX}-line-sync-${this.screenId}`,
             `${isLineSync}`,
         );
+        this.fullTextItemData = cloneJson(this.fullTextItemData);
     }
 
     get div() {
