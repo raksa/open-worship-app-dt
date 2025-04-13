@@ -3,7 +3,7 @@ import {
     ContextMenuItemType,
     showAppContextMenu,
 } from '../context-menu/appContextMenuHelpers';
-import { BibleItemRenderedType } from './fullTextScreenComps';
+import { BibleItemRenderingType } from './fullTextScreenComps';
 import fullTextScreenHelper from './fullTextScreenHelpers';
 import ScreenFullTextManager from './managers/ScreenFullTextManager';
 import { showAppAlert } from '../popup-widget/popupWidgetHelpers';
@@ -28,9 +28,9 @@ async function onBibleSelect(
     index: number,
     ftItemData: FullTextItemDataType,
 ) {
-    const bibleRenderedList = ftItemData.bibleItemData
-        ?.renderedList as BibleItemRenderedType[];
-    const bibleItemingList = bibleRenderedList.map(({ bibleKey }) => {
+    const bibleRenderingList = ftItemData.bibleItemData
+        ?.renderedList as BibleItemRenderingType[];
+    const bibleItemingList = bibleRenderingList.map(({ bibleKey }) => {
         return bibleKey;
     });
     const localBibleInfoList = await getAllLocalBibleInfoList();
@@ -64,11 +64,11 @@ async function onBibleSelect(
         screenFTManager.fullTextItemData = newFtItemData;
     };
     const menuItems: ContextMenuItemType[] = [
-        ...(bibleRenderedList.length > 1
+        ...(bibleRenderingList.length > 1
             ? [
                   {
                       menuTitle:
-                          'Remove(' + bibleRenderedList[index].bibleKey + ')',
+                          'Remove(' + bibleRenderingList[index].bibleKey + ')',
                       onSelect: async () => {
                           bibleItemingList.splice(index, 1);
                           applyBibleItems(bibleItemingList);
@@ -105,7 +105,7 @@ async function onBibleSelect(
     showAppContextMenu(event, menuItems);
 }
 
-export function renderScreenFullTextManager(
+export async function renderScreenFullTextManager(
     screenFullTextManager: ScreenFullTextManager,
 ) {
     if (screenFullTextManager.div === null) {
@@ -127,7 +127,7 @@ export function renderScreenFullTextManager(
         ftItemData.type === 'bible-item' &&
         ftItemData.bibleItemData !== undefined
     ) {
-        newDiv = fullTextScreenHelper.genHtmlFromFtBibleItem(
+        newDiv = await fullTextScreenHelper.genHtmlFromFtBibleItem(
             ftItemData.bibleItemData.renderedList,
             screenFullTextManager.isLineSync,
         );
@@ -182,12 +182,12 @@ export function renderScreenFullTextManager(
 }
 
 export async function bibleItemToFtData(bibleItems: BibleItem[]) {
-    const bibleRenderedList =
+    const bibleRenderingList =
         await fullTextScreenHelper.genBibleItemRenderList(bibleItems);
     return {
         type: 'bible-item',
         bibleItemData: {
-            renderedList: bibleRenderedList,
+            renderedList: bibleRenderingList,
             bibleItem: bibleItems[0].toJson(),
         },
         scroll: 0,

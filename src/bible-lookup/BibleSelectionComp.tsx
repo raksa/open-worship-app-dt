@@ -16,8 +16,8 @@ export async function showBibleOption(
     excludeBibleKey: string[],
     onSelect: (bibleKey: string) => void,
 ) {
-    let localBibleInfoList = await getAllLocalBibleInfoList();
-    if (localBibleInfoList === null) {
+    let localeBibleInfoList = await getAllLocalBibleInfoList();
+    if (localeBibleInfoList === null) {
         showAppAlert(
             'Unable to get bible info list',
             'We were sorry, but we are unable to get bible list at the moment' +
@@ -25,19 +25,19 @@ export async function showBibleOption(
         );
         return;
     }
-    localBibleInfoList = localBibleInfoList.filter((bibleInfo) => {
+    localeBibleInfoList = localeBibleInfoList.filter((bibleInfo) => {
         return !excludeBibleKey.includes(bibleInfo.key);
     });
-    const localBibleInfoMap: { [locale: string]: BibleMinimalInfoType[] } = {};
-    localBibleInfoList.forEach((bibleInfo) => {
-        if (localBibleInfoMap[bibleInfo.locale] === undefined) {
-            localBibleInfoMap[bibleInfo.locale] = [];
+    const localeBibleInfoMap: { [locale: string]: BibleMinimalInfoType[] } = {};
+    localeBibleInfoList.forEach((bibleInfo) => {
+        if (localeBibleInfoMap[bibleInfo.locale] === undefined) {
+            localeBibleInfoMap[bibleInfo.locale] = [];
         }
-        localBibleInfoMap[bibleInfo.locale].push(bibleInfo);
+        localeBibleInfoMap[bibleInfo.locale].push(bibleInfo);
     });
     const menuItems: ContextMenuItemType[] = [];
-    for (const locale in localBibleInfoMap) {
-        const bibleInfoList = localBibleInfoMap[locale];
+    for (const locale in localeBibleInfoMap) {
+        const bibleInfoList = localeBibleInfoMap[locale];
         menuItems.push(
             ...[
                 {

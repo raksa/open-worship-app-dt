@@ -5,14 +5,14 @@ import {
     getAllLangsAsync,
     getCurrentLocale,
     getLang,
-    LanguageType,
+    LanguageDataType,
     setCurrentLocale,
 } from '../lang';
 import appProvider from '../server/appProvider';
 
 export default function SettingGeneralLanguageComp() {
     const [isSelecting, setIsSelecting] = useState(false);
-    const [allLangs, setAllLangs] = useState<LanguageType[]>([]);
+    const [allLangs, setAllLangs] = useState<LanguageDataType[]>([]);
     const currentLocale = getCurrentLocale();
     const selectedLang = getLang(currentLocale);
     useAppEffect(() => {

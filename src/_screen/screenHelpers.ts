@@ -8,7 +8,7 @@ import { getSetting, setSetting } from '../helper/settingHelpers';
 import { checkIsValidLocale } from '../lang';
 import { createMouseEvent } from '../context-menu/appContextMenuHelpers';
 import {
-    BibleItemRenderedType,
+    BibleItemRenderingType,
     LyricRenderedType,
 } from './fullTextScreenComps';
 import {
@@ -23,9 +23,10 @@ import appProvider from '../server/appProvider';
 export const fullTextDataTypeList = ['bible-item', 'lyric'] as const;
 export type FullTextDataType = (typeof fullTextDataTypeList)[number];
 export type FullTextItemDataType = {
+    locale: string;
     type: FullTextDataType;
     bibleItemData?: {
-        renderedList: BibleItemRenderedType[];
+        renderedList: BibleItemRenderingType[];
         bibleItem: BibleItemType;
     };
     lyricData?: {

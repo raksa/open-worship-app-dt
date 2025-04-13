@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { getLangCode } from '../../lang';
+import { getLangCode, LocaleType } from '../../lang';
 
 function BibleKeyXMLInputComp({
     defaultVale,
@@ -95,7 +95,7 @@ function BibleNumbersMapXMLInputComp({
 }: Readonly<{
     defaultVale: string;
     onChange: (key: string) => void;
-    locale: string;
+    locale: LocaleType;
 }>) {
     const [value, setValue] = useState(defaultVale);
     const [invalidMessage, setInvalidMessage] = useState<string>('');
@@ -143,7 +143,7 @@ function BibleNumbersMapXMLInputComp({
 
 export function genBibleNumbersMapXMLInput(
     numbers: string[],
-    locale: string,
+    locale: LocaleType,
     onChange: (numbers: string[]) => void,
 ) {
     return (
@@ -164,7 +164,7 @@ function BibleBooksMapXMLInputComp({
 }: Readonly<{
     defaultVale: string;
     onChange: (key: string) => void;
-    locale: string;
+    locale: LocaleType;
 }>) {
     const [value, setValue] = useState(defaultVale);
     const [invalidMessage, setInvalidMessage] = useState<string>('');
@@ -250,7 +250,7 @@ function BibleBooksMapXMLInputComp({
 
 export function genBibleBooksMapXMLInput(
     numbers: string[],
-    locale: string,
+    locale: LocaleType,
     onChange: (numbers: string[]) => void,
 ) {
     return (

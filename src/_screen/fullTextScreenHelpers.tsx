@@ -6,7 +6,7 @@ import {
 } from '../helper/bible-helpers/serverBibleHelpers2';
 import BibleItem from '../bible-list/BibleItem';
 import {
-    BibleItemRenderedType,
+    BibleItemRenderingType,
     FTBibleTable,
     LyricRenderedType,
     FTLyricItem,
@@ -14,19 +14,29 @@ import {
 } from './fullTextScreenComps';
 import { getHTMLChild } from '../helper/helpers';
 import appProvider from '../server/appProvider';
+import { getLangAsync } from '../lang';
 
 const fullTextScreenHelper = {
-    genHtmlFromFtBibleItem(
-        bibleRenderedList: BibleItemRenderedType[],
+    async genHtmlFromFtBibleItem(
+        bibleRenderingList: BibleItemRenderingType[],
         isLineSync: boolean,
     ) {
-        if (bibleRenderedList.length === 0) {
+        if (bibleRenderingList.length === 0) {
             return document.createElement('table');
         }
-        const versesCount = bibleRenderedList[0].verses.length;
+        const bibleRenderingLangList = await Promise.all(
+            bibleRenderingList.map(async (item) => {
+                const lang = (await getLangAsync(item.locale, true))!;
+                return {
+                    ...item,
+                    lang,
+                };
+            }),
+        );
+        const versesCount = bibleRenderingList[0].verses.length;
         const htmlString = ReactDOMServer.renderToStaticMarkup(
             <FTBibleTable
-                bibleRenderedList={bibleRenderedList}
+                bibleRenderingList={bibleRenderingLangList}
                 isLineSync={isLineSync}
                 versesCount={versesCount}
             />,
@@ -35,6 +45,7 @@ const fullTextScreenHelper = {
         div.innerHTML = htmlString;
         return getHTMLChild<HTMLDivElement>(div, 'div');
     },
+
     genHtmlFromFtLyric(
         lyricRenderedList: LyricRenderedType[],
         isLineSync: boolean,
@@ -139,7 +150,7 @@ const fullTextScreenHelper = {
     genBibleItemRenderList(bibleItems: BibleItem[]) {
         return Promise.all(
             bibleItems.map((bibleItem) => {
-                return new Promise<BibleItemRenderedType>((resolve, _) => {
+                return new Promise<BibleItemRenderingType>((resolve, _) => {
                     (async () => {
                         const bibleTitle = await bibleItem.toTitle();
                         const verses = await getVerses(

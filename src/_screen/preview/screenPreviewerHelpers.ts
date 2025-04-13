@@ -35,7 +35,7 @@ export function openContextMenu(event: any, screenManager: ScreenManager) {
     const extraMenuItems: ContextMenuItemType[] = isShowingFT
         ? [
               {
-                  menuTitle: `${isLineSync ? 'Un' : ''}Set Line Sync`,
+                  menuTitle: `${isLineSync ? 'Unset' : 'Set'} Line Sync`,
                   onSelect() {
                       screenFullTextManager.isLineSync = !isLineSync;
                   },

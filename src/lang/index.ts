@@ -7,7 +7,7 @@ import enLangData from './data/en';
 
 export const DEFAULT_LOCALE = 'en-US';
 
-export const allLocalesMap: { [key: string]: string } = {
+export const allLocalesMap = {
     'af-ZA': 'af',
     'am-ET': 'am',
     'ar-AE': 'ar',
@@ -236,27 +236,29 @@ export const allLocalesMap: { [key: string]: string } = {
     'zh-SG': 'zh',
     'zh-TW': 'zh',
     'zu-ZA': 'zu',
-};
+} as const;
 export const reversedLocalesMap: { [key: string]: string } = Object.fromEntries(
     Object.entries(allLocalesMap).map(([key, value]) => [value, key]),
 );
 
-export function getLangCode(locale: string): string | null {
+export function getLangCode(locale: LocaleType): string | null {
     return (allLocalesMap as any)[locale] ?? null;
 }
 
-export const langDataMap: { [key: string]: LanguageType } = {
+export const langDataMap: { [key: string]: LanguageDataType } = {
     km: kmLangData,
     en: enLangData,
 };
 
 export const langCodes = ['km', 'en'] as const;
-export type LocaleType = (typeof langCodes)[number];
-export type LanguageType = {
+export type LocaleType = keyof typeof allLocalesMap;
+export type LanguageDataType = {
+    langCode: string;
+    genCss: () => string;
+    fontFamily: string;
     numList: string[];
     dictionary: AnyObjectType;
     name: string;
-    locale: LocaleType;
     flagSVG: string;
     sanitizeSearchingText: (text: string) => string;
     trimText: (text: string) => string;
@@ -265,17 +267,17 @@ export type LanguageType = {
 
 const LANGUAGE_LOCALE_SETTING_NAME = 'language-locale';
 
-export const defaultLocale: LocaleType = 'en';
+export const defaultLocale: LocaleType = 'en-US';
 let currentLocale: LocaleType = defaultLocale;
 export function setCurrentLocale(locale: LocaleType) {
     setSetting(LANGUAGE_LOCALE_SETTING_NAME, locale);
     currentLocale = locale;
 }
-export function checkIsValidLangCode(locale: any) {
-    return langCodes.includes(locale);
+export function checkIsValidLangCode(text: string) {
+    return langCodes.includes(text as any);
 }
-export function checkIsValidLocale(locale: any) {
-    return !!allLocalesMap[locale];
+export function checkIsValidLocale(text: string) {
+    return !!(allLocalesMap as any)[text];
 }
 export function getCurrentLocale() {
     const lc = getSetting(LANGUAGE_LOCALE_SETTING_NAME, 'en');
@@ -285,20 +287,25 @@ export function getCurrentLocale() {
     return currentLocale;
 }
 
-const cache = new Map<string, LanguageType>();
-export function getLang(langCodeOrLocal: string) {
+const cache = new Map<string, LanguageDataType>();
+export function getLang(langCodeOrLocale: string) {
     // TODO: change to completely locale
-    const langCode = getLangCode(langCodeOrLocal);
-    return cache.get(langCode ?? langCodeOrLocal) ?? null;
+    const langCode = checkIsValidLocale(langCodeOrLocale)
+        ? getLangCode(langCodeOrLocale as any)
+        : langCodeOrLocale;
+    return cache.get(langCode ?? langCodeOrLocale) ?? null;
 }
 
-export async function getLangAsync(locale: string) {
+export async function getLangAsync(locale: LocaleType, isForce = false) {
     if (!cache.has(locale)) {
         try {
             const langData =
                 langDataMap[locale] ?? langDataMap[allLocalesMap[locale]];
             cache.set(locale, langData);
-            const langCode = getLangCode(locale);
+            let langCode = getLangCode(locale);
+            if (langCode === null && isForce) {
+                langCode = getLangCode(defaultLocale);
+            }
             if (langCode !== null) {
                 cache.set(langCode, langData);
             }

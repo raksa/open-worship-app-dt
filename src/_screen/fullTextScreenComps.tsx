@@ -1,17 +1,19 @@
 import { Fragment } from 'react';
 
-import { LocaleType } from '../lang';
-import { getFontFace, getFontFamilyByLocal } from '../server/fontHelpers';
+import { LanguageDataType, LocaleType } from '../lang';
 
 export type BibleRenderVerseType = {
     num: string;
     text: string;
 };
-export type BibleItemRenderedType = {
+export type BibleItemRenderingType = {
     locale: LocaleType;
     bibleKey: string;
     title: string;
     verses: BibleRenderVerseType[];
+};
+export type BibleItemRenderingLangType = BibleItemRenderingType & {
+    lang: LanguageDataType;
 };
 export type LyricRenderedType = {
     title: string;
@@ -22,19 +24,19 @@ export type LyricRenderedType = {
 };
 
 export function FTBibleTable({
-    bibleRenderedList,
+    bibleRenderingList,
     isLineSync,
     versesCount,
 }: Readonly<{
-    bibleRenderedList: BibleItemRenderedType[];
+    bibleRenderingList: BibleItemRenderingLangType[];
     isLineSync: boolean;
     versesCount: number;
 }>) {
-    const fontFaceList = bibleRenderedList.map(({ locale }) => {
-        return getFontFace(locale);
+    const fontFaceList = bibleRenderingList.map(({ lang }) => {
+        return lang.genCss();
     });
     const rendThHeader = (
-        { locale, bibleKey, title }: BibleItemRenderedType,
+        { lang, bibleKey, title }: BibleItemRenderingLangType,
         i: number,
     ) => {
         return (
@@ -42,7 +44,7 @@ export function FTBibleTable({
                 key={title}
                 className="header"
                 style={{
-                    fontFamily: getFontFamilyByLocal(locale),
+                    fontFamily: lang.fontFamily,
                 }}
             >
                 <div style={{ display: 'flex' }}>
@@ -60,13 +62,13 @@ export function FTBibleTable({
     const renderTrBody = (_: any, i: number) => {
         return (
             <tr key={i}>
-                {bibleRenderedList.map(({ locale, verses }, j) => {
+                {bibleRenderingList.map(({ lang, verses }, j) => {
                     const { num, text } = verses[i];
                     return (
                         <td
                             key={j}
                             style={{
-                                fontFamily: getFontFamilyByLocal(locale),
+                                fontFamily: lang.fontFamily,
                             }}
                         >
                             <span className="highlight" data-highlight={i}>
@@ -80,7 +82,7 @@ export function FTBibleTable({
         );
     };
     const renderTdBody = (
-        { locale, verses }: BibleItemRenderedType,
+        { lang, verses }: BibleItemRenderingLangType,
         i: number,
     ) => {
         return (
@@ -91,7 +93,7 @@ export function FTBibleTable({
                             key={j}
                             className="highlight"
                             style={{
-                                fontFamily: getFontFamilyByLocal(locale),
+                                fontFamily: lang.fontFamily,
                             }}
                             data-highlight={j}
                         >
@@ -112,13 +114,13 @@ export function FTBibleTable({
             />
             <table>
                 <thead>
-                    <tr>{bibleRenderedList.map(rendThHeader)}</tr>
+                    <tr>{bibleRenderingList.map(rendThHeader)}</tr>
                 </thead>
                 <tbody>
                     {isLineSync ? (
                         Array.from({ length: versesCount }).map(renderTrBody)
                     ) : (
-                        <tr>{bibleRenderedList.map(renderTdBody)}</tr>
+                        <tr>{bibleRenderingList.map(renderTdBody)}</tr>
                     )}
                 </tbody>
             </table>

@@ -1,4 +1,4 @@
-import { LanguageType } from '..';
+import { LanguageDataType } from '..';
 
 const numList = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
 
@@ -21,11 +21,27 @@ const dictionary = {
     Slide: 'ស្លាយ',
     'Full Text': 'បង្ហាញពេញ',
 };
-const km: LanguageType = {
+const lang: LanguageDataType = {
+    langCode: 'km',
+    genCss: () => {
+        const fontBR = '/fonts/km/Battambang/Battambang-Regular.ttf';
+        const fontBB = '/fonts/km/Battambang/Battambang-Bold.ttf';
+        return `
+        @font-face {
+            font-family: Battambang;
+            src: url(${fontBR}) format("truetype");
+        }
+        @font-face {
+            font-family: Battambang;
+            src: url(${fontBB}) format("truetype");
+            font-weight: bold;
+        }
+        `;
+    },
+    fontFamily: 'Battambang',
     numList,
     dictionary,
     name: 'Khmer',
-    locale: 'km',
     flagSVG: `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="flag-icons-kh" viewBox="0 0 640 480">
     <path fill="#032ea1" d="M0 0h640v480H0z"/>
     <path fill="#e00025" d="M0 120h640v240H0z"/>
@@ -193,7 +209,7 @@ const km: LanguageType = {
             }
         }
         newText = newText.replace(/\s+/g, ' ');
-        newText = km.trimText(newText);
+        newText = lang.trimText(newText);
         return newText;
     },
     trimText: (text: string) => {
@@ -204,4 +220,4 @@ const km: LanguageType = {
     },
 };
 
-export default km;
+export default lang;
