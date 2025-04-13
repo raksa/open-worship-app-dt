@@ -147,7 +147,7 @@ function genAttachBackgroundComponent(
     droppedData: DroppedDataType | null | undefined,
 ) {
     if (droppedData === null || droppedData === undefined) {
-        return {};
+        return null;
     }
     let element = null;
     if (droppedData.type === DragTypeEnum.BACKGROUND_COLOR) {
@@ -182,7 +182,7 @@ function genAttachBackgroundComponent(
             />
         );
     }
-    return { style: {}, element };
+    return element;
 }
 
 function useAttachedBackgroundData(filePath: string, id: string) {
@@ -191,16 +191,13 @@ function useAttachedBackgroundData(filePath: string, id: string) {
     >(undefined);
     useAppEffectAsync(
         async (contextMethods) => {
-            if (droppedData !== undefined) {
-                return;
-            }
             const data = await attachBackgroundManager.getAttachedBackground(
                 filePath,
                 id,
             );
             contextMethods.setDroppedData(data);
         },
-        [droppedData],
+        [filePath, id],
         { setDroppedData },
     );
     useFileSourceEvents(
@@ -212,7 +209,7 @@ function useAttachedBackgroundData(filePath: string, id: string) {
                     setDroppedData(data);
                 });
         },
-        [],
+        [filePath, id],
         AttachBackgroundManager.genMetaDataFilePath(filePath),
     );
     return droppedData;
@@ -270,10 +267,7 @@ export default function ItemRenderComp({
         item.filePath,
         item.id.toString(),
     );
-    const {
-        style: attachedBackgroundStyle,
-        element: attachedBackgroundElement,
-    } = useMemo(() => {
+    const attachedBackgroundElement = useMemo(() => {
         return genAttachBackgroundComponent(attachedBackgroundData);
     }, [attachedBackgroundData]);
     const style: React.CSSProperties = {
@@ -285,7 +279,7 @@ export default function ItemRenderComp({
         <div
             className={`data-vary-app-document-item card pointer ${activeCN} ${presenterCN}`}
             ref={setTargetDiv}
-            style={{ width: `${width}px`, ...attachedBackgroundStyle }}
+            style={{ width: `${width}px` }}
             data-vary-app-document-item-id={item.id}
             draggable
             onDragOver={(event) => {
