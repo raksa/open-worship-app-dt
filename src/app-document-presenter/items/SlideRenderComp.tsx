@@ -48,7 +48,13 @@ export default function SlideRenderComp({
             onClick={onClick}
             onCopy={onCopy}
         >
-            <div className="card-header d-flex" style={{ height: '35px' }}>
+            <div
+                className="card-header d-flex"
+                style={{
+                    height: '35px',
+                    backgroundColor: 'var(--bs-gray-800)',
+                }}
+            >
                 <RenderInfoComp
                     viewIndex={index + 1}
                     varyAppDocumentItem={slide}
