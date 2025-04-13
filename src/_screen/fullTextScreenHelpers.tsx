@@ -5,7 +5,6 @@ import {
     toLocaleNumBible,
 } from '../helper/bible-helpers/serverBibleHelpers2';
 import BibleItem from '../bible-list/BibleItem';
-import appProviderScreen from './appProviderScreen';
 import {
     BibleItemRenderedType,
     FTBibleTable,
@@ -14,6 +13,7 @@ import {
     BibleRenderVerseType,
 } from './fullTextScreenComps';
 import { getHTMLChild } from '../helper/helpers';
+import appProvider from '../server/appProvider';
 
 const fullTextScreenHelper = {
     genHtmlFromFtBibleItem(
@@ -91,7 +91,7 @@ const fullTextScreenHelper = {
             onBibleSelect: (event: MouseEvent, index: number) => void;
         },
     ) {
-        if (!appProviderScreen.isScreen) {
+        if (!appProvider.isPageScreen) {
             const divBibleKeys =
                 div.querySelectorAll<HTMLSpanElement>('div.bible-name');
             Array.from(divBibleKeys).forEach((divBibleKey) => {

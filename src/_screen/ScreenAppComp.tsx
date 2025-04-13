@@ -4,10 +4,10 @@ import ScreenSlideComp from './ScreenVaryAppDocumentComp';
 import ScreenAlertComp from './ScreenAlertComp';
 import ScreenFullTextComp from './ScreenFullTextComp';
 import { RendStyle } from './RenderTransitionEffectComp';
-import appProviderScreen from './appProviderScreen';
 import { createScreenManager } from './managers/screenManagerHelpers';
 import ScreenManager from './managers/ScreenManager';
 import { ScreenManagerBaseContext } from './managers/screenManagerHooks';
+import appProvider from '../server/appProvider';
 
 ScreenManager.initReceiveScreenMessage();
 export default function ScreenAppComp() {
@@ -20,7 +20,7 @@ export default function ScreenAppComp() {
     if (screenManager === null) {
         return null;
     }
-    if (appProviderScreen.isScreen) {
+    if (appProvider.isPageScreen) {
         screenManager.sendScreenMessage(
             {
                 screenId,

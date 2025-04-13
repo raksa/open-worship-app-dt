@@ -20,7 +20,7 @@ import {
     getDisplayIdByScreenId,
     SCREEN_MANAGER_SETTING_NAME,
 } from './screenHelpers';
-import appProviderScreen from '../appProviderScreen';
+import appProvider from '../../server/appProvider';
 
 export type ScreenManagerEventType =
     | 'instance'
@@ -80,9 +80,7 @@ export default class ScreenManagerBase
 
     updateDim() {
         const display = this.display;
-        const dim = appProviderScreen.isScreen
-            ? getWindowDim()
-            : display.bounds;
+        const dim = appProvider.isPageScreen ? getWindowDim() : display.bounds;
         this.width = dim.width;
         this.height = dim.height;
     }

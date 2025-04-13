@@ -5,7 +5,6 @@ import { getSetting, setSetting } from '../../helper/settingHelpers';
 import { SlideType } from '../../app-document-list/Slide';
 import { genPdfSlide } from '../../app-document-presenter/items/PdfSlideRenderComp';
 import { genHtmlSlide } from '../../app-document-presenter/items/SlideRendererComp';
-import appProviderScreen from '../appProviderScreen';
 import {
     BasicScreenMessageType,
     ScreenMessageType,
@@ -25,6 +24,7 @@ import {
 import PdfSlide, { PdfSlideType } from '../../app-document-list/PdfSlide';
 import { attachBackgroundManager } from '../../others/AttachBackgroundManager';
 import ScreenBackgroundManager from './ScreenBackgroundManager';
+import appProvider from '../../server/appProvider';
 
 export type ScreenVaryAppDocumentManagerEventType = 'update';
 
@@ -51,7 +51,7 @@ class ScreenVaryAppDocumentManager extends ScreenEventHandler<ScreenVaryAppDocum
     ) {
         super(screenManagerBase);
         this.slideEffectManager = slideEffectManager;
-        if (appProviderScreen.isPagePresenter) {
+        if (appProvider.isPagePresenter) {
             const allSlideList = getAppDocumentListOnScreenSetting();
             this._varyAppDocumentItemData = allSlideList[this.key] ?? null;
         }
@@ -218,7 +218,7 @@ class ScreenVaryAppDocumentManager extends ScreenEventHandler<ScreenVaryAppDocum
     }
 
     cleanupSlideContent(content: HTMLDivElement) {
-        if (!appProviderScreen.isScreen) {
+        if (!appProvider.isPageScreen) {
             return;
         }
         Array.from(content.children).forEach((child) => {

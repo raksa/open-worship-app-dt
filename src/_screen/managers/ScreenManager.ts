@@ -13,8 +13,8 @@ import {
 } from './screenManagerBaseHelpers';
 import ScreenManagerBase from './ScreenManagerBase';
 import { RegisteredEventType } from '../../event/EventHandler';
-import appProviderScreen from '../appProviderScreen';
 import { ScreenMessageType } from '../screenHelpers';
+import appProvider from '../../server/appProvider';
 
 export default class ScreenManager extends ScreenManagerBase {
     readonly screenBackgroundManager: ScreenBackgroundManager;
@@ -187,7 +187,7 @@ export default class ScreenManager extends ScreenManagerBase {
     }
 
     static initReceiveScreenMessage() {
-        const messageUtils = appProviderScreen.messageUtils;
+        const messageUtils = appProvider.messageUtils;
         const channel = messageUtils.channels.screenMessageChannel;
         messageUtils.listenForData(channel, (_, message: ScreenMessageType) => {
             this.applyScreenManagerSyncScreen(message);
@@ -248,14 +248,14 @@ export default class ScreenManager extends ScreenManagerBase {
     }
 
     sendScreenMessage(message: ScreenMessageType, isForce?: boolean) {
-        if (appProviderScreen.isScreen && !isForce) {
+        if (appProvider.isPageScreen && !isForce) {
             return;
         }
-        const messageUtils = appProviderScreen.messageUtils;
+        const messageUtils = appProvider.messageUtils;
         const channel = messageUtils.channels.screenMessageChannel;
         const isSent = messageUtils.sendDataSync(channel, {
             ...message,
-            isScreen: appProviderScreen.isScreen,
+            isScreen: appProvider.isPageScreen,
         });
         console.assert(isSent, JSON.stringify({ channel, message }));
         ScreenManager.syncScreenManagerGroup(message);

@@ -3,7 +3,6 @@ import { CSSProperties } from 'react';
 import { DragTypeEnum, DroppedDataType } from '../../helper/DragInf';
 import { getImageDim, getVideoDim } from '../../helper/helpers';
 import { setSetting } from '../../helper/settingHelpers';
-import appProviderScreen from '../appProviderScreen';
 import { genHtmlBackground } from '../ScreenBackgroundComp';
 import {
     BackgroundSrcType,
@@ -18,6 +17,7 @@ import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
 import ScreenManagerBase from './ScreenManagerBase';
 import ScreenEffectManager from './ScreenEffectManager';
+import appProvider from '../../server/appProvider';
 
 export type ScreenBackgroundManagerEventType = 'update';
 
@@ -33,7 +33,7 @@ class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManager
     ) {
         super(screenManagerBase);
         this.backgroundEffectManager = backgroundEffectManager;
-        if (appProviderScreen.isPagePresenter) {
+        if (appProvider.isPagePresenter) {
             const allBackgroundSrcList = getBackgroundSrcListOnScreenSetting();
             this._backgroundSrc = allBackgroundSrcList[this.key] ?? null;
         }

@@ -7,7 +7,6 @@ import { isValidJson } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelpers';
 import { checkIsValidLocale } from '../lang';
 import { createMouseEvent } from '../context-menu/appContextMenuHelpers';
-import appProviderScreen from './appProviderScreen';
 import {
     BibleItemRenderedType,
     LyricRenderedType,
@@ -19,6 +18,7 @@ import {
 import { electronSendAsync, unlocking } from '../server/appHelpers';
 import { getValidOnScreen } from './managers/screenManagerBaseHelpers';
 import { VaryAppDocumentItemDataType } from '../app-document-list/appDocumentHelpers';
+import appProvider from '../server/appProvider';
 
 export const fullTextDataTypeList = ['bible-item', 'lyric'] as const;
 export type FullTextDataType = (typeof fullTextDataTypeList)[number];
@@ -107,7 +107,7 @@ export type ScreenMessageType = BasicScreenMessageType & {
     screenId: number;
 };
 
-const messageUtils = appProviderScreen.messageUtils;
+const messageUtils = appProvider.messageUtils;
 
 export function calMediaSizes(
     {

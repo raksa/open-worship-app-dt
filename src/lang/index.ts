@@ -250,8 +250,8 @@ export const langDataMap: { [key: string]: LanguageType } = {
     en: enLangData,
 };
 
-export const locales = ['km', 'en'] as const;
-export type LocaleType = (typeof locales)[number];
+export const langCodes = ['km', 'en'] as const;
+export type LocaleType = (typeof langCodes)[number];
 export type LanguageType = {
     numList: string[];
     dictionary: AnyObjectType;
@@ -271,12 +271,15 @@ export function setCurrentLocale(locale: LocaleType) {
     setSetting(LANGUAGE_LOCALE_SETTING_NAME, locale);
     currentLocale = locale;
 }
+export function checkIsValidLangCode(locale: any) {
+    return langCodes.includes(locale);
+}
 export function checkIsValidLocale(locale: any) {
-    return locales.includes(locale);
+    return !!allLocalesMap[locale];
 }
 export function getCurrentLocale() {
     const lc = getSetting(LANGUAGE_LOCALE_SETTING_NAME, 'en');
-    if (checkIsValidLocale(lc)) {
+    if (checkIsValidLangCode(lc)) {
         currentLocale = lc as LocaleType;
     }
     return currentLocale;

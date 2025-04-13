@@ -4,7 +4,6 @@ import BibleItem from '../../bible-list/BibleItem';
 import { DroppedDataType, DragTypeEnum } from '../../helper/DragInf';
 import { AnyObjectType, isValidJson } from '../../helper/helpers';
 import { getSetting, setSetting } from '../../helper/settingHelpers';
-import appProviderScreen from '../appProviderScreen';
 import fullTextScreenHelper from '../fullTextScreenHelpers';
 import {
     ScreenFTManagerEventType,
@@ -26,6 +25,7 @@ import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
 import ScreenManagerBase from './ScreenManagerBase';
 import { getAllScreenManagerBases } from './screenManagerBaseHelpers';
+import appProvider from '../../server/appProvider';
 
 let textStyle: AnyObjectType = {};
 class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType> {
@@ -37,7 +37,7 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
 
     constructor(screenManagerBase: ScreenManagerBase) {
         super(screenManagerBase);
-        if (appProviderScreen.isPagePresenter) {
+        if (appProvider.isPagePresenter) {
             const allFTList = getFullTextListOnScreenSetting();
             this._ftItemData = allFTList[this.key] ?? null;
 
@@ -126,7 +126,7 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
     private _setMetadata(key: string, value: any) {
         if (this._ftItemData !== null) {
             (this._ftItemData as any)[key] = value;
-            if (!appProviderScreen.isScreen) {
+            if (!appProvider.isPageScreen) {
                 unlocking(
                     `set-meta-${screenManagerSettingNames.FULL_TEXT}`,
                     () => {
