@@ -80,12 +80,17 @@ export function handleArrowing(
     event: KeyboardEvent,
     varyAppDocumentItems: VaryAppDocumentItemType[],
 ) {
-    if (
-        !appProvider.presenterHomePage ||
-        !document.activeElement?.classList.contains(DIV_CLASS_NAME)
-    ) {
+    if (!appProvider.presenterHomePage) {
         return;
     }
+    if (!document.activeElement?.classList.contains(DIV_CLASS_NAME)) {
+        const element = document.querySelector(`.${DIV_CLASS_NAME}`);
+        if (element !== null) {
+            (element as HTMLDivElement).focus();
+        }
+        return;
+    }
+    event.preventDefault();
     const isLeft = ['ArrowLeft', 'ArrowUp', 'PageUp'].includes(event.key);
     const divSelectedList = document.activeElement.querySelectorAll(
         `[${DATA_QUERY_KEY}].highlight-selected`,
