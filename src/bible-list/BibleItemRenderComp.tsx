@@ -66,6 +66,7 @@ function genAttachBackgroundComponent(
             </button>
         );
     }
+    // TODO: show bg on button click
     return element;
 }
 
