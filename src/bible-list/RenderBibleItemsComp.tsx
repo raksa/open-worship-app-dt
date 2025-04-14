@@ -29,6 +29,7 @@ export default function RenderBibleItemsComp({
                             i1,
                         )}
                         bibleItem={bibleItem}
+                        filePath={bible.filePath}
                     />
                 );
             })}

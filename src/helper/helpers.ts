@@ -362,7 +362,7 @@ export function useAppPromise<T>(
 }
 
 export function changeDragEventStyle(
-    event: React.DragEvent<HTMLDivElement>,
+    event: React.DragEvent<HTMLElement>,
     key: string,
     value: string,
 ) {

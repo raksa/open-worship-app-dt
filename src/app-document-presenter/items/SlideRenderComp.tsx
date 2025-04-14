@@ -4,7 +4,7 @@ import { useScreenVaryAppDocumentManagerEvents } from '../../_screen/managers/sc
 import { handleDragStart } from '../../helper/dragHelpers';
 import { use } from 'react';
 import { SelectedEditingSlideContext } from '../../app-document-list/appDocumentHelpers';
-import ItemRenderComp from './ItemRenderComp';
+import SlideItemRenderComp from './SlideItemRenderComp';
 import { ContextMenuItemType } from '../../context-menu/appContextMenuHelpers';
 
 export default function SlideRenderComp({
@@ -37,7 +37,7 @@ export default function SlideRenderComp({
         onDragEnd(event);
     };
     return (
-        <ItemRenderComp
+        <SlideItemRenderComp
             item={slide}
             selectedItem={selectedSlide}
             width={width}
@@ -49,6 +49,6 @@ export default function SlideRenderComp({
             onCopy={onCopy}
         >
             <SlideRendererHtmlComp slide={slide} />
-        </ItemRenderComp>
+        </SlideItemRenderComp>
     );
 }

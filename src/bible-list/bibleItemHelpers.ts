@@ -52,6 +52,7 @@ export async function openBibleItemContextMenu(
     bibleItem: BibleItem,
     index: number,
     openBibleLookup: (() => void) | null,
+    extraMenuItems: ContextMenuItemType[],
 ) {
     const bible = bibleItem.filePath
         ? await Bible.fromFilePath(bibleItem.filePath)
@@ -118,7 +119,7 @@ export async function openBibleItemContextMenu(
             },
         });
     }
-    showAppContextMenu(event, menuItem);
+    showAppContextMenu(event, [...menuItem, ...extraMenuItems]);
 }
 
 export function genDuplicatedMessage(

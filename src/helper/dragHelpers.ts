@@ -8,6 +8,14 @@ import DragInf, {
 import FileSource from './FileSource';
 import { appDocumentItemFromKey } from '../app-document-list/appDocumentHelpers';
 import PdfSlide from '../app-document-list/PdfSlide';
+import { useState } from 'react';
+import AttachBackgroundManager, {
+    attachBackgroundManager,
+} from '../others/AttachBackgroundManager';
+import { useAppEffectAsync } from './debuggerHelpers';
+import { useFileSourceEvents } from './dirSourceHelpers';
+import { changeDragEventStyle } from './helpers';
+import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 
 export function handleDragStart(
     event: any,
@@ -56,4 +64,71 @@ async function deserializeDragData({
         return null;
     }
     return { type, item };
+}
+
+export async function onDropHandling(
+    event: React.DragEvent<HTMLElement>,
+    item: { filePath: string; id: number },
+) {
+    event.preventDefault();
+    changeDragEventStyle(event, 'opacity', '1');
+    const droppedData = await extractDropData(event);
+    if (
+        droppedData !== null &&
+        [
+            DragTypeEnum.BACKGROUND_COLOR,
+            DragTypeEnum.BACKGROUND_IMAGE,
+            DragTypeEnum.BACKGROUND_VIDEO,
+        ].includes(droppedData.type)
+    ) {
+        await attachBackgroundManager.attachDroppedBackground(
+            droppedData,
+            item.filePath,
+            item.id.toString(),
+        );
+    }
+}
+
+export function useAttachedBackgroundData(filePath: string, id: string) {
+    const [droppedData, setDroppedData] = useState<
+        DroppedDataType | null | undefined
+    >(undefined);
+    useAppEffectAsync(
+        async (contextMethods) => {
+            const data = await attachBackgroundManager.getAttachedBackground(
+                filePath,
+                id,
+            );
+            contextMethods.setDroppedData(data);
+        },
+        [filePath, id],
+        { setDroppedData },
+    );
+    useFileSourceEvents(
+        ['update'],
+        () => {
+            attachBackgroundManager
+                .getAttachedBackground(filePath, id)
+                .then((data) => {
+                    setDroppedData(data);
+                });
+        },
+        [filePath, id],
+        AttachBackgroundManager.genMetaDataFilePath(filePath),
+    );
+    return droppedData;
+}
+
+export function genRemovingAttachedBackgroundMenu(
+    filePath: string,
+    id: string,
+): ContextMenuItemType[] {
+    return [
+        {
+            menuTitle: 'Remove background',
+            onSelect: () => {
+                attachBackgroundManager.detachBackground(filePath, id);
+            },
+        },
+    ];
 }

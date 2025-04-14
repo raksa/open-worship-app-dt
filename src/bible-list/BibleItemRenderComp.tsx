@@ -2,7 +2,12 @@ import Bible from './Bible';
 import BibleItem from './BibleItem';
 import ItemReadErrorComp from '../others/ItemReadErrorComp';
 import { useFileSourceRefreshEvents } from '../helper/dirSourceHelpers';
-import { handleDragStart } from '../helper/dragHelpers';
+import {
+    genRemovingAttachedBackgroundMenu,
+    handleDragStart,
+    onDropHandling,
+    useAttachedBackgroundData,
+} from '../helper/dragHelpers';
 import ItemColorNoteComp from '../others/ItemColorNoteComp';
 import { BibleSelectionMiniComp } from '../bible-lookup/BibleSelectionComp';
 import {
@@ -16,6 +21,48 @@ import {
 } from './bibleItemHelpers';
 import { useShowBibleLookupContext } from '../others/commonButtons';
 import appProvider from '../server/appProvider';
+import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
+import { useMemo } from 'react';
+import { changeDragEventStyle } from '../helper/helpers';
+import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
+
+function genAttachBackgroundComponent(
+    droppedData: DroppedDataType | null | undefined,
+) {
+    if (droppedData === null || droppedData === undefined) {
+        return null;
+    }
+    let element = null;
+    if (droppedData.type === DragTypeEnum.BACKGROUND_COLOR) {
+        element = (
+            <i
+                className="bi bi-filter-circle-fill app-border-white-round"
+                style={{
+                    color: droppedData.item,
+                }}
+            ></i>
+        );
+    } else if (droppedData.type === DragTypeEnum.BACKGROUND_IMAGE) {
+        element = (
+            <button
+                className="btn btn-outline-secondary btn-sm"
+                title={droppedData.item.src}
+            >
+                <i className="bi bi-image"></i>
+            </button>
+        );
+    } else if (droppedData.type === DragTypeEnum.BACKGROUND_VIDEO) {
+        element = (
+            <button
+                className="btn btn-outline-secondary btn-sm"
+                title={droppedData.item.src}
+            >
+                <i className="bi bi-file-earmark-play-fill"></i>
+            </button>
+        );
+    }
+    return element;
+}
 
 export default function BibleItemRenderComp({
     index,
@@ -26,7 +73,7 @@ export default function BibleItemRenderComp({
     index: number;
     bibleItem: BibleItem;
     warningMessage?: string;
-    filePath?: string;
+    filePath: string;
 }>) {
     const showBibleLookupPopup = useShowBibleLookupContext();
     const viewController = useBibleItemViewControllerContext();
@@ -42,8 +89,30 @@ export default function BibleItemRenderComp({
         bibleItem.bibleKey = newBibleKey;
         bibleItem.save(bible);
     };
+    const attachedBackgroundData = useAttachedBackgroundData(
+        filePath,
+        bibleItem.id.toString(),
+    );
+    const attachedBackgroundElement = useMemo(() => {
+        return genAttachBackgroundComponent(attachedBackgroundData);
+    }, [attachedBackgroundData]);
     const handleContextMenuOpening = (event: React.MouseEvent<any>) => {
-        openBibleItemContextMenu(event, bibleItem, index, showBibleLookupPopup);
+        const menuItems: ContextMenuItemType[] = [];
+        if (attachedBackgroundData) {
+            menuItems.push(
+                ...genRemovingAttachedBackgroundMenu(
+                    filePath,
+                    bibleItem.id.toString(),
+                ),
+            );
+        }
+        openBibleItemContextMenu(
+            event,
+            bibleItem,
+            index,
+            showBibleLookupPopup,
+            menuItems,
+        );
     };
     const handleDoubleClicking = (event: any) => {
         if (appProvider.isPagePresenter) {
@@ -70,33 +139,50 @@ export default function BibleItemRenderComp({
 
     return (
         <li
-            className="list-group-item item pointer"
+            className="list-group-item item pointer px-1"
             title={title}
             data-index={index + 1}
             draggable
             onDragStart={(event) => {
                 handleDragStart(event, bibleItem);
             }}
+            onDragOver={(event) => {
+                event.preventDefault();
+                changeDragEventStyle(event, 'opacity', '0.5');
+            }}
+            onDragLeave={(event) => {
+                event.preventDefault();
+                changeDragEventStyle(event, 'opacity', '1');
+            }}
+            onDrop={(event) => {
+                onDropHandling(event, {
+                    filePath,
+                    id: bibleItem.id,
+                });
+            }}
             onDoubleClick={handleDoubleClicking}
             onContextMenu={handleContextMenuOpening}
         >
             <div className="d-flex">
                 <ItemColorNoteComp item={bibleItem} />
-                <div className="px-1">
-                    <BibleSelectionMiniComp
-                        bibleKey={bibleItem.bibleKey}
-                        onBibleKeyChange={(_, newValue) => {
-                            changeBible(newValue);
-                        }}
-                        isMinimal
-                    />
+                <div className="d-flex flex-fill">
+                    <div className="px-1">
+                        <BibleSelectionMiniComp
+                            bibleKey={bibleItem.bibleKey}
+                            onBibleKeyChange={(_, newValue) => {
+                                changeBible(newValue);
+                            }}
+                            isMinimal
+                        />
+                    </div>
+                    <span className="app-ellipsis">{title || 'not found'}</span>
+                    {warningMessage && (
+                        <span className="float-end" title={warningMessage}>
+                            ⚠️
+                        </span>
+                    )}
                 </div>
-                <span className="app-ellipsis">{title || 'not found'}</span>
-                {warningMessage && (
-                    <span className="float-end" title={warningMessage}>
-                        ⚠️
-                    </span>
-                )}
+                <div className="float-end">{attachedBackgroundElement}</div>
             </div>
         </li>
     );

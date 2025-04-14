@@ -22,9 +22,8 @@ import {
     VaryAppDocumentItemType,
 } from '../../app-document-list/appDocumentHelpers';
 import PdfSlide, { PdfSlideType } from '../../app-document-list/PdfSlide';
-import { attachBackgroundManager } from '../../others/AttachBackgroundManager';
-import ScreenBackgroundManager from './ScreenBackgroundManager';
 import appProvider from '../../server/appProvider';
+import { applyAttachBackground } from './screenBackgroundHelpers';
 
 export type ScreenVaryAppDocumentManagerEventType = 'update';
 
@@ -82,25 +81,12 @@ class ScreenVaryAppDocumentManager extends ScreenEventHandler<ScreenVaryAppDocum
         setIsPdfFullWidth(isFullWidth);
     }
 
-    async applyAttachBackground(filePath: string, id: string) {
-        const droppedData = await attachBackgroundManager.getAttachedBackground(
-            filePath,
-            id,
-        );
-        if (droppedData === null) {
-            return;
-        }
-        const screenBackgroundManager = ScreenBackgroundManager.getInstance(
-            this.screenId,
-        );
-        screenBackgroundManager.receiveScreenDropped(droppedData);
-    }
-
     set varyAppDocumentItemData(
         appDocumentItemData: VaryAppDocumentItemScreenDataType | null,
     ) {
         if (appDocumentItemData !== null && appDocumentItemData.itemJson) {
-            this.applyAttachBackground(
+            applyAttachBackground(
+                this.screenId,
                 appDocumentItemData.filePath,
                 appDocumentItemData.itemJson.id.toString(),
             );

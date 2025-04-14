@@ -33,6 +33,7 @@ import ScreenEventHandler from './ScreenEventHandler';
 import ScreenManagerBase from './ScreenManagerBase';
 import { getAllScreenManagerBases } from './screenManagerBaseHelpers';
 import appProvider from '../../server/appProvider';
+import { applyAttachBackground } from './screenBackgroundHelpers';
 
 let textStyle: AnyObjectType = {};
 class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType> {
@@ -365,6 +366,7 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
             genScreenMouseEvent(event) as any,
             isForceChoosing,
         );
+        const filePath = bibleItem.filePath;
         screenIds.forEach(async (screenId) => {
             const screenFullTextManager = this.getInstance(screenId);
             const bibleKeys = screenFullTextManager.getRenderedBibleKeys();
@@ -373,6 +375,13 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
                 bibleKeys,
             );
             screenFullTextManager.applyFullDataSrcWithSyncGroup(newFtItemData);
+            if (filePath !== undefined) {
+                applyAttachBackground(
+                    screenId,
+                    filePath,
+                    bibleItemJson.id.toString(),
+                );
+            }
         });
     }
 

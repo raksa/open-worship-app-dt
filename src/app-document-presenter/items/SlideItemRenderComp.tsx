@@ -3,19 +3,20 @@ import './VaryAppDocumentItem.scss';
 import Slide from '../../app-document-list/Slide';
 import ScreenVaryAppDocumentManager from '../../_screen/managers/ScreenVaryAppDocumentManager';
 import { useScreenVaryAppDocumentManagerEvents } from '../../_screen/managers/screenEventHelpers';
-import { extractDropData, handleDragStart } from '../../helper/dragHelpers';
+import {
+    genRemovingAttachedBackgroundMenu,
+    handleDragStart,
+    onDropHandling,
+    useAttachedBackgroundData,
+} from '../../helper/dragHelpers';
 import ShowingScreenIcon from '../../_screen/preview/ShowingScreenIcon';
 import appProvider from '../../server/appProvider';
 import { VaryAppDocumentItemType } from '../../app-document-list/appDocumentHelpers';
 import { changeDragEventStyle } from '../../helper/helpers';
 import { DragTypeEnum, DroppedDataType } from '../../helper/DragInf';
-import AttachBackgroundManager, {
-    attachBackgroundManager,
-} from '../../others/AttachBackgroundManager';
 import { ContextMenuItemType } from '../../context-menu/appContextMenuHelpers';
 import { useMemo, useState } from 'react';
-import { useFileSourceEvents } from '../../helper/dirSourceHelpers';
-import { useAppEffect, useAppEffectAsync } from '../../helper/debuggerHelpers';
+import { useAppEffect } from '../../helper/debuggerHelpers';
 
 function RenderScreenInfoComp({
     varyAppDocumentItem,
@@ -120,29 +121,6 @@ export function toClassNameHighlight(
     };
 }
 
-async function onDropHandling(
-    event: React.DragEvent<HTMLDivElement>,
-    item: VaryAppDocumentItemType,
-) {
-    event.preventDefault();
-    changeDragEventStyle(event, 'opacity', '1');
-    const droppedData = await extractDropData(event);
-    if (
-        droppedData !== null &&
-        [
-            DragTypeEnum.BACKGROUND_COLOR,
-            DragTypeEnum.BACKGROUND_IMAGE,
-            DragTypeEnum.BACKGROUND_VIDEO,
-        ].includes(droppedData.type)
-    ) {
-        await attachBackgroundManager.attachDroppedBackground(
-            droppedData,
-            item.filePath,
-            item.id.toString(),
-        );
-    }
-}
-
 function genAttachBackgroundComponent(
     droppedData: DroppedDataType | null | undefined,
 ) {
@@ -185,36 +163,6 @@ function genAttachBackgroundComponent(
     return element;
 }
 
-function useAttachedBackgroundData(filePath: string, id: string) {
-    const [droppedData, setDroppedData] = useState<
-        DroppedDataType | null | undefined
-    >(undefined);
-    useAppEffectAsync(
-        async (contextMethods) => {
-            const data = await attachBackgroundManager.getAttachedBackground(
-                filePath,
-                id,
-            );
-            contextMethods.setDroppedData(data);
-        },
-        [filePath, id],
-        { setDroppedData },
-    );
-    useFileSourceEvents(
-        ['update'],
-        () => {
-            attachBackgroundManager
-                .getAttachedBackground(filePath, id)
-                .then((data) => {
-                    setDroppedData(data);
-                });
-        },
-        [filePath, id],
-        AttachBackgroundManager.genMetaDataFilePath(filePath),
-    );
-    return droppedData;
-}
-
 export function useScale(item: VaryAppDocumentItemType) {
     const [targetDiv, setTargetDiv] = useState<HTMLDivElement | null>(null);
     const [parentWidth, setParentWidth] = useState(0);
@@ -238,7 +186,7 @@ export function useScale(item: VaryAppDocumentItemType) {
     };
 }
 
-export default function ItemRenderComp({
+export default function SlideItemRenderComp({
     item,
     width,
     onClick,
@@ -302,15 +250,12 @@ export default function ItemRenderComp({
             onContextMenu={(event) => {
                 const menuItems: ContextMenuItemType[] = [];
                 if (attachedBackgroundData) {
-                    menuItems.push({
-                        menuTitle: 'Remove background',
-                        onSelect: () => {
-                            attachBackgroundManager.detachBackground(
-                                item.filePath,
-                                item.id.toString(),
-                            );
-                        },
-                    });
+                    menuItems.push(
+                        ...genRemovingAttachedBackgroundMenu(
+                            item.filePath,
+                            item.id.toString(),
+                        ),
+                    );
                 }
                 onContextMenu(event, menuItems);
             }}

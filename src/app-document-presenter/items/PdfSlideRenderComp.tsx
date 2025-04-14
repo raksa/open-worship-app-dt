@@ -3,7 +3,7 @@ import ReactDOMServer from 'react-dom/server';
 import { getHTMLChild } from '../../helper/helpers';
 import { handleDragStart } from '../../helper/dragHelpers';
 import PdfSlide from '../../app-document-list/PdfSlide';
-import ItemRenderComp, { useScale } from './ItemRenderComp';
+import SlideItemRenderComp, { useScale } from './SlideItemRenderComp';
 import { ContextMenuItemType } from '../../context-menu/appContextMenuHelpers';
 
 function PdfSlideRenderContentComp({
@@ -72,7 +72,7 @@ export default function PdfSlideRenderComp({
         onDragEnd(event);
     };
     return (
-        <ItemRenderComp
+        <SlideItemRenderComp
             item={pdfSlide}
             width={width}
             index={index}
@@ -96,6 +96,6 @@ export default function PdfSlideRenderComp({
                     <PdfSlideRenderContentComp pdfImageSrc={pdfPreviewSrc} />
                 )}
             </div>
-        </ItemRenderComp>
+        </SlideItemRenderComp>
     );
 }

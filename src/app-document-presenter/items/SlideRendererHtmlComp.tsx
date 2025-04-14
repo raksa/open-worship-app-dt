@@ -1,6 +1,6 @@
 import Slide from '../../app-document-list/Slide';
 import SlideRendererComp from './SlideRendererComp';
-import { useScale } from './ItemRenderComp';
+import { useScale } from './SlideItemRenderComp';
 
 export default function SlideRendererHtmlComp({
     slide,

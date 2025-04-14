@@ -11,6 +11,7 @@ import { getAllLocalBibleInfoList } from '../helper/bible-helpers/bibleDownloadH
 import { FullTextItemDataType } from './screenHelpers';
 import { getDisplayByScreenId } from './managers/screenHelpers';
 import { BibleItemType } from '../bible-list/bibleItemHelpers';
+import { cloneJson } from '../helper/helpers';
 
 export type ScreenFTManagerEventType = 'update' | 'text-style';
 
@@ -199,8 +200,12 @@ export async function renderScreenFullTextManager(
 
 export async function bibleItemJsonToFtData(
     bibleItemJson: BibleItemType,
-    newBibleKeys: string[],
+    bibleKeys: string[],
 ) {
+    const newBibleKeys = cloneJson(bibleKeys);
+    if (newBibleKeys.length === 0) {
+        return await bibleItemToFtData([BibleItem.fromJson(bibleItemJson)]);
+    }
     const newBibleItems = newBibleKeys.map((bibleKey1) => {
         const bibleItem = BibleItem.fromJson(bibleItemJson);
         bibleItem.bibleKey = bibleKey1;
