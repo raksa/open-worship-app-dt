@@ -15,7 +15,6 @@ import {
     ScreenFTManagerEventType,
     SCREEN_FT_SETTING_PREFIX,
     renderScreenFullTextManager,
-    bibleItemToFtData,
     bibleItemJsonToFtData,
 } from '../screenFullTextHelpers';
 import {
@@ -34,6 +33,7 @@ import ScreenManagerBase from './ScreenManagerBase';
 import { getAllScreenManagerBases } from './screenManagerBaseHelpers';
 import appProvider from '../../server/appProvider';
 import { applyAttachBackground } from './screenBackgroundHelpers';
+import { BibleItemType } from '../../bible-list/bibleItemHelpers';
 
 let textStyle: AnyObjectType = {};
 class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType> {
@@ -356,6 +356,25 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
         this.textStyle = data.textStyle;
     }
 
+    async applyNewBibleItemJson(
+        bibleItemJson: BibleItemType,
+        filePath: string | undefined,
+    ) {
+        const bibleKeys = this.getRenderedBibleKeys();
+        const newFtItemData = await bibleItemJsonToFtData(
+            bibleItemJson,
+            bibleKeys,
+        );
+        this.applyFullDataSrcWithSyncGroup(newFtItemData);
+        if (filePath !== undefined) {
+            applyAttachBackground(
+                this.screenId,
+                filePath,
+                bibleItemJson.id.toString(),
+            );
+        }
+    }
+
     static async handleBibleItemSelecting(
         event: React.MouseEvent | null,
         bibleItem: BibleItem,
@@ -369,19 +388,10 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
         const filePath = bibleItem.filePath;
         screenIds.forEach(async (screenId) => {
             const screenFullTextManager = this.getInstance(screenId);
-            const bibleKeys = screenFullTextManager.getRenderedBibleKeys();
-            const newFtItemData = await bibleItemJsonToFtData(
+            screenFullTextManager.applyNewBibleItemJson(
                 bibleItemJson,
-                bibleKeys,
+                filePath,
             );
-            screenFullTextManager.applyFullDataSrcWithSyncGroup(newFtItemData);
-            if (filePath !== undefined) {
-                applyAttachBackground(
-                    screenId,
-                    filePath,
-                    bibleItemJson.id.toString(),
-                );
-            }
         });
     }
 
@@ -428,10 +438,11 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
 
     async receiveScreenDropped(droppedData: DroppedDataType) {
         if (droppedData.type === DragTypeEnum.BIBLE_ITEM) {
-            const newFullTextItemData = await bibleItemToFtData([
-                droppedData.item,
-            ]);
-            this.applyFullDataSrcWithSyncGroup(newFullTextItemData);
+            const bibleItem: BibleItem = droppedData.item;
+            this.applyNewBibleItemJson(
+                bibleItem.toJson(),
+                droppedData.item.filePath,
+            );
         } else {
             loggerHelpers.log(droppedData);
         }

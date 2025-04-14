@@ -218,14 +218,20 @@ export default class BibleItem
         this.originalJson = bibleItem.originalJson;
     }
     dragSerialize() {
+        const data = this.toJson() as any;
+        data.filePath = this.filePath;
         return {
             type: DragTypeEnum.BIBLE_ITEM,
-            data: this.toJson(),
+            data,
         };
     }
     static dragDeserialize(data: any) {
         try {
-            return this.fromJson(data);
+            const bibleItem = this.fromJson(data);
+            if (data.filePath) {
+                bibleItem.filePath = data.filePath;
+            }
+            return bibleItem;
         } catch (error) {
             handleError(error);
         }
