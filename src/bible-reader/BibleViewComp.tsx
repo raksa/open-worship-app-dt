@@ -18,9 +18,11 @@ export default function BibleViewComp({
     bibleItem: BibleItem;
 }>) {
     const viewController = useBibleItemViewControllerContext();
+    const uuid = crypto.randomUUID();
     return (
         <BibleItemContext value={bibleItem}>
             <div
+                id={`uuid-${uuid}`}
                 className="bible-view card flex-fill w-100 h-100"
                 style={{ minWidth: '30%' }}
                 onDragOver={(event) => {
@@ -39,7 +41,7 @@ export default function BibleViewComp({
                 onContextMenu={(event: any) => {
                     showAppContextMenu(event, [
                         ...genDefaultBibleItemContextMenu(bibleItem),
-                        ...viewController.genContextMenu(bibleItem),
+                        ...viewController.genContextMenu(bibleItem, uuid),
                     ]);
                 }}
             >

@@ -19,6 +19,7 @@ import { EventMapper } from '../event/KeyboardEventListener';
 import { finalRenderer } from './BibleViewComp';
 import { genContextMenuItemShortcutKey } from '../context-menu/AppContextMenuComp';
 import appProvider from '../server/appProvider';
+import { BIBLE_VIEW_TEXT_CLASS } from './BibleViewExtra';
 
 export type UpdateEventType = 'update';
 export const RESIZE_SETTING_NAME = 'bible-previewer-render';
@@ -445,7 +446,7 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
     addBibleItemBottom(bibleItem: BibleItem, newBibleItem: BibleItem) {
         this.addBibleItem(bibleItem, newBibleItem, false, false);
     }
-    genContextMenu(bibleItem: BibleItem): ContextMenuItemType[] {
+    genContextMenu(bibleItem: BibleItem, uuid: string): ContextMenuItemType[] {
         return [
             {
                 menuTitle: 'Split Horizontal',
@@ -456,8 +457,8 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
             },
             {
                 menuTitle: 'Split Horizontal To',
-                onSelect: (event: any) => {
-                    showBibleOption(event, [], (newBibleKey: string) => {
+                onSelect: (event1: any) => {
+                    showBibleOption(event1, [], (newBibleKey: string) => {
                         const newBibleItem = bibleItem.clone();
                         newBibleItem.bibleKey = newBibleKey;
                         this.addBibleItemLeft(bibleItem, newBibleItem);
@@ -473,8 +474,8 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
             },
             {
                 menuTitle: 'Split Vertical To',
-                onSelect: (event: any) => {
-                    showBibleOption(event, [], (newBibleKey: string) => {
+                onSelect: (event2: any) => {
+                    showBibleOption(event2, [], (newBibleKey: string) => {
                         const newBibleItem = bibleItem.clone();
                         newBibleItem.bibleKey = newBibleKey;
                         this.addBibleItemBottom(bibleItem, newBibleItem);
@@ -490,6 +491,16 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
                     appProvider.browserUtils.openExternalURL(
                         `${url}/view.html?bookKey=${bookKey}&chapterKey=${chapterKey}`,
                     );
+                },
+            },
+            {
+                menuTitle: 'Toggle Widget Full View',
+                onSelect: () => {
+                    document
+                        .querySelector(
+                            `#uuid-${uuid} .${BIBLE_VIEW_TEXT_CLASS}`,
+                        )
+                        ?.classList.toggle('app-full-view');
                 },
             },
         ];
@@ -572,14 +583,14 @@ export class LookupBibleItemViewController extends BibleItemViewController {
         this.selectedBibleItem = newBibleItem;
         this.setLookupContentFromBibleItem(newBibleItem);
     }
-    genContextMenu(bibleItem: BibleItem): ContextMenuItemType[] {
+    genContextMenu(bibleItem: BibleItem, uuid: string): ContextMenuItemType[] {
         const isBibleItemSelected = this.checkIsBibleItemSelected(bibleItem);
         const menu1 = genFoundBibleItemContextMenu(
             bibleItem,
             this.onLookupAddBibleItem,
             isBibleItemSelected,
         );
-        const menus2 = super.genContextMenu(bibleItem);
+        const menus2 = super.genContextMenu(bibleItem, uuid);
         if (!isBibleItemSelected) {
             menus2.push({
                 menuTitle: 'Edit',

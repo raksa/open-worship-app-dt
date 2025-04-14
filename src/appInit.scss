@@ -56,6 +56,17 @@
     }
   }
 
+  .app-full-view {
+    position: fixed !important;
+    background-color: var(--bs-gray-800) !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    overflow-y: auto !important;
+    z-index: $z-index-widget-full-view !important;
+  }
+
   .flex-item {
     display: flex;
     position: relative;

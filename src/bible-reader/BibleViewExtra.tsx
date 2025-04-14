@@ -126,6 +126,8 @@ function handleVersesSelecting(event: any) {
     }
 }
 
+export const BIBLE_VIEW_TEXT_CLASS = 'bible-view-text';
+
 export function BibleViewTextComp() {
     const bibleItem = useBibleItemContext();
     const fontSize = useBibleViewFontSizeContext();
@@ -135,7 +137,7 @@ export function BibleViewTextComp() {
     }
     return (
         <div
-            className="bible-view-text app-selectable-text pt-3"
+            className={`${BIBLE_VIEW_TEXT_CLASS} app-selectable-text pt-3`}
             style={{ fontSize: `${fontSize}px`, paddingBottom: '100px' }}
         >
             {result.map(([verse, text]) => {

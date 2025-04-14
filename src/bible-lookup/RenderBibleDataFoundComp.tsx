@@ -31,14 +31,17 @@ export default function RenderBibleDataFoundComp({
     useFoundActionKeyboard(bibleItem);
     const viewController = LookupBibleItemViewController.getInstance();
     viewController.selectedBibleItem.syncData(bibleItem);
+    const uuid = crypto.randomUUID();
     return (
         <div
+            id={`uuid-${uuid}`}
             className="card border-success w-100 h-100"
             onContextMenu={(event) => {
                 showAppContextMenu(event as any, [
                     ...genDefaultBibleItemContextMenu(bibleItem),
                     ...viewController.genContextMenu(
                         viewController.selectedBibleItem,
+                        uuid,
                     ),
                 ]);
             }}
