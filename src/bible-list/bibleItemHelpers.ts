@@ -82,7 +82,7 @@ export async function openBibleItemContextMenu(
         ...genShowOnScreensContextMenu((event) => {
             ScreenFullTextManager.handleBibleItemSelecting(
                 event,
-                [bibleItem],
+                bibleItem,
                 true,
             );
         }),

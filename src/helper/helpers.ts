@@ -373,7 +373,6 @@ export function bringDomToNearestView(dom: Element) {
     dom.scrollIntoView({
         behavior: 'smooth',
         block: 'nearest',
-        inline: 'nearest',
     });
 }
 
@@ -381,7 +380,6 @@ export function bringDomToCenterView(dom: Element) {
     dom.scrollIntoView({
         behavior: 'smooth',
         block: 'center',
-        inline: 'center',
     });
 }
 

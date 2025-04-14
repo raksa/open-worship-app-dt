@@ -10,6 +10,7 @@ import { showAppAlert } from '../popup-widget/popupWidgetHelpers';
 import { getAllLocalBibleInfoList } from '../helper/bible-helpers/bibleDownloadHelpers';
 import { FullTextItemDataType } from './screenHelpers';
 import { getDisplayByScreenId } from './managers/screenHelpers';
+import { BibleItemType } from '../bible-list/bibleItemHelpers';
 
 export type ScreenFTManagerEventType = 'update' | 'text-style';
 
@@ -24,6 +25,28 @@ function onSelectIndex(
     screenFTManager.selectedIndex = selectedIndex;
     screenFTManager.sendSyncSelectedIndex();
 }
+
+async function applyBibleItems(
+    screenFTManager: ScreenFullTextManager,
+    ftItemData: FullTextItemDataType,
+    newBibleKeys: string[],
+) {
+    const bibleItemJson = ftItemData.bibleItemData?.bibleItem;
+    if (bibleItemJson === undefined) {
+        showAppAlert(
+            'Fail to get bible item data',
+            'We were sorry, but we are unable to get bible item data at ' +
+                'the moment please try again later',
+        );
+        return;
+    }
+    const newFtItemData = await bibleItemJsonToFtData(
+        bibleItemJson,
+        newBibleKeys,
+    );
+    screenFTManager.fullTextItemData = newFtItemData;
+}
+
 async function onBibleSelect(
     screenFTManager: ScreenFullTextManager,
     event: any,
@@ -47,24 +70,7 @@ async function onBibleSelect(
     const bibleListFiltered = localBibleInfoList.filter((bibleInfo) => {
         return !bibleItemingList.includes(bibleInfo.key);
     });
-    const applyBibleItems = async (newBibleKeys: string[]) => {
-        const bibleItemJson = ftItemData.bibleItemData?.bibleItem;
-        if (bibleItemJson === undefined) {
-            showAppAlert(
-                'Fail to get bible item data',
-                'We were sorry, but we are unable to get bible item data at ' +
-                    'the moment please try again later',
-            );
-            return;
-        }
-        const newBibleItems = newBibleKeys.map((bibleKey1) => {
-            const bibleItem = BibleItem.fromJson(bibleItemJson);
-            bibleItem.bibleKey = bibleKey1;
-            return bibleItem;
-        });
-        const newFtItemData = await bibleItemToFtData(newBibleItems);
-        screenFTManager.fullTextItemData = newFtItemData;
-    };
+
     const menuItems: ContextMenuItemType[] = [
         ...(bibleRenderingList.length > 1
             ? [
@@ -73,7 +79,11 @@ async function onBibleSelect(
                           'Remove(' + bibleRenderingList[index].bibleKey + ')',
                       onSelect: async () => {
                           bibleItemingList.splice(index, 1);
-                          applyBibleItems(bibleItemingList);
+                          applyBibleItems(
+                              screenFTManager,
+                              ftItemData,
+                              bibleItemingList,
+                          );
                       },
                       otherChild: (
                           <i className="bi bi-x-lg" style={{ color: 'red' }} />
@@ -99,7 +109,11 @@ async function onBibleSelect(
                     } else {
                         bibleItemingList[index] = bibleKey;
                     }
-                    applyBibleItems(bibleItemingList);
+                    applyBibleItems(
+                        screenFTManager,
+                        ftItemData,
+                        bibleItemingList,
+                    );
                 },
             };
         }),
@@ -181,6 +195,18 @@ export async function renderScreenFullTextManager(
     screenFullTextManager.div.appendChild(divContainer);
     screenFullTextManager.renderScroll(true);
     screenFullTextManager.renderSelectedIndex();
+}
+
+export async function bibleItemJsonToFtData(
+    bibleItemJson: BibleItemType,
+    newBibleKeys: string[],
+) {
+    const newBibleItems = newBibleKeys.map((bibleKey1) => {
+        const bibleItem = BibleItem.fromJson(bibleItemJson);
+        bibleItem.bibleKey = bibleKey1;
+        return bibleItem;
+    });
+    return await bibleItemToFtData(newBibleItems);
 }
 
 export async function bibleItemToFtData(bibleItems: BibleItem[]) {

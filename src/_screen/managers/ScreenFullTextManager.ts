@@ -16,6 +16,7 @@ import {
     SCREEN_FT_SETTING_PREFIX,
     renderScreenFullTextManager,
     bibleItemToFtData,
+    bibleItemJsonToFtData,
 } from '../screenFullTextHelpers';
 import {
     BasicScreenMessageType,
@@ -128,6 +129,15 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
         });
         this.sendSyncScreen();
         this.fireUpdateEvent();
+    }
+
+    getRenderedBibleKeys() {
+        if (this._ftItemData === null) {
+            return [];
+        }
+        return (this._ftItemData.bibleItemData?.renderedList ?? []).map(
+            ({ bibleKey }) => bibleKey,
+        );
     }
 
     private _setMetadata(key: string, value: any) {
@@ -347,17 +357,22 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
 
     static async handleBibleItemSelecting(
         event: React.MouseEvent | null,
-        bibleItems: BibleItem[],
+        bibleItem: BibleItem,
         isForceChoosing = false,
     ) {
-        const ftItemData = await bibleItemToFtData(bibleItems);
+        const bibleItemJson = bibleItem.toJson();
         const screenIds = await this.chooseScreenIds(
             genScreenMouseEvent(event) as any,
             isForceChoosing,
         );
-        screenIds.forEach((screenId) => {
+        screenIds.forEach(async (screenId) => {
             const screenFullTextManager = this.getInstance(screenId);
-            screenFullTextManager.applyFullDataSrcWithSyncGroup(ftItemData);
+            const bibleKeys = screenFullTextManager.getRenderedBibleKeys();
+            const newFtItemData = await bibleItemJsonToFtData(
+                bibleItemJson,
+                bibleKeys,
+            );
+            screenFullTextManager.applyFullDataSrcWithSyncGroup(newFtItemData);
         });
     }
 
