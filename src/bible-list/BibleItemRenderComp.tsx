@@ -35,29 +35,34 @@ function genAttachBackgroundComponent(
     let element = null;
     if (droppedData.type === DragTypeEnum.BACKGROUND_COLOR) {
         element = (
-            <i
-                className="bi bi-filter-circle-fill app-border-white-round"
-                style={{
-                    color: droppedData.item,
-                }}
-            ></i>
+            <button
+                className="btn btn-secondary btn-sm"
+                title={droppedData.item}
+            >
+                <i
+                    className="bi bi-filter-circle-fill"
+                    style={{
+                        color: droppedData.item,
+                    }}
+                />
+            </button>
         );
     } else if (droppedData.type === DragTypeEnum.BACKGROUND_IMAGE) {
         element = (
             <button
-                className="btn btn-outline-secondary btn-sm"
+                className="btn btn-secondary btn-sm"
                 title={droppedData.item.src}
             >
-                <i className="bi bi-image"></i>
+                <i className="bi bi-image" />
             </button>
         );
     } else if (droppedData.type === DragTypeEnum.BACKGROUND_VIDEO) {
         element = (
             <button
-                className="btn btn-outline-secondary btn-sm"
+                className="btn btn-secondary btn-sm"
                 title={droppedData.item.src}
             >
-                <i className="bi bi-file-earmark-play-fill"></i>
+                <i className="bi bi-file-earmark-play-fill" />
             </button>
         );
     }
