@@ -27,6 +27,7 @@ export type OptionsType = {
     coord?: { x: number; y: number };
     style?: React.CSSProperties;
     noKeystroke?: boolean;
+    applyOnTab?: boolean;
 };
 
 export type PropsType = {
@@ -177,11 +178,32 @@ function appKeyUpDown(isUp: boolean) {
         (tableDiv as any)?.focus();
     }, 100);
 }
-function checkKeyUpDown(event: any, items: ContextMenuItemType[]) {
+function checkKeyUpDown(event: any, data: PropsType) {
+    const apply = (item: ContextMenuItemType) => {
+        stopEvent();
+        contextControl.setDataDelegator?.(null);
+        if (item.disabled) {
+            return;
+        }
+        item.onSelect?.(event);
+    };
     const stopEvent = () => {
         event.preventDefault();
         event.stopPropagation();
     };
+    const { items, options } = data;
+    if (options?.applyOnTab && ['Tab'].includes(event.key)) {
+        const itemData = getDomItems();
+        let index = itemData.index;
+        if (index === -1) {
+            index = 0;
+        }
+        const item = items[index];
+        if (item !== undefined) {
+            apply(item);
+        }
+        return;
+    }
     if (['Enter'].includes(event.key)) {
         const menuContainer = getMenuContainer();
         if (menuContainer !== document.activeElement) {
@@ -189,9 +211,7 @@ function checkKeyUpDown(event: any, items: ContextMenuItemType[]) {
         }
         const { index } = getDomItems();
         if (items[index] !== undefined) {
-            stopEvent();
-            contextControl.setDataDelegator?.(null);
-            items[index].onSelect?.(event);
+            apply(items[index]);
         }
         return;
     }
@@ -289,7 +309,7 @@ export function useAppContextMenuData() {
             if (data === null) {
                 return;
             }
-            checkKeyUpDown(event, data.items);
+            checkKeyUpDown(event, data);
         },
         [data],
     );

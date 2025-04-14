@@ -1,4 +1,4 @@
-import { clipboard } from 'electron';
+import { clipboard, shell } from 'electron';
 import url from 'node:url';
 import { rootUrlAccess } from '../fsServe';
 import { isSecured } from '../electronHelpers';
@@ -14,6 +14,11 @@ const browserUtils = {
         }
         urlPath = urlPath.slice('file://'.length);
         return `${rootUrlAccess}://${urlPath}`;
+    },
+    openExternalURL(url: string) {
+        shell.openExternal(url).catch((error: Error) => {
+            console.error('Failed to open URL:', error);
+        });
     },
 };
 

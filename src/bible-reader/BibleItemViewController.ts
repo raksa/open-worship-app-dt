@@ -18,6 +18,7 @@ import {
 import { EventMapper } from '../event/KeyboardEventListener';
 import { finalRenderer } from './BibleViewComp';
 import { genContextMenuItemShortcutKey } from '../context-menu/AppContextMenuComp';
+import appProvider from '../server/appProvider';
 
 export type UpdateEventType = 'update';
 export const RESIZE_SETTING_NAME = 'bible-previewer-render';
@@ -478,6 +479,17 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
                         newBibleItem.bibleKey = newBibleKey;
                         this.addBibleItemBottom(bibleItem, newBibleItem);
                     });
+                },
+            },
+            {
+                menuTitle: 'Open Khmer Study Bible',
+                onSelect: () => {
+                    const url = 'https://sb1954sb.openworship.app';
+                    const bookKey = bibleItem.target.bookKey;
+                    const chapterKey = bibleItem.target.chapter;
+                    appProvider.browserUtils.openExternalURL(
+                        `${url}/view.html?bookKey=${bookKey}&chapterKey=${chapterKey}`,
+                    );
                 },
             },
         ];

@@ -129,6 +129,7 @@ const appProvider = (window as any).provider as Readonly<
         browserUtils: {
             copyToClipboard: (str: string) => void;
             pathToFileURL: (filePath: string) => string;
+            openExternalURL: (url: string) => void;
         };
         messageUtils: MessageUtilsType;
         httpUtils: {

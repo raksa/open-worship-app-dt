@@ -375,6 +375,7 @@ export default class BibleSearchController {
                     opacity: 0.9,
                 },
                 noKeystroke: true,
+                applyOnTab: true,
             },
         );
         this.menuControllerSession.promiseDone.then(() => {
