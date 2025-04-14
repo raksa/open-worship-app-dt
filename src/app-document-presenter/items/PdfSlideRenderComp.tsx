@@ -61,7 +61,7 @@ export default function PdfSlideRenderComp({
     onDragStart: (event: React.DragEvent<HTMLDivElement>) => void;
     onDragEnd: (event: React.DragEvent<HTMLDivElement>) => void;
 }>) {
-    const { scale, parentWidth, setParentDiv } = useScale(pdfSlide);
+    const { scale, parentWidth, setParentDiv } = useScale(pdfSlide, width);
     useScreenVaryAppDocumentManagerEvents(['update']);
     const pdfPreviewSrc = pdfSlide.pdfPreviewSrc;
     const dragStartHandling = (event: any) => {

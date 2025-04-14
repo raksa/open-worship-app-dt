@@ -163,12 +163,12 @@ function genAttachBackgroundComponent(
     return element;
 }
 
-export function useScale(item: VaryAppDocumentItemType) {
+export function useScale(item: VaryAppDocumentItemType, thumbnailSize: number) {
     const [targetDiv, setTargetDiv] = useState<HTMLDivElement | null>(null);
     const [parentWidth, setParentWidth] = useState(0);
     useAppEffect(() => {
         setParentWidth(targetDiv?.clientWidth ?? 0);
-    }, [targetDiv]);
+    }, [targetDiv, thumbnailSize]);
     const scale = useMemo(() => {
         return parentWidth / item.width;
     }, [parentWidth, item]);
@@ -208,7 +208,7 @@ export default function SlideItemRenderComp({
     selectedItem?: VaryAppDocumentItemType | null;
     children: React.ReactNode;
 }>) {
-    const { scale, setTargetDiv } = useScale(item);
+    const { scale, setTargetDiv } = useScale(item, width);
     useScreenVaryAppDocumentManagerEvents(['update']);
     const { activeCN, presenterCN } = toClassNameHighlight(item, selectedItem);
     const attachedBackgroundData = useAttachedBackgroundData(

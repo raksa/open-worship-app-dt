@@ -48,7 +48,7 @@ export default function SlideRenderComp({
             onClick={onClick}
             onCopy={onCopy}
         >
-            <SlideRendererHtmlComp slide={slide} />
+            <SlideRendererHtmlComp slide={slide} width={width}/>
         </SlideItemRenderComp>
     );
 }

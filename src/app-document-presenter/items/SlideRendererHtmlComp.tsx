@@ -4,10 +4,12 @@ import { useScale } from './SlideItemRenderComp';
 
 export default function SlideRendererHtmlComp({
     slide,
+    width,
 }: Readonly<{
     slide: Slide;
+    width: number;
 }>) {
-    const { scale, parentWidth, setParentDiv } = useScale(slide);
+    const { scale, parentWidth, setParentDiv } = useScale(slide, width);
     if (slide.isError) {
         return <div className="alert alert-danger">Error</div>;
     }
