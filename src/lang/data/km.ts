@@ -24,8 +24,11 @@ const dictionary = {
 const lang: LanguageDataType = {
     langCode: 'km',
     genCss: () => {
-        const fontBR = '/fonts/km/Battambang/Battambang-Regular.ttf';
-        const fontBB = '/fonts/km/Battambang/Battambang-Bold.ttf';
+        if (lang.dirPath === undefined) {
+            return '';
+        }
+        const fontBR = `${lang.dirPath}/Battambang-Regular.ttf`;
+        const fontBB = `${lang.dirPath}/Battambang-Bold.ttf`;
         return `
         @font-face {
             font-family: Battambang;

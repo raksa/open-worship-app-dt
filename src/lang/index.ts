@@ -254,6 +254,7 @@ export const langCodes = ['km', 'en'] as const;
 export type LocaleType = keyof typeof allLocalesMap;
 export type LanguageDataType = {
     langCode: string;
+    dirPath?: string;
     genCss: () => string;
     fontFamily: string;
     numList: string[];
@@ -370,6 +371,10 @@ export async function fromLocaleNum(locale: LocaleType, localeNum: string) {
     const langData = await getLangAsync(locale);
     if (langData === null) {
         return null;
+    }
+    if (locale === 'km-KH') {
+        // TODO: implement downloadable lang package
+        langData.dirPath = '/fonts/km/Battambang';
     }
     const numList = langData.numList;
     return fromStringNum(numList, localeNum);
