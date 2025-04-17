@@ -1,6 +1,5 @@
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.css';
-import './others/font.scss';
 import './appInit.scss';
 import './others/bootstrap-override.scss';
 import './others/scrollbar.scss';
@@ -13,7 +12,12 @@ import {
 import { getAllLocalBibleInfoList } from './helper/bible-helpers/bibleDownloadHelpers';
 import { handleError } from './helper/errorHelpers';
 import FileSourceMetaManager from './helper/FileSourceMetaManager';
-import { getCurrentLangAsync, getLangAsync, defaultLocale } from './lang';
+import {
+    getCurrentLangAsync,
+    getLangAsync,
+    defaultLocale,
+    getCurrentLocale,
+} from './lang';
 import appProvider from './server/appProvider';
 import initCrypto from './_owa-crypto';
 import { useHandleFind } from './_find/finderHelpers';
@@ -145,7 +149,18 @@ export function RenderApp({
 
 export async function main(children: React.ReactNode) {
     await initApp();
+    const locale = getCurrentLocale();
+    const lang = await getLangAsync(locale);
+    if (lang !== null) {
+        document.body.style.fontFamily = lang.fontFamily;
+    }
     const container = getRootElement<HTMLDivElement>();
     const root = createRoot(container);
-    root.render(<RenderApp>{children}</RenderApp>);
+
+    root.render(
+        <RenderApp>
+            <style>{lang?.genCss()}</style>
+            {children}
+        </RenderApp>,
+    );
 }

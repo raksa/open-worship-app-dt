@@ -59,7 +59,7 @@ export async function toLocaleNumBible(bibleKey: string, n: number | null) {
     }
     const info = await getBibleInfo(bibleKey);
     let localeNum: string | null = null;
-    if (info !== null && info.numList !== undefined) {
+    if (info?.numList !== undefined) {
         localeNum = toStringNum(info.numList, n);
     }
     if (localeNum === null) {

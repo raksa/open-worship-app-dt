@@ -31,17 +31,17 @@ const lang: LanguageDataType = {
         const fontBB = `${lang.dirPath}/Battambang-Bold.ttf`;
         return `
         @font-face {
-            font-family: Battambang;
+            font-family: KhmerFont;
             src: url(${fontBR}) format("truetype");
         }
         @font-face {
-            font-family: Battambang;
+            font-family: KhmerFont;
             src: url(${fontBB}) format("truetype");
             font-weight: bold;
         }
         `;
     },
-    fontFamily: 'Battambang',
+    fontFamily: 'KhmerFont',
     numList,
     dictionary,
     name: 'Khmer',

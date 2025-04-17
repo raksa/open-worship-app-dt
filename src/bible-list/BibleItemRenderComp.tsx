@@ -25,6 +25,7 @@ import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
 import { useMemo } from 'react';
 import { changeDragEventStyle } from '../helper/helpers';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
+import { BibleItemFontFamilyComp } from '../others/LanguageWrapper';
 
 function genAttachBackgroundComponent(
     droppedData: DroppedDataType | null | undefined,
@@ -181,7 +182,11 @@ export default function BibleItemRenderComp({
                             isMinimal
                         />
                     </div>
-                    <span className="app-ellipsis">{title || 'not found'}</span>
+                    <span className="app-ellipsis">
+                        <BibleItemFontFamilyComp bibleKey={bibleItem.bibleKey}>
+                            {title || 'not found'}
+                        </BibleItemFontFamilyComp>
+                    </span>
                     {warningMessage && (
                         <span className="float-end" title={warningMessage}>
                             ⚠️

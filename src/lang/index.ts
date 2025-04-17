@@ -308,6 +308,10 @@ export async function getLangAsync(locale: LocaleType, isForce = false) {
                 langCode = getLangCode(defaultLocale);
             }
             if (langCode !== null) {
+                if (langCode === 'km') {
+                    // TODO: implement downloadable lang package
+                    langData.dirPath = '/fonts/km/Battambang';
+                }
                 cache.set(langCode, langData);
             }
         } catch (error) {
@@ -329,7 +333,7 @@ export function tran(text: string) {
         return text;
     }
     const dictionary = langData.dictionary;
-    return dictionary[text] || text;
+    return dictionary[text] ?? text;
 }
 
 export function toStringNum(numList: string[], n: number): string {
@@ -371,10 +375,6 @@ export async function fromLocaleNum(locale: LocaleType, localeNum: string) {
     const langData = await getLangAsync(locale);
     if (langData === null) {
         return null;
-    }
-    if (locale === 'km-KH') {
-        // TODO: implement downloadable lang package
-        langData.dirPath = '/fonts/km/Battambang';
     }
     const numList = langData.numList;
     return fromStringNum(numList, localeNum);

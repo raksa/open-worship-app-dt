@@ -1,6 +1,12 @@
 @use 'sass:math';
 @use './others/variables.scss' as *;
 
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
 #app {
   width: 100vw !important;
   height: 100vh !important;

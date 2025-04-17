@@ -1,5 +1,4 @@
 import './_screen/screen.scss';
-import './others/font.scss';
 
 import { StrictMode } from 'react';
 
