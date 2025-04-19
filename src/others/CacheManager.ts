@@ -9,7 +9,7 @@ export default class CacheManager<T> {
         this.cache = new Map();
         this.expirationSecond = expirationSecond;
         const cleanupSeconds = 5 * 1000; // 5 seconds
-        setInterval(this.cleanup, cleanupSeconds);
+        setInterval(this.cleanup.bind(this), cleanupSeconds);
     }
 
     unlocking<P>(key: string, callback: () => Promise<P>): Promise<P> {

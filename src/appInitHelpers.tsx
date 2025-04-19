@@ -159,7 +159,6 @@ export async function main(children: React.ReactNode) {
 
     root.render(
         <RenderApp>
-            <style>{lang?.genCss()}</style>
             {children}
         </RenderApp>,
     );

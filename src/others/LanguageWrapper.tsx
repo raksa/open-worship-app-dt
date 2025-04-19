@@ -14,16 +14,13 @@ export function FontFamilyComp({
         return <>{children}</>;
     }
     return (
-        <>
-            <style>{lang.genCss()}</style>
-            <span
-                style={{
-                    fontFamily: lang.fontFamily,
-                }}
-            >
-                {children}
-            </span>
-        </>
+        <span
+            style={{
+                fontFamily: lang.fontFamily,
+            }}
+        >
+            {children}
+        </span>
     );
 }
 
