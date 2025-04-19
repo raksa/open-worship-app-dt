@@ -26,6 +26,7 @@ import { createRoot } from 'react-dom/client';
 import { StrictMode } from 'react';
 import { getSetting, setSetting } from './helper/settingHelpers';
 import { unlocking } from './server/appHelpers';
+import { applyFontFamily } from './others/LanguageWrapper';
 
 const ERROR_DATETIME_SETTING_NAME = 'error-datetime-setting';
 const ERROR_DURATION = 1000 * 10; // 10 seconds;
@@ -147,8 +148,36 @@ export function RenderApp({
     );
 }
 
+function onDomChange(
+    callback: (element: Node, type: 'added' | 'attr-modified') => void,
+) {
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            mutation.addedNodes.forEach((node) => {
+                if (node instanceof HTMLElement) {
+                    callback(node, 'added');
+                }
+            });
+            if (mutation.attributeName) {
+                callback(mutation.target, 'attr-modified');
+            }
+        });
+    });
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+    });
+    return () => {
+        observer.disconnect();
+    };
+}
+
 export async function main(children: React.ReactNode) {
     await initApp();
+    onDomChange((element) => {
+        applyFontFamily(element);
+    });
     const locale = getCurrentLocale();
     const lang = await getLangAsync(locale);
     if (lang !== null) {
@@ -157,9 +186,5 @@ export async function main(children: React.ReactNode) {
     const container = getRootElement<HTMLDivElement>();
     const root = createRoot(container);
 
-    root.render(
-        <RenderApp>
-            {children}
-        </RenderApp>,
-    );
+    root.render(<RenderApp>{children}</RenderApp>);
 }
