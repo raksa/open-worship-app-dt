@@ -158,7 +158,8 @@ function onDomChange(
                     callback(node, 'added');
                 }
             });
-            if (mutation.attributeName) {
+            // TODO: check if this enough
+            if (mutation.type === 'attributes') {
                 callback(mutation.target, 'attr-modified');
             }
         });
@@ -175,7 +176,9 @@ function onDomChange(
 
 export async function main(children: React.ReactNode) {
     await initApp();
-    onDomChange((element) => {
+    onDomChange((element, type) => {
+        console.log(type);
+
         applyFontFamily(element);
     });
     const locale = getCurrentLocale();
