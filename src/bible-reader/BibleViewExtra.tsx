@@ -96,7 +96,7 @@ export function BibleViewTitleComp() {
     const fontSize = useBibleViewFontSizeContext();
     return (
         <span
-            className="title"
+            className="title debugger-text"
             data-bible-key={bibleItem.bibleKey}
             style={{ fontSize }}
             title={

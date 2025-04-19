@@ -26,7 +26,7 @@ import { createRoot } from 'react-dom/client';
 import { StrictMode } from 'react';
 import { getSetting, setSetting } from './helper/settingHelpers';
 import { unlocking } from './server/appHelpers';
-import { applyFontFamily } from './others/LanguageWrapper';
+import { applyFontFamily, MutationType } from './others/LanguageWrapper';
 
 const ERROR_DATETIME_SETTING_NAME = 'error-datetime-setting';
 const ERROR_DURATION = 1000 * 10; // 10 seconds;
@@ -148,18 +148,14 @@ export function RenderApp({
     );
 }
 
-function onDomChange(
-    callback: (element: Node, type: 'added' | 'attr-modified') => void,
-) {
+function onDomChange(callback: (element: Node, type: MutationType) => void) {
     const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
-            mutation.addedNodes.forEach((node) => {
-                if (node instanceof HTMLElement) {
+            if (mutation.type === 'childList') {
+                mutation.addedNodes.forEach((node) => {
                     callback(node, 'added');
-                }
-            });
-            // TODO: check if this enough
-            if (mutation.type === 'attributes') {
+                });
+            } else if (mutation.type === 'attributes') {
                 callback(mutation.target, 'attr-modified');
             }
         });
@@ -176,11 +172,7 @@ function onDomChange(
 
 export async function main(children: React.ReactNode) {
     await initApp();
-    onDomChange((element, type) => {
-        console.log(type);
-
-        applyFontFamily(element);
-    });
+    onDomChange(applyFontFamily);
     const locale = getCurrentLocale();
     const lang = await getLangAsync(locale);
     if (lang !== null) {
