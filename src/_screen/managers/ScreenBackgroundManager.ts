@@ -130,8 +130,24 @@ class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManager
         this.backgroundSrc = backGroundSrc;
     }
 
+    async applyBackgroundSrc(
+        backgroundType: BackgroundType,
+        src: string | null,
+    ) {
+        if (src === null || this.backgroundSrc?.src === src) {
+            this.applyBackgroundSrcWithSyncGroup(null);
+        } else {
+            const backgroundSrc =
+                await ScreenBackgroundManager.initBackgroundSrcDim(
+                    src,
+                    backgroundType,
+                );
+            this.applyBackgroundSrcWithSyncGroup(backgroundSrc);
+        }
+    }
+
     static async handleBackgroundSelecting(
-        event: React.MouseEvent<HTMLElement, MouseEvent>,
+        event: React.MouseEvent,
         backgroundType: BackgroundType,
         src: string | null,
         isForceChoosing = false,
@@ -139,20 +155,7 @@ class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManager
         const screenIds = await this.chooseScreenIds(event, isForceChoosing);
         for (const screenId of screenIds) {
             const screenBackgroundManager = this.getInstance(screenId);
-            if (
-                src === null ||
-                screenBackgroundManager.backgroundSrc?.src === src
-            ) {
-                screenBackgroundManager.applyBackgroundSrcWithSyncGroup(null);
-            } else {
-                const backgroundSrc = await this.initBackgroundSrcDim(
-                    src,
-                    backgroundType,
-                );
-                screenBackgroundManager.applyBackgroundSrcWithSyncGroup(
-                    backgroundSrc,
-                );
-            }
+            screenBackgroundManager.applyBackgroundSrc(backgroundType, src);
         }
         this.fireUpdateEvent();
     }

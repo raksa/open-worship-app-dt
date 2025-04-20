@@ -15,6 +15,18 @@ import { freezeObject } from '../../helper/helpers';
 
 freezeObject(colorList);
 
+function setOpacity(color: string, opacity: number) {
+    const hex = transparentColor(opacity);
+    const newColor = color.split('');
+    let offset = 0;
+    if (newColor[0] === '#') {
+        offset = 1;
+    }
+    newColor[offset + 6] = hex[0];
+    newColor[offset + 7] = hex[1];
+    return newColor.join('');
+}
+
 export default function ColorPicker({
     defaultColor,
     color,
@@ -27,28 +39,7 @@ export default function ColorPicker({
     onNoColor?: (color: AppColorType, event: MouseEvent) => void;
 }>) {
     const [localColor, setLocalColor] = useState(color);
-    const handleColorChanging = (newColor: AppColorType | null, event: any) => {
-        if (newColor === null) {
-            onNoColor?.(defaultColor, event);
-            return;
-        }
-        const hex =
-            localColor === null
-                ? 'ff'
-                : transparentColor(colorToTransparent(localColor));
-        const newColorStr = newColor + hex;
-        applyNewColor(newColorStr, event);
-    };
-    const handleOpacityChanging = (value: number, event: any) => {
-        if (localColor === null) {
-            return;
-        }
-        const hex = transparentColor(value);
-        const newColor = localColor.split('');
-        newColor[7] = hex[0];
-        newColor[8] = hex[1];
-        applyNewColor(newColor.join(''), event);
-    };
+    const opacity = localColor !== null ? colorToTransparent(localColor) : 255;
     useAppEffect(() => {
         setLocalColor(color);
     }, [color]);
@@ -57,8 +48,23 @@ export default function ColorPicker({
         if (!onColorChange) {
             return;
         }
-        onColorChange(upperColor, event);
         setLocalColor(upperColor);
+        onColorChange(upperColor, event);
+    };
+    const handleColorChanging = (newColor: AppColorType | null, event: any) => {
+        if (newColor === null) {
+            onNoColor?.(defaultColor, event);
+            return;
+        }
+        const newColorStr = setOpacity(newColor as string, opacity);
+        applyNewColor(newColorStr, event);
+    };
+    const handleOpacityChanging = (value: number, event: any) => {
+        if (localColor === null) {
+            return;
+        }
+        const newColor = setOpacity(localColor, value);
+        applyNewColor(newColor, event);
     };
     return (
         <div className="flex-item color-picker">
@@ -70,7 +76,7 @@ export default function ColorPicker({
                 />
                 {localColor !== null && (
                     <OpacitySlider
-                        value={colorToTransparent(localColor)}
+                        value={opacity}
                         onOpacityChanged={handleOpacityChanging}
                     />
                 )}
