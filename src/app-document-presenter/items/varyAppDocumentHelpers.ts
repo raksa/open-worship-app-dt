@@ -83,11 +83,14 @@ export function handleArrowing(
     if (!appProvider.presenterHomePage) {
         return;
     }
-    if (!document.activeElement?.classList.contains(DIV_CLASS_NAME)) {
-        const element = document.querySelector(`.${DIV_CLASS_NAME}`);
-        if (element !== null) {
-            (element as HTMLDivElement).focus();
-        }
+    const element = document.querySelector(`.${DIV_CLASS_NAME}`);
+    if (element === null) {
+        return;
+    }
+    if (document.activeElement === null) {
+        (element as HTMLDivElement).focus();
+        return;
+    } else if (document.activeElement !== element) {
         return;
     }
     event.preventDefault();
