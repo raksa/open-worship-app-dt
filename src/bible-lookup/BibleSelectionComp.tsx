@@ -138,5 +138,9 @@ function BibleKeyWithTileComp({ bibleKey }: Readonly<{ bibleKey: string }>) {
     const currentBibleInfo = bibleInfoList?.find(
         (bibleInfo) => bibleInfo.key === bibleKey,
     );
-    return <span title={currentBibleInfo?.title}>{bibleKey}</span>;
+    return (
+        <span title={currentBibleInfo?.title} data-bible-key={bibleKey}>
+            {bibleKey}
+        </span>
+    );
 }

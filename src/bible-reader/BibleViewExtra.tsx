@@ -96,7 +96,8 @@ export function BibleViewTitleComp() {
     const fontSize = useBibleViewFontSizeContext();
     return (
         <span
-            className="title"
+            className="title debugger-text"
+            data-bible-key={bibleItem.bibleKey}
             style={{ fontSize }}
             title={
                 materialContext !== null ? 'Double click to edit' : undefined
@@ -138,7 +139,11 @@ export function BibleViewTextComp() {
     return (
         <div
             className={`${BIBLE_VIEW_TEXT_CLASS} app-selectable-text pt-3`}
-            style={{ fontSize: `${fontSize}px`, paddingBottom: '100px' }}
+            data-bible-key={bibleItem.bibleKey}
+            style={{
+                fontSize: `${fontSize}px`,
+                paddingBottom: '100px',
+            }}
         >
             {result.map(([verse, text]) => {
                 return (

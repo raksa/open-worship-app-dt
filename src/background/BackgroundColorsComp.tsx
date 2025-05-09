@@ -8,34 +8,52 @@ import { useAppEffect } from '../helper/debuggerHelpers';
 import ShowingScreenIcon from '../_screen/preview/ShowingScreenIcon';
 import { BackgroundSrcType } from '../_screen/screenHelpers';
 
+function RenderColorPickerPerScreenComp({
+    screenId,
+    backgroundSrc,
+}: Readonly<{
+    screenId: number;
+    backgroundSrc: BackgroundSrcType;
+}>) {
+    const handleColorChanging = async (newColor: AppColorType | null) => {
+        const screenBackgroundManager =
+            ScreenBackgroundManager.getInstance(screenId);
+        screenBackgroundManager.applyBackgroundSrc('color', newColor);
+    };
+    return (
+        <div className="p-1 m-1 app-border-white-round">
+            <ShowingScreenIcon screenId={screenId} />
+            <ColorPicker
+                color={backgroundSrc.src as AppColorType}
+                defaultColor={backgroundSrc.src as AppColorType}
+                onNoColor={() => {
+                    handleColorChanging(null);
+                }}
+                onColorChange={handleColorChanging}
+            />
+        </div>
+    );
+}
+
 export default function BackgroundColorsComp() {
     const [selectedBackgroundSrcList, setSelectedBackgroundSrcList] = useState<
         [string, BackgroundSrcType][] | null
     >(null);
-    const handleNoColoring = async (_newColor: AppColorType, event: any) => {
-        setSelectedBackgroundSrcList(null);
-        ScreenBackgroundManager.handleBackgroundSelecting(event, 'color', null);
-    };
-    const handleColorChanging = async (newColor: AppColorType, event: any) => {
-        setSelectedBackgroundSrcList(null);
-        ScreenBackgroundManager.handleBackgroundSelecting(
-            event,
-            'color',
-            newColor,
+    const initBackgroundSrcList = async () => {
+        setSelectedBackgroundSrcList(
+            ScreenBackgroundManager.getBackgroundSrcListByType('color'),
         );
     };
     useAppEffect(() => {
         if (selectedBackgroundSrcList === null) {
-            setSelectedBackgroundSrcList(
-                ScreenBackgroundManager.getBackgroundSrcListByType('color'),
-            );
+            initBackgroundSrcList();
         }
     }, [selectedBackgroundSrcList]);
-    useScreenBackgroundManagerEvents(['update'], undefined, () => {
-        setSelectedBackgroundSrcList(
-            ScreenBackgroundManager.getBackgroundSrcListByType('color'),
-        );
-    });
+    useScreenBackgroundManagerEvents(
+        ['update'],
+        undefined,
+        initBackgroundSrcList,
+    );
     if (selectedBackgroundSrcList === null) {
         return null;
     }
@@ -50,25 +68,23 @@ export default function BackgroundColorsComp() {
                 <ColorPicker
                     color={null}
                     defaultColor={'#000000'}
-                    onNoColor={handleNoColoring}
-                    onColorChange={handleColorChanging}
+                    onColorChange={(newColor, event: any) => {
+                        ScreenBackgroundManager.handleBackgroundSelecting(
+                            event,
+                            'color',
+                            newColor,
+                        );
+                    }}
                 />
             ) : (
                 selectedBackgroundSrcList.map(([key, backgroundSrc], i) => {
                     const screenId = parseInt(key);
                     return (
-                        <div
+                        <RenderColorPickerPerScreenComp
                             key={backgroundSrc.src + i}
-                            className="p-1 m-1 app-border-white-round"
-                        >
-                            <ShowingScreenIcon screenId={screenId} />
-                            <ColorPicker
-                                color={backgroundSrc.src as AppColorType}
-                                defaultColor={backgroundSrc.src as AppColorType}
-                                onNoColor={handleNoColoring}
-                                onColorChange={handleColorChanging}
-                            />
-                        </div>
+                            screenId={screenId}
+                            backgroundSrc={backgroundSrc}
+                        />
                     );
                 })
             )}

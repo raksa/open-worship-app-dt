@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 export type AppRangeDefaultType = {
     size: number;
     min: number;
@@ -46,6 +48,10 @@ export function handleCtrlWheel({
     setValue(newValue);
 }
 
+function roundSize(value: number, defaultSize: AppRangeDefaultType) {
+    return Math.min(defaultSize.max, Math.max(defaultSize.min, value));
+}
+
 export default function AppRangeComp({
     value,
     title,
@@ -61,10 +67,18 @@ export default function AppRangeComp({
     defaultSize: AppRangeDefaultType;
     isShowValue?: boolean;
 }>) {
-    const currentValue = Math.min(
-        defaultSize.max,
-        Math.max(defaultSize.min, value),
-    ).toFixed(1);
+    const [localValue, setLocalValue] = useState(roundSize(value, defaultSize));
+    const setLocalValue1 = (newValue: number) => {
+        newValue = roundSize(newValue, defaultSize);
+        setLocalValue(newValue);
+        setValue(newValue);
+    };
+    if (defaultSize.max <= defaultSize.min) {
+        throw new Error(
+            'max must be greater than min value, ' +
+                JSON.stringify(defaultSize),
+        );
+    }
     return (
         <div
             className="form form-inline d-flex mx-2"
@@ -74,7 +88,7 @@ export default function AppRangeComp({
             <div
                 className="pointer"
                 onClick={() => {
-                    setValue(value - defaultSize.step);
+                    setLocalValue1(localValue - defaultSize.step);
                 }}
             >
                 -
@@ -86,38 +100,38 @@ export default function AppRangeComp({
                 min={defaultSize.min}
                 max={defaultSize.max}
                 step={defaultSize.step}
-                value={currentValue}
+                value={localValue}
                 onWheel={(event) => {
-                    setValue(
+                    setLocalValue1(
                         wheelToRangeValue({
                             defaultSize,
                             isUp: event.deltaY > 0,
-                            currentScale: value,
+                            currentScale: localValue,
                         }),
                     );
                 }}
                 onChange={(event) => {
-                    setValue(parseInt(event.target.value));
+                    setLocalValue1(parseInt(event.target.value));
                 }}
             />
             <div
                 className="pointer"
                 onClick={() => {
-                    setValue(value + defaultSize.step);
+                    setLocalValue1(localValue + defaultSize.step);
                 }}
             >
                 +
             </div>
-            {isShowValue && (
+            {isShowValue ? (
                 <label
                     className="form-label"
                     style={{
                         fontVariantNumeric: 'tabular-nums',
                     }}
                 >
-                    :{currentValue}
+                    :{localValue}
                 </label>
-            )}
+            ) : null}
         </div>
     );
 }

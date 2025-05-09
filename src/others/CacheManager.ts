@@ -1,16 +1,15 @@
 import { unlocking } from '../server/appHelpers';
 
+type StoreType<T> = { value: T; timestamp: number };
 export default class CacheManager<T> {
-    private readonly maxSize: number;
-    private readonly cache: Map<string, { value: T; timestamp: number }>;
-    private order: string[];
+    private readonly cache: Map<string, StoreType<T>>;
     private readonly expirationSecond: number | null;
 
-    constructor(maxSize: number, expirationSecond: number | null = null) {
-        this.maxSize = maxSize;
+    constructor(expirationSecond: number | null = null) {
         this.cache = new Map();
-        this.order = [];
         this.expirationSecond = expirationSecond;
+        const cleanupSeconds = 5 * 1000; // 5 seconds
+        setInterval(this.cleanup.bind(this), cleanupSeconds);
     }
 
     unlocking<P>(key: string, callback: () => Promise<P>): Promise<P> {
@@ -19,19 +18,37 @@ export default class CacheManager<T> {
         });
     }
 
+    checkIsExpired(item: StoreType<T>): boolean {
+        if (this.expirationSecond === null) {
+            return false;
+        }
+        return Date.now() - item.timestamp > this.expirationSecond * 1000;
+    }
+
+    private _cleanup(): void {
+        for (const [key, item] of this.cache) {
+            if (this.checkIsExpired(item)) {
+                this.cache.delete(key);
+            }
+        }
+    }
+
+    async cleanup(): Promise<void> {
+        await this.unlocking('cleanup', async () => {
+            this._cleanup();
+        });
+    }
+
     async get(key: string): Promise<T | null> {
         return await this.unlocking(key, async () => {
             const cacheItem = this.cache.get(key);
             if (cacheItem) {
-                const { value, timestamp } = cacheItem;
-                if (
-                    this.expirationSecond !== null &&
-                    Date.now() - timestamp > this.expirationSecond * 1000
-                ) {
+                if (this.checkIsExpired(cacheItem)) {
                     this.cache.delete(key);
                     return null;
                 }
-                return value;
+                cacheItem.timestamp = Date.now();
+                return cacheItem.value;
             }
             return null;
         });
@@ -39,23 +56,10 @@ export default class CacheManager<T> {
 
     async set(key: string, value: T): Promise<void> {
         await this.unlocking(key, async () => {
-            if (this.cache.has(key)) {
-                this.cache.delete(key);
-                this.order = this.order.filter((k) => {
-                    return k !== key;
-                });
-            } else if (this.order.length >= this.maxSize) {
-                const oldestKey = this.order.shift();
-                if (oldestKey) {
-                    this.cache.delete(oldestKey);
-                }
-            }
             this.cache.set(key, { value, timestamp: Date.now() });
-            this.order.push(key);
         });
     }
     clear(): void {
         this.cache.clear();
-        this.order = [];
     }
 }

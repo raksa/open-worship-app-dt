@@ -312,6 +312,14 @@ export async function getLangAsync(locale: LocaleType, isForce = false) {
                     // TODO: implement downloadable lang package
                     langData.dirPath = '/fonts/km/Battambang';
                 }
+                const elementID = `lang-${langCode}`;
+                let styleElement = document.querySelector(`style#${elementID}`);
+                if (styleElement === null) {
+                    styleElement = document.createElement('style');
+                    styleElement.id = elementID;
+                    document.head.appendChild(styleElement);
+                }
+                styleElement.innerHTML = langData.genCss();
                 cache.set(langCode, langData);
             }
         } catch (error) {
