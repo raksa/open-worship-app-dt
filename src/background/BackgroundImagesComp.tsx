@@ -16,7 +16,7 @@ function rendChild(
 ) {
     const fileSource = FileSource.getInstance(filePath);
     return (
-        <div className="card-body">
+        <div className="card-body overflow-hidden">
             <RenderScreenIds
                 screenIds={selectedBackgroundSrcList.map(([key]) => {
                     return parseInt(key);
@@ -25,8 +25,12 @@ function rendChild(
             <img
                 src={fileSource.src}
                 className="card-img-top"
-                alt="..."
+                alt={fileSource.name}
                 style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    objectPosition: 'center center',
                     pointerEvents: 'none',
                 }}
             />
