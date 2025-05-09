@@ -153,15 +153,14 @@ export function BibleViewTextComp() {
                 paddingBottom: '100px',
             }}
         >
-            {result.map(({ localeVerse, text, isNewLine }, i) => {
+            {result.map(({ localeVerse, text, isNewLine }) => {
                 return (
                     <Fragment key={localeVerse}>
-                        {isNewLine && i > 0 ? <br /> : null}
                         <div className="verse-number">
                             <div>
                                 {isNewLine ? (
                                     <span className="verse-number-text">
-                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                        &nbsp;&nbsp;
                                     </span>
                                 ) : null}
                                 {localeVerse}
