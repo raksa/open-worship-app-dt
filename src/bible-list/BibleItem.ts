@@ -214,6 +214,14 @@ export default class BibleItem
         const { title, text } = await this.toTitleText();
         copyToClipboard(`${this.getCopyingBibleKey()} ${title}\n${text}`);
     }
+    async getJumpingChapter(isNext: boolean) {
+        const nextChapter = await bibleRenderHelper.getJumpingChapter(
+            this.bibleKey,
+            this.target,
+            isNext,
+        );
+        return nextChapter;
+    }
     syncData(bibleItem: BibleItem) {
         this.originalJson = bibleItem.originalJson;
     }

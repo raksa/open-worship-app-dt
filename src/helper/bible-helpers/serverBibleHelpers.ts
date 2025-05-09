@@ -28,7 +28,7 @@ export type BookType = {
     chapterCount: number;
 };
 
-export const toLocaleNum = (n: number, numList: string[]) => {
+export const toLocaleNumQuick = (n: number, numList: string[]) => {
     if (!numList) {
         return n;
     }
@@ -265,7 +265,7 @@ async function toChapter(
     return `${book} ${
         info.numList === undefined
             ? chapterNum
-            : await toLocaleNum(chapterNum, info.numList)
+            : toLocaleNumQuick(chapterNum, info.numList)
     }`;
 }
 

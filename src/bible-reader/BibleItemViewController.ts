@@ -671,6 +671,18 @@ export class LookupBibleItemViewController extends BibleItemViewController {
             this.editBibleItem(lastBibleItem);
         }
     }
+    async tryJumpingChapter(isNext: boolean) {
+        const bibleItem = this.selectedBibleItem;
+        const nextBibleItem = bibleItem.clone(true);
+        const nextTarget = await bibleItem.getJumpingChapter(isNext);
+        if (nextTarget === null) {
+            showSimpleToast('Try Next Chapter', 'Unable to find next chapter');
+            return;
+        }
+        nextBibleItem.target = nextTarget;
+        this.changeBibleItem(bibleItem, nextBibleItem);
+        this.editBibleItem(nextBibleItem);
+    }
 }
 
 export const BibleItemViewControllerContext =

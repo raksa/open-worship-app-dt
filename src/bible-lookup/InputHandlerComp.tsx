@@ -37,8 +37,8 @@ export default function InputHandlerComp({
     onBibleKeyChange: (oldBibleKey: string, newBibleKey: string) => void;
 }>) {
     const { inputText } = useInputTextContext();
-    const setInputText =
-        LookupBibleItemViewController.getInstance().setInputText;
+    const bibleViewController = LookupBibleItemViewController.getInstance();
+    const setInputText = bibleViewController.setInputText;
     const bibleKey = useBibleKeyContext();
     const books = useGetBookKVList(bibleKey);
     const bookKey = books === null ? null : books['GEN'];
@@ -93,6 +93,26 @@ export default function InputHandlerComp({
                     setInputText(value);
                 }}
             />
+            <div className="d-flex justify-content-between h-100">
+                <button
+                    className="btn btn-sm btn-outline-secondary"
+                    title="Previous"
+                    onClick={() => {
+                        bibleViewController.tryJumpingChapter(false);
+                    }}
+                >
+                    <i className="bi bi-caret-left" />
+                </button>
+                <button
+                    className="btn btn-sm btn-outline-secondary"
+                    title="Next"
+                    onClick={() => {
+                        bibleViewController.tryJumpingChapter(true);
+                    }}
+                >
+                    <i className="bi bi-caret-right" />
+                </button>
+            </div>
         </Fragment>
     );
 }
