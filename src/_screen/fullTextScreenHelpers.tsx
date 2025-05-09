@@ -101,7 +101,7 @@ const fullTextScreenHelper = {
         }: {
             onSelectIndex: (
                 selectedIndex: number | null,
-                isToCenter: boolean,
+                isToTop: boolean,
             ) => void;
             onBibleSelect: (event: MouseEvent, index: number) => void;
         },
@@ -137,22 +137,24 @@ const fullTextScreenHelper = {
                     span.dataset.highlight,
                 );
             });
-            const clickHandler = (isToCenter: boolean) => {
+            const clickHandler = (isToTop: boolean) => {
                 const arrChildren = this.removeClassName(div, 'selected');
                 if (
                     !arrChildren.includes(span) &&
                     span.dataset.highlight &&
                     !isNaN(parseInt(span.dataset.highlight))
                 ) {
-                    onSelectIndex(parseInt(span.dataset.highlight), isToCenter);
+                    onSelectIndex(parseInt(span.dataset.highlight), isToTop);
                 } else {
                     onSelectIndex(null, false);
                 }
             };
-            span.addEventListener('click', () => {
-                clickHandler(false);
+            span.addEventListener('click', (event) => {
+                clickHandler(event.altKey);
             });
-            span.addEventListener('dblclick', () => {
+            span.addEventListener('dblclick', (event) => {
+                event.stopPropagation();
+                event.preventDefault();
                 clickHandler(true);
             });
         });

@@ -1,6 +1,7 @@
 import { Fragment } from 'react';
 
 import { LanguageDataType, LocaleType } from '../lang';
+import { BIBLE_VERSE_TEXT_TITLE } from '../helper/helpers';
 
 export type BibleRenderVerseType = {
     num: string;
@@ -71,7 +72,11 @@ export function FTBibleTable({
                                 fontFamily: lang.fontFamily,
                             }}
                         >
-                            <span className="highlight" data-highlight={i}>
+                            <span
+                                className="highlight"
+                                data-highlight={i}
+                                title={BIBLE_VERSE_TEXT_TITLE}
+                            >
                                 <div className="verse-number">{num}</div>
                                 {text}
                             </span>
@@ -92,6 +97,7 @@ export function FTBibleTable({
                         <span
                             key={j}
                             className="highlight"
+                            title={BIBLE_VERSE_TEXT_TITLE}
                             style={{
                                 fontFamily: lang.fontFamily,
                             }}

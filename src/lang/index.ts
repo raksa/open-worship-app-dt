@@ -264,6 +264,7 @@ export type LanguageDataType = {
     sanitizeSearchingText: (text: string) => string;
     trimText: (text: string) => string;
     endWord: (text: string) => string;
+    checkShouldNewLine: (text: string) => boolean;
 };
 
 const LANGUAGE_LOCALE_SETTING_NAME = 'language-locale';

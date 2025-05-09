@@ -1,6 +1,10 @@
 import { keyToBook, getVerses } from '../helper/bible-helpers/bibleInfoHelpers';
 import { getKJVKeyValue } from '../helper/bible-helpers/serverBibleHelpers';
-import { toLocaleNumBible } from '../helper/bible-helpers/serverBibleHelpers2';
+import {
+    getBibleLocale,
+    toLocaleNumBible,
+} from '../helper/bible-helpers/serverBibleHelpers2';
+import { getLangAsync } from '../lang';
 
 export type BibleTargetType = {
     bookKey: string;
@@ -9,7 +13,14 @@ export type BibleTargetType = {
     verseEnd: number;
 };
 
-type CallbackType<T extends string | [string, string][]> = (
+export type CompiledVerseType = {
+    verse: number;
+    localeVerse: string;
+    text: string;
+    isNewLine: boolean;
+};
+
+type CallbackType<T extends string | CompiledVerseType[]> = (
     _: T | null,
 ) => void;
 const cache: Map<string, Array<CallbackType<any>>> = new Map();
@@ -101,29 +112,37 @@ class BibleRenderHelper {
 
     async _toVerseTextList(
         bibleVersesKey: string,
-        callback: CallbackType<[string, string][]>,
+        callback: CallbackType<CompiledVerseType[]>,
     ) {
         const cacheKey = this.toVerseTextListQueueKey(bibleVersesKey);
         const isFist = this.pushCallback(cacheKey, callback);
         if (!isFist) {
             return;
         }
-        const {
-            bibleKey: bible,
-            book,
-            chapter,
-            verseStart,
-            verseEnd,
-        } = this.fromBibleVerseKey(bibleVersesKey);
-        const verses = await getVerses(bible, book, chapter);
+        const { bibleKey, book, chapter, verseStart, verseEnd } =
+            this.fromBibleVerseKey(bibleVersesKey);
+        const verses = await getVerses(bibleKey, book, chapter);
         if (!verses) {
             return null;
         }
-        const result: [string, string][] = [];
+        const locale = await getBibleLocale(bibleKey);
+        const langData = await getLangAsync(locale);
+        const result: CompiledVerseType[] = [];
         for (let i = verseStart; i <= verseEnd; i++) {
-            const localNum = await toLocaleNumBible(bible, i);
+            const localNum = await toLocaleNumBible(bibleKey, i);
+            let isNewLine = i == 1;
+            if (langData !== null && i > 1) {
+                isNewLine = langData.checkShouldNewLine(
+                    verses[(i - 1).toString()] ?? '??',
+                );
+            }
             const iString = i.toString();
-            result.push([localNum ?? iString, verses[iString] ?? '??']);
+            result.push({
+                verse: i,
+                localeVerse: localNum ?? iString,
+                text: verses[iString] ?? '??',
+                isNewLine,
+            });
         }
         return this.fullfilCallback(cacheKey, result);
     }
@@ -132,7 +151,7 @@ class BibleRenderHelper {
             bibleKey,
             target,
         );
-        return new Promise<[string, string][] | null>((resolve) => {
+        return new Promise<CompiledVerseType[] | null>((resolve) => {
             this._toVerseTextList(bibleVersesKey, (result) => {
                 resolve(result);
             });
@@ -148,8 +167,8 @@ class BibleRenderHelper {
             return `😟Unable to render text for ${bibleVersesKey}`;
         }
         return verseTextList
-            .map(([verse, text]) => {
-                return `(${verse}): ${text}`;
+            .map(({ localeVerse, text }) => {
+                return `(${localeVerse}): ${text}`;
             })
             .join(' ');
     }

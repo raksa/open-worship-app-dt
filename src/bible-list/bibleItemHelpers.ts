@@ -10,7 +10,7 @@ import BibleItem from './BibleItem';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { AnyObjectType } from '../helper/helpers';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
-import { BibleTargetType } from './bibleRenderHelpers';
+import { BibleTargetType, CompiledVerseType } from './bibleRenderHelpers';
 import { toInputText } from '../helper/bible-helpers/serverBibleHelpers2';
 import { genShowOnScreensContextMenu } from '../others/FileItemHandlerComp';
 import ScreenFullTextManager from '../_screen/managers/ScreenFullTextManager';
@@ -169,7 +169,7 @@ export function useBibleItemRenderText(bibleItem: BibleItem) {
     return text;
 }
 export function useBibleItemVerseTextList(bibleItem: BibleItem) {
-    const [result, setResult] = useState<[string, string][] | null>(null);
+    const [result, setResult] = useState<CompiledVerseType[] | null>(null);
     useAppEffectAsync(
         async (methodContext) => {
             const result = await bibleItem.toVerseTextList();

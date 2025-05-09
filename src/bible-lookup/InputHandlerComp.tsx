@@ -74,6 +74,7 @@ export default function InputHandlerComp({
             />
             <input
                 id={BIBLE_LOOKUP_INPUT_ID}
+                data-bible-key={bibleKey}
                 type="text"
                 className={`form-control ${INPUT_TEXT_CLASS}`}
                 value={inputText}

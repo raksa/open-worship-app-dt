@@ -17,6 +17,9 @@ export type AnyObjectType = {
     [key: string]: any;
 };
 
+export const BIBLE_VERSE_TEXT_TITLE =
+    'Click to highlight, double click or ' + 'Alt + click to bring to view';
+
 export function getRandomUUID() {
     return (
         Math.random().toString(36).substring(2) +
@@ -369,24 +372,21 @@ export function changeDragEventStyle(
     (event.currentTarget.style as any)[key] = value;
 }
 
-export function bringDomToNearestView(dom: Element) {
+export function bringDomToView(dom: Element, block: ScrollLogicalPosition) {
     dom.scrollIntoView({
         behavior: 'smooth',
-        block: 'nearest',
+        block,
     });
+}
+
+export function bringDomToNearestView(dom: Element) {
+    bringDomToView(dom, 'nearest');
+}
+
+export function bringDomToTopView(dom: Element) {
+    bringDomToView(dom, 'start');
 }
 
 export function bringDomToCenterView(dom: Element) {
-    dom.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-    });
-}
-
-export function handleToViewBringing(event: any) {
-    event.stopPropagation();
-    const selection = window.getSelection();
-    selection?.removeAllRanges();
-    bringDomToCenterView(event.currentTarget);
-    event.currentTarget.classList.add('selected');
+    bringDomToView(dom, 'center');
 }

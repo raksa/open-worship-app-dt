@@ -221,6 +221,10 @@ const lang: LanguageDataType = {
     endWord: (text: string) => {
         return text + '\u200B';
     },
+    checkShouldNewLine: (text: string) => {
+        const endWord = text.slice(-1);
+        return endWord === '។' || endWord === '៕';
+    },
 };
 
 export default lang;

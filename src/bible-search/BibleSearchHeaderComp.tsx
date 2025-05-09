@@ -41,6 +41,7 @@ export default function BibleSearchHeaderComp({
                         bibleSearchController.input = null;
                     };
                 }}
+                data-bible-key={bibleSearchController.bibleKey}
                 type="text"
                 className="form-control"
                 onKeyUp={keyUpHandling}

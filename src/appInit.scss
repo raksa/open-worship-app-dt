@@ -294,12 +294,7 @@ body {
     background-color: transparent;
 
     & > div {
-      transform: translateY(100%);
-      transition:
-        transform 0.3s,
-        backdrop-filter 2s,
-        background-color 2s;
-      transition-timing-function: step-end;
+      visibility: hidden;
     }
 
     &:hover {
@@ -307,7 +302,7 @@ body {
       backdrop-filter: blur(5px);
 
       & > div {
-        transform: translateY(0);
+        visibility: visible;
       }
     }
 

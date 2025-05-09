@@ -4,8 +4,8 @@ import BibleItem from '../../bible-list/BibleItem';
 import { DroppedDataType, DragTypeEnum } from '../../helper/DragInf';
 import {
     AnyObjectType,
-    bringDomToCenterView,
     bringDomToNearestView,
+    bringDomToTopView,
     cloneJson,
     isValidJson,
 } from '../../helper/helpers';
@@ -42,7 +42,7 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
     private _div: HTMLDivElement | null = null;
     private _syncScrollTimeout: any = null;
     private _divScrollListenerBind: (() => void) | null = null;
-    public isToCenter = false;
+    public isToTop = false;
 
     constructor(screenManagerBase: ScreenManagerBase) {
         super(screenManagerBase);
@@ -419,8 +419,8 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
             return;
         }
         fullTextScreenHelper.removeClassName(this.div, 'selected');
-        const isToCenter = this.isToCenter;
-        this.isToCenter = false;
+        const isToTop = this.isToTop;
+        this.isToTop = false;
         const selectedBlocks = fullTextScreenHelper.resetClassName(
             this.div,
             'selected',
@@ -428,8 +428,8 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
             `${this.selectedIndex}`,
         );
         selectedBlocks.forEach((block) => {
-            if (isToCenter) {
-                bringDomToCenterView(block);
+            if (isToTop) {
+                bringDomToTopView(block);
             } else {
                 bringDomToNearestView(block);
             }

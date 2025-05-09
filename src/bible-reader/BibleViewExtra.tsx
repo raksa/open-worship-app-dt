@@ -15,7 +15,11 @@ import ItemColorNoteComp from '../others/ItemColorNoteComp';
 import ColorNoteInf from '../helper/ColorNoteInf';
 import { useBibleItemViewControllerContext } from './BibleItemViewController';
 import { useBibleItemContext } from './BibleItemContext';
-import { bringDomToNearestView, handleToViewBringing } from '../helper/helpers';
+import {
+    BIBLE_VERSE_TEXT_TITLE,
+    bringDomToNearestView,
+    bringDomToTopView,
+} from '../helper/helpers';
 
 export function RenderTitleMaterialComp({
     editingBibleItem,
@@ -113,7 +117,7 @@ export function BibleViewTitleComp() {
     );
 }
 
-function handleVersesSelecting(event: any) {
+function handleVersesSelecting(event: any, isToTop = false) {
     const currentTarget = event.currentTarget;
     const classList = currentTarget.classList;
     if (classList.contains('selected')) {
@@ -123,7 +127,11 @@ function handleVersesSelecting(event: any) {
             element.classList.remove('selected');
         });
         classList.add('selected');
-        bringDomToNearestView(currentTarget);
+        if (isToTop || event.altKey) {
+            bringDomToTopView(currentTarget);
+        } else {
+            bringDomToNearestView(currentTarget);
+        }
     }
 }
 
@@ -145,16 +153,36 @@ export function BibleViewTextComp() {
                 paddingBottom: '100px',
             }}
         >
-            {result.map(([verse, text]) => {
+            {result.map(({ localeVerse, text, isNewLine }, i) => {
                 return (
-                    <Fragment key={verse}>
+                    <Fragment key={localeVerse}>
+                        {isNewLine && i > 0 ? <br /> : null}
                         <div className="verse-number">
-                            <div>{verse}</div>
+                            <div>
+                                {isNewLine ? (
+                                    <span className="verse-number-text">
+                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                    </span>
+                                ) : null}
+                                {localeVerse}
+                            </div>
                         </div>
                         <div
                             className="verse-text"
+                            title={BIBLE_VERSE_TEXT_TITLE}
                             onClick={handleVersesSelecting}
-                            onDoubleClick={handleToViewBringing}
+                            onDoubleClick={(event) => {
+                                event.stopPropagation();
+                                event.preventDefault();
+                                const selection = window.getSelection();
+                                if (
+                                    selection !== null &&
+                                    selection.rangeCount > 0
+                                ) {
+                                    selection.removeAllRanges();
+                                }
+                                handleVersesSelecting(event, true);
+                            }}
                         >
                             {text}
                         </div>

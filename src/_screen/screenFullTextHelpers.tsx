@@ -20,9 +20,9 @@ export const SCREEN_FT_SETTING_PREFIX = 'screen-ft-';
 function onSelectIndex(
     screenFTManager: ScreenFullTextManager,
     selectedIndex: number | null,
-    isToCenter: boolean,
+    isToTop: boolean,
 ) {
-    screenFTManager.isToCenter = isToCenter;
+    screenFTManager.isToTop = isToTop;
     screenFTManager.selectedIndex = selectedIndex;
     screenFTManager.sendSyncSelectedIndex();
 }
@@ -161,8 +161,8 @@ export async function renderScreenFullTextManager(
         return;
     }
     fullTextScreenHelper.registerHighlight(newDiv, {
-        onSelectIndex: (selectedIndex, isToCenter) => {
-            onSelectIndex(screenFullTextManager, selectedIndex, isToCenter);
+        onSelectIndex: (selectedIndex, isToTop) => {
+            onSelectIndex(screenFullTextManager, selectedIndex, isToTop);
         },
         onBibleSelect: (event: any, index) => {
             onBibleSelect(screenFullTextManager, event, index, ftItemData);

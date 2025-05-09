@@ -109,6 +109,9 @@ export default function ScreenPreviewerItemComp({
                 style={{
                     height: `${height}px`,
                 }}
+                onScroll={(event) => {
+                    event.currentTarget.scrollTop = 0;
+                }}
             >
                 <mini-screen-previewer-custom-html
                     screenId={screenManager.screenId}
