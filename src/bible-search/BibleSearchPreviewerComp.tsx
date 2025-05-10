@@ -1,60 +1,40 @@
-import { useState } from 'react';
+import { lazy } from 'react';
 
-import { useAppEffect, useAppEffectAsync } from '../helper/debuggerHelpers';
-import LoadingComp from '../others/LoadingComp';
-import BibleFindBodyComp from './BibleFindBodyComp';
-import { useBibleKeyContext } from '../bible-list/bibleHelpers';
-import BibleFindController, {
-    BibleFindControllerContext,
-} from './BibleFindController';
+import TabRenderComp, { genTabBody } from '../others/TabRenderComp';
+import { useStateSettingString } from '../helper/settingHelpers';
 
+const LazyBibleFindPreviewerComp = lazy(() => {
+    return import('./BibleFindPreviewerComp');
+});
+const LazyBibleCrossReferentPreviewerComp = lazy(() => {
+    return import('./BibleCrossReferentPreviewerComp');
+});
+
+const tabTypeList = [
+    ['s', 'Search', LazyBibleFindPreviewerComp],
+    ['c', 'Cross Referent', LazyBibleCrossReferentPreviewerComp],
+] as const;
+type TabType = (typeof tabTypeList)[number][0];
 export default function BibleSearchPreviewerComp() {
-    const selectedBibleKey = useBibleKeyContext();
-    const [bibleKey, setBibleKey] = useState(selectedBibleKey);
-    const [bibleFindController, setBibleFindController] = useState<
-        BibleFindController | null | undefined
-    >(undefined);
-    useAppEffect(() => {
-        setBibleKey(selectedBibleKey);
-    }, [selectedBibleKey]);
-
-    const setBibleKey1 = (_: string, newBibleKey: string) => {
-        setBibleFindController(undefined);
-        setBibleKey(newBibleKey);
-    };
-    useAppEffectAsync(
-        async (methodContext) => {
-            if (bibleKey !== 'Unknown' && bibleFindController === undefined) {
-                const apiData1 = await BibleFindController.getInstant(bibleKey);
-                methodContext.setBibleFindController(apiData1);
-            }
-        },
-        [bibleFindController, bibleKey],
-        { setBibleFindController },
+    const [tabType, setTabType] = useStateSettingString<TabType>(
+        'bible-search-tab',
+        's',
     );
-    if (bibleFindController === undefined) {
-        return <LoadingComp />;
-    }
-    if (bibleFindController === null) {
-        return (
-            <div className="alert alert-warning">
-                <i className="bi bi-info-circle" />
-                <div className="ms-2">Fail to get find controller!</div>
-                <button
-                    className="btn btn-info"
-                    onClick={() => {
-                        setBibleFindController(undefined);
-                    }}
-                >
-                    Reload
-                </button>
-            </div>
-        );
-    }
-
     return (
-        <BibleFindControllerContext.Provider value={bibleFindController}>
-            <BibleFindBodyComp setBibleKey={setBibleKey1} />
-        </BibleFindControllerContext.Provider>
+        <div className="card w-100 h-100 overflow-hidden d-flex flex-column">
+            <TabRenderComp<TabType>
+                tabs={tabTypeList.map(([type, name]) => {
+                    return [type, name];
+                })}
+                activeTab={tabType}
+                setActiveTab={setTabType}
+                className="card-header"
+            />
+            <div className="card-body">
+                {tabTypeList.map(([type, _, target]) => {
+                    return genTabBody<TabType>(tabType, [type, target]);
+                })}
+            </div>
+        </div>
     );
 }

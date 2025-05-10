@@ -18,13 +18,13 @@ import { tran } from '../lang';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { audioEvent } from './audioBackgroundHelpers';
 
-const LazyBackgroundColors = lazy(() => {
+const LazyBackgroundColorsComp = lazy(() => {
     return import('./BackgroundColorsComp');
 });
-const LazyBackgroundImages = lazy(() => {
+const LazyBackgroundImagesComp = lazy(() => {
     return import('./BackgroundImagesComp');
 });
-const LazyBackgroundVideos = lazy(() => {
+const LazyBackgroundVideosComp = lazy(() => {
     return import('./BackgroundVideosComp');
 });
 const LazyBackgroundSounds = lazy(() => {
@@ -66,9 +66,9 @@ function RenderSoundTabComp({
 }
 
 const tabTypeList = [
-    ['color', 'Colors', LazyBackgroundColors],
-    ['image', 'Images', LazyBackgroundImages],
-    ['video', 'Videos', LazyBackgroundVideos],
+    ['color', 'Colors', LazyBackgroundColorsComp],
+    ['image', 'Images', LazyBackgroundImagesComp],
+    ['video', 'Videos', LazyBackgroundVideosComp],
 ] as const;
 type TabType = (typeof tabTypeList)[number][0] | 'sound';
 export default function BackgroundComp() {
