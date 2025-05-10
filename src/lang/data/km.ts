@@ -225,6 +225,21 @@ const lang: LanguageDataType = {
         const endWord = text.slice(-1);
         return endWord === '។' || endWord === '៕';
     },
+    extraBibleContextMenuItems: (bibleItem, appProvider) => {
+        return [
+            {
+                menuTitle: 'Open Khmer Study Bible',
+                onSelect: () => {
+                    const url = 'https://sb1954sb.openworship.app';
+                    const bookKey = bibleItem.target.bookKey;
+                    const chapterKey = bibleItem.target.chapter;
+                    appProvider.browserUtils.openExternalURL(
+                        `${url}/view.html?bookKey=${bookKey}&chapterKey=${chapterKey}`,
+                    );
+                },
+            },
+        ];
+    },
 };
 
 export default lang;

@@ -115,7 +115,7 @@ export type SQLiteDatabaseType = {
     close: () => void;
 };
 
-const appProvider = (window as any).provider as Readonly<
+export type AppProviderType = Readonly<
     PagePropsType & {
         appType: AppTypeEnum;
         isDesktop: boolean;
@@ -151,5 +151,7 @@ const appProvider = (window as any).provider as Readonly<
         currentHomePage: string;
     }
 >;
+
+const appProvider = (window as any).provider as AppProviderType;
 
 export default appProvider;

@@ -38,10 +38,13 @@ export default function BibleViewComp({
                 onDrop={async (event) => {
                     applyDragged(event, viewController, bibleItem);
                 }}
-                onContextMenu={(event: any) => {
+                onContextMenu={async (event: any) => {
                     showAppContextMenu(event, [
                         ...genDefaultBibleItemContextMenu(bibleItem),
-                        ...viewController.genContextMenu(bibleItem, uuid),
+                        ...(await viewController.genContextMenu(
+                            bibleItem,
+                            uuid,
+                        )),
                     ]);
                 }}
             >

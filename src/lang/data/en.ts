@@ -42,6 +42,9 @@ const lang: LanguageDataType = {
     checkShouldNewLine: (text: string) => {
         return text.endsWith('.');
     },
+    extraBibleContextMenuItems: (_bibleItem, _appProvider) => {
+        return [];
+    },
 };
 
 export default lang;

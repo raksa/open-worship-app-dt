@@ -35,13 +35,13 @@ export default function RenderBibleDataFoundComp({
         <div
             id={`uuid-${uuid}`}
             className="card border-success w-100 h-100"
-            onContextMenu={(event) => {
+            onContextMenu={async (event) => {
                 showAppContextMenu(event as any, [
                     ...genDefaultBibleItemContextMenu(bibleItem),
-                    ...viewController.genContextMenu(
+                    ...(await viewController.genContextMenu(
                         viewController.selectedBibleItem,
                         uuid,
-                    ),
+                    )),
                 ]);
             }}
         >

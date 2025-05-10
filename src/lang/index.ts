@@ -4,6 +4,9 @@ import { getSetting, setSetting } from '../helper/settingHelpers';
 
 import kmLangData from './data/km';
 import enLangData from './data/en';
+import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
+import BibleItem from '../bible-list/BibleItem';
+import { AppProviderType } from '../server/appProvider';
 
 export const DEFAULT_LOCALE = 'en-US';
 
@@ -265,6 +268,10 @@ export type LanguageDataType = {
     trimText: (text: string) => string;
     endWord: (text: string) => string;
     checkShouldNewLine: (text: string) => boolean;
+    extraBibleContextMenuItems: (
+        bibleItem: BibleItem,
+        appProvider: AppProviderType,
+    ) => ContextMenuItemType[];
 };
 
 const LANGUAGE_LOCALE_SETTING_NAME = 'language-locale';

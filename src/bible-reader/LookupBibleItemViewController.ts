@@ -148,14 +148,17 @@ class LookupBibleItemViewController extends BibleItemViewController {
         this.selectedBibleItem = bibleItem;
         this.setLookupContentFromBibleItem(bibleItem);
     }
-    genContextMenu(bibleItem: BibleItem, uuid: string): ContextMenuItemType[] {
+    async genContextMenu(
+        bibleItem: BibleItem,
+        uuid: string,
+    ): Promise<ContextMenuItemType[]> {
         const isBibleItemSelected = this.checkIsBibleItemSelected(bibleItem);
         const menu1 = genFoundBibleItemContextMenu(
             bibleItem,
             this.onLookupAddBibleItem,
             isBibleItemSelected,
         );
-        const menus2 = super.genContextMenu(bibleItem, uuid);
+        const menus2 = await super.genContextMenu(bibleItem, uuid);
         if (!isBibleItemSelected) {
             menus2.push({
                 menuTitle: 'Edit',

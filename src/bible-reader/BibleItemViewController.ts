@@ -16,6 +16,8 @@ import {
     genTimeoutAttempt,
 } from '../helper/helpers';
 import { BIBLE_VIEW_TEXT_CLASS } from '../helper/bibleViewHelpers';
+import { getLangAsync } from '../lang';
+import { getBibleLocale } from '../helper/bible-helpers/serverBibleHelpers2';
 
 export type UpdateEventType = 'update';
 export const RESIZE_SETTING_NAME = 'bible-previewer-render';
@@ -510,7 +512,12 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
     addBibleItemBottom(bibleItem: BibleItem, newBibleItem: BibleItem) {
         this.addBibleItem(bibleItem, newBibleItem, false, false);
     }
-    genContextMenu(bibleItem: BibleItem, uuid: string): ContextMenuItemType[] {
+    async genContextMenu(
+        bibleItem: BibleItem,
+        uuid: string,
+    ): Promise<ContextMenuItemType[]> {
+        const locale = await getBibleLocale(bibleItem.bibleKey);
+        const langData = await getLangAsync(locale);
         return [
             {
                 menuTitle: 'Split Horizontal',
@@ -546,17 +553,9 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
                     });
                 },
             },
-            {
-                menuTitle: 'Open Khmer Study Bible',
-                onSelect: () => {
-                    const url = 'https://sb1954sb.openworship.app';
-                    const bookKey = bibleItem.target.bookKey;
-                    const chapterKey = bibleItem.target.chapter;
-                    appProvider.browserUtils.openExternalURL(
-                        `${url}/view.html?bookKey=${bookKey}&chapterKey=${chapterKey}`,
-                    );
-                },
-            },
+            ...(langData !== null
+                ? langData.extraBibleContextMenuItems(bibleItem, appProvider)
+                : []),
             {
                 menuTitle: 'Toggle Widget Full View',
                 onSelect: () => {
