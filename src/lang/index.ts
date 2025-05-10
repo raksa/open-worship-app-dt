@@ -396,9 +396,12 @@ export async function fromLocaleNum(locale: LocaleType, localeNum: string) {
 }
 
 export async function sanitizeSearchingText(locale: LocaleType, text: string) {
-    const langData = await getLangAsync(locale);
+    let langData = await getLangAsync(locale);
     if (langData === null) {
-        return null;
+        langData = await getLangAsync(defaultLocale);
+    }
+    if (langData === null) {
+        return text;
     }
     return langData.sanitizeSearchingText(text);
 }

@@ -89,12 +89,14 @@ async function initDatabase(bibleKey: string, databaseFilePath: string) {
             }
         }
     }
-    console.log(`DB: Inserting ${words.size} words`);
-    databaseAdmin.exec(
-        `INSERT INTO spell(text) VALUES ${Array.from(words)
-            .map((word) => `('${word.split('').join(' ')}')`)
-            .join(',')};`,
-    );
+    if (words.size > 0) {
+        console.log(`DB: Inserting ${words.size} words`);
+        databaseAdmin.exec(
+            `INSERT INTO spell(text) VALUES ${Array.from(words)
+                .map((word) => `('${word.split('').join(' ')}')`)
+                .join(',')};`,
+        );
+    }
     return databaseAdmin;
 }
 
