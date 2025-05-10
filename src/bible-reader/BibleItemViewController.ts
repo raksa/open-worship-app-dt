@@ -271,18 +271,25 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
         const json = JSON.stringify(newColorNoteMap);
         setSetting(this.toSettingName('bible-items-color-note'), json);
     }
-    get settingName() {
-        return this.toSettingName(BIBLE_ITEMS_PREVIEW_SETTING);
+    get shouldNewLine() {
+        return getSetting(this.toSettingName('-view-new-line')) === 'true';
+    }
+    set shouldNewLine(shouldNewLine: boolean) {
+        setSetting(
+            this.toSettingName('-view-new-line'),
+            shouldNewLine ? 'true' : 'false',
+        );
+        this.fireUpdateEvent();
     }
     get nestedBibleItems() {
         try {
-            const jsonStr = getSetting(this.settingName) || '[]';
+            const jsonStr = getSetting(this.toSettingName('-data')) || '[]';
             const json = JSON.parse(jsonStr);
             return parseNestedBibleItem(json);
         } catch (error) {
             handleError(error);
         }
-        setSetting(this.settingName, '[]');
+        setSetting(this.toSettingName('-data'), '[]');
         return [];
     }
     set nestedBibleItems(newNestedBibleItems: NestedBibleItemsType) {
@@ -290,7 +297,7 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
         const jsonStr = JSON.stringify(
             stringifyNestedBibleItem(newNestedBibleItems),
         );
-        setSetting(this.settingName, jsonStr);
+        setSetting(this.toSettingName('-data'), jsonStr);
         this.fireUpdateEvent();
     }
     get straightBibleItems() {
@@ -317,8 +324,8 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
             return this.getColorNote(bibleItem) === colorNote;
         });
     }
-    toSettingName(preSettingName: string) {
-        return preSettingName + this._settingNameSuffix;
+    toSettingName(suffixSettingName: string) {
+        return `${BIBLE_ITEMS_PREVIEW_SETTING}${this._settingNameSuffix}${suffixSettingName}`;
     }
 
     finalRenderer(_bibleItem: BibleItem): ReactNode {

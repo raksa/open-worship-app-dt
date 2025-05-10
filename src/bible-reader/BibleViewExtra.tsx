@@ -1,4 +1,4 @@
-import { createContext, use } from 'react';
+import React, { createContext, use } from 'react';
 
 import BibleItem from '../bible-list/BibleItem';
 import { BibleSelectionMiniComp } from '../bible-lookup/BibleSelectionComp';
@@ -71,7 +71,7 @@ export function RenderHeaderComp({
     const fontSize = useBibleViewFontSizeContext();
     return (
         <div
-            className="card-header d-flex"
+            className="card-header d-flex app-top-hover-visible"
             style={{ ...fontSizeToHeightStyle(fontSize) }}
         >
             <RenderTitleMaterialComp onBibleKeyChange={onChange} />
@@ -88,7 +88,8 @@ export function RenderHeaderComp({
 }
 
 export const BibleViewTitleMaterialContext = createContext<{
-    onDBClick: (bibleItem: BibleItem) => void;
+    onDBClick?: (bibleItem: BibleItem) => void;
+    extraHeader?: React.ReactNode;
 } | null>(null);
 
 export function BibleViewTitleComp() {
@@ -106,11 +107,12 @@ export function BibleViewTitleComp() {
             }
             onDoubleClick={() => {
                 if (materialContext !== null) {
-                    materialContext.onDBClick(bibleItem);
+                    materialContext.onDBClick?.(bibleItem);
                 }
             }}
         >
             {title}
+            {materialContext?.extraHeader}
         </span>
     );
 }
@@ -118,13 +120,20 @@ export function BibleViewTitleComp() {
 function RendVerseTextComp({
     bibleItem,
     verseInfo,
+    index,
 }: Readonly<{
     bibleItem: BibleItem;
     verseInfo: CompiledVerseType;
+    index: number;
 }>) {
     const viewController = useBibleItemViewControllerContext();
     return (
         <>
+            {viewController.shouldNewLine &&
+            verseInfo.isNewLine &&
+            index > 0 ? (
+                <br />
+            ) : null}
             <div className="verse-number">
                 <div data-bible-key={verseInfo.bibleKey}>
                     {verseInfo.isNewLine ? (
@@ -183,12 +192,13 @@ export function BibleViewTextComp() {
                 paddingBottom: '100px',
             }}
         >
-            {result.map((verseInfo) => {
+            {result.map((verseInfo, i) => {
                 return (
                     <RendVerseTextComp
                         key={verseInfo.localeVerse}
                         bibleItem={bibleItem}
                         verseInfo={verseInfo}
+                        index={i}
                     />
                 );
             })}

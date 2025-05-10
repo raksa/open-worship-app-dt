@@ -55,11 +55,11 @@ export async function genChapterMatches(
         }),
     );
     const newList = chapterNumStrList.map((chapterNumStr, i) => {
-        return [chapterList[i], chapterNumStr];
+        return [chapterList[i], chapterNumStr, bibleKey];
     });
     const newFilteredList = newList.filter((chapterMatch) => {
         return chapterMatch[0] !== null;
-    }) as [number, string][];
+    }) as [number, string, string][];
     if (guessingChapter === null) {
         return newFilteredList;
     }
@@ -89,7 +89,9 @@ export function useChapterMatch(
     bookKey: string,
     guessingChapter: string | null,
 ) {
-    const [matches, setMatches] = useState<[number, string][] | null>(null);
+    const [matches, setMatches] = useState<[number, string, string][] | null>(
+        null,
+    );
     useAppEffectAsync(
         async (methodContext) => {
             if (!(await checkIsBookAvailable(bibleKey, bookKey))) {
@@ -109,6 +111,7 @@ export function useChapterMatch(
 }
 
 type BookMatchDataType = {
+    bibleKey: string;
     bookKey: string;
     book: string;
     bookKJV: string;
@@ -178,6 +181,7 @@ export async function genBookMatches(
         )
         .map(([bookKey, book]) => {
             return {
+                bibleKey,
                 bookKey,
                 book,
                 bookKJV: kjvKeyValue[bookKey],

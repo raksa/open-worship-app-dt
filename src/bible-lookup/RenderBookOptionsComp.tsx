@@ -17,6 +17,7 @@ const OPTION_CLASS = 'bible-lookup-book-option';
 const OPTION_SELECTED_CLASS = 'active';
 
 function genBookOption({
+    bibleKey,
     onSelect,
     index,
     bookKey,
@@ -24,6 +25,7 @@ function genBookOption({
     bookKJV,
     isAvailable,
 }: {
+    bibleKey: string;
     onSelect: SelectBookType;
     index: number;
     bookKey: string;
@@ -52,7 +54,7 @@ function genBookOption({
                     onSelect(bookKey, book);
                 }}
             >
-                <span>{book}</span>
+                <span data-bible-key={bibleKey}>{book}</span>
                 {book !== bookKJV ? (
                     <>
                         (<small className="text-muted">{bookKJV}</small>)
@@ -93,20 +95,23 @@ function BookOptionsComp({
     }
     return (
         <>
-            {matches.map(({ bookKey, book, bookKJV, isAvailable }, i) => {
-                return (
-                    <Fragment key={bookKey}>
-                        {genBookOption({
-                            bookKey,
-                            book,
-                            bookKJV,
-                            onSelect,
-                            index: i,
-                            isAvailable,
-                        })}
-                    </Fragment>
-                );
-            })}
+            {matches.map(
+                ({ bibleKey, bookKey, book, bookKJV, isAvailable }, i) => {
+                    return (
+                        <Fragment key={bookKey}>
+                            {genBookOption({
+                                bibleKey,
+                                bookKey,
+                                book,
+                                bookKJV,
+                                onSelect,
+                                index: i,
+                                isAvailable,
+                            })}
+                        </Fragment>
+                    );
+                },
+            )}
         </>
     );
 }

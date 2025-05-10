@@ -52,7 +52,9 @@ class LookupBibleItemViewController extends BibleItemViewController {
         }
     }
     get selectedBibleItem() {
-        const settingId = getSetting(this.settingName + '-selected-bible-item');
+        const settingId = getSetting(
+            this.toSettingName('-selected-bible-item'),
+        );
         const bibleItemId = settingId ? parseInt(settingId) : -1;
         if (bibleItemId !== -1) {
             const bibleItem = this.straightBibleItems.find((bibleItem) => {
@@ -69,7 +71,7 @@ class LookupBibleItemViewController extends BibleItemViewController {
         this.changeBibleItem(bibleItem, bibleItem);
         const bibleItemId = bibleItem.id;
         setSetting(
-            this.settingName + '-selected-bible-item',
+            this.toSettingName('-selected-bible-item'),
             bibleItemId.toString(),
         );
         this.setBibleKey(this.bibleKey);
@@ -93,10 +95,10 @@ class LookupBibleItemViewController extends BibleItemViewController {
         }
     }
     get inputText() {
-        return getSetting(this.settingName + '-input-text', '');
+        return getSetting(this.toSettingName('-input-text'), '');
     }
     set inputText(newText: string) {
-        setSetting(this.settingName + '-input-text', newText);
+        setSetting(this.toSettingName('-input-text'), newText);
         this.setInputText(newText);
         setBibleLookupInputFocus();
     }

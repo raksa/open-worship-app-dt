@@ -301,27 +301,33 @@ export function getLang(langCodeOrLocale: string) {
 export async function getLangAsync(locale: LocaleType, isForce = false) {
     if (!cache.has(locale)) {
         try {
-            const langData =
-                langDataMap[locale] ?? langDataMap[allLocalesMap[locale]];
+            const langData: LanguageDataType | null =
+                langDataMap[locale] ??
+                langDataMap[allLocalesMap[locale]] ??
+                null;
             cache.set(locale, langData);
             let langCode = getLangCode(locale);
             if (langCode === null && isForce) {
                 langCode = getLangCode(defaultLocale);
             }
+            if (langCode === 'km' && langData !== null) {
+                // TODO: implement downloadable lang package
+                langData.dirPath = '/fonts/km/Battambang';
+            }
             if (langCode !== null) {
-                if (langCode === 'km') {
-                    // TODO: implement downloadable lang package
-                    langData.dirPath = '/fonts/km/Battambang';
-                }
-                const elementID = `lang-${langCode}`;
-                let styleElement = document.querySelector(`style#${elementID}`);
-                if (styleElement === null) {
-                    styleElement = document.createElement('style');
-                    styleElement.id = elementID;
-                    document.head.appendChild(styleElement);
-                }
-                styleElement.innerHTML = langData.genCss();
                 cache.set(langCode, langData);
+                if (langData !== null) {
+                    const elementID = `lang-${langCode}`;
+                    let styleElement = document.querySelector(
+                        `style#${elementID}`,
+                    );
+                    if (styleElement === null) {
+                        styleElement = document.createElement('style');
+                        styleElement.id = elementID;
+                        document.head.appendChild(styleElement);
+                    }
+                    styleElement.innerHTML = langData.genCss();
+                }
             }
         } catch (error) {
             handleError(error);

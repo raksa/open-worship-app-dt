@@ -1,4 +1,4 @@
-import { lazy, useMemo } from 'react';
+import { lazy } from 'react';
 
 import BibleItem from '../bible-list/BibleItem';
 import { BibleItemViewControllerContext } from '../bible-reader/BibleItemViewController';
@@ -22,21 +22,50 @@ export default function BibleLookupBodyPreviewerComp() {
     useCloseBibleItemRenderer();
     useSplitBibleItemRenderer();
     const viewController = LookupBibleItemViewController.getInstance();
-    const contextValue = useMemo(
-        () => ({
-            onDBClick: (bibleItem: BibleItem) => {
-                viewController.editBibleItem(bibleItem);
-            },
-        }),
-        [viewController],
-    );
     viewController.finalRenderer = function (bibleItem: BibleItem) {
         const isSelected = viewController.checkIsBibleItemSelected(bibleItem);
         if (isSelected) {
-            return <RenderBibleLookupBodyComp />;
+            return (
+                <BibleViewTitleMaterialContext
+                    value={{
+                        extraHeader: (
+                            <span
+                                className="pointer"
+                                onClick={() => {
+                                    viewController.editBibleItem(bibleItem);
+                                }}
+                            >
+                                <i
+                                    style={{ color: 'green' }}
+                                    className="bi bi-pencil-fill"
+                                />
+                            </span>
+                        ),
+                    }}
+                >
+                    <RenderBibleLookupBodyComp />
+                </BibleViewTitleMaterialContext>
+            );
         }
         return (
-            <BibleViewTitleMaterialContext value={contextValue}>
+            <BibleViewTitleMaterialContext
+                value={{
+                    onDBClick: (bibleItem: BibleItem) => {
+                        viewController.editBibleItem(bibleItem);
+                    },
+                    extraHeader: (
+                        <span
+                            className="pointer app-low-hover-visible"
+                            style={{ color: 'green' }}
+                            onClick={() => {
+                                viewController.editBibleItem(bibleItem);
+                            }}
+                        >
+                            <i className="bi bi-pencil" />
+                        </span>
+                    ),
+                }}
+            >
                 <BibleViewComp bibleItem={bibleItem} />
             </BibleViewTitleMaterialContext>
         );

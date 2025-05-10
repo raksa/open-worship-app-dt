@@ -324,4 +324,15 @@ body {
     content: '*';
     color: $hight-light-color;
   }
+
+  .app-top-hover-visible {
+    .app-low-hover-visible {
+      visibility: hidden;
+    }
+    &:hover {
+      .app-low-hover-visible {
+        visibility: visible;
+      }
+    }
+  }
 }
