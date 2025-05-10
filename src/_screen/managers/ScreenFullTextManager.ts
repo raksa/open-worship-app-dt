@@ -408,9 +408,9 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
             this.div.scrollTop = scrollTop;
         }
         this.div.scroll({
+            behavior: 'smooth',
             top: scrollTop,
             left: 0,
-            behavior: 'smooth',
         });
     }
 

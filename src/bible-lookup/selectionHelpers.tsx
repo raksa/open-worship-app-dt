@@ -2,6 +2,7 @@ import {
     KeyboardType,
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
+import { bringDomToBottomView } from '../helper/helpers';
 
 export const INPUT_TEXT_CLASS = 'bible-lookup-input-text';
 export const RENDER_FOUND_CLASS = 'bible-lookup-render-found';
@@ -172,10 +173,7 @@ export function processSelection(
     });
     elements[index].classList.add(selectedClass);
     blurInputText();
-    elements[index].scrollIntoView({
-        block: 'end',
-        behavior: 'smooth',
-    });
+    bringDomToBottomView(elements[index]);
 }
 
 export type SelectBookType = (newBookKey: string, newBook: string) => void;

@@ -4,6 +4,7 @@ import { getScreenManagerBase } from '../../_screen/managers/screenManagerBaseHe
 import { screenManagerFromBase } from '../../_screen/managers/screenManagerHelpers';
 import { VaryAppDocumentItemType } from '../../app-document-list/appDocumentHelpers';
 import { slidePreviewerMethods } from './AppDocumentPreviewerFooterComp';
+import { bringDomToCenterView } from '../../helper/helpers';
 
 export function handleAppDocumentItemSelecting(
     event: any,
@@ -151,10 +152,7 @@ export function handleArrowing(
                     item.filePath,
                     item.toJson(),
                 );
-            targetDiv.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center',
-            });
+            bringDomToCenterView(targetDiv);
         }, i * 100);
     }
 }

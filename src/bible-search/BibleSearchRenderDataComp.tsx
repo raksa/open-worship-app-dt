@@ -16,6 +16,7 @@ import BibleSearchRenderPerPageComp, {
     APP_FOUND_PAGE_CLASS,
 } from './BibleSearchRenderPerPageComp';
 import { useBibleSearchController } from './BibleSearchController';
+import { bringDomToBottomView, bringDomToTopView } from '../helper/helpers';
 
 async function selectBookKey(
     event: any,
@@ -66,14 +67,12 @@ function RenderPageNumberComp({
                 className="page-link"
                 onClick={() => {
                     if (isActive) {
-                        document
-                            .querySelector(
-                                `.${APP_FOUND_PAGE_CLASS}-${pageNumber}`,
-                            )
-                            ?.scrollIntoView({
-                                behavior: 'smooth',
-                                block: 'start',
-                            });
+                        const dom = document.querySelector(
+                            `.${APP_FOUND_PAGE_CLASS}-${pageNumber}`,
+                        );
+                        if (dom !== null) {
+                            bringDomToTopView(dom);
+                        }
                         return;
                     }
                     handleSearch(pageNumber);
@@ -93,10 +92,7 @@ function ShowSearchComp() {
                 if (element === null) {
                     return;
                 }
-                element.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'end',
-                });
+                bringDomToBottomView(element);
             }}
         >
             <hr />

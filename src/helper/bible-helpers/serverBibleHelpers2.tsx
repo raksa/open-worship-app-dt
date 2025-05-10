@@ -36,6 +36,7 @@ export async function toInputText(
             }
         }
     }
+    // 1 John 1:1-2
     return txt;
 }
 

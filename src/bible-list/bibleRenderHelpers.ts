@@ -26,6 +26,8 @@ export type CompiledVerseType = {
     localeVerse: string;
     text: string;
     isNewLine: boolean;
+    bibleKey: string;
+    kjvBibleVersesKey: string;
 };
 
 type CallbackType<T extends string | CompiledVerseType[]> = (
@@ -46,13 +48,15 @@ class BibleRenderHelper {
             callback(result);
         });
     }
-
-    toBibleVersesKey(bibleKey: string, bibleTarget: BibleTargetType) {
+    toKJVBibleVersesKey(bibleTarget: BibleTargetType) {
         const { bookKey: book, chapter, verseStart, verseEnd } = bibleTarget;
         const txtV = `${verseStart}${
             verseStart !== verseEnd ? '-' + verseEnd : ''
         }`;
-        return `${bibleKey} | ${book} ${chapter}:${txtV}`;
+        return `${book} ${chapter}:${txtV}`;
+    }
+    toBibleVersesKey(bibleKey: string, bibleTarget: BibleTargetType) {
+        return `${bibleKey} | ${this.toKJVBibleVersesKey(bibleTarget)}`;
     }
     fromBibleVerseKey(bibleVersesKey: string) {
         let arr = bibleVersesKey.split(' | ');
@@ -150,6 +154,13 @@ class BibleRenderHelper {
                 localeVerse: localNum ?? iString,
                 text: verses[iString] ?? '??',
                 isNewLine,
+                bibleKey,
+                kjvBibleVersesKey: this.toKJVBibleVersesKey({
+                    bookKey: book,
+                    chapter,
+                    verseStart: i,
+                    verseEnd: i,
+                }),
             });
         }
         return this.fullfilCallback(cacheKey, result);

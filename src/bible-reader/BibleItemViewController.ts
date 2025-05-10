@@ -10,7 +10,11 @@ import { showSimpleToast } from '../toast/toastHelpers';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 import { showBibleOption } from '../bible-lookup/BibleSelectionComp';
 import appProvider from '../server/appProvider';
-import { genTimeoutAttempt } from '../helper/helpers';
+import {
+    bringDomToNearestView,
+    bringDomToTopView,
+    genTimeoutAttempt,
+} from '../helper/helpers';
 import { BIBLE_VIEW_TEXT_CLASS } from '../helper/bibleViewHelpers';
 
 export type UpdateEventType = 'update';
@@ -307,6 +311,12 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
         }
         this.colorNoteMap = colorNoteMap;
     }
+    getBibleItemsByColorNote(colorNote: string) {
+        const allBibleItems = this.straightBibleItems;
+        return allBibleItems.filter((bibleItem) => {
+            return this.getColorNote(bibleItem) === colorNote;
+        });
+    }
     toSettingName(preSettingName: string) {
         return preSettingName + this._settingNameSuffix;
     }
@@ -407,9 +417,6 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
     }
     changeBibleItem(bibleItem: BibleItem, newBibleItem: BibleItem) {
         try {
-            if (bibleItem.id === -1) {
-                throw new Error('Invalid bible item id');
-            }
             newBibleItem.id = bibleItem.id;
             const { nestedBibleItems, parentNestedBibleItems, index } =
                 this.seek(
@@ -565,6 +572,64 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
         this.nestedBibleItems = [...nestedBibleItems, newBibleItem];
         return newBibleItem;
     }
+    syncBibleVerseSelection(
+        bibleItem: BibleItem,
+        verseKey: string,
+        isToTop: boolean,
+    ) {
+        const containerDoms = document.querySelectorAll(
+            `.${BIBLE_VIEW_TEXT_CLASS}[data-bible-item-id="${bibleItem.id}"]`,
+        );
+        Array.from(containerDoms).forEach((containerDom: any) => {
+            const elements = containerDom.querySelectorAll(
+                `.${BIBLE_VIEW_TEXT_CLASS} div[data-verse-key="${verseKey}"]`,
+            );
+            Array.from(elements).forEach((element: any) => {
+                this.handleVersesSelecting(element, isToTop, true);
+            });
+        });
+    }
+    handleVersesSelecting(
+        targetDom: HTMLDivElement,
+        isToTop: boolean,
+        isForceSelect = false,
+        bibleItem?: BibleItem,
+    ) {
+        const classList = targetDom.classList;
+        if (!isForceSelect && classList.contains('selected')) {
+            classList.remove('selected');
+            return;
+        }
+        targetDom.parentElement?.childNodes.forEach((element: any) => {
+            element.classList.remove('selected');
+        });
+        classList.add('selected');
+        if (isToTop) {
+            bringDomToTopView(targetDom);
+        } else {
+            bringDomToNearestView(targetDom);
+        }
+        if (bibleItem === undefined) {
+            return;
+        }
+        const kjvBibleVerseKey = targetDom.dataset.verseKey;
+        if (kjvBibleVerseKey === undefined) {
+            return;
+        }
+        const colorNote = this.getColorNote(bibleItem);
+        if (!colorNote) {
+            return;
+        }
+        this.getBibleItemsByColorNote(colorNote).forEach((bibleItem1) => {
+            if (bibleItem1.id !== bibleItem.id) {
+                this.syncBibleVerseSelection(
+                    bibleItem1,
+                    kjvBibleVerseKey,
+                    isToTop,
+                );
+            }
+        });
+    }
 }
 
 export const BibleItemViewControllerContext =
@@ -574,7 +639,8 @@ export function useBibleItemViewControllerContext() {
     const viewController = use(BibleItemViewControllerContext);
     if (viewController === null) {
         throw new Error(
-            'useBibleItemViewControllerUpdateEvent must be used within a BibleItemViewControllerContext',
+            'useBibleItemViewControllerUpdateEvent must be used within a' +
+                ' BibleItemViewControllerContext',
         );
     }
     return viewController;

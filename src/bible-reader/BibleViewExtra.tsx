@@ -1,4 +1,4 @@
-import { createContext, Fragment, use } from 'react';
+import { createContext, use } from 'react';
 
 import BibleItem from '../bible-list/BibleItem';
 import { BibleSelectionMiniComp } from '../bible-lookup/BibleSelectionComp';
@@ -16,11 +16,8 @@ import ItemColorNoteComp from '../others/ItemColorNoteComp';
 import ColorNoteInf from '../helper/ColorNoteInf';
 import { useBibleItemViewControllerContext } from './BibleItemViewController';
 import { useBibleItemContext } from './BibleItemContext';
-import {
-    BIBLE_VERSE_TEXT_TITLE,
-    bringDomToNearestView,
-    bringDomToTopView,
-} from '../helper/helpers';
+import { BIBLE_VERSE_TEXT_TITLE } from '../helper/helpers';
+import { CompiledVerseType } from '../bible-list/bibleRenderHelpers';
 
 export function RenderTitleMaterialComp({
     editingBibleItem,
@@ -118,22 +115,56 @@ export function BibleViewTitleComp() {
     );
 }
 
-function handleVersesSelecting(event: any, isToTop = false) {
-    const currentTarget = event.currentTarget;
-    const classList = currentTarget.classList;
-    if (classList.contains('selected')) {
-        classList.remove('selected');
-    } else {
-        currentTarget.parentElement?.childNodes.forEach((element: any) => {
-            element.classList.remove('selected');
-        });
-        classList.add('selected');
-        if (isToTop || event.altKey) {
-            bringDomToTopView(currentTarget);
-        } else {
-            bringDomToNearestView(currentTarget);
-        }
-    }
+function RendVerseTextComp({
+    bibleItem,
+    verseInfo,
+}: Readonly<{
+    bibleItem: BibleItem;
+    verseInfo: CompiledVerseType;
+}>) {
+    const viewController = useBibleItemViewControllerContext();
+    return (
+        <>
+            <div className="verse-number">
+                <div data-bible-key={verseInfo.bibleKey}>
+                    {verseInfo.isNewLine ? (
+                        <span className="verse-number-text">&nbsp;&nbsp;</span>
+                    ) : null}
+                    {verseInfo.localeVerse}
+                </div>
+            </div>
+            <div
+                className="verse-text"
+                data-bible-key={verseInfo.bibleKey}
+                data-verse-key={verseInfo.kjvBibleVersesKey}
+                title={BIBLE_VERSE_TEXT_TITLE}
+                onClick={(event) => {
+                    viewController.handleVersesSelecting(
+                        event.currentTarget,
+                        event.altKey,
+                        false,
+                        bibleItem,
+                    );
+                }}
+                onDoubleClick={(event) => {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    const selection = window.getSelection();
+                    if (selection !== null && selection.rangeCount > 0) {
+                        selection.removeAllRanges();
+                    }
+                    viewController.handleVersesSelecting(
+                        event.currentTarget,
+                        true,
+                        false,
+                        bibleItem,
+                    );
+                }}
+            >
+                {verseInfo.text}
+            </div>
+        </>
+    );
 }
 
 export function BibleViewTextComp() {
@@ -146,45 +177,19 @@ export function BibleViewTextComp() {
     return (
         <div
             className={`${BIBLE_VIEW_TEXT_CLASS} app-selectable-text pt-3`}
-            data-bible-key={bibleItem.bibleKey}
+            data-bible-item-id={bibleItem.id}
             style={{
                 fontSize: `${fontSize}px`,
                 paddingBottom: '100px',
             }}
         >
-            {result.map(({ localeVerse, text, isNewLine }) => {
+            {result.map((verseInfo) => {
                 return (
-                    <Fragment key={localeVerse}>
-                        <div className="verse-number">
-                            <div>
-                                {isNewLine ? (
-                                    <span className="verse-number-text">
-                                        &nbsp;&nbsp;
-                                    </span>
-                                ) : null}
-                                {localeVerse}
-                            </div>
-                        </div>
-                        <div
-                            className="verse-text"
-                            title={BIBLE_VERSE_TEXT_TITLE}
-                            onClick={handleVersesSelecting}
-                            onDoubleClick={(event) => {
-                                event.stopPropagation();
-                                event.preventDefault();
-                                const selection = window.getSelection();
-                                if (
-                                    selection !== null &&
-                                    selection.rangeCount > 0
-                                ) {
-                                    selection.removeAllRanges();
-                                }
-                                handleVersesSelecting(event, true);
-                            }}
-                        >
-                            {text}
-                        </div>
-                    </Fragment>
+                    <RendVerseTextComp
+                        key={verseInfo.localeVerse}
+                        bibleItem={bibleItem}
+                        verseInfo={verseInfo}
+                    />
                 );
             })}
         </div>

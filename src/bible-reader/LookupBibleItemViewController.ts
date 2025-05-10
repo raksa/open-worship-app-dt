@@ -68,9 +68,6 @@ class LookupBibleItemViewController extends BibleItemViewController {
     set selectedBibleItem(bibleItem: BibleItem) {
         this.changeBibleItem(bibleItem, bibleItem);
         const bibleItemId = bibleItem.id;
-        if (bibleItemId === -1) {
-            throw new Error('Invalid bible item id');
-        }
         setSetting(
             this.settingName + '-selected-bible-item',
             bibleItemId.toString(),
@@ -100,11 +97,6 @@ class LookupBibleItemViewController extends BibleItemViewController {
     }
     set inputText(newText: string) {
         setSetting(this.settingName + '-input-text', newText);
-        this.getFoundBibleItem().then((foundBibleItem) => {
-            if (foundBibleItem !== null) {
-                this.changeBibleItem(this.selectedBibleItem, foundBibleItem);
-            }
-        });
         this.setInputText(newText);
         setBibleLookupInputFocus();
     }
@@ -228,7 +220,7 @@ class LookupBibleItemViewController extends BibleItemViewController {
             return;
         }
         const newBibleItem = bibleItem.clone(true);
-        newBibleItem.target = selectedBibleItem.clone().target;
+        newBibleItem.target = selectedBibleItem.target;
         this.changeBibleItem(bibleItem, newBibleItem);
     }
     deleteBibleItem(bibleItem: BibleItem) {

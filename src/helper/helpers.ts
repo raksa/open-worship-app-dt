@@ -390,3 +390,7 @@ export function bringDomToTopView(dom: Element) {
 export function bringDomToCenterView(dom: Element) {
     bringDomToView(dom, 'center');
 }
+
+export function bringDomToBottomView(dom: Element) {
+    bringDomToView(dom, 'end');
+}
