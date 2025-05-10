@@ -38,6 +38,52 @@ function useHistoryTextList(maxHistoryCount: number) {
     return [historyTextList, setHistoryTextList1] as const;
 }
 
+function extractHistoryText(historyText: string) {
+    const regex = /^\((.+)\)\s(.+)$/;
+    const found = regex.exec(historyText);
+    if (found === null) {
+        return null;
+    }
+    const bibleKey = found[1];
+    const bibleTitle = found[2];
+    return {
+        bibleKey,
+        bibleTitle,
+    };
+}
+
+async function handleDoubleClicking(event: any, historyText: string) {
+    event.preventDefault();
+    const extracted = extractHistoryText(historyText);
+    if (extracted === null) {
+        return;
+    }
+    const { bibleKey, bibleTitle } = extracted;
+    const { result } = await extractBibleTitle(bibleKey, bibleTitle);
+    if (result.bibleItem === null) {
+        return;
+    }
+    const viewController = LookupBibleItemViewController.getInstance();
+    if (event.shiftKey) {
+        viewController.addBibleItemLeft(
+            viewController.selectedBibleItem,
+            viewController.selectedBibleItem,
+        );
+    }
+    viewController.setLookupContentFromBibleItem(result.bibleItem);
+}
+
+function handleHistoryRemoving(
+    historyTextList: string[],
+    historyText: string,
+    setHistoryTextList: (newHistoryTextList: string[]) => void,
+) {
+    const newHistoryTextList = historyTextList.filter((historyText1) => {
+        return historyText1 !== historyText;
+    });
+    setHistoryTextList(newHistoryTextList);
+}
+
 export default function InputHistoryComp({
     maxHistoryCount = 20,
 }: Readonly<{
@@ -45,34 +91,7 @@ export default function InputHistoryComp({
 }>) {
     const [historyTextList, setHistoryTextList] =
         useHistoryTextList(maxHistoryCount);
-    const handleHistoryRemoving = (historyText: string) => {
-        const newHistoryTextList = historyTextList.filter((h) => {
-            return h !== historyText;
-        });
-        setHistoryTextList(newHistoryTextList);
-    };
-    const handleDoubleClicking = async (event: any, historyText: string) => {
-        event.preventDefault();
-        const regex = /^\((.+)\)\s(.+)$/;
-        const found = regex.exec(historyText);
-        if (found === null) {
-            return;
-        }
-        const bibleKey = found[1];
-        const bibleTitle = found[2];
-        const { result } = await extractBibleTitle(bibleKey, bibleTitle);
-        if (result.bibleItem === null) {
-            return;
-        }
-        const viewController = LookupBibleItemViewController.getInstance();
-        if (event.shiftKey) {
-            viewController.addBibleItemLeft(
-                viewController.selectedBibleItem,
-                viewController.selectedBibleItem,
-            );
-        }
-        viewController.setLookupContentFromBibleItem(result.bibleItem);
-    };
+
     return (
         <div
             className="d-flex shadow-sm rounded px-1 me-1"
@@ -83,9 +102,11 @@ export default function InputHistoryComp({
             }}
         >
             {historyTextList.map((historyText) => {
+                const extracted = extractHistoryText(historyText);
                 return (
                     <button
                         key={historyText}
+                        data-bible-key={extracted?.bibleKey || ''}
                         title={
                             'Double click to put back, shift double click to ' +
                             'put back split'
@@ -101,7 +122,11 @@ export default function InputHistoryComp({
                             title="Remove"
                             style={{ color: 'red' }}
                             onClick={() => {
-                                handleHistoryRemoving(historyText);
+                                handleHistoryRemoving(
+                                    historyTextList,
+                                    historyText,
+                                    setHistoryTextList,
+                                );
                             }}
                         >
                             <i className="bi bi-x" />

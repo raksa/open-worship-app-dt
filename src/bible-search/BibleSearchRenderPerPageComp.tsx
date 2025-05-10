@@ -10,7 +10,12 @@ export const APP_FOUND_PAGE_CLASS = 'app-found-page';
 function BibleViewTitleComp({ bibleItem }: Readonly<{ bibleItem: BibleItem }>) {
     const title = useBibleItemRenderTitle(bibleItem);
     return (
-        <span className="title app-border-white-round m-1 px-1">{title}</span>
+        <span
+            data-bible-key={bibleItem.bibleKey}
+            className="title app-border-white-round m-1 px-1"
+        >
+            {title}
+        </span>
     );
 }
 
@@ -46,6 +51,7 @@ function RenderFoundItemComp({
         >
             <BibleViewTitleComp bibleItem={bibleItem} />
             <span
+                data-bible-key={bibleItem.bibleKey}
                 dangerouslySetInnerHTML={{
                     __html: newItem,
                 }}

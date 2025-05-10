@@ -22,7 +22,7 @@ export default function RenderVerseOptionsComp({
         return null;
     }
     return (
-        <div className="render-found">
+        <div className="render-found" data-bible-key={bibleItem.bibleKey}>
             <div
                 className={
                     'verse-select d-flex p-1 align-content-start flex-wrap'
@@ -39,6 +39,15 @@ export default function RenderVerseOptionsComp({
                         />
                     );
                 })}
+                <span
+                    className="p-2 pointer"
+                    title="Full Verse"
+                    onClick={() => {
+                        onVersesChange(1, verseList.length);
+                    }}
+                >
+                    <i className="bi bi-asterisk" />
+                </span>
             </div>
         </div>
     );
