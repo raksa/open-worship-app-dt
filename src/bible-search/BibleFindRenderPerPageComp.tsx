@@ -2,8 +2,8 @@ import BibleItem from '../bible-list/BibleItem';
 import { useBibleItemRenderTitle } from '../bible-list/bibleItemHelpers';
 import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
 import { useAppPromise } from '../helper/helpers';
-import { useBibleSearchController } from './BibleSearchController';
-import { BibleSearchResultType, breakItem } from './bibleSearchHelpers';
+import { useBibleFindController } from './BibleFindController';
+import { BibleFindResultType, breakItem } from './bibleFindHelpers';
 
 export const APP_FOUND_PAGE_CLASS = 'app-found-page';
 
@@ -20,19 +20,19 @@ function BibleViewTitleComp({ bibleItem }: Readonly<{ bibleItem: BibleItem }>) {
 }
 
 function RenderFoundItemComp({
-    searchText,
+    findText,
     text,
     bibleKey,
     handleClicking,
 }: Readonly<{
-    searchText: string;
+    findText: string;
     text: string;
     bibleKey: string;
     handleClicking: (event: any, bibleItem: BibleItem) => void;
 }>) {
-    const bibleSearchController = useBibleSearchController();
+    const bibleFindController = useBibleFindController();
     const data = useAppPromise(
-        breakItem(bibleSearchController.locale, searchText, text, bibleKey),
+        breakItem(bibleFindController.locale, findText, text, bibleKey),
     );
     if (data === undefined) {
         return <div>Loading...</div>;
@@ -60,15 +60,15 @@ function RenderFoundItemComp({
     );
 }
 
-export default function BibleSearchRenderPerPageComp({
+export default function BibleFindRenderPerPageComp({
     pageNumber,
     data,
-    searchText,
+    findText,
     bibleKey,
 }: Readonly<{
     pageNumber: string;
-    data: BibleSearchResultType;
-    searchText: string;
+    data: BibleFindResultType;
+    findText: string;
     bibleKey: string;
 }>) {
     const handleClicking = (event: any, bibleItem: BibleItem) => {
@@ -90,7 +90,7 @@ export default function BibleSearchRenderPerPageComp({
                     return (
                         <RenderFoundItemComp
                             key={uniqueKey}
-                            searchText={searchText}
+                            findText={findText}
                             text={text}
                             bibleKey={bibleKey}
                             handleClicking={handleClicking}

@@ -2,49 +2,48 @@ import { useState } from 'react';
 
 import { useAppEffect, useAppEffectAsync } from '../helper/debuggerHelpers';
 import LoadingComp from '../others/LoadingComp';
-import BibleSearchBodyComp from './BibleSearchBodyComp';
+import BibleFindBodyComp from './BibleFindBodyComp';
 import { useBibleKeyContext } from '../bible-list/bibleHelpers';
-import BibleSearchController, {
-    BibleSearchControllerContext,
-} from './BibleSearchController';
+import BibleFindController, {
+    BibleFindControllerContext,
+} from './BibleFindController';
 
 export default function BibleSearchPreviewerComp() {
     const selectedBibleKey = useBibleKeyContext();
     const [bibleKey, setBibleKey] = useState(selectedBibleKey);
-    const [bibleSearchController, setBibleSearchController] = useState<
-        BibleSearchController | null | undefined
+    const [bibleFindController, setBibleFindController] = useState<
+        BibleFindController | null | undefined
     >(undefined);
     useAppEffect(() => {
         setBibleKey(selectedBibleKey);
     }, [selectedBibleKey]);
 
     const setBibleKey1 = (_: string, newBibleKey: string) => {
-        setBibleSearchController(undefined);
+        setBibleFindController(undefined);
         setBibleKey(newBibleKey);
     };
     useAppEffectAsync(
         async (methodContext) => {
-            if (bibleKey !== 'Unknown' && bibleSearchController === undefined) {
-                const apiData1 =
-                    await BibleSearchController.getInstant(bibleKey);
-                methodContext.setSearchController(apiData1);
+            if (bibleKey !== 'Unknown' && bibleFindController === undefined) {
+                const apiData1 = await BibleFindController.getInstant(bibleKey);
+                methodContext.setBibleFindController(apiData1);
             }
         },
-        [bibleSearchController, bibleKey],
-        { setSearchController: setBibleSearchController },
+        [bibleFindController, bibleKey],
+        { setBibleFindController },
     );
-    if (bibleSearchController === undefined) {
+    if (bibleFindController === undefined) {
         return <LoadingComp />;
     }
-    if (bibleSearchController === null) {
+    if (bibleFindController === null) {
         return (
             <div className="alert alert-warning">
                 <i className="bi bi-info-circle" />
-                <div className="ms-2">Fail to get search controller!</div>
+                <div className="ms-2">Fail to get find controller!</div>
                 <button
                     className="btn btn-info"
                     onClick={() => {
-                        setBibleSearchController(undefined);
+                        setBibleFindController(undefined);
                     }}
                 >
                     Reload
@@ -54,8 +53,8 @@ export default function BibleSearchPreviewerComp() {
     }
 
     return (
-        <BibleSearchControllerContext.Provider value={bibleSearchController}>
-            <BibleSearchBodyComp setBibleKey={setBibleKey1} />
-        </BibleSearchControllerContext.Provider>
+        <BibleFindControllerContext.Provider value={bibleFindController}>
+            <BibleFindBodyComp setBibleKey={setBibleKey1} />
+        </BibleFindControllerContext.Provider>
     );
 }

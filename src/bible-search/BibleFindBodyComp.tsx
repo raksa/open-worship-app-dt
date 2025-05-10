@@ -2,32 +2,29 @@ import { useState, useTransition } from 'react';
 
 import {
     AllDataType,
-    BibleSearchForType,
+    BibleFindForType,
     calcPaging,
     findPageNumber,
     SelectedBookKeyType,
-} from './bibleSearchHelpers';
-import BibleSearchRenderDataComp from './BibleSearchRenderDataComp';
+} from './bibleFindHelpers';
+import BibleFindRenderDataComp from './BibleFindRenderDataComp';
 import BibleSelectionComp from '../bible-lookup/BibleSelectionComp';
-import BibleSearchHeaderComp from './BibleSearchHeaderComp';
-import { useBibleSearchController } from './BibleSearchController';
+import BibleFindHeaderComp from './BibleFindHeaderComp';
+import { useBibleFindController } from './BibleFindController';
 
-export default function BibleSearchBodyComp({
+export default function BibleFindBodyComp({
     setBibleKey,
 }: Readonly<{
     setBibleKey: (_: string, newBibleKey: string) => void;
 }>) {
-    const bibleSearchController = useBibleSearchController();
+    const bibleFindController = useBibleFindController();
     const [selectedBook, setSelectedBook] = useState<SelectedBookKeyType>(null);
-    const [searchText, setSearchText] = useState('');
+    const [findText, setFindText] = useState('');
     const [allData, setAllData] = useState<AllDataType>({});
-    const [isSearching, startTransition] = useTransition();
-    const doSearch = async (
-        searchData: BibleSearchForType,
-        isFresh = false,
-    ) => {
+    const [isFinding, startTransition] = useTransition();
+    const doFinding = async (findData: BibleFindForType, isFresh = false) => {
         startTransition(async () => {
-            const data = await bibleSearchController.doSearch(searchData);
+            const data = await bibleFindController.doFinding(findData);
             if (data !== null) {
                 const { perPage, pages } = calcPaging(data);
                 const pageNumber = findPageNumber(data, perPage, pages);
@@ -41,52 +38,52 @@ export default function BibleSearchBodyComp({
         });
     };
     const setSelectedBook1 = (newSelectedBook: SelectedBookKeyType) => {
-        bibleSearchController.bookKey = newSelectedBook?.bookKey ?? null;
+        bibleFindController.bookKey = newSelectedBook?.bookKey ?? null;
         setAllData({});
         setSelectedBook(newSelectedBook);
-        if (bibleSearchController.searchText) {
-            doSearch({ text: bibleSearchController.searchText }, true);
+        if (bibleFindController.findText) {
+            doFinding({ text: bibleFindController.findText }, true);
         }
     };
-    const handleSearch = (isFresh = false) => {
-        const searchText = bibleSearchController.searchText;
-        if (!searchText) {
+    const handleFinding = (isFresh = false) => {
+        const findText = bibleFindController.findText;
+        if (!findText) {
             return;
         }
-        setSearchText(searchText);
+        setFindText(findText);
         if (isFresh) {
             setAllData({});
         }
-        const searchData: BibleSearchForType = {
-            text: searchText,
+        const findData: BibleFindForType = {
+            text: findText,
         };
-        doSearch(searchData, isFresh);
+        doFinding(findData, isFresh);
     };
     return (
         <div className="card overflow-hidden w-100 h-100">
             <div className="card-header input-group overflow-hidden">
                 <BibleSelectionComp
                     onBibleKeyChange={setBibleKey}
-                    bibleKey={bibleSearchController.bibleKey}
+                    bibleKey={bibleFindController.bibleKey}
                 />
-                <BibleSearchHeaderComp
-                    handleSearch={handleSearch}
-                    isSearching={isSearching}
+                <BibleFindHeaderComp
+                    handleFind={handleFinding}
+                    isFinding={isFinding}
                 />
             </div>
-            <BibleSearchRenderDataComp
-                text={searchText}
+            <BibleFindRenderDataComp
+                text={findText}
                 allData={allData}
-                searchFor={(from: number, to: number) => {
-                    doSearch({
+                findFor={(from: number, to: number) => {
+                    doFinding({
                         fromLineNumber: from,
                         toLineNumber: to,
-                        text: searchText,
+                        text: findText,
                     });
                 }}
                 selectedBook={selectedBook}
                 setSelectedBook={setSelectedBook1}
-                isSearch={isSearching}
+                isFinding={isFinding}
             />
         </div>
     );

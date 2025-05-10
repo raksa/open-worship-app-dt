@@ -8,14 +8,14 @@ import LoadingComp from '../others/LoadingComp';
 import { showSimpleToast } from '../toast/toastHelpers';
 import {
     calcPaging,
-    BibleSearchResultType,
+    BibleFindResultType,
     pageNumberToReqData,
     SelectedBookKeyType,
-} from './bibleSearchHelpers';
-import BibleSearchRenderPerPageComp, {
+} from './bibleFindHelpers';
+import BibleFindRenderPerPageComp, {
     APP_FOUND_PAGE_CLASS,
-} from './BibleSearchRenderPerPageComp';
-import { useBibleSearchController } from './BibleSearchController';
+} from './BibleFindRenderPerPageComp';
+import { useBibleFindController } from './BibleFindController';
 import { bringDomToBottomView, bringDomToTopView } from '../helper/helpers';
 
 async function selectBookKey(
@@ -52,11 +52,11 @@ async function selectBookKey(
 function RenderPageNumberComp({
     pageNumber,
     isActive,
-    handleSearch,
+    handleFinding,
 }: Readonly<{
     pageNumber: string;
     isActive: boolean;
-    handleSearch: (pageNumber: string) => void;
+    handleFinding: (pageNumber: string) => void;
 }>) {
     return (
         <li
@@ -75,7 +75,7 @@ function RenderPageNumberComp({
                         }
                         return;
                     }
-                    handleSearch(pageNumber);
+                    handleFinding(pageNumber);
                 }}
             >
                 {pageNumber}
@@ -84,7 +84,7 @@ function RenderPageNumberComp({
     );
 }
 
-function ShowSearchComp() {
+function ShowFindComp() {
     return (
         <div
             className="d-flex justify-content-center"
@@ -104,11 +104,11 @@ function ShowSearchComp() {
 function RenderFooterComp({
     pages,
     allPageNumberFound,
-    searchFor,
+    findFor,
 }: Readonly<{
     pages: string[];
     allPageNumberFound: string[];
-    searchFor: (pageNumber: string) => void;
+    findFor: (pageNumber: string) => void;
 }>) {
     if (pages.length === 0) {
         return null;
@@ -132,7 +132,7 @@ function RenderFooterComp({
                                 key={pageNumber}
                                 pageNumber={pageNumber}
                                 isActive={isActive}
-                                handleSearch={searchFor}
+                                handleFinding={findFor}
                             />
                         );
                     })}
@@ -142,32 +142,32 @@ function RenderFooterComp({
     );
 }
 
-export default function BibleSearchRenderDataComp({
+export default function BibleFindRenderDataComp({
     text,
     allData,
-    searchFor,
+    findFor,
     selectedBook,
     setSelectedBook,
-    isSearch,
+    isFinding,
 }: Readonly<{
     text: string;
-    allData: { [key: string]: BibleSearchResultType };
-    searchFor: (from: number, to: number) => void;
+    allData: { [key: string]: BibleFindResultType };
+    findFor: (from: number, to: number) => void;
     selectedBook: SelectedBookKeyType;
     setSelectedBook: (_: SelectedBookKeyType) => void;
-    isSearch: boolean;
+    isFinding: boolean;
 }>) {
-    const bibleSearchController = useBibleSearchController();
+    const bibleFindController = useBibleFindController();
     useAppEffect(() => {
         setSelectedBook(null);
-    }, [bibleSearchController]);
+    }, [bibleFindController]);
     const allPageNumberFound = Object.keys(allData);
     const pagingData = calcPaging(
         allPageNumberFound.length ? allData[allPageNumberFound[0]] : null,
     );
-    const searchFor1 = (pageNumber: string) => {
-        const searchForData = pageNumberToReqData(pagingData, pageNumber);
-        searchFor(searchForData.fromLineNumber, searchForData.toLineNumber);
+    const findFor1 = (pageNumber: string) => {
+        const findForData = pageNumberToReqData(pagingData, pageNumber);
+        findFor(findForData.fromLineNumber, findForData.toLineNumber);
     };
     return (
         <>
@@ -182,7 +182,7 @@ export default function BibleSearchRenderDataComp({
                             onClick={(event) => {
                                 selectBookKey(
                                     event,
-                                    bibleSearchController.bibleKey,
+                                    bibleFindController.bibleKey,
                                     selectedBook,
                                     setSelectedBook,
                                 );
@@ -200,21 +200,21 @@ export default function BibleSearchRenderDataComp({
                     }
                     const data = allData[pageNumber];
                     return (
-                        <BibleSearchRenderPerPageComp
+                        <BibleFindRenderPerPageComp
                             key={pageNumber}
-                            searchText={text}
+                            findText={text}
                             data={data}
                             pageNumber={pageNumber}
-                            bibleKey={bibleSearchController.bibleKey}
+                            bibleKey={bibleFindController.bibleKey}
                         />
                     );
                 })}
-                {isSearch ? <ShowSearchComp /> : null}
+                {isFinding ? <ShowFindComp /> : null}
             </div>
             <RenderFooterComp
                 pages={pagingData.pages}
                 allPageNumberFound={allPageNumberFound}
-                searchFor={searchFor1}
+                findFor={findFor1}
             />
         </>
     );

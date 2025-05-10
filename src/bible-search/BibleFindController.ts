@@ -7,7 +7,7 @@ import {
     LocaleType,
     quickEndWord,
     quickTrimText,
-    sanitizeSearchingText,
+    sanitizeFindingText,
 } from '../lang';
 import appProvider, { SQLiteDatabaseType } from '../server/appProvider';
 import { fsCheckFileExist, pathJoin } from '../server/fileHelpers';
@@ -16,10 +16,10 @@ import { getAllXMLFileKeys } from '../setting/bible-setting/bibleXMLJsonDataHelp
 import {
     APIDataMapType,
     APIDataType,
-    BibleSearchForType,
-    BibleSearchResultType,
-    searchOnline,
-} from './bibleSearchHelpers';
+    BibleFindForType,
+    BibleFindResultType,
+    findOnline,
+} from './bibleFindHelpers';
 import {
     AppContextMenuControlType,
     ContextMenuItemType,
@@ -63,7 +63,7 @@ async function initDatabase(bibleKey: string, databaseFilePath: string) {
         console.log(`DB: Processing ${bookKey}`);
         for (const [chapterKey, verses] of Object.entries(book)) {
             for (const verse in verses) {
-                const sanitizedText = await sanitizeSearchingText(
+                const sanitizedText = await sanitizeFindingText(
                     locale,
                     verses[verse],
                 );
@@ -100,16 +100,16 @@ async function initDatabase(bibleKey: string, databaseFilePath: string) {
     return databaseAdmin;
 }
 
-class OnlineSearchHandler {
+class OnlineFindHandler {
     apiDataMap: APIDataMapType;
     constructor(apiDataMap: APIDataMapType) {
         this.apiDataMap = apiDataMap;
     }
-    async doSearch(searchData: BibleSearchForType) {
-        const data = await searchOnline(
+    async doFinding(findData: BibleFindForType) {
+        const data = await findOnline(
             this.apiDataMap.apiUrl,
             this.apiDataMap.apiKey,
-            searchData,
+            findData,
         );
         return data;
     }
@@ -118,21 +118,21 @@ class OnlineSearchHandler {
     }
 }
 
-class DatabaseSearchHandler {
+class DatabaseFindingHandler {
     database: SQLiteDatabaseType;
     constructor(database: SQLiteDatabaseType) {
         this.database = database;
     }
-    async doSearch(bibleKey: string, searchData: BibleSearchForType) {
+    async doFinding(bibleKey: string, findData: BibleFindForType) {
         // TODO: use dictionary to break text text to words.
         // e.g: Khmer language has no space between words so we need to break it to words
-        const { bookKey, isFresh, text } = searchData;
+        const { bookKey, isFresh, text } = findData;
         if (!text) {
             return null;
         }
-        let { fromLineNumber, toLineNumber } = searchData;
+        let { fromLineNumber, toLineNumber } = findData;
         const locale = await getBibleLocale(bibleKey);
-        const sText = (await sanitizeSearchingText(locale, text)) ?? text;
+        const sText = (await sanitizeFindingText(locale, text)) ?? text;
         let sqlBookKey = '';
         if (bookKey !== undefined) {
             sqlBookKey = ` AND text LIKE '${bookKey}.%'`;
@@ -145,9 +145,7 @@ class DatabaseSearchHandler {
         }
         const count = toLineNumber - fromLineNumber + 1;
         if (count < 1) {
-            throw new Error(
-                `Invalid line number ${JSON.stringify(searchData)}`,
-            );
+            throw new Error(`Invalid line number ${JSON.stringify(findData)}`);
         }
         sql += ` LIMIT ${fromLineNumber}, ${count}`;
         const result = this.database.getAll(`${sql};`);
@@ -171,7 +169,7 @@ class DatabaseSearchHandler {
             toLineNumber,
             content: foundResult,
             isFresh,
-        } as BibleSearchResultType;
+        } as BibleFindResultType;
     }
     async loadSuggestionWords(
         attemptingWord: string,
@@ -196,13 +194,13 @@ class DatabaseSearchHandler {
     }
 }
 
-export default class BibleSearchController {
-    onlineSearchHandler: OnlineSearchHandler | null = null;
-    databaseSearchHandler: DatabaseSearchHandler | null = null;
+export default class BibleFindController {
+    onlineFindHandler: OnlineFindHandler | null = null;
+    databaseFindHandler: DatabaseFindingHandler | null = null;
     private readonly _bibleKey: string;
     private _bookKey: string | null = null;
     input: HTMLInputElement | null = null;
-    private _searchText: string = '';
+    private _findText: string = '';
     locale: LocaleType;
     isAddedByEnter: boolean = false;
     onTextChange: () => void = () => {};
@@ -220,12 +218,12 @@ export default class BibleSearchController {
         this._bookKey = value;
     }
 
-    get searchText() {
-        return this._searchText || (this.input?.value ?? '');
+    get findText() {
+        return this._findText || (this.input?.value ?? '');
     }
-    set searchText(value: string | null) {
+    set findText(value: string | null) {
         if (this.input !== null) {
-            this._searchText = value ?? '';
+            this._findText = value ?? '';
             this._oldInputText = this.input.value;
             this.input.value = value ?? '';
             this.input.focus();
@@ -244,24 +242,24 @@ export default class BibleSearchController {
         }
     }
 
-    async doSearch(searchData: BibleSearchForType) {
+    async doFinding(findData: BibleFindForType) {
         this.closeSuggestionMenu();
         if (this.bookKey !== null) {
-            searchData['bookKey'] = this.bookKey;
+            findData['bookKey'] = this.bookKey;
         }
-        if (this.onlineSearchHandler !== null) {
-            return await this.onlineSearchHandler.doSearch(searchData);
+        if (this.onlineFindHandler !== null) {
+            return await this.onlineFindHandler.doFinding(findData);
         }
-        if (this.databaseSearchHandler !== null) {
-            return await this.databaseSearchHandler.doSearch(
+        if (this.databaseFindHandler !== null) {
+            return await this.databaseFindHandler.doFinding(
                 this.bibleKey,
-                searchData,
+                findData,
             );
         }
         return null;
     }
 
-    static async getOnlineInstant(instance: BibleSearchController) {
+    static async getOnlineInstant(instance: BibleFindController) {
         const apiData = await loadApiData();
         if (apiData === null) {
             return null;
@@ -270,12 +268,12 @@ export default class BibleSearchController {
         if (apiDataMap === undefined) {
             return null;
         }
-        instance.onlineSearchHandler = new OnlineSearchHandler(apiDataMap);
+        instance.onlineFindHandler = new OnlineFindHandler(apiDataMap);
         return instance;
     }
 
     static async getXMLInstant(
-        instance: BibleSearchController,
+        instance: BibleFindController,
         xmlFilePath: string,
     ) {
         const fileSource = FileSource.getInstance(xmlFilePath);
@@ -293,18 +291,18 @@ export default class BibleSearchController {
         if (database === null) {
             return null;
         }
-        instance.databaseSearchHandler = new DatabaseSearchHandler(database);
+        instance.databaseFindHandler = new DatabaseFindingHandler(database);
         return instance;
     }
 
     static async getInstant(bibleKey: string) {
         const locale = await getBibleLocale(bibleKey);
-        const instance = new BibleSearchController(bibleKey, locale);
+        const instance = new BibleFindController(bibleKey, locale);
         const keysMap = await getAllXMLFileKeys();
         if (keysMap[bibleKey] === undefined) {
-            return await BibleSearchController.getOnlineInstant(instance);
+            return await BibleFindController.getOnlineInstant(instance);
         }
-        return await BibleSearchController.getXMLInstant(
+        return await BibleFindController.getXMLInstant(
             instance,
             keysMap[bibleKey],
         );
@@ -314,14 +312,14 @@ export default class BibleSearchController {
         attemptingWord: string,
         limit = 5,
     ): Promise<string[]> {
-        if (this.databaseSearchHandler !== null) {
-            return await this.databaseSearchHandler.loadSuggestionWords(
+        if (this.databaseFindHandler !== null) {
+            return await this.databaseFindHandler.loadSuggestionWords(
                 attemptingWord,
                 limit,
             );
         }
-        if (this.onlineSearchHandler !== null) {
-            return await this.onlineSearchHandler.loadSuggestionWords(
+        if (this.onlineFindHandler !== null) {
+            return await this.onlineFindHandler.loadSuggestionWords(
                 attemptingWord,
                 limit,
             );
@@ -329,17 +327,17 @@ export default class BibleSearchController {
         return [];
     }
 
-    private async handleDeletionSearchText(text: string) {
-        const sanitizedText = await sanitizeSearchingText(this.locale, text);
+    private async handleDeletionFindText(text: string) {
+        const sanitizedText = await sanitizeFindingText(this.locale, text);
         if (sanitizedText === null) {
             return;
         }
         const splitted = sanitizedText.split(' ');
         if (splitted.length < 2) {
-            this._searchText = '';
+            this._findText = '';
             return;
         }
-        this._searchText = splitted.slice(0, -1).join(' ');
+        this._findText = splitted.slice(0, -1).join(' ');
     }
 
     private async checkLookupWord(event: any, lookupWord: string) {
@@ -357,11 +355,11 @@ export default class BibleSearchController {
                         if (event.key === 'Enter') {
                             this.isAddedByEnter = true;
                         }
-                        this.searchText = quickEndWord(
+                        this.findText = quickEndWord(
                             this.locale,
                             quickTrimText(
                                 this.locale,
-                                `${this._searchText.trim()} ${text} `,
+                                `${this._findText.trim()} ${text} `,
                             ),
                         );
                         this.input?.focus();
@@ -385,7 +383,7 @@ export default class BibleSearchController {
                 this.input.focus();
                 const value = quickTrimText(this.locale, this.input.value);
                 if (value) {
-                    this.searchText = quickEndWord(this.locale, value);
+                    this.findText = quickEndWord(this.locale, value);
                 }
             }
             this.menuControllerSession = null;
@@ -404,31 +402,31 @@ export default class BibleSearchController {
             return;
         }
         if (['Delete', 'Backspace'].includes(inputKey)) {
-            await this.handleDeletionSearchText(newValue);
+            await this.handleDeletionFindText(newValue);
         }
         const newTrimValue = quickTrimText(this.locale, this.input.value);
         if (newTrimValue !== newValue) {
             return;
         }
-        const text = this._searchText
-            ? newTrimValue.split(this._searchText)[1]
+        const text = this._findText
+            ? newTrimValue.split(this._findText)[1]
             : newTrimValue;
         if (!text) {
             return;
         }
-        const sanitizedText = await sanitizeSearchingText(this.locale, text);
+        const sanitizedText = await sanitizeFindingText(this.locale, text);
         const lookupWord = (sanitizedText ?? '').split(' ').at(-1) ?? '';
         this.checkLookupWord(event, lookupWord);
     }
 }
 
-export const BibleSearchControllerContext =
-    createContext<BibleSearchController | null>(null);
-export function useBibleSearchController() {
-    const context = use(BibleSearchControllerContext);
+export const BibleFindControllerContext =
+    createContext<BibleFindController | null>(null);
+export function useBibleFindController() {
+    const context = use(BibleFindControllerContext);
     if (context === null) {
         throw new Error(
-            'useBibleSearchController must be used within BibleSearchControllerContext',
+            'useBibleFindController must be used within BibleFindControllerContext',
         );
     }
     return context;

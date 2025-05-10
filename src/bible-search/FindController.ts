@@ -2,7 +2,7 @@ import { getBibleLocale } from '../helper/bible-helpers/serverBibleHelpers2';
 import { handleError } from '../helper/errorHelpers';
 import FileSource from '../helper/FileSource';
 import { appApiFetch } from '../helper/networkHelpers';
-import { sanitizeSearchingText } from '../lang';
+import { sanitizeFindingText } from '../lang';
 import appProvider, { SQLiteDatabaseType } from '../server/appProvider';
 import { fsCheckFileExist, pathJoin } from '../server/fileHelpers';
 import { getBibleXMLDataFromKey } from '../setting/bible-setting/bibleXMLHelpers';
@@ -10,10 +10,10 @@ import { getAllXMLFileKeys } from '../setting/bible-setting/bibleXMLJsonDataHelp
 import {
     APIDataMapType,
     APIDataType,
-    BibleSearchForType,
-    BibleSearchResultType,
-    searchOnline,
-} from './bibleSearchHelpers';
+    BibleFindForType,
+    BibleFindResultType,
+    findOnline,
+} from './bibleFindHelpers';
 
 const DEFAULT_ROW_LIMIT = 20;
 
@@ -48,7 +48,7 @@ async function initDatabase(bibleKey: string, databaseFilePath: string) {
         console.log(`DB: Processing ${bookKey}`);
         for (const [chapterKey, verses] of Object.entries(book)) {
             for (const verse in verses) {
-                const sanitizedText = await sanitizeSearchingText(
+                const sanitizedText = await sanitizeFindingText(
                     locale,
                     verses[verse],
                 );
@@ -72,31 +72,31 @@ async function initDatabase(bibleKey: string, databaseFilePath: string) {
     return databaseAdmin;
 }
 
-class OnlineSearchHandler {
+class OnlineFindHandler {
     apiDataMap: APIDataMapType;
     constructor(apiDataMap: APIDataMapType) {
         this.apiDataMap = apiDataMap;
     }
-    async doSearch(searchData: BibleSearchForType) {
-        const data = await searchOnline(
+    async doFinding(findData: BibleFindForType) {
+        const data = await findOnline(
             this.apiDataMap.apiUrl,
             this.apiDataMap.apiKey,
-            searchData,
+            findData,
         );
         return data;
     }
 }
 
-class DatabaseSearchHandler {
+class DatabaseFindHandler {
     database: SQLiteDatabaseType;
     constructor(database: SQLiteDatabaseType) {
         this.database = database;
     }
-    async doSearch(bibleKey: string, searchData: BibleSearchForType) {
-        const { bookKey, isFresh, text } = searchData;
-        let { fromLineNumber, toLineNumber } = searchData;
+    async doFinding(bibleKey: string, findData: BibleFindForType) {
+        const { bookKey, isFresh, text } = findData;
+        let { fromLineNumber, toLineNumber } = findData;
         const locale = await getBibleLocale(bibleKey);
-        const sText = (await sanitizeSearchingText(locale, text)) ?? text;
+        const sText = (await sanitizeFindingText(locale, text)) ?? text;
         const sqlBookKey =
             bookKey !== undefined ? ` AND bookKey = '${bookKey}'` : '';
         const sqlFrom = `FROM verses WHERE sText LIKE '%${sText}%'${sqlBookKey}`;
@@ -107,9 +107,7 @@ class DatabaseSearchHandler {
         }
         const count = toLineNumber - fromLineNumber + 1;
         if (count < 1) {
-            throw new Error(
-                `Invalid line number ${JSON.stringify(searchData)}`,
-            );
+            throw new Error(`Invalid line number ${JSON.stringify(findData)}`);
         }
         sql += ` LIMIT ${fromLineNumber}, ${count}`;
         const result = this.database.getAll(`${sql};`);
@@ -133,13 +131,13 @@ class DatabaseSearchHandler {
             toLineNumber,
             content: foundResult,
             isFresh,
-        } as BibleSearchResultType;
+        } as BibleFindResultType;
     }
 }
 
-export default class SearchController {
-    onlineSearchHandler: OnlineSearchHandler | null = null;
-    databaseSearchHandler: DatabaseSearchHandler | null = null;
+export default class FindController {
+    onlineFindHandler: OnlineFindHandler | null = null;
+    databaseFindHandler: DatabaseFindHandler | null = null;
     private readonly _bibleKey: string;
     private _bookKey: string | null = null;
     constructor(bibleKey: string) {
@@ -157,23 +155,23 @@ export default class SearchController {
         return this._bibleKey;
     }
 
-    async doSearch(searchData: BibleSearchForType) {
+    async doFinding(findData: BibleFindForType) {
         if (this.bookKey !== null) {
-            searchData['bookKey'] = this.bookKey;
+            findData['bookKey'] = this.bookKey;
         }
-        if (this.onlineSearchHandler !== null) {
-            return await this.onlineSearchHandler.doSearch(searchData);
+        if (this.onlineFindHandler !== null) {
+            return await this.onlineFindHandler.doFinding(findData);
         }
-        if (this.databaseSearchHandler !== null) {
-            return await this.databaseSearchHandler.doSearch(
+        if (this.databaseFindHandler !== null) {
+            return await this.databaseFindHandler.doFinding(
                 this.bibleKey,
-                searchData,
+                findData,
             );
         }
         return null;
     }
 
-    static async getOnlineInstant(instance: SearchController) {
+    static async getOnlineInstant(instance: FindController) {
         const apiData = await loadApiData();
         if (apiData === null) {
             return null;
@@ -182,14 +180,11 @@ export default class SearchController {
         if (apiDataMap === undefined) {
             return null;
         }
-        instance.onlineSearchHandler = new OnlineSearchHandler(apiDataMap);
+        instance.onlineFindHandler = new OnlineFindHandler(apiDataMap);
         return instance;
     }
 
-    static async getXMLInstant(
-        instance: SearchController,
-        xmlFilePath: string,
-    ) {
+    static async getXMLInstant(instance: FindController, xmlFilePath: string) {
         const fileSource = FileSource.getInstance(xmlFilePath);
         const databasePath = pathJoin(
             fileSource.basePath,
@@ -205,19 +200,16 @@ export default class SearchController {
         if (database === null) {
             return null;
         }
-        instance.databaseSearchHandler = new DatabaseSearchHandler(database);
+        instance.databaseFindHandler = new DatabaseFindHandler(database);
         return instance;
     }
 
     static async getInstant(bibleKey: string) {
-        const instance = new SearchController(bibleKey);
+        const instance = new FindController(bibleKey);
         const keysMap = await getAllXMLFileKeys();
         if (keysMap[bibleKey] === undefined) {
-            return await SearchController.getOnlineInstant(instance);
+            return await FindController.getOnlineInstant(instance);
         }
-        return await SearchController.getXMLInstant(
-            instance,
-            keysMap[bibleKey],
-        );
+        return await FindController.getXMLInstant(instance, keysMap[bibleKey]);
     }
 }

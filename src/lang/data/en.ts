@@ -26,7 +26,7 @@ const lang: LanguageDataType = {
     <path fill="#C8102E" d="M0 193v96h640v-96H0zM273 0v480h96V0h-96z"/>
   </svg>
   `,
-    sanitizeSearchingText: (text) => {
+    sanitizeFindingText: (text) => {
         return text
             .toLowerCase()
             .replace(/[^a-z0-9 ]/g, ' ')

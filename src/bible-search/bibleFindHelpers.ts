@@ -3,7 +3,7 @@ import { handleError } from '../helper/errorHelpers';
 import * as loggerHelpers from '../helper/loggerHelpers';
 import BibleItem from '../bible-list/BibleItem';
 import { BibleItemType } from '../bible-list/bibleItemHelpers';
-import { LocaleType, sanitizeSearchingText } from '../lang';
+import { LocaleType, sanitizeFindingText } from '../lang';
 
 export type SelectedBookKeyType = {
     bookKey: string;
@@ -20,7 +20,7 @@ export type APIDataType = {
     };
 };
 
-export type BibleSearchResultType = {
+export type BibleFindResultType = {
     maxLineNumber: number;
     fromLineNumber: number;
     toLineNumber: number;
@@ -29,7 +29,7 @@ export type BibleSearchResultType = {
         uniqueKey: string;
     }[];
 };
-export type BibleSearchForType = {
+export type BibleFindForType = {
     bookKey?: string;
     fromLineNumber?: number;
     toLineNumber?: number;
@@ -43,10 +43,10 @@ export type PagingDataTye = {
     pageSize: number;
     perPage: number;
 };
-export type AllDataType = { [key: string]: BibleSearchResultType };
+export type AllDataType = { [key: string]: BibleFindResultType };
 
 export function checkIsCurrentPage(
-    data: BibleSearchResultType,
+    data: BibleFindResultType,
     pageNumber: number,
     perPage: number,
 ) {
@@ -56,7 +56,7 @@ export function checkIsCurrentPage(
     }
 }
 export function findPageNumber(
-    data: BibleSearchResultType,
+    data: BibleFindResultType,
     perPage: number,
     pages: string[],
 ) {
@@ -68,12 +68,12 @@ export function findPageNumber(
     return '0';
 }
 
-export function calcPerPage(data: BibleSearchResultType) {
+export function calcPerPage(data: BibleFindResultType) {
     const perPage = data.toLineNumber - data.fromLineNumber + 1;
     return perPage;
 }
 
-export function calcPaging(data: BibleSearchResultType | null): PagingDataTye {
+export function calcPaging(data: BibleFindResultType | null): PagingDataTye {
     if (data === null) {
         return { pages: [], currentPage: '0', pageSize: 0, perPage: 0 };
     }
@@ -96,11 +96,10 @@ export async function breakItem(
     bibleItem: BibleItem;
     kjvTitle: string;
 }> {
-    const sanitizedSearchText =
-        (await sanitizeSearchingText(locale, text)) ?? text;
+    const sanitizedFindText = (await sanitizeFindingText(locale, text)) ?? text;
     const [bookKeyChapter, verse, ...newItems] = item.split(':');
     let newItem = newItems.join(':');
-    for (const subText of sanitizedSearchText.split(' ')) {
+    for (const subText of sanitizedFindText.split(' ')) {
         newItem = newItem.replace(
             new RegExp(`(${subText})`, 'ig'),
             '<span style="color:red">$1</span>',
@@ -139,10 +138,10 @@ export function pageNumberToReqData(
     };
 }
 
-export async function searchOnline(
+export async function findOnline(
     apiUrl: string,
     apiKey: string,
-    searchData: BibleSearchForType,
+    findData: BibleFindForType,
 ) {
     try {
         const response = await fetch(apiUrl, {
@@ -151,7 +150,7 @@ export async function searchOnline(
                 'Content-Type': 'application/json',
             },
             method: 'POST',
-            body: JSON.stringify(searchData),
+            body: JSON.stringify(findData),
         });
         const result = await response.json();
         if (result['content']) {
@@ -161,12 +160,12 @@ export async function searchOnline(
                     uniqueKey: crypto.randomUUID(),
                 };
             });
-            return result as BibleSearchResultType;
+            return result as BibleFindResultType;
         }
-        loggerHelpers.error(`Invalid bible search ${result}`);
+        loggerHelpers.error(`Invalid bible find ${result}`);
     } catch (error) {
         showSimpleToast(
-            'Fetching Bible Search Online',
+            'Fetching Bible Finding Online',
             'Fail to fetch bible online',
         );
         handleError(error);
