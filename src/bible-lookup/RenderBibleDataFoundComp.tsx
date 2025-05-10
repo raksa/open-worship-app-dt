@@ -9,10 +9,6 @@ import {
 import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
 import { genDefaultBibleItemContextMenu } from '../bible-list/bibleItemHelpers';
 import {
-    closeEventMapper,
-    LookupBibleItemViewController,
-} from '../bible-reader/BibleItemViewController';
-import {
     fontSizeToHeightStyle,
     useBibleViewFontSizeContext,
 } from '../helper/bibleViewHelpers';
@@ -20,6 +16,9 @@ import { closeCurrentEditingBibleItem } from '../bible-reader/readBibleHelpers';
 import { toShortcutKey } from '../event/KeyboardEventListener';
 import { useBibleItemContext } from '../bible-reader/BibleItemContext';
 import { genInputText } from '../bible-list/bibleHelpers';
+import LookupBibleItemViewController, {
+    closeEventMapper,
+} from '../bible-reader/LookupBibleItemViewController';
 
 export default function RenderBibleDataFoundComp({
     onVerseChange,

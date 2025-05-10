@@ -1,11 +1,11 @@
 import BibleItem from '../bible-list/BibleItem';
-import BibleItemViewController, {
+import LookupBibleItemViewController, {
     closeEventMapper,
     ctrlShiftMetaKeys,
-    LookupBibleItemViewController,
-} from './BibleItemViewController';
+} from './LookupBibleItemViewController';
 import { handleError } from '../helper/errorHelpers';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
+import BibleItemViewController from './BibleItemViewController';
 
 export enum DraggingPosEnum {
     TOP = '-top',

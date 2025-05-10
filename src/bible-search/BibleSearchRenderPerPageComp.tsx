@@ -1,6 +1,6 @@
 import BibleItem from '../bible-list/BibleItem';
 import { useBibleItemRenderTitle } from '../bible-list/bibleItemHelpers';
-import { LookupBibleItemViewController } from '../bible-reader/BibleItemViewController';
+import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
 import { useAppPromise } from '../helper/helpers';
 import { useBibleSearchController } from './BibleSearchController';
 import { BibleSearchResultType, breakItem } from './bibleSearchHelpers';

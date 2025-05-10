@@ -5,8 +5,8 @@ import RenderBibleDataFoundComp from './RenderBibleDataFoundComp';
 import { BibleItemContext } from '../bible-reader/BibleItemContext';
 import { attemptAddingHistory } from './InputHistoryComp';
 import { BibleSelectionMiniComp } from './BibleSelectionComp';
-import { LookupBibleItemViewController } from '../bible-reader/BibleItemViewController';
 import { RENDER_FOUND_CLASS } from './selectionHelpers';
+import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
 
 export default function RenderLookupSuggestionComp({
     bibleResult,

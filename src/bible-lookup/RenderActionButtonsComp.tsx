@@ -10,11 +10,11 @@ import BibleItem from '../bible-list/BibleItem';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { getIsKeepingPopup } from './RenderExtraButtonsRightComp';
-import { LookupBibleItemViewController } from '../bible-reader/BibleItemViewController';
 import { useBibleItemContext } from '../bible-reader/BibleItemContext';
 import appProvider from '../server/appProvider';
 import { useShowBibleLookupContext } from '../others/commonButtons';
 import { genContextMenuItemShortcutKey } from '../context-menu/AppContextMenuComp';
+import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
 
 const presenterEventMapper: KBEventMapper = {
     allControlKey: ['Ctrl', 'Shift'],

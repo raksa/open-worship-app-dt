@@ -7,12 +7,12 @@ import {
 } from '../bible-list/bibleHelpers';
 import { BibleNotAvailableComp } from './RenderLookupSuggestionComp';
 import BibleLookupBodyPreviewerComp from './BibleLookupBodyPreviewerComp';
-import { LookupBibleItemViewController } from '../bible-reader/BibleItemViewController';
 import ResizeActorComp from '../resize-actor/ResizeActorComp';
 import { MultiContextRender } from '../helper/MultiContextRender';
 import RenderBibleLookupHeaderComp from './RenderBibleLookupHeaderComp';
 import RenderExtraButtonsRightComp from './RenderExtraButtonsRightComp';
 import { useStateSettingBoolean } from '../helper/settingHelpers';
+import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
 
 const LazyBibleSearchBodyPreviewer = lazy(() => {
     return import('../bible-search/BibleSearchPreviewerComp');

@@ -1,10 +1,7 @@
 import { lazy, useMemo } from 'react';
 
 import BibleItem from '../bible-list/BibleItem';
-import {
-    BibleItemViewControllerContext,
-    LookupBibleItemViewController,
-} from '../bible-reader/BibleItemViewController';
+import { BibleItemViewControllerContext } from '../bible-reader/BibleItemViewController';
 import BibleViewComp from '../bible-reader/BibleViewComp';
 import RenderBibleLookupBodyComp from './RenderBibleLookupBodyComp';
 import AppSuspenseComp from '../others/AppSuspenseComp';
@@ -14,6 +11,7 @@ import {
     useSplitBibleItemRenderer,
 } from '../bible-reader/readBibleHelpers';
 import { BibleViewTitleMaterialContext } from '../bible-reader/BibleViewExtra';
+import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
 
 const LazyBiblePreviewerRender = lazy(() => {
     return import('../bible-reader/BiblePreviewerRenderComp');

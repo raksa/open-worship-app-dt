@@ -3,11 +3,11 @@ import { genInputText } from '../bible-list/bibleHelpers';
 import { setBibleLookupInputFocus } from './selectionHelpers';
 import RenderExtraButtonsRightComp from './RenderExtraButtonsRightComp';
 import { getPopupWindowTypeData } from '../app-modal/helpers';
-import { LookupBibleItemViewController } from '../bible-reader/BibleItemViewController';
 import InputHistoryComp from './InputHistoryComp';
 import appProvider from '../server/appProvider';
 import { ModalCloseButton } from '../app-modal/ModalComp';
 import { useShowBibleLookupContext } from '../others/commonButtons';
+import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
 
 export default function RenderBibleLookupHeaderComp({
     isLookupOnline,

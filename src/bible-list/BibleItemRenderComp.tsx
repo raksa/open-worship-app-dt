@@ -10,10 +10,7 @@ import {
 } from '../helper/dragHelpers';
 import ItemColorNoteComp from '../others/ItemColorNoteComp';
 import { BibleSelectionMiniComp } from '../bible-lookup/BibleSelectionComp';
-import {
-    LookupBibleItemViewController,
-    useBibleItemViewControllerContext,
-} from '../bible-reader/BibleItemViewController';
+import { useBibleItemViewControllerContext } from '../bible-reader/BibleItemViewController';
 import ScreenFullTextManager from '../_screen/managers/ScreenFullTextManager';
 import {
     openBibleItemContextMenu,
@@ -25,6 +22,7 @@ import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
 import { useMemo } from 'react';
 import { changeDragEventStyle } from '../helper/helpers';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
+import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
 
 function genAttachBackgroundComponent(
     droppedData: DroppedDataType | null | undefined,

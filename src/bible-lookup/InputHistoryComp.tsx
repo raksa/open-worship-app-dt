@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { getSetting, setSetting } from '../helper/settingHelpers';
 import { extractBibleTitle } from '../helper/bible-helpers/serverBibleHelpers2';
-import { LookupBibleItemViewController } from '../bible-reader/BibleItemViewController';
 import { genTimeoutAttempt } from '../helper/helpers';
+import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
 
 let addHistory: (text: string) => void = () => {};
 export function applyPendingText() {

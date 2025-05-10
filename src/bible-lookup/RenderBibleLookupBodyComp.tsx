@@ -11,9 +11,9 @@ import RenderLookupSuggestionComp from './RenderLookupSuggestionComp';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { keyToBook } from '../helper/bible-helpers/bibleInfoHelpers';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
-import { LookupBibleItemViewController } from '../bible-reader/BibleItemViewController';
 import { useBibleKeyContext } from '../bible-list/bibleHelpers';
 import { getInputTrueValue, useInputTextContext } from './InputHandlerComp';
+import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
 
 let syncTimeoutId: any = null;
 function checkShouldSync(
