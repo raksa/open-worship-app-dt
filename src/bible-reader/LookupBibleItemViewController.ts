@@ -64,7 +64,10 @@ class LookupBibleItemViewController extends BibleItemViewController {
                 return bibleItem;
             }
         }
-        this.selectedBibleItem = this.straightBibleItems[0];
+        setSetting(
+            this.toSettingName('-selected-bible-item'),
+            this.straightBibleItems[0].id.toString(),
+        );
         return this.selectedBibleItem;
     }
     set selectedBibleItem(bibleItem: BibleItem) {
