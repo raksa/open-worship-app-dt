@@ -13,7 +13,7 @@ import {
 import { BibleViewTitleMaterialContext } from '../bible-reader/BibleViewExtra';
 import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
 
-const LazyBiblePreviewerRender = lazy(() => {
+const LazyBiblePreviewerRenderComp = lazy(() => {
     return import('../bible-reader/BiblePreviewerRenderComp');
 });
 
@@ -73,7 +73,7 @@ export default function BibleLookupBodyPreviewerComp() {
     return (
         <BibleItemViewControllerContext value={viewController}>
             <AppSuspenseComp>
-                <LazyBiblePreviewerRender />
+                <LazyBiblePreviewerRenderComp />
             </AppSuspenseComp>
         </BibleItemViewControllerContext>
     );

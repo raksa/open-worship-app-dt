@@ -43,7 +43,7 @@ function openContextMenu(event: any) {
 }
 
 ScreenManager.initReceiveScreenMessage();
-export default function MiniScreen() {
+export default function MiniScreenComp() {
     const [isShowingTools, setIsShowingTools] = useStateSettingBoolean(
         'mini-screen-previewer-tool',
         false,

@@ -27,7 +27,7 @@ const LazyBackgroundImagesComp = lazy(() => {
 const LazyBackgroundVideosComp = lazy(() => {
     return import('./BackgroundVideosComp');
 });
-const LazyBackgroundSounds = lazy(() => {
+const LazyBackgroundSoundsComp = lazy(() => {
     return import('./BackgroundSoundsComp');
 });
 
@@ -127,7 +127,7 @@ export default function BackgroundComp() {
                                 widgetName: 'Background Sound',
                             },
                             {
-                                children: LazyBackgroundSounds,
+                                children: LazyBackgroundSoundsComp,
                                 key: 'h2',
                                 widgetName: 'Background Sound',
                             },

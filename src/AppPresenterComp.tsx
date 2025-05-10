@@ -9,13 +9,13 @@ import SlideEditHandlerComp from './app-document-presenter/SlideEditHandlerComp'
 import BibleViewComp from './bible-reader/BibleViewComp';
 import BibleItem from './bible-list/BibleItem';
 
-const LazyAppPresenterLeft = lazy(() => {
+const LazyAppPresenterLeftComp = lazy(() => {
     return import('./AppPresenterLeftComp');
 });
-const LazyAppPresenterMiddle = lazy(() => {
+const LazyAppPresenterMiddleComp = lazy(() => {
     return import('./AppPresenterMiddleComp');
 });
-const LazyAppPresenterRight = lazy(() => {
+const LazyAppPresenterRightComp = lazy(() => {
     return import('./AppPresenterRightComp');
 });
 
@@ -39,17 +39,17 @@ export default function AppPresenterComp() {
                 }}
                 dataInput={[
                     {
-                        children: LazyAppPresenterLeft,
+                        children: LazyAppPresenterLeftComp,
                         key: 'h1',
                         widgetName: 'App Presenter Left',
                     },
                     {
-                        children: LazyAppPresenterMiddle,
+                        children: LazyAppPresenterMiddleComp,
                         key: 'h2',
                         widgetName: 'App Presenter Middle',
                     },
                     {
-                        children: LazyAppPresenterRight,
+                        children: LazyAppPresenterRightComp,
                         key: 'h3',
                         widgetName: 'App Presenter Right',
                     },

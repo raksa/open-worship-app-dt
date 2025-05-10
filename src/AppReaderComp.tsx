@@ -7,10 +7,10 @@ import {
 } from './resize-actor/flexSizeHelpers';
 import ResizeActorComp from './resize-actor/ResizeActorComp';
 
-const LazyBibleList = lazy(() => {
+const LazyBibleListComp = lazy(() => {
     return import('./bible-list/BibleListComp');
 });
-const LazyRenderBibleLookup = lazy(() => {
+const LazyRenderBibleLookupComp = lazy(() => {
     return import('./bible-lookup/RenderBibleLookupComp');
 });
 
@@ -20,12 +20,12 @@ const flexSizeDefault: FlexSizeType = {
 };
 const dataInput: DataInputType[] = [
     {
-        children: LazyBibleList,
+        children: LazyBibleListComp,
         key: 'h1',
         widgetName: 'Bible List',
     },
     {
-        children: LazyRenderBibleLookup,
+        children: LazyRenderBibleLookupComp,
         key: 'h2',
         widgetName: 'Bible Previewer',
     },

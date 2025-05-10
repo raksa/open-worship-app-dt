@@ -7,7 +7,7 @@ import ScreenVaryAppDocumentManager from '../managers/ScreenVaryAppDocumentManag
 import AppRangeComp from '../../others/AppRangeComp';
 import { getAllScreenManagers } from '../managers/screenManagerHelpers';
 
-export default function Appearance() {
+export default function AppearanceComp() {
     const [color, setColor] = useState(
         ScreenFullTextManager.textStyleTextColor,
     );

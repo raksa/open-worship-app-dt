@@ -12,7 +12,7 @@ import { copyToClipboard } from '../server/appHelpers';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 
-const LazyRenderBibleItems = lazy(() => {
+const LazyRenderBibleItemsComp = lazy(() => {
     return import('./RenderBibleItemsComp');
 });
 
@@ -136,7 +136,7 @@ function BiblePreview({ bible }: Readonly<{ bible: Bible }>) {
                 {bible.isOpened && (
                     <div className="accordion-body p-0">
                         <AppSuspenseComp>
-                            <LazyRenderBibleItems bible={bible} />
+                            <LazyRenderBibleItemsComp bible={bible} />
                         </AppSuspenseComp>
                     </div>
                 )}

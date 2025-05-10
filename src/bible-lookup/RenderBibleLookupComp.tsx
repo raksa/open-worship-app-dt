@@ -13,7 +13,7 @@ import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewCo
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { getAllLocalBibleInfoList } from '../helper/bible-helpers/bibleDownloadHelpers';
 
-const LazyBibleSearchBodyPreviewer = lazy(() => {
+const LazyBibleSearchBodyPreviewerComp = lazy(() => {
     return import('../bible-search/BibleSearchPreviewerComp');
 });
 
@@ -92,7 +92,7 @@ export default function RenderBibleLookupComp({
             widgetName: 'Lookup',
         },
         {
-            children: LazyBibleSearchBodyPreviewer,
+            children: LazyBibleSearchBodyPreviewerComp,
             key: 'h1',
             widgetName: 'Bible Online Lookup',
         },

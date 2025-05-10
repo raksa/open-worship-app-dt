@@ -2,15 +2,15 @@ import { lazy } from 'react';
 
 import AppSuspenseComp from '../../others/AppSuspenseComp';
 
-const LazyCustomStyle = lazy(() => {
-    return import('./CustomStyle');
+const LazyCustomStyleComp = lazy(() => {
+    return import('./CustomStyleComp');
 });
 
 export default function ScreenPreviewerTools() {
     return (
         <div>
             <AppSuspenseComp>
-                <LazyCustomStyle />
+                <LazyCustomStyleComp />
             </AppSuspenseComp>
         </div>
     );

@@ -5,14 +5,14 @@ import { lazy } from 'react';
 import { useStateSettingString } from '../../helper/settingHelpers';
 import TabRenderComp, { genTabBody } from '../../others/TabRenderComp';
 
-const LazyAppearance = lazy(() => {
-    return import('./Appearance');
+const LazyAppearanceComp = lazy(() => {
+    return import('./AppearanceComp');
 });
-const LazyTextShadow = lazy(() => {
+const LazyTextShadowComp = lazy(() => {
     return import('./TextShadow');
 });
 
-export default function CustomStyle() {
+export default function CustomStyleComp() {
     return (
         <div className="custom-style card pointer app-border-white-round mt-1">
             <Body />
@@ -21,8 +21,8 @@ export default function CustomStyle() {
 }
 
 const tabTypeList = [
-    ['a', 'Appearance', LazyAppearance],
-    ['s', 'Shadow', LazyTextShadow],
+    ['a', 'Appearance', LazyAppearanceComp],
+    ['s', 'Shadow', LazyTextShadowComp],
 ] as const;
 type TabType = (typeof tabTypeList)[number][0];
 function Body() {
