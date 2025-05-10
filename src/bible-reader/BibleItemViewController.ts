@@ -284,6 +284,16 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
         );
         this.fireUpdateEvent();
     }
+    get kjvBibleVerseKey() {
+        return getSetting(this.toSettingName('-kjv-bible-verse-key'), '');
+    }
+    set kjvBibleVerseKey(kjvBibleVerseKey: string) {
+        setSetting(
+            this.toSettingName('-kjv-bible-verse-key'),
+            kjvBibleVerseKey,
+        );
+        this.setKJVBibleVerseKey(kjvBibleVerseKey);
+    }
     get nestedBibleItems() {
         try {
             const jsonStr = getSetting(this.toSettingName('-data')) || '[]';
@@ -623,7 +633,7 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
         if (kjvBibleVerseKey === undefined) {
             return;
         }
-        this.setKJVBibleVerseKey(kjvBibleVerseKey);
+        this.kjvBibleVerseKey = kjvBibleVerseKey;
         const colorNote = this.getColorNote(bibleItem);
         if (!colorNote) {
             return;

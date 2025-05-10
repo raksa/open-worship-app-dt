@@ -8,9 +8,12 @@ import { bibleRenderHelper } from '../bible-list/bibleRenderHelpers';
 
 export default function BibleCrossReferentPreviewerComp() {
     const [bileItem, setBileItem] = useState<BibleItem | null>(null);
-    const viewController = LookupBibleItemViewController.getInstance();
     useAppEffect(() => {
+        const viewController = LookupBibleItemViewController.getInstance();
         viewController.setKJVBibleVerseKey = (kjvBibleVerseKey: string) => {
+            if (!kjvBibleVerseKey) {
+                return;
+            }
             const extracted =
                 bibleRenderHelper.fromKJVBibleVersesKey(kjvBibleVerseKey);
             const newBibleItem = BibleItem.fromJson({
@@ -26,6 +29,7 @@ export default function BibleCrossReferentPreviewerComp() {
             });
             setBileItem(newBibleItem);
         };
+        viewController.setKJVBibleVerseKey(viewController.kjvBibleVerseKey);
         return () => {
             viewController.setKJVBibleVerseKey = (_: string) => {};
         };
@@ -40,7 +44,7 @@ export default function BibleCrossReferentPreviewerComp() {
     }
     return (
         <BibleItemContext value={bileItem}>
-            <RefRendererComp />;
+            <RefRendererComp />
         </BibleItemContext>
     );
 }
