@@ -6,9 +6,6 @@ import {
     resizeSettingNames,
 } from './resize-actor/flexSizeHelpers';
 import ResizeActorComp from './resize-actor/ResizeActorComp';
-import BibleItemViewController, {
-    BibleItemViewControllerContext,
-} from './bible-reader/BibleItemViewController';
 
 const LazyBibleList = lazy(() => {
     return import('./bible-list/BibleListComp');
@@ -33,16 +30,13 @@ const dataInput: DataInputType[] = [
         widgetName: 'Bible Previewer',
     },
 ];
-const viewController = new BibleItemViewController('reader');
 export default function AppReaderComp() {
     return (
-        <BibleItemViewControllerContext value={viewController}>
-            <ResizeActorComp
-                flexSizeName={resizeSettingNames.read}
-                isHorizontal
-                flexSizeDefault={flexSizeDefault}
-                dataInput={dataInput}
-            />
-        </BibleItemViewControllerContext>
+        <ResizeActorComp
+            flexSizeName={resizeSettingNames.read}
+            isHorizontal
+            flexSizeDefault={flexSizeDefault}
+            dataInput={dataInput}
+        />
     );
 }

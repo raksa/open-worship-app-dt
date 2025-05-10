@@ -18,7 +18,7 @@ const LazyBibleSearchBodyPreviewer = lazy(() => {
     return import('../bible-search/BibleSearchPreviewerComp');
 });
 
-const LOOKUPING_ONLINE_SETTING_NAME = 'bible-lookup-online';
+const LOOKUP_ONLINE_SETTING_NAME = 'bible-lookup-online';
 
 export default function RenderBibleLookupComp({
     editorInputText = '',
@@ -26,7 +26,7 @@ export default function RenderBibleLookupComp({
     editorInputText?: string;
 }>) {
     const [isLookupOnline, setIsLookupOnline] = useStateSettingBoolean(
-        LOOKUPING_ONLINE_SETTING_NAME,
+        LOOKUP_ONLINE_SETTING_NAME,
         false,
     );
     const [inputText, setInputText] = useState<string>(editorInputText);

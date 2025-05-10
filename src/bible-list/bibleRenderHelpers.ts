@@ -175,42 +175,23 @@ class BibleRenderHelper {
         if (bibleInfo === null) {
             return null;
         }
-        let nextBookKey = bookKey;
-        let nextChapter;
-        const chapterCount = getKJVChapterCount(bookKey);
-        // TODO: simplify this
-        if (isNext) {
-            if (chapter < chapterCount) {
-                nextChapter = chapter + 1;
-            } else {
-                const booksOrder = bibleObj.booksOrder;
-                const bookIndex = booksOrder.findIndex(
-                    (bookKey1) => bookKey1 === bookKey,
-                );
-                if (bookIndex < 0 || bookIndex + 1 >= booksOrder.length) {
-                    return null;
-                }
-                nextChapter = 1;
-                nextBookKey = booksOrder[bookIndex + 1];
-            }
-        } else {
-            if (chapter > 1) {
-                nextChapter = chapter - 1;
-            } else {
-                const booksOrder = bibleObj.booksOrder;
-                const bookIndex = booksOrder.findIndex(
-                    (bookKey1) => bookKey1 === bookKey,
-                );
-                if (bookIndex <= 0) {
-                    return null;
-                }
-                nextChapter = getKJVChapterCount(booksOrder[bookIndex - 1]);
-                nextBookKey = booksOrder[bookIndex - 1];
-            }
+        const booksOrder = bibleObj.booksOrder;
+        const bookIndex = booksOrder.findIndex(
+            (bookKey1) => bookKey1 === bookKey,
+        );
+        let nextBookIndex = bookIndex;
+        let nextChapter = chapter + (isNext ? 1 : -1);
+        if (nextChapter < 1 || nextChapter > getKJVChapterCount(bookKey)) {
+            const bookLength = booksOrder.length;
+            nextBookIndex =
+                (bookLength + nextBookIndex + (isNext ? 1 : -1)) % bookLength;
+            nextChapter = isNext
+                ? 1
+                : getKJVChapterCount(booksOrder[nextBookIndex]);
         }
         const verses = await getVerses(bibleKey, bookKey, nextChapter);
         return {
-            bookKey: nextBookKey,
+            bookKey: booksOrder[nextBookIndex],
             chapter: nextChapter,
             verseStart: 1,
             verseEnd: verses ? Object.keys(verses).length : 1,

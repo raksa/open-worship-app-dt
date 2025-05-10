@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { useStateSettingNumber } from '../helper/settingHelpers';
 import BibleViewSettingComp, { defaultRangeSize } from './BibleViewSettingComp';
-import { useBIVCUpdateEvent } from './BibleItemViewController';
+import { useBibleItemViewControllerUpdateEvent } from './BibleItemViewController';
 import BibleViewRendererComp from './BibleViewRendererComp';
 import {
     BibleViewFontSizeContext,
@@ -61,6 +61,6 @@ export default function BiblePreviewerRenderComp() {
 }
 
 function Render() {
-    const nestedBibleItems = useBIVCUpdateEvent();
+    const nestedBibleItems = useBibleItemViewControllerUpdateEvent();
     return <BibleViewRendererComp nestedBibleItems={nestedBibleItems} />;
 }
