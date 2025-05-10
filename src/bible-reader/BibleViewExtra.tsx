@@ -8,6 +8,7 @@ import {
     useBibleItemVerseTextList,
 } from '../bible-list/bibleItemHelpers';
 import {
+    BIBLE_VIEW_TEXT_CLASS,
     fontSizeToHeightStyle,
     useBibleViewFontSizeContext,
 } from '../helper/bibleViewHelpers';
@@ -134,8 +135,6 @@ function handleVersesSelecting(event: any, isToTop = false) {
         }
     }
 }
-
-export const BIBLE_VIEW_TEXT_CLASS = 'bible-view-text';
 
 export function BibleViewTextComp() {
     const bibleItem = useBibleItemContext();

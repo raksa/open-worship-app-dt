@@ -150,13 +150,14 @@ export default function RenderBibleLookupBodyComp() {
     const { inputText } = useInputTextContext();
     const viewController = LookupBibleItemViewController.getInstance();
     const bibleKey = useBibleKeyContext();
-    const setInputText = viewController.setInputText;
     const extractedInput = useExtractInput(bibleKey, inputText);
     const {
         applyBookSelectionCallback,
         applyChapterSelectionCallback,
         applyVerseSelectionCallback,
-    } = useMethods(bibleKey, extractedInput, inputText, setInputText);
+    } = useMethods(bibleKey, extractedInput, inputText, (text: string) => {
+        viewController.inputText = text;
+    });
     return (
         <RenderLookupSuggestionComp
             bibleResult={extractedInput}

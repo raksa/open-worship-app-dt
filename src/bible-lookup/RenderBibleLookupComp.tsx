@@ -1,10 +1,7 @@
-import { lazy, useMemo, useState } from 'react';
+import { lazy, useState } from 'react';
 
 import { InputTextContext } from './InputHandlerComp';
-import {
-    SelectedBibleKeyContext,
-    useSelectedBibleKey,
-} from '../bible-list/bibleHelpers';
+import { SelectedBibleKeyContext } from '../bible-list/bibleHelpers';
 import { BibleNotAvailableComp } from './RenderLookupSuggestionComp';
 import BibleLookupBodyPreviewerComp from './BibleLookupBodyPreviewerComp';
 import ResizeActorComp from '../resize-actor/ResizeActorComp';
@@ -13,12 +10,43 @@ import RenderBibleLookupHeaderComp from './RenderBibleLookupHeaderComp';
 import RenderExtraButtonsRightComp from './RenderExtraButtonsRightComp';
 import { useStateSettingBoolean } from '../helper/settingHelpers';
 import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
+import { useAppEffectAsync } from '../helper/debuggerHelpers';
+import { getAllLocalBibleInfoList } from '../helper/bible-helpers/bibleDownloadHelpers';
 
 const LazyBibleSearchBodyPreviewer = lazy(() => {
     return import('../bible-search/BibleSearchPreviewerComp');
 });
 
 const LOOKUP_ONLINE_SETTING_NAME = 'bible-lookup-online';
+const DEFAULT_UNKNOWN_BIBLE_KEY = 'Unknown';
+
+export function useSelectedBibleKey() {
+    const [isValid, setIsValid] = useState(true);
+    const [bibleKey, setBibleKey] = useState<string>(DEFAULT_UNKNOWN_BIBLE_KEY);
+    const viewController = LookupBibleItemViewController.getInstance();
+    viewController.setBibleKey = setBibleKey;
+    useAppEffectAsync(
+        async (methodContext) => {
+            const localBibleInfoList = await getAllLocalBibleInfoList();
+            const newBibleKey =
+                DEFAULT_UNKNOWN_BIBLE_KEY !== viewController.bibleKey
+                    ? viewController.bibleKey
+                    : 'KJV';
+            if (localBibleInfoList.length === 0) {
+                methodContext.setIsValid(false);
+            } else if (
+                localBibleInfoList.find((bibleInfo) => {
+                    return bibleInfo.key === newBibleKey;
+                }) !== undefined
+            ) {
+                viewController.bibleKey = newBibleKey;
+            }
+        },
+        [],
+        { setIsValid },
+    );
+    return { isValid, bibleKey };
+}
 
 export default function RenderBibleLookupComp({
     editorInputText = '',
@@ -29,20 +57,12 @@ export default function RenderBibleLookupComp({
         LOOKUP_ONLINE_SETTING_NAME,
         false,
     );
-    const [inputText, setInputText] = useState<string>(editorInputText);
-    const { isValid, bibleKey, setBibleKey } = useSelectedBibleKey();
     const viewController = LookupBibleItemViewController.getInstance();
-    if (bibleKey !== null) {
-        viewController.selectedBibleItem.bibleKey = bibleKey;
-    }
-    viewController.setBibleKey = setBibleKey;
-    const inputTextContextValue = useMemo(
-        () => ({
-            inputText,
-            setInputText,
-        }),
-        [inputText, setInputText],
+    const [inputText, setInputText] = useState<string>(
+        editorInputText || viewController.inputText,
     );
+    viewController.setInputText = setInputText;
+    const { isValid, bibleKey } = useSelectedBibleKey();
 
     if (!isValid) {
         return (
@@ -86,7 +106,9 @@ export default function RenderBibleLookupComp({
                 },
                 {
                     context: InputTextContext,
-                    value: inputTextContextValue,
+                    value: {
+                        inputText,
+                    },
                 },
             ]}
         >
@@ -95,7 +117,6 @@ export default function RenderBibleLookupComp({
                     editorInputText={editorInputText}
                     isLookupOnline={isLookupOnline}
                     setIsLookupOnline={setIsLookupOnline}
-                    setBibleKey={setBibleKey}
                 />
                 <div className={'card-body d-flex w-100 h-100 overflow-hidden'}>
                     {isLookupOnline ? (

@@ -2,33 +2,8 @@ import { useState } from 'react';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { getSetting, setSetting } from '../helper/settingHelpers';
 import { extractBibleTitle } from '../helper/bible-helpers/serverBibleHelpers2';
-import { genTimeoutAttempt } from '../helper/helpers';
 import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
-
-let addHistory: (text: string) => void = () => {};
-export function applyPendingText() {
-    if (!pendingText) {
-        return;
-    }
-    addHistory(pendingText);
-    pendingText = '';
-}
-const attemptTimeout = genTimeoutAttempt(4e3);
-let pendingText = '';
-export function attemptAddingHistory(
-    bibleKey: string,
-    text: string,
-    isImmediate = false,
-) {
-    pendingText = `(${bibleKey}) ${text}`;
-    if (isImmediate) {
-        applyPendingText();
-        return;
-    }
-    attemptTimeout(() => {
-        applyPendingText();
-    });
-}
+import { historyStore } from '../bible-reader/BibleItemViewController';
 
 const HISTORY_TEXT_LIST_SETTING_NAME = 'history-text-list';
 function useHistoryTextList(maxHistoryCount: number) {
@@ -48,7 +23,7 @@ function useHistoryTextList(maxHistoryCount: number) {
         );
     };
     useAppEffect(() => {
-        addHistory = (text: string) => {
+        historyStore.addHistory = (text: string) => {
             if (historyTextList.includes(text)) {
                 return historyTextList;
             }
@@ -57,7 +32,7 @@ function useHistoryTextList(maxHistoryCount: number) {
             setHistoryTextList1(newHistory);
         };
         return () => {
-            addHistory = () => {};
+            historyStore.addHistory = () => {};
         };
     }, [historyTextList]);
     return [historyTextList, setHistoryTextList1] as const;

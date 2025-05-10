@@ -7,7 +7,7 @@ import { handleError } from '../helper/errorHelpers';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
 import BibleItemViewController from './BibleItemViewController';
 
-export enum DraggingPosEnum {
+enum DraggingPosEnum {
     TOP = '-top',
     BOTTOM = '-bottom',
     LEFT = '-left',

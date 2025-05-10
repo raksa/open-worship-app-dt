@@ -64,7 +64,3 @@ export default function BibleViewComp({
         </BibleItemContext>
     );
 }
-
-export function finalRenderer(bibleItem: BibleItem) {
-    return <BibleViewComp bibleItem={bibleItem} />;
-}

@@ -67,8 +67,8 @@ function RenderBibleFoundHeader() {
     ) => {
         const inputText = await viewController.selectedBibleItem?.toTitle();
         const newText = await genInputText(oldBibleKey, newBibleKey, inputText);
-        viewController.setInputText(newText);
-        viewController.setBibleKey(newBibleKey);
+        viewController.inputText = newText;
+        viewController.bibleKey = newBibleKey;
     };
     return (
         <div

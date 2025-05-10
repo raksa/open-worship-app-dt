@@ -1,4 +1,4 @@
-import { lazy } from 'react';
+import { lazy, useMemo } from 'react';
 
 import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActorComp from './resize-actor/ResizeActorComp';
@@ -6,6 +6,8 @@ import BibleItemViewController, {
     BibleItemViewControllerContext,
 } from './bible-reader/BibleItemViewController';
 import SlideEditHandlerComp from './app-document-presenter/SlideEditHandlerComp';
+import BibleViewComp from './bible-reader/BibleViewComp';
+import BibleItem from './bible-list/BibleItem';
 
 const LazyAppPresenterLeft = lazy(() => {
     return import('./AppPresenterLeftComp');
@@ -17,8 +19,14 @@ const LazyAppPresenterRight = lazy(() => {
     return import('./AppPresenterRightComp');
 });
 
-const viewController = new BibleItemViewController('presenter');
 export default function AppPresenterComp() {
+    const viewController = useMemo(() => {
+        const newViewController = new BibleItemViewController('presenter');
+        newViewController.finalRenderer = (bibleItem: BibleItem) => {
+            return <BibleViewComp bibleItem={bibleItem} />;
+        };
+        return newViewController;
+    }, []);
     return (
         <BibleItemViewControllerContext value={viewController}>
             <ResizeActorComp

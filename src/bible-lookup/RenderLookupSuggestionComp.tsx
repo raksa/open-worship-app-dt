@@ -3,10 +3,10 @@ import RenderChapterOptionsComp from './RenderChapterOptionsComp';
 import { ExtractedBibleResult } from '../helper/bible-helpers/serverBibleHelpers2';
 import RenderBibleDataFoundComp from './RenderBibleDataFoundComp';
 import { BibleItemContext } from '../bible-reader/BibleItemContext';
-import { attemptAddingHistory } from './InputHistoryComp';
 import { BibleSelectionMiniComp } from './BibleSelectionComp';
 import { RENDER_FOUND_CLASS } from './selectionHelpers';
 import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
+import { attemptAddingHistory } from '../bible-reader/BibleItemViewController';
 
 export default function RenderLookupSuggestionComp({
     bibleResult,
@@ -79,7 +79,7 @@ export function BibleNotAvailableComp({
         _oldBibleKey: string,
         newBibleKey: string,
     ) => {
-        viewController.setBibleKey(newBibleKey);
+        viewController.bibleKey = newBibleKey;
     };
 
     return (

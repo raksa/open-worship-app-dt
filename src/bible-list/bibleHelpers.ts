@@ -1,6 +1,5 @@
 import { createContext, use, useState } from 'react';
 
-import { getSetting, setSetting } from '../helper/settingHelpers';
 import BibleItem from './BibleItem';
 import {
     checkIsBookAvailable,
@@ -12,7 +11,6 @@ import {
     toInputText,
     toLocaleNumBible,
 } from '../helper/bible-helpers/serverBibleHelpers2';
-import { getAllLocalBibleInfoList } from '../helper/bible-helpers/bibleDownloadHelpers';
 import Bible from './Bible';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
@@ -23,71 +21,9 @@ import { addExtension } from '../server/fileHelpers';
 import appProvider from '../server/appProvider';
 import { VerseList } from '../helper/bible-helpers/BibleDataReader';
 
-export const SELECTED_BIBLE_SETTING_NAME = 'selected-bible';
-
-async function getSelectedEditorBibleItem() {
-    const localBibleInfoList = await getAllLocalBibleInfoList();
-    let bibleKey = getSetting(SELECTED_BIBLE_SETTING_NAME) || null;
-    if (bibleKey === null) {
-        if (!localBibleInfoList?.length) {
-            showSimpleToast(
-                'Getting Selected Bible',
-                'Unable to get selected bible',
-            );
-            return null;
-        }
-        bibleKey = localBibleInfoList[0].key;
-        setSetting(SELECTED_BIBLE_SETTING_NAME, bibleKey);
-    } else if (
-        localBibleInfoList?.find((bibleInfo) => {
-            return bibleInfo.key === bibleKey;
-        }) === undefined
-    ) {
-        bibleKey = 'KJV';
-        setSetting(SELECTED_BIBLE_SETTING_NAME, bibleKey);
-    }
-    return bibleKey;
-}
 export const SelectedBibleKeyContext = createContext<string>('KJV');
 export function useBibleKeyContext() {
     return use(SelectedBibleKeyContext);
-}
-
-const DEFAULT_UNKNOWN_BIBLE_KEY = 'Unknown';
-export function useSelectedBibleKey() {
-    const [isValid, setIsValid] = useState(true);
-    const [bibleKeySelected, setBibleKeySelected] = useState<string>(
-        DEFAULT_UNKNOWN_BIBLE_KEY,
-    );
-    const setBibleKeySelected1 = (bibleKey: string | null) => {
-        setSetting(SELECTED_BIBLE_SETTING_NAME, bibleKey ?? '');
-        getAllLocalBibleInfoList().then((localBibleInfoList) => {
-            if (
-                localBibleInfoList?.find((bibleInfo) => {
-                    return bibleInfo.key === bibleKey;
-                }) === undefined
-            ) {
-                setIsValid(false);
-                showSimpleToast('Setting Bible Key', 'Invalid bible key');
-            } else {
-                setIsValid(true);
-            }
-            setBibleKeySelected(bibleKey ?? DEFAULT_UNKNOWN_BIBLE_KEY);
-        });
-    };
-    useAppEffectAsync(
-        async (methodContext) => {
-            const bibleKey = await getSelectedEditorBibleItem();
-            methodContext.setBibleKeySelected1(bibleKey);
-        },
-        [],
-        { setBibleKeySelected1 },
-    );
-    return {
-        isValid,
-        bibleKey: bibleKeySelected,
-        setBibleKey: setBibleKeySelected1,
-    };
 }
 
 export function useGetDefaultInputText(bibleItem: BibleItem | null) {

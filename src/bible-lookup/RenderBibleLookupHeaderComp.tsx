@@ -1,6 +1,5 @@
 import InputHandlerComp, { useInputTextContext } from './InputHandlerComp';
 import { genInputText } from '../bible-list/bibleHelpers';
-import { setBibleLookupInputFocus } from './selectionHelpers';
 import RenderExtraButtonsRightComp from './RenderExtraButtonsRightComp';
 import { getPopupWindowTypeData } from '../app-modal/helpers';
 import InputHistoryComp from './InputHistoryComp';
@@ -12,31 +11,22 @@ import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewCo
 export default function RenderBibleLookupHeaderComp({
     isLookupOnline,
     setIsLookupOnline,
-    setBibleKey,
 }: Readonly<{
     editorInputText: string;
     isLookupOnline: boolean;
     setIsLookupOnline: (isLookupOnline: boolean) => void;
-    setBibleKey: (bibleKey: string | null) => void;
 }>) {
     const hideBibleLookupPopup = useShowBibleLookupContext(false);
-    const { inputText, setInputText } = useInputTextContext();
+    const { inputText } = useInputTextContext();
     const { data } = getPopupWindowTypeData();
-
-    const viewController = LookupBibleItemViewController.getInstance();
-    const setInputText1 = (newText: string) => {
-        setInputText(newText);
-        setBibleLookupInputFocus();
-    };
-    viewController.setInputText = setInputText1;
 
     const handleBibleKeyChanging = async (
         oldBibleKey: string,
         newBibleKey: string,
     ) => {
         const newText = await genInputText(oldBibleKey, newBibleKey, inputText);
-        setBibleKey(newBibleKey);
-        setInputText1(newText);
+        const viewController = LookupBibleItemViewController.getInstance();
+        viewController.inputText = newText;
     };
     const isEditingBibleItem = !!data;
     return (

@@ -16,7 +16,6 @@ import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewCo
 
 export const InputTextContext = createContext<{
     inputText: string;
-    setInputText: (text: string) => void;
 } | null>(null);
 export function useInputTextContext() {
     const inputTextContext = use(InputTextContext);
@@ -38,7 +37,9 @@ export default function InputHandlerComp({
 }>) {
     const { inputText } = useInputTextContext();
     const bibleViewController = LookupBibleItemViewController.getInstance();
-    const setInputText = bibleViewController.setInputText;
+    const setInputText = (text: string) => {
+        bibleViewController.inputText = text;
+    };
     const bibleKey = useBibleKeyContext();
     const books = useGetBookKVList(bibleKey);
     const bookKey = books === null ? null : books['GEN'];
