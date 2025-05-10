@@ -58,18 +58,23 @@ class BibleRenderHelper {
     toBibleVersesKey(bibleKey: string, bibleTarget: BibleTargetType) {
         return `${bibleKey} | ${this.toKJVBibleVersesKey(bibleTarget)}`;
     }
-    fromBibleVerseKey(bibleVersesKey: string) {
-        let arr = bibleVersesKey.split(' | ');
-        const bibleKey = arr[0];
-        arr = arr[1].split(':');
+    fromKJVBibleVersesKey(kjvBibleVersesKey: string) {
+        const arr = kjvBibleVersesKey.split(':');
         const [book, chapter] = arr[0].split(' ');
         const [verseStart, verseEnd] = arr[1].split('-');
         return {
-            bibleKey,
             book,
             chapter: Number(chapter),
             verseStart: Number(verseStart),
             verseEnd: verseEnd ? Number(verseEnd) : Number(verseStart),
+        };
+    }
+    fromBibleVerseKey(bibleVersesKey: string) {
+        const arr = bibleVersesKey.split(' | ');
+        const bibleKey = arr[0];
+        return {
+            bibleKey,
+            ...this.fromKJVBibleVersesKey(arr[1]),
         };
     }
 

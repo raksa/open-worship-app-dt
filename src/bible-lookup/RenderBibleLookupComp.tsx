@@ -10,7 +10,7 @@ import RenderBibleLookupHeaderComp from './RenderBibleLookupHeaderComp';
 import RenderExtraButtonsRightComp from './RenderExtraButtonsRightComp';
 import { useStateSettingBoolean } from '../helper/settingHelpers';
 import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
-import { useAppEffectAsync } from '../helper/debuggerHelpers';
+import { useAppEffect, useAppEffectAsync } from '../helper/debuggerHelpers';
 import { getAllLocalBibleInfoList } from '../helper/bible-helpers/bibleDownloadHelpers';
 
 const LazyBibleSearchBodyPreviewerComp = lazy(() => {
@@ -24,7 +24,12 @@ export function useSelectedBibleKey() {
     const [isValid, setIsValid] = useState(true);
     const [bibleKey, setBibleKey] = useState<string>(DEFAULT_UNKNOWN_BIBLE_KEY);
     const viewController = LookupBibleItemViewController.getInstance();
-    viewController.setBibleKey = setBibleKey;
+    useAppEffect(() => {
+        viewController.setBibleKey = setBibleKey;
+        return () => {
+            viewController.setBibleKey = (_: string) => {};
+        };
+    }, [setBibleKey]);
     useAppEffectAsync(
         async (methodContext) => {
             const localBibleInfoList = await getAllLocalBibleInfoList();
@@ -61,8 +66,13 @@ export default function RenderBibleLookupComp({
     const [inputText, setInputText] = useState<string>(
         editorInputText || viewController.inputText,
     );
-    viewController.setInputText = setInputText;
     const { isValid, bibleKey } = useSelectedBibleKey();
+    useAppEffect(() => {
+        viewController.setInputText = setInputText;
+        return () => {
+            viewController.setInputText = (_: string) => {};
+        };
+    }, [setInputText]);
 
     if (!isValid) {
         return (

@@ -11,7 +11,6 @@ import {
 import { BibleViewTextComp, RenderHeaderComp } from './BibleViewExtra';
 import { genDefaultBibleItemContextMenu } from '../bible-list/bibleItemHelpers';
 import { BibleItemContext } from './BibleItemContext';
-import RefRendererComp from '../bible-refs/RefRendererComp';
 
 export default function BibleViewComp({
     bibleItem,
@@ -61,7 +60,6 @@ export default function BibleViewComp({
                 />
                 <div className="card-body p-3">
                     <BibleViewTextComp />
-                    <RefRendererComp />
                 </div>
             </div>
         </BibleItemContext>

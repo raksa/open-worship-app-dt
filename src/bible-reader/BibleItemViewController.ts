@@ -254,6 +254,7 @@ export type MovingPositionType = keyof typeof movingPosition;
 const BIBLE_ITEMS_PREVIEW_SETTING = 'bible-items-preview';
 class BibleItemViewController extends EventHandler<UpdateEventType> {
     private readonly _settingNameSuffix: string;
+    setKJVBibleVerseKey = (_: string) => {};
     constructor(settingNameSuffix: string) {
         super();
         this._settingNameSuffix = `-${settingNameSuffix}`;
@@ -622,6 +623,7 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
         if (kjvBibleVerseKey === undefined) {
             return;
         }
+        this.setKJVBibleVerseKey(kjvBibleVerseKey);
         const colorNote = this.getColorNote(bibleItem);
         if (!colorNote) {
             return;
