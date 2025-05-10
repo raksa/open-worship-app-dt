@@ -248,10 +248,24 @@ export type MovingPositionType = keyof typeof movingPosition;
 const BIBLE_ITEMS_PREVIEW_SETTING = 'bible-items-preview';
 class BibleItemViewController extends EventHandler<UpdateEventType> {
     private readonly _settingNameSuffix: string;
-    readonly colorNoteMap: WeakMap<BibleItem, string> = new WeakMap();
     constructor(settingNameSuffix: string) {
         super();
         this._settingNameSuffix = `-${settingNameSuffix}`;
+    }
+    get colorNoteMap() {
+        const str = getSetting(this.toSettingName('bible-items-color-note'));
+        try {
+            if (str) {
+                return JSON.parse(str);
+            }
+        } catch (error) {
+            handleError(error);
+        }
+        return {};
+    }
+    set colorNoteMap(newColorNoteMap: { [key: number]: string }) {
+        const json = JSON.stringify(newColorNoteMap);
+        setSetting(this.toSettingName('bible-items-color-note'), json);
     }
     get settingName() {
         return this.toSettingName(BIBLE_ITEMS_PREVIEW_SETTING);
@@ -282,14 +296,16 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
         return this.straightBibleItems.length < 2;
     }
     getColorNote(bibleItem: BibleItem) {
-        return this.colorNoteMap.get(bibleItem) ?? '';
+        return this.colorNoteMap[bibleItem.id] ?? '';
     }
     setColorNote(bibleItem: BibleItem, color: string | null) {
+        const colorNoteMap = this.colorNoteMap;
         if (!color) {
-            this.colorNoteMap.delete(bibleItem);
+            delete colorNoteMap[bibleItem.id];
         } else {
-            this.colorNoteMap.set(bibleItem, color);
+            colorNoteMap[bibleItem.id] = color;
         }
+        this.colorNoteMap = colorNoteMap;
     }
     toSettingName(preSettingName: string) {
         return preSettingName + this._settingNameSuffix;
