@@ -21,10 +21,11 @@ function RefItemRendererComp({
             </div>
         );
     }
+    console.log(bibleRef);
     return (
         <div className="w-100">
             {index !== 0 ? <hr /> : null}
-            {bibleRef !== null && <code>{JSON.stringify(bibleRef)}</code>}
+            {<code>{JSON.stringify(bibleRef)}</code>}
         </div>
     );
 }
@@ -39,7 +40,9 @@ export default function RefRendererComp() {
     }
     return (
         <div className="w-100">
-            <h4>{bibleTitle}</h4>
+            <h4>
+                ({bibleItem.bibleKey}) {bibleTitle}
+            </h4>
             {arr.map((verse, i) => {
                 return (
                     <RefItemRendererComp

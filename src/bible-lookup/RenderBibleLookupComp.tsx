@@ -29,7 +29,7 @@ export function useSelectedBibleKey() {
         return () => {
             viewController.setBibleKey = (_: string) => {};
         };
-    }, [setBibleKey]);
+    }, []);
     useAppEffectAsync(
         async (methodContext) => {
             const localBibleInfoList = await getAllLocalBibleInfoList();
@@ -72,7 +72,7 @@ export default function RenderBibleLookupComp({
         return () => {
             viewController.setInputText = (_: string) => {};
         };
-    }, [setInputText]);
+    }, []);
 
     if (!isValid) {
         return (

@@ -254,7 +254,7 @@ export type MovingPositionType = keyof typeof movingPosition;
 const BIBLE_ITEMS_PREVIEW_SETTING = 'bible-items-preview';
 class BibleItemViewController extends EventHandler<UpdateEventType> {
     private readonly _settingNameSuffix: string;
-    setKJVBibleVerseKey = (_: string) => {};
+    setBibleVerseKey = (_: string) => {};
     constructor(settingNameSuffix: string) {
         super();
         this._settingNameSuffix = `-${settingNameSuffix}`;
@@ -284,15 +284,12 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
         );
         this.fireUpdateEvent();
     }
-    get kjvBibleVerseKey() {
-        return getSetting(this.toSettingName('-kjv-bible-verse-key'), '');
+    get bibleVerseKey() {
+        return getSetting(this.toSettingName('-bible-verse-key'), '');
     }
-    set kjvBibleVerseKey(kjvBibleVerseKey: string) {
-        setSetting(
-            this.toSettingName('-kjv-bible-verse-key'),
-            kjvBibleVerseKey,
-        );
-        this.setKJVBibleVerseKey(kjvBibleVerseKey);
+    set bibleVerseKey(kjvBibleVerseKey: string) {
+        setSetting(this.toSettingName('-bible-verse-key'), kjvBibleVerseKey);
+        this.setBibleVerseKey(kjvBibleVerseKey);
     }
     get nestedBibleItems() {
         try {
@@ -599,7 +596,7 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
         );
         Array.from(containerDoms).forEach((containerDom: any) => {
             const elements = containerDom.querySelectorAll(
-                `.${BIBLE_VIEW_TEXT_CLASS} div[data-verse-key="${verseKey}"]`,
+                `.${BIBLE_VIEW_TEXT_CLASS} div[data-kjv-verse-key="${verseKey}"]`,
             );
             Array.from(elements).forEach((element: any) => {
                 this.handleVersesSelecting(element, isToTop, true);
@@ -629,11 +626,11 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
         if (bibleItem === undefined) {
             return;
         }
-        const kjvBibleVerseKey = targetDom.dataset.verseKey;
+        this.bibleVerseKey = targetDom.dataset.verseKey ?? '';
+        const kjvBibleVerseKey = targetDom.dataset.kjvVerseKey;
         if (kjvBibleVerseKey === undefined) {
             return;
         }
-        this.kjvBibleVerseKey = kjvBibleVerseKey;
         const colorNote = this.getColorNote(bibleItem);
         if (!colorNote) {
             return;

@@ -144,7 +144,8 @@ function RendVerseTextComp({
             <div
                 className="verse-text"
                 data-bible-key={verseInfo.bibleKey}
-                data-verse-key={verseInfo.kjvBibleVersesKey}
+                data-kjv-verse-key={verseInfo.kjvBibleVersesKey}
+                data-verse-key={verseInfo.bibleVersesKey}
                 title={BIBLE_VERSE_TEXT_TITLE}
                 onClick={(event) => {
                     viewController.handleVersesSelecting(

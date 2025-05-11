@@ -10,15 +10,15 @@ export default function BibleCrossReferentPreviewerComp() {
     const [bileItem, setBileItem] = useState<BibleItem | null>(null);
     useAppEffect(() => {
         const viewController = LookupBibleItemViewController.getInstance();
-        viewController.setKJVBibleVerseKey = (kjvBibleVerseKey: string) => {
-            if (!kjvBibleVerseKey) {
+        viewController.setBibleVerseKey = (bibleVerseKey: string) => {
+            if (!bibleVerseKey) {
                 return;
             }
             const extracted =
-                bibleRenderHelper.fromKJVBibleVersesKey(kjvBibleVerseKey);
+                bibleRenderHelper.fromBibleVerseKey(bibleVerseKey);
             const newBibleItem = BibleItem.fromJson({
                 id: -1,
-                bibleKey: 'KJV',
+                bibleKey: extracted.bibleKey,
                 target: {
                     bookKey: extracted.book,
                     chapter: extracted.chapter,
@@ -29,11 +29,11 @@ export default function BibleCrossReferentPreviewerComp() {
             });
             setBileItem(newBibleItem);
         };
-        viewController.setKJVBibleVerseKey(viewController.kjvBibleVerseKey);
+        viewController.setBibleVerseKey(viewController.bibleVerseKey);
         return () => {
-            viewController.setKJVBibleVerseKey = (_: string) => {};
+            viewController.setBibleVerseKey = (_: string) => {};
         };
-    }, [setBileItem]);
+    }, []);
     if (bileItem === null) {
         return (
             <div>

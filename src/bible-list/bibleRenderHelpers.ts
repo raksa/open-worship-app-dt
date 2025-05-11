@@ -28,6 +28,7 @@ export type CompiledVerseType = {
     isNewLine: boolean;
     bibleKey: string;
     kjvBibleVersesKey: string;
+    bibleVersesKey: string;
 };
 
 type CallbackType<T extends string | CompiledVerseType[]> = (
@@ -161,6 +162,12 @@ class BibleRenderHelper {
                 isNewLine,
                 bibleKey,
                 kjvBibleVersesKey: this.toKJVBibleVersesKey({
+                    bookKey: book,
+                    chapter,
+                    verseStart: i,
+                    verseEnd: i,
+                }),
+                bibleVersesKey: this.toBibleVersesKey(bibleKey, {
                     bookKey: book,
                     chapter,
                     verseStart: i,
