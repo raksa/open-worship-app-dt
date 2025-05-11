@@ -10,7 +10,6 @@ import {
 } from '../helper/dragHelpers';
 import ItemColorNoteComp from '../others/ItemColorNoteComp';
 import { BibleSelectionMiniComp } from '../bible-lookup/BibleSelectionComp';
-import { useBibleItemViewControllerContext } from '../bible-reader/BibleItemViewController';
 import ScreenFullTextManager from '../_screen/managers/ScreenFullTextManager';
 import {
     openBibleItemContextMenu,
@@ -80,7 +79,6 @@ export default function BibleItemRenderComp({
     filePath: string;
 }>) {
     const showBibleLookupPopup = useShowBibleLookupContext();
-    const viewController = useBibleItemViewControllerContext();
     useFileSourceRefreshEvents(['select'], filePath);
     const title = useBibleItemRenderTitle(bibleItem);
     const changeBible = async (newBibleKey: string) => {
@@ -132,8 +130,6 @@ export default function BibleItemRenderComp({
             } else {
                 lookupViewController.setLookupContentFromBibleItem(bibleItem);
             }
-        } else {
-            viewController.appendBibleItem(bibleItem);
         }
     };
 
