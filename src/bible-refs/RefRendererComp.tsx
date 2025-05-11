@@ -28,8 +28,9 @@ async function breakItem(bibleKey: string, bibleVerseKey: string) {
     await bibleItem.toTitle();
     const text = await bibleItem.toText();
     return {
-        htmlText: text.substring(0, 200),
+        htmlText: text.substring(0, 150) + '...',
         bibleItem,
+        fullText: text,
     };
 }
 
@@ -57,18 +58,33 @@ function RenderFoundItemComp({
             </div>
         );
     }
-    const { htmlText, bibleItem } = data;
+    const { htmlText, bibleItem, fullText } = data;
     return (
         <div
             className="w-100 app-border-white-round my-2 p-2 pointer"
-            title="shift + click to append"
             onClick={(event) => {
                 handleClicking(event, bibleItem, true);
             }}
         >
             <BibleDirectViewTitleComp bibleItem={bibleItem} />
-            {/* TODO: implement the following: isS, isFN, isStar, isTitle, isLXXDSS */}
+            {/* TODO: update title */}
+            <span className="badge badge-success" title="isS">
+                {itemInfo.isS ? 'S ' : ''}
+            </span>
+            <span className="badge badge-success" title="isFN">
+                {itemInfo.isFN ? 'FN ' : ''}
+            </span>
+            <span className="badge badge-success" title="isStar">
+                {itemInfo.isStar ? '★ ' : ''}
+            </span>
+            <span className="badge badge-success" title="isTitle">
+                {itemInfo.isTitle ? 'T ' : ''}
+            </span>
+            <span className="badge badge-success" title="isLXXDSS">
+                {itemInfo.isLXXDSS ? 'LXXDSS ' : ''}
+            </span>
             <span
+                title={fullText}
                 data-bible-key={bibleItem.bibleKey}
                 dangerouslySetInnerHTML={{
                     __html: htmlText,
