@@ -144,7 +144,7 @@ export default function RefRendererComp() {
     }
     return (
         <div className="w-100">
-            <h4>
+            <h4 data-bible-key={bibleItem.bibleKey}>
                 ({bibleItem.bibleKey}) {bibleTitle}
             </h4>
             {arr.map((verse, i) => {

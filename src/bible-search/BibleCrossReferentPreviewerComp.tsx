@@ -37,7 +37,7 @@ export default function BibleCrossReferentPreviewerComp() {
     if (bileItem === null) {
         return (
             <div>
-                <h1>Wait...</h1>
+                <h4>Wait...</h4>
                 <p>Please select any bible verse.</p>
             </div>
         );
