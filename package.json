@@ -3,7 +3,7 @@
     "description": "Fully Open-Source and completely free forever for worship service.",
     "author": "Raksa Eng <eng.raksa@gmail.com> (https://www.linkedin.com/in/raks-eng/)",
     "homepage": "https://github.com/OpenWorshipApp/open-worship-app-dt",
-    "version": "2025.04.11",
+    "version": "2025.05.10",
     "type": "commonjs",
     "main": "./electron-build/electron/index.js",
     "scripts": {
