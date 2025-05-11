@@ -203,7 +203,7 @@ export default function BibleFindRenderDataComp({
                         <BibleFindRenderPerPageComp
                             key={pageNumber}
                             findText={text}
-                            data={data}
+                            items={data.content}
                             pageNumber={pageNumber}
                             bibleKey={bibleFindController.bibleKey}
                         />

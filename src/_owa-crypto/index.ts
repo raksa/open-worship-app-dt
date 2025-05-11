@@ -27,6 +27,12 @@ export function is_dev() {
 }
 
 export function bible_ref(text: string) {
+    // isS "S GEN 1:5"
+    // isFN "FN GEN 1:5"
+    // isStar "STAR GEN 1:5"
+    // isTitle "TITLE GEN 1:5"
+    // isLXXDSS "LXXDSS GEN 1:5"
+    // TODO: implement this extraction
     return JSON.stringify({
         text,
         isS: false,

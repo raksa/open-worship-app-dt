@@ -91,6 +91,20 @@ export const BibleViewTitleMaterialContext = createContext<{
     extraHeader?: React.ReactNode;
 } | null>(null);
 
+export function BibleDirectViewTitleComp({
+    bibleItem,
+}: Readonly<{ bibleItem: BibleItem }>) {
+    const title = useBibleItemRenderTitle(bibleItem);
+    return (
+        <span
+            data-bible-key={bibleItem.bibleKey}
+            className="title app-border-white-round m-1 px-1"
+        >
+            {title}
+        </span>
+    );
+}
+
 export function BibleViewTitleComp() {
     const bibleItem = useBibleItemContext();
     const materialContext = use(BibleViewTitleMaterialContext);

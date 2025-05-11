@@ -1,34 +1,18 @@
-import BibleItem from '../bible-list/BibleItem';
-import { useBibleItemRenderTitle } from '../bible-list/bibleItemHelpers';
-import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
+import { BibleDirectViewTitleComp } from '../bible-reader/BibleViewExtra';
 import { useAppPromise } from '../helper/helpers';
 import { useBibleFindController } from './BibleFindController';
-import { BibleFindResultType, breakItem } from './bibleFindHelpers';
+import { breakItem, handleClicking } from './bibleFindHelpers';
 
 export const APP_FOUND_PAGE_CLASS = 'app-found-page';
-
-function BibleViewTitleComp({ bibleItem }: Readonly<{ bibleItem: BibleItem }>) {
-    const title = useBibleItemRenderTitle(bibleItem);
-    return (
-        <span
-            data-bible-key={bibleItem.bibleKey}
-            className="title app-border-white-round m-1 px-1"
-        >
-            {title}
-        </span>
-    );
-}
 
 function RenderFoundItemComp({
     findText,
     text,
     bibleKey,
-    handleClicking,
 }: Readonly<{
     findText: string;
     text: string;
     bibleKey: string;
-    handleClicking: (event: any, bibleItem: BibleItem) => void;
 }>) {
     const bibleFindController = useBibleFindController();
     const data = useAppPromise(
@@ -49,7 +33,7 @@ function RenderFoundItemComp({
                 handleClicking(event, bibleItem);
             }}
         >
-            <BibleViewTitleComp bibleItem={bibleItem} />
+            <BibleDirectViewTitleComp bibleItem={bibleItem} />
             <span
                 data-bible-key={bibleItem.bibleKey}
                 dangerouslySetInnerHTML={{
@@ -62,23 +46,18 @@ function RenderFoundItemComp({
 
 export default function BibleFindRenderPerPageComp({
     pageNumber,
-    data,
+    items,
     findText,
     bibleKey,
 }: Readonly<{
     pageNumber: string;
-    data: BibleFindResultType;
+    items: {
+        text: string;
+        uniqueKey: string;
+    }[];
     findText: string;
     bibleKey: string;
 }>) {
-    const handleClicking = (event: any, bibleItem: BibleItem) => {
-        const viewController = LookupBibleItemViewController.getInstance();
-        if (event.shiftKey) {
-            viewController.appendBibleItem(bibleItem);
-        } else {
-            viewController.setLookupContentFromBibleItem(bibleItem);
-        }
-    };
     return (
         <>
             <div className={`d-flex ${APP_FOUND_PAGE_CLASS}-${pageNumber}`}>
@@ -86,14 +65,13 @@ export default function BibleFindRenderPerPageComp({
                 <hr className="w-100" />
             </div>
             <div className="w-100">
-                {data.content.map(({ text, uniqueKey }) => {
+                {items.map(({ text, uniqueKey }) => {
                     return (
                         <RenderFoundItemComp
                             key={uniqueKey}
                             findText={findText}
                             text={text}
                             bibleKey={bibleKey}
-                            handleClicking={handleClicking}
                         />
                     );
                 })}
