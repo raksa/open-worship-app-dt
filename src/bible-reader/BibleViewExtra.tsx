@@ -3,10 +3,6 @@ import React, { createContext, use } from 'react';
 import BibleItem from '../bible-list/BibleItem';
 import { BibleSelectionMiniComp } from '../bible-lookup/BibleSelectionComp';
 import {
-    useBibleItemRenderTitle,
-    useBibleItemVerseTextList,
-} from '../bible-list/bibleItemHelpers';
-import {
     BIBLE_VIEW_TEXT_CLASS,
     fontSizeToHeightStyle,
     useBibleViewFontSizeContext,
@@ -17,6 +13,22 @@ import { useBibleItemViewControllerContext } from './BibleItemViewController';
 import { useBibleItemContext } from './BibleItemContext';
 import { BIBLE_VERSE_TEXT_TITLE } from '../helper/helpers';
 import { CompiledVerseType } from '../bible-list/bibleRenderHelpers';
+import { useAppStateAsync } from '../helper/debuggerHelpers';
+
+export const BibleViewTitleMaterialContext = createContext<{
+    titleElement: React.ReactNode;
+} | null>(null);
+
+export function useBibleViewTitleMaterialContext() {
+    const context = use(BibleViewTitleMaterialContext);
+    if (context === null) {
+        throw new Error(
+            'useBibleViewTitleMaterialContext must be used within a ' +
+                'BibleViewTitleMaterialContext.Provider',
+        );
+    }
+    return context;
+}
 
 export function RenderTitleMaterialComp({
     editingBibleItem,
@@ -27,6 +39,7 @@ export function RenderTitleMaterialComp({
 }>) {
     const bibleItem = useBibleItemContext();
     const viewController = useBibleItemViewControllerContext();
+    const materialContext = useBibleViewTitleMaterialContext();
     const colorNoteHandler: ColorNoteInf = {
         getColorNote: async () => {
             return viewController.getColorNote(editingBibleItem ?? bibleItem);
@@ -52,9 +65,7 @@ export function RenderTitleMaterialComp({
                         />
                     </div>
                 </div>
-                <div className="flex-item">
-                    <BibleViewTitleComp />
-                </div>
+                <div className="flex-item">{materialContext.titleElement}</div>
             </div>
         </div>
     );
@@ -86,15 +97,10 @@ export function RenderHeaderComp({
     );
 }
 
-export const BibleViewTitleMaterialContext = createContext<{
-    onDBClick?: (bibleItem: BibleItem) => void;
-    extraHeader?: React.ReactNode;
-} | null>(null);
-
 export function BibleDirectViewTitleComp({
     bibleItem,
 }: Readonly<{ bibleItem: BibleItem }>) {
-    const title = useBibleItemRenderTitle(bibleItem);
+    const { value: title } = useAppStateAsync(bibleItem.toTitle(), [bibleItem]);
     return (
         <span
             data-bible-key={bibleItem.bibleKey}
@@ -105,27 +111,54 @@ export function BibleDirectViewTitleComp({
     );
 }
 
-export function BibleViewTitleComp() {
+export function BibleViewTitleComp({
+    onDBClick,
+    onPencilClick,
+}: Readonly<{
+    onDBClick?: (event: any) => void;
+    onPencilClick?: (event: any) => void;
+}> = {}) {
     const bibleItem = useBibleItemContext();
-    const materialContext = use(BibleViewTitleMaterialContext);
-    const title = useBibleItemRenderTitle(bibleItem);
+    const { value: title } = useAppStateAsync(bibleItem.toTitle(), [bibleItem]);
     const fontSize = useBibleViewFontSizeContext();
     return (
         <span
-            className="title debugger-text"
+            className="title"
             data-bible-key={bibleItem.bibleKey}
             style={{ fontSize }}
-            title={
-                materialContext !== null ? 'Double click to edit' : undefined
-            }
-            onDoubleClick={() => {
-                if (materialContext !== null) {
-                    materialContext.onDBClick?.(bibleItem);
-                }
-            }}
+            title={onDBClick !== undefined ? 'Double click to edit' : undefined}
+            onDoubleClick={onDBClick}
         >
             {title}
-            {materialContext?.extraHeader}
+            {onPencilClick ? (
+                <span
+                    className="pointer app-low-hover-visible"
+                    style={{ color: 'green' }}
+                    onClick={() => {
+                        onPencilClick(bibleItem);
+                    }}
+                >
+                    <i className="bi bi-pencil" />
+                </span>
+            ) : null}
+        </span>
+    );
+}
+
+export function BibleViewTitleEditingComp() {
+    const bibleItem = useBibleItemContext();
+    const { value: title } = useAppStateAsync(bibleItem.toTitle(), [bibleItem]);
+    const fontSize = useBibleViewFontSizeContext();
+    return (
+        <span
+            className="title"
+            data-bible-key={bibleItem.bibleKey}
+            style={{ fontSize }}
+        >
+            {title}
+            <span className="pointer">
+                <i style={{ color: 'green' }} className="bi bi-pencil-fill" />
+            </span>
         </span>
     );
 }
@@ -193,8 +226,10 @@ function RendVerseTextComp({
 export function BibleViewTextComp() {
     const bibleItem = useBibleItemContext();
     const fontSize = useBibleViewFontSizeContext();
-    const result = useBibleItemVerseTextList(bibleItem);
-    if (result === null) {
+    const { value: result } = useAppStateAsync(bibleItem.toVerseTextList(), [
+        bibleItem,
+    ]);
+    if (!result) {
         return null;
     }
     return (

@@ -136,7 +136,7 @@ export function useAppStateAsync<T>(
             const newValue = await promise;
             contextMethods.setValue(newValue);
         },
-        deps,
+        [...deps],
         { setValue },
     );
     return {

@@ -10,7 +10,11 @@ import {
     useNextEditingBibleItem,
     useSplitBibleItemRenderer,
 } from '../bible-reader/readBibleHelpers';
-import { BibleViewTitleMaterialContext } from '../bible-reader/BibleViewExtra';
+import {
+    BibleViewTitleComp,
+    BibleViewTitleEditingComp,
+    BibleViewTitleMaterialContext,
+} from '../bible-reader/BibleViewExtra';
 import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
 
 const LazyBiblePreviewerRenderComp = lazy(() => {
@@ -28,19 +32,7 @@ export default function BibleLookupBodyPreviewerComp() {
             return (
                 <BibleViewTitleMaterialContext
                     value={{
-                        extraHeader: (
-                            <span
-                                className="pointer"
-                                onClick={() => {
-                                    viewController.editBibleItem(bibleItem);
-                                }}
-                            >
-                                <i
-                                    style={{ color: 'green' }}
-                                    className="bi bi-pencil-fill"
-                                />
-                            </span>
-                        ),
+                        titleElement: <BibleViewTitleEditingComp />,
                     }}
                 >
                     <RenderBibleLookupBodyComp />
@@ -50,19 +42,15 @@ export default function BibleLookupBodyPreviewerComp() {
         return (
             <BibleViewTitleMaterialContext
                 value={{
-                    onDBClick: (bibleItem: BibleItem) => {
-                        viewController.editBibleItem(bibleItem);
-                    },
-                    extraHeader: (
-                        <span
-                            className="pointer app-low-hover-visible"
-                            style={{ color: 'green' }}
-                            onClick={() => {
+                    titleElement: (
+                        <BibleViewTitleComp
+                            onDBClick={() => {
                                 viewController.editBibleItem(bibleItem);
                             }}
-                        >
-                            <i className="bi bi-pencil" />
-                        </span>
+                            onPencilClick={() => {
+                                viewController.editBibleItem(bibleItem);
+                            }}
+                        />
                     ),
                 }}
             >

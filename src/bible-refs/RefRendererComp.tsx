@@ -1,24 +1,24 @@
 import BibleItem from '../bible-list/BibleItem';
-import { useBibleItemRenderTitle } from '../bible-list/bibleItemHelpers';
 import { bibleRenderHelper } from '../bible-list/bibleRenderHelpers';
 import { useBibleItemContext } from '../bible-reader/BibleItemContext';
 import { BibleDirectViewTitleComp } from '../bible-reader/BibleViewExtra';
 import { handleClicking } from '../bible-search/bibleFindHelpers';
 import { bibleObj } from '../helper/bible-helpers/serverBibleHelpers';
+import { useAppStateAsync } from '../helper/debuggerHelpers';
 import { useAppPromise } from '../helper/helpers';
 import { BibleRefType, useGetBibleRef } from './bibleRefsHelpers';
 
 async function breakItem(bibleKey: string, bibleVerseKey: string) {
     const extracted = bibleRenderHelper.fromKJVBibleVersesKey(bibleVerseKey);
     const booksOrder = bibleObj.booksOrder;
-    if (!booksOrder.includes(extracted.book)) {
+    if (!booksOrder.includes(extracted.bookKey)) {
         return null;
     }
     const bibleItem = BibleItem.fromJson({
         id: -1,
         bibleKey,
         target: {
-            bookKey: extracted.book,
+            bookKey: extracted.bookKey,
             chapter: extracted.chapter,
             verseStart: extracted.verseStart,
             verseEnd: extracted.verseEnd,
@@ -136,7 +136,7 @@ function RefItemRendererComp({
 
 export default function RefRendererComp() {
     const bibleItem = useBibleItemContext();
-    const bibleTitle = useBibleItemRenderTitle(bibleItem);
+    const { value: title } = useAppStateAsync(bibleItem.toTitle(), [bibleItem]);
     const { bookKey: book, chapter, verseStart, verseEnd } = bibleItem.target;
     const arr: number[] = [];
     for (let i = verseStart; i <= verseEnd; i++) {
@@ -145,7 +145,7 @@ export default function RefRendererComp() {
     return (
         <div className="w-100">
             <h4 data-bible-key={bibleItem.bibleKey}>
-                ({bibleItem.bibleKey}) {bibleTitle}
+                ({bibleItem.bibleKey}) {title}
             </h4>
             {arr.map((verse, i) => {
                 return (

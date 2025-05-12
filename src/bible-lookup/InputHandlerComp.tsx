@@ -10,9 +10,10 @@ import {
     focusRenderFound,
     setBibleLookupInputFocus,
 } from './selectionHelpers';
-import { useBibleItemPropsToInputText } from '../bible-list/bibleItemHelpers';
 import { useBibleKeyContext } from '../bible-list/bibleHelpers';
 import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
+import { useAppStateAsync } from '../helper/debuggerHelpers';
+import { toInputText } from '../helper/bible-helpers/serverBibleHelpers2';
 
 export const InputTextContext = createContext<{
     inputText: string;
@@ -43,12 +44,8 @@ export default function InputHandlerComp({
     const bibleKey = useBibleKeyContext();
     const books = useGetBookKVList(bibleKey);
     const bookKey = books === null ? null : books['GEN'];
-    const placeholder = useBibleItemPropsToInputText(
-        bibleKey,
-        bookKey,
-        1,
-        1,
-        2,
+    const { value: placeholder } = useAppStateAsync(
+        toInputText(bibleKey, bookKey, 1, 1, 2),
     );
     useKeyboardRegistering(
         [{ key: 'Escape' }],
@@ -80,7 +77,7 @@ export default function InputHandlerComp({
                 className={`form-control ${INPUT_TEXT_CLASS}`}
                 value={inputText}
                 autoFocus
-                placeholder={placeholder}
+                placeholder={placeholder??'not found'}
                 onKeyUp={(event) => {
                     if (['ArrowDown', 'ArrowUp'].includes(event.key)) {
                         event.stopPropagation();

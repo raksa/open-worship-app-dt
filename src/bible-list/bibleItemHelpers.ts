@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import Bible from './Bible';
 import {
     ContextMenuItemType,
@@ -9,9 +7,7 @@ import { moveBibleItemTo } from './bibleHelpers';
 import BibleItem from './BibleItem';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { AnyObjectType } from '../helper/helpers';
-import { useAppEffectAsync } from '../helper/debuggerHelpers';
-import { BibleTargetType, CompiledVerseType } from './bibleRenderHelpers';
-import { toInputText } from '../helper/bible-helpers/serverBibleHelpers2';
+import { BibleTargetType } from './bibleRenderHelpers';
 import { genShowOnScreensContextMenu } from '../others/FileItemHandlerComp';
 import ScreenFullTextManager from '../_screen/managers/ScreenFullTextManager';
 
@@ -142,66 +138,4 @@ export function genDuplicatedMessage(
         warningMessage = `Duplicated with item number ${itemNum}`;
     }
     return warningMessage;
-}
-
-export function useBibleItemRenderTitle(bibleItem: BibleItem) {
-    const [title, setTitle] = useState<string>('');
-    useAppEffectAsync(
-        async (methodContext) => {
-            const title = await bibleItem.toTitle();
-            methodContext.setTitle(title);
-        },
-        [bibleItem],
-        { setTitle },
-    );
-    return title;
-}
-export function useBibleItemRenderText(bibleItem: BibleItem) {
-    const [text, setText] = useState<string>('');
-    useAppEffectAsync(
-        async (methodContext) => {
-            const text = await bibleItem.toText();
-            methodContext.setText(text);
-        },
-        [bibleItem],
-        { setText },
-    );
-    return text;
-}
-export function useBibleItemVerseTextList(bibleItem: BibleItem) {
-    const [result, setResult] = useState<CompiledVerseType[] | null>(null);
-    useAppEffectAsync(
-        async (methodContext) => {
-            const result = await bibleItem.toVerseTextList();
-            methodContext.setResult(result);
-        },
-        [bibleItem],
-        { setResult },
-    );
-    return result;
-}
-
-export function useBibleItemPropsToInputText(
-    bibleKey: string,
-    book?: string | null,
-    chapter?: number | null,
-    verseStart?: number | null,
-    verseEnd?: number | null,
-) {
-    const [text, setText] = useState<string>('');
-    useAppEffectAsync(
-        async (methodContext) => {
-            const text1 = await toInputText(
-                bibleKey,
-                book,
-                chapter,
-                verseStart,
-                verseEnd,
-            );
-            methodContext.setText(text1);
-        },
-        [bibleKey, book, chapter, verseStart, verseEnd],
-        { setText },
-    );
-    return text;
 }

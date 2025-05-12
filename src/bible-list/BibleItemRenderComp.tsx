@@ -11,10 +11,7 @@ import {
 import ItemColorNoteComp from '../others/ItemColorNoteComp';
 import { BibleSelectionMiniComp } from '../bible-lookup/BibleSelectionComp';
 import ScreenFullTextManager from '../_screen/managers/ScreenFullTextManager';
-import {
-    openBibleItemContextMenu,
-    useBibleItemRenderTitle,
-} from './bibleItemHelpers';
+import { openBibleItemContextMenu } from './bibleItemHelpers';
 import { useShowBibleLookupContext } from '../others/commonButtons';
 import appProvider from '../server/appProvider';
 import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
@@ -22,6 +19,7 @@ import { useMemo } from 'react';
 import { changeDragEventStyle } from '../helper/helpers';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
+import { useAppStateAsync } from '../helper/debuggerHelpers';
 
 function genAttachBackgroundComponent(
     droppedData: DroppedDataType | null | undefined,
@@ -80,7 +78,7 @@ export default function BibleItemRenderComp({
 }>) {
     const showBibleLookupPopup = useShowBibleLookupContext();
     useFileSourceRefreshEvents(['select'], filePath);
-    const title = useBibleItemRenderTitle(bibleItem);
+    const { value: title } = useAppStateAsync(bibleItem.toTitle(), [bibleItem]);
     const changeBible = async (newBibleKey: string) => {
         const bible = bibleItem.filePath
             ? await Bible.fromFilePath(bibleItem.filePath)
@@ -140,7 +138,7 @@ export default function BibleItemRenderComp({
     return (
         <li
             className="list-group-item item pointer px-1"
-            title={title}
+            title={title ?? 'not found'}
             data-index={index + 1}
             draggable
             onDragStart={(event) => {

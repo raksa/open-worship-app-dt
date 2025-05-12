@@ -20,7 +20,7 @@ export default function BibleCrossReferentPreviewerComp() {
                 id: -1,
                 bibleKey: extracted.bibleKey,
                 target: {
-                    bookKey: extracted.book,
+                    bookKey: extracted.bookKey,
                     chapter: extracted.chapter,
                     verseStart: extracted.verseStart,
                     verseEnd: extracted.verseEnd,

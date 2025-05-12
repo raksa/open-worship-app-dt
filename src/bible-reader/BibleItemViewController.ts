@@ -285,11 +285,16 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
         this.fireUpdateEvent();
     }
     get bibleVerseKey() {
-        return getSetting(this.toSettingName('-bible-verse-key'), '');
+        const verseKey = getSetting(this.toSettingName('-bible-verse-key'), '');
+        // (KJV) GEN 1:2-3
+        if (verseKey.startsWith('(')) {
+            return verseKey;
+        }
+        return '';
     }
-    set bibleVerseKey(kjvBibleVerseKey: string) {
-        setSetting(this.toSettingName('-bible-verse-key'), kjvBibleVerseKey);
-        this.setBibleVerseKey(kjvBibleVerseKey);
+    set bibleVerseKey(bibleVerseKey: string) {
+        setSetting(this.toSettingName('-bible-verse-key'), bibleVerseKey);
+        this.setBibleVerseKey(bibleVerseKey);
     }
     get nestedBibleItems() {
         try {

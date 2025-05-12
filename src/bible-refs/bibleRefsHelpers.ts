@@ -38,7 +38,7 @@ function transform(bibleRef: RawBibleRefListType): BibleRefType[][] {
     });
 }
 
-const cache = new CacheManager<BibleRefType[][]>(60 * 60); // 1 hour
+const cache = new CacheManager<BibleRefType[][]>(60); // 1 minute
 export async function getBibleRef(key: string) {
     return unlocking(`bible-refs/${key}`, async () => {
         const cachedData = await cache.get(key);

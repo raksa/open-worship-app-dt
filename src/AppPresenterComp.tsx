@@ -8,6 +8,10 @@ import BibleItemViewController, {
 import SlideEditHandlerComp from './app-document-presenter/SlideEditHandlerComp';
 import BibleViewComp from './bible-reader/BibleViewComp';
 import BibleItem from './bible-list/BibleItem';
+import {
+    BibleViewTitleComp,
+    BibleViewTitleMaterialContext,
+} from './bible-reader/BibleViewExtra';
 
 const LazyAppPresenterLeftComp = lazy(() => {
     return import('./AppPresenterLeftComp');
@@ -23,7 +27,15 @@ export default function AppPresenterComp() {
     const viewController = useMemo(() => {
         const newViewController = new BibleItemViewController('presenter');
         newViewController.finalRenderer = (bibleItem: BibleItem) => {
-            return <BibleViewComp bibleItem={bibleItem} />;
+            return (
+                <BibleViewTitleMaterialContext
+                    value={{
+                        titleElement: <BibleViewTitleComp />,
+                    }}
+                >
+                    <BibleViewComp bibleItem={bibleItem} />
+                </BibleViewTitleMaterialContext>
+            );
         };
         return newViewController;
     }, []);

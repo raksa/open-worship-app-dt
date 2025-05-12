@@ -31,8 +31,8 @@ type PdfItemViewInfoType = {
 };
 
 const srcSizeCacheManager = new CacheManager<{ width: number; height: number }>(
-    60 * 60 * 24 * 30,
-);
+    60,
+); // 1 minute
 async function getImageSize(src: string) {
     let size = await srcSizeCacheManager.get(src);
     if (size !== null) {
