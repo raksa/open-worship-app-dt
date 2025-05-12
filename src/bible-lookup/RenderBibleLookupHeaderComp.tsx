@@ -26,6 +26,7 @@ export default function RenderBibleLookupHeaderComp({
     ) => {
         const newText = await genInputText(oldBibleKey, newBibleKey, inputText);
         const viewController = LookupBibleItemViewController.getInstance();
+        viewController.bibleKey = newBibleKey;
         viewController.inputText = newText;
     };
     const isEditingBibleItem = !!data;
