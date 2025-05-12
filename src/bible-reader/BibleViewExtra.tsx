@@ -12,8 +12,12 @@ import ColorNoteInf from '../helper/ColorNoteInf';
 import { useBibleItemViewControllerContext } from './BibleItemViewController';
 import { useBibleItemContext } from './BibleItemContext';
 import { BIBLE_VERSE_TEXT_TITLE } from '../helper/helpers';
-import { CompiledVerseType } from '../bible-list/bibleRenderHelpers';
+import {
+    bibleRenderHelper,
+    CompiledVerseType,
+} from '../bible-list/bibleRenderHelpers';
 import { useAppStateAsync } from '../helper/debuggerHelpers';
+import { toLocaleNumBible } from '../helper/bible-helpers/serverBibleHelpers2';
 
 export const BibleViewTitleMaterialContext = createContext<{
     titleElement: React.ReactNode;
@@ -129,7 +133,7 @@ export function BibleViewTitleComp({
             title={onDBClick !== undefined ? 'Double click to edit' : undefined}
             onDoubleClick={onDBClick}
         >
-            {title}
+            {title}{' '}
             {onPencilClick ? (
                 <span
                     className="pointer app-low-hover-visible"
@@ -147,16 +151,38 @@ export function BibleViewTitleComp({
 
 export function BibleViewTitleEditingComp() {
     const bibleItem = useBibleItemContext();
+    const { bibleKey, target } = bibleItem;
     const { value: title } = useAppStateAsync(bibleItem.toTitle(), [bibleItem]);
+    const { value: book } = useAppStateAsync(
+        bibleRenderHelper.toLocaleTitle(bibleKey, target.bookKey),
+        [bibleKey, target.bookKey],
+    );
+    const { value: localeChapter } = useAppStateAsync(
+        toLocaleNumBible(bibleKey, target.chapter),
+        [bibleKey, target.chapter],
+    );
     const fontSize = useBibleViewFontSizeContext();
     return (
-        <span
-            className="title"
-            data-bible-key={bibleItem.bibleKey}
-            style={{ fontSize }}
-        >
-            {title}
-            <span className="pointer">
+        <span className="title" data-bible-key={bibleKey} style={{ fontSize }}>
+            <span
+                className="pointer"
+                onClick={() => {
+                    console.log(target.bookKey);
+                }}
+            >
+                {book}
+            </span>{' '}
+            <span
+                className="pointer"
+                onClick={() => {
+                    console.log(target.chapter);
+                }}
+            >
+                {localeChapter}
+            </span>
+            {':'}
+            {title?.split(':')[1] ?? ''}{' '}
+            <span>
                 <i style={{ color: 'green' }} className="bi bi-pencil-fill" />
             </span>
         </span>

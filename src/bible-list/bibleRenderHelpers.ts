@@ -72,6 +72,11 @@ class BibleRenderHelper {
     toVerseTextListQueueKey(bibleVersesKey: string) {
         return `text > ${bibleVersesKey}`;
     }
+    async toLocaleTitle(bibleKey: string, bookKey: string) {
+        return (
+            (await keyToBook(bibleKey, bookKey)) || getKJVKeyValue()[bookKey]
+        );
+    }
     async toTitle(bibleKey: string, target: BibleTargetType) {
         const bibleVersesKey = bibleRenderHelper.toBibleVersesKey(
             bibleKey,
@@ -92,9 +97,7 @@ class BibleRenderHelper {
             const txtV = `${verseStartLocale}${
                 verseStart !== verseEnd ? '-' + verseEndLocale : ''
             }`;
-            const ensuredBookKey =
-                (await keyToBook(bibleKey, bookKey)) ||
-                getKJVKeyValue()[bookKey];
+            const ensuredBookKey = await this.toLocaleTitle(bibleKey, bookKey);
             const title = `${ensuredBookKey} ${chapterLocale}:${txtV}`;
             await titleCache.set(bibleVersesKey, title);
             return title;
