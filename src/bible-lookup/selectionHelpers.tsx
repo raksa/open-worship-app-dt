@@ -223,4 +223,6 @@ export function setBibleLookupInputFocus() {
         return;
     }
     inputElement.focus();
+    const length = inputElement.value.length;
+    inputElement.setSelectionRange(length, length);
 }

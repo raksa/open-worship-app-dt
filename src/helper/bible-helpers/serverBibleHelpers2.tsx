@@ -178,9 +178,9 @@ async function transformExtracted(
     if (verses === null) {
         return result;
     }
+    const verseCount = Object.keys(verses).length;
     result.chapter = chapterNum;
     result.guessingChapter = null;
-    const verseCount = Object.keys(verses).length;
     result.bibleItem = BibleItem.fromData(
         bibleKey,
         bookKey,

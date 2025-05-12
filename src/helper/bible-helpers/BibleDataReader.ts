@@ -72,7 +72,7 @@ export default class BibleDataReader {
                     });
                 }
                 const rawData = base64Decode(b64Data);
-                return JSON.parse(rawData);
+                return JSON.parse(rawData) as BibleInfoType;
             } catch (error: any) {
                 if (error.code !== 'ENOENT') {
                     handleError(error);
@@ -80,6 +80,7 @@ export default class BibleDataReader {
             } finally {
                 hideProgressBard(progressKey);
             }
+            return null;
         });
     }
     async toBiblePath(bibleKey: string) {

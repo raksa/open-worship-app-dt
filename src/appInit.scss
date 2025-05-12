@@ -335,4 +335,10 @@ body {
       }
     }
   }
+
+  .app-caught-hover {
+    &:hover {
+      text-shadow: 0 0 3px var(--bs-primary);
+    }
+  }
 }

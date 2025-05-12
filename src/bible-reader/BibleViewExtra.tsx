@@ -1,4 +1,4 @@
-import React, { createContext, use } from 'react';
+import React, { createContext, use, useMemo } from 'react';
 
 import BibleItem from '../bible-list/BibleItem';
 import { BibleSelectionMiniComp } from '../bible-lookup/BibleSelectionComp';
@@ -13,11 +13,20 @@ import { useBibleItemViewControllerContext } from './BibleItemViewController';
 import { useBibleItemContext } from './BibleItemContext';
 import { BIBLE_VERSE_TEXT_TITLE } from '../helper/helpers';
 import {
-    bibleRenderHelper,
+    BibleTargetType,
     CompiledVerseType,
 } from '../bible-list/bibleRenderHelpers';
 import { useAppStateAsync } from '../helper/debuggerHelpers';
-import { toLocaleNumBible } from '../helper/bible-helpers/serverBibleHelpers2';
+import { setBibleLookupInputFocus } from '../bible-lookup/selectionHelpers';
+import { showAppContextMenu } from '../context-menu/appContextMenuHelpers';
+import {
+    getBibleInfo,
+    getVerses,
+} from '../helper/bible-helpers/bibleInfoHelpers';
+import {
+    getKJVChapterCount,
+    getKJVKeyValue,
+} from '../helper/bible-helpers/serverBibleHelpers';
 
 export const BibleViewTitleMaterialContext = createContext<{
     titleElement: React.ReactNode;
@@ -149,40 +158,174 @@ export function BibleViewTitleComp({
     );
 }
 
+function chose<T>(
+    event: any,
+    currentKey: T,
+    keys: [T, string, string | undefined][],
+) {
+    return new Promise<T | null>((resolve) => {
+        showAppContextMenu(
+            event,
+            keys.map(([key, value1, value2]) => {
+                return {
+                    menuTitle: value1,
+                    title: value2,
+                    disabled: key === currentKey,
+                    onSelect: () => {
+                        resolve(key);
+                    },
+                };
+            }),
+        );
+    });
+}
+async function getBookList(bibleKey: string) {
+    const info = await getBibleInfo(bibleKey);
+    if (info === null) {
+        return null;
+    }
+    const bookKVList = info.books;
+    const booksAvailable = info.booksAvailable;
+    const kjvKeyValue = getKJVKeyValue();
+    const bookList = Object.entries(bookKVList)
+        .filter(([bookKey]) => {
+            return booksAvailable.includes(bookKey);
+        })
+        .map(([bookKey, book]) => {
+            return [bookKey, book, kjvKeyValue[bookKey]] as [
+                string,
+                string,
+                string,
+            ];
+        });
+    return bookList;
+}
+export function BibleViewTitleEditableComp({
+    bibleItem,
+    onTargetChange,
+}: Readonly<{
+    bibleItem: BibleItem;
+    onTargetChange?: (target: BibleTargetType) => void;
+}>) {
+    const { value: title } = useAppStateAsync(bibleItem.toTitle(), [bibleItem]);
+    const { target } = bibleItem;
+    const [book, localeChapter, localeVerses] = useMemo(() => {
+        if (!title) {
+            return [
+                target.bookKey,
+                target.chapter.toString(),
+                `${target.verseStart}-${target.verseEnd}`,
+            ];
+        }
+        const arr = title.split(' ');
+        return [arr[0], ...arr[1].split(':')];
+    }, [target, title]);
+    if (onTargetChange === undefined) {
+        return <span>{title}</span>;
+    }
+    const genEditor = (
+        text: string,
+        onClick: (event: any) => Promise<void>,
+    ) => {
+        return (
+            <span className="pointer app-caught-hover" onClick={onClick}>
+                {text}
+            </span>
+        );
+    };
+    const choseChapter = async (event: any, bookKey = target.bookKey) => {
+        const chapterCount = getKJVChapterCount(bookKey);
+        return await chose(
+            event,
+            target.chapter,
+            Array.from({ length: chapterCount }, (_, i) => {
+                return [i + 1, `${i + 1}`, `${i + 1}`];
+            }),
+        );
+    };
+    const choseVerses = async (
+        event: any,
+        bookKey = target.bookKey,
+        chapter = target.chapter,
+    ) => {
+        const verses = await getVerses(bibleItem.bibleKey, bookKey, chapter);
+        if (verses === null) {
+            return null;
+        }
+        const verseCount = Object.keys(verses).length;
+        return await chose(
+            event,
+            target.verseStart,
+            Array.from({ length: verseCount }, (_, i) => {
+                return [i + 1, `${i + 1}`, `${i + 1}`];
+            }),
+        );
+    };
+    return (
+        <span>
+            {genEditor(book, async (event) => {
+                const bookKVList = await getBookList(bibleItem.bibleKey);
+                if (bookKVList === null) {
+                    return;
+                }
+                const newBook = await chose(event, target.bookKey, bookKVList);
+                if (newBook === null) {
+                    return;
+                }
+                const newChapter = await choseChapter(event, newBook);
+                if (newChapter === null) {
+                    return;
+                }
+                const newVerses = await choseVerses(event, newBook, newChapter);
+                console.log(newBook, newChapter, newVerses);
+            })}{' '}
+            {genEditor(localeChapter, async (event) => {
+                const newChapter = await choseChapter(event);
+                if (newChapter === null) {
+                    return;
+                }
+                const newVerses = await choseVerses(
+                    event,
+                    target.bookKey,
+                    newChapter,
+                );
+                console.log(target.bookKey, newChapter, newVerses);
+            })}
+            {':'}
+            {genEditor(localeVerses, async (event) => {
+                const newVerses = await choseVerses(
+                    event,
+                    target.bookKey,
+                    target.chapter,
+                );
+                console.log(target.bookKey, target.chapter, newVerses);
+            })}
+        </span>
+    );
+}
+
 export function BibleViewTitleEditingComp() {
     const bibleItem = useBibleItemContext();
-    const { bibleKey, target } = bibleItem;
-    const { value: title } = useAppStateAsync(bibleItem.toTitle(), [bibleItem]);
-    const { value: book } = useAppStateAsync(
-        bibleRenderHelper.toLocaleTitle(bibleKey, target.bookKey),
-        [bibleKey, target.bookKey],
-    );
-    const { value: localeChapter } = useAppStateAsync(
-        toLocaleNumBible(bibleKey, target.chapter),
-        [bibleKey, target.chapter],
-    );
     const fontSize = useBibleViewFontSizeContext();
     return (
-        <span className="title" data-bible-key={bibleKey} style={{ fontSize }}>
+        <span
+            className="title"
+            data-bible-key={bibleItem.bibleKey}
+            style={{ fontSize }}
+        >
+            <BibleViewTitleEditableComp
+                bibleItem={bibleItem}
+                onTargetChange={(newBibleTarget) => {
+                    console.log(newBibleTarget);
+                }}
+            />{' '}
             <span
                 className="pointer"
+                title='Hit "Escape" to force edit'
                 onClick={() => {
-                    console.log(target.bookKey);
+                    setBibleLookupInputFocus();
                 }}
             >
-                {book}
-            </span>{' '}
-            <span
-                className="pointer"
-                onClick={() => {
-                    console.log(target.chapter);
-                }}
-            >
-                {localeChapter}
-            </span>
-            {':'}
-            {title?.split(':')[1] ?? ''}{' '}
-            <span>
                 <i style={{ color: 'green' }} className="bi bi-pencil-fill" />
             </span>
         </span>
