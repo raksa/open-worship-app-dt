@@ -77,7 +77,7 @@ export default function InputHandlerComp({
                 className={`form-control ${INPUT_TEXT_CLASS}`}
                 value={inputText}
                 autoFocus
-                placeholder={placeholder??'not found'}
+                placeholder={placeholder ?? 'not found'}
                 onKeyUp={(event) => {
                     if (['ArrowDown', 'ArrowUp'].includes(event.key)) {
                         event.stopPropagation();
