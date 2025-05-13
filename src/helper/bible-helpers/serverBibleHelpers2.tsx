@@ -4,6 +4,7 @@ import { bookToKey, getBibleInfo, getVerses } from './bibleInfoHelpers';
 import {
     fromLocaleNum,
     fromStringNum,
+    getFontFamily,
     LocaleType,
     toLocaleNum,
     toStringNum,
@@ -46,6 +47,12 @@ export async function getBibleLocale(bibleKey: string) {
         return 'en' as LocaleType;
     }
     return info.locale;
+}
+
+export async function getBibleFontFamily(bibleKey: string) {
+    const locale = await getBibleLocale(bibleKey);
+    const fontFamily = await getFontFamily(locale);
+    return fontFamily;
 }
 
 // TODO: use LRUCache instead
@@ -138,6 +145,18 @@ export async function parseChapterFromGuessing(
     return chapterNum;
 }
 
+export async function getVersesCount(
+    bibleKey: string,
+    bookKey: string,
+    chapterNum: number,
+) {
+    const verses = await getVerses(bibleKey, bookKey, chapterNum);
+    if (verses === null) {
+        return null;
+    }
+    return Object.keys(verses).length;
+}
+
 async function transformExtracted(
     bibleKey: string,
     book: string,
@@ -174,11 +193,10 @@ async function transformExtracted(
     if (chapterNum === null) {
         return result;
     }
-    const verses = await getVerses(bibleKey, bookKey, chapterNum);
-    if (verses === null) {
+    const verseCount = await getVersesCount(bibleKey, bookKey, chapterNum);
+    if (verseCount === null) {
         return result;
     }
-    const verseCount = Object.keys(verses).length;
     result.chapter = chapterNum;
     result.guessingChapter = null;
     result.bibleItem = BibleItem.fromData(

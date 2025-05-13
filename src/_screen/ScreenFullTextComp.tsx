@@ -72,7 +72,8 @@ const styleText = `
 
 #full-text td .verse-number {
     -webkit-text-stroke: 0.01em greenyellow;
-    transform: scale(0.8) translateY(-0.3em);
+    color: rgba(172, 255, 47, 0.645);
+    transform: scale(0.7) translateY(-0.3em);
     opacity: 0.7;
 }
 

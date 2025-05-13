@@ -404,9 +404,7 @@ export async function fromLocaleNum(locale: LocaleType, localeNum: string) {
 
 export async function sanitizeFindingText(locale: LocaleType, text: string) {
     let langData = await getLangAsync(locale);
-    if (langData === null) {
-        langData = await getLangAsync(defaultLocale);
-    }
+    langData ??= await getLangAsync(defaultLocale);
     if (langData === null) {
         return text;
     }
@@ -427,4 +425,12 @@ export function quickEndWord(locale: LocaleType, text: string) {
         return text;
     }
     return langData.endWord(text);
+}
+
+export async function getFontFamily(locale: LocaleType) {
+    const langData = await getLangAsync(locale);
+    if (langData === null) {
+        return '';
+    }
+    return langData.fontFamily;
 }

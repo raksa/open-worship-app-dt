@@ -14,7 +14,7 @@ export type BibleItemRenderingType = {
     verses: BibleRenderVerseType[];
 };
 export type BibleItemRenderingLangType = BibleItemRenderingType & {
-    lang: LanguageDataType;
+    langData: LanguageDataType;
 };
 export type LyricRenderedType = {
     title: string;
@@ -33,11 +33,11 @@ export function FTBibleTable({
     isLineSync: boolean;
     versesCount: number;
 }>) {
-    const fontFaceList = bibleRenderingList.map(({ lang }) => {
-        return lang.genCss();
+    const fontFaceList = bibleRenderingList.map(({ langData }) => {
+        return langData.genCss();
     });
     const rendThHeader = (
-        { lang, bibleKey, title }: BibleItemRenderingLangType,
+        { langData, bibleKey, title }: BibleItemRenderingLangType,
         i: number,
     ) => {
         return (
@@ -45,7 +45,7 @@ export function FTBibleTable({
                 key={title}
                 className="header"
                 style={{
-                    fontFamily: lang.fontFamily,
+                    fontFamily: langData.fontFamily,
                 }}
             >
                 <div style={{ display: 'flex' }}>
@@ -63,13 +63,13 @@ export function FTBibleTable({
     const renderTrBody = (_: any, i: number) => {
         return (
             <tr key={i}>
-                {bibleRenderingList.map(({ lang, verses }, j) => {
+                {bibleRenderingList.map(({ langData, verses }, j) => {
                     const { num, text } = verses[i];
                     return (
                         <td
                             key={j}
                             style={{
-                                fontFamily: lang.fontFamily,
+                                fontFamily: langData.fontFamily,
                             }}
                         >
                             <span
@@ -87,7 +87,7 @@ export function FTBibleTable({
         );
     };
     const renderTdBody = (
-        { lang, verses }: BibleItemRenderingLangType,
+        { langData, verses }: BibleItemRenderingLangType,
         i: number,
     ) => {
         return (
@@ -99,7 +99,7 @@ export function FTBibleTable({
                             className="highlight"
                             title={BIBLE_VERSE_TEXT_TITLE}
                             style={{
-                                fontFamily: lang.fontFamily,
+                                fontFamily: langData.fontFamily,
                             }}
                             data-highlight={j}
                         >

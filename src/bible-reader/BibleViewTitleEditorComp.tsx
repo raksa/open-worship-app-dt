@@ -13,10 +13,10 @@ import {
     getKJVKeyValue,
 } from '../helper/bible-helpers/serverBibleHelpers';
 import {
-    getBibleLocale,
+    getBibleFontFamily,
+    getVersesCount,
     toLocaleNumBible,
 } from '../helper/bible-helpers/serverBibleHelpers2';
-import { getLangAsync } from '../lang';
 
 function chose<T>(
     event: any,
@@ -26,13 +26,13 @@ function chose<T>(
     itemStyle: React.CSSProperties = {},
 ) {
     return new Promise<T | null>((resolve) => {
-        showAppContextMenu(
+        const { promiseDone } = showAppContextMenu(
             event,
-            keys.map(([key, value1, value2]) => {
+            keys.map(([key, value1, value2], i) => {
                 return {
                     menuTitle: value1,
                     title: value2,
-                    disabled: !isAllowAll && key === currentKey,
+                    disabled: i === 0 || (!isAllowAll && key === currentKey),
                     onSelect: () => {
                         resolve(key);
                     },
@@ -40,6 +40,9 @@ function chose<T>(
                 };
             }),
         );
+        promiseDone.then(() => {
+            resolve(null);
+        });
     });
 }
 async function getBookList(bibleKey: string) {
@@ -55,11 +58,8 @@ async function getBookList(bibleKey: string) {
             return booksAvailable.includes(bookKey);
         })
         .map(([bookKey, book]) => {
-            return [bookKey, book, kjvKeyValue[bookKey]] as [
-                string,
-                string,
-                string,
-            ];
+            const title = `${kjvKeyValue[bookKey]}(${getKJVChapterCount(bookKey)})`;
+            return [bookKey, book, title] as [string, string, string];
         });
     return bookList;
 }
@@ -77,13 +77,7 @@ export default function BibleViewTitleEditorComp({
     const { value: title } = useAppStateAsync(bibleItem.toTitle(), [bibleItem]);
     const { bibleKey, target } = bibleItem;
     const { value: fontFamily } = useAppStateAsync(
-        new Promise<string>((resolve) => {
-            (async () => {
-                const locale = await getBibleLocale(bibleKey);
-                const langData = await getLangAsync(locale);
-                resolve(langData?.fontFamily ?? '');
-            })();
-        }),
+        getBibleFontFamily(bibleKey),
         [bibleKey],
     );
     const [book, localeChapter, localeVerseStart, localeVerseEnd] =
@@ -129,14 +123,13 @@ export default function BibleViewTitleEditorComp({
                 return getNumItem(bibleKey, i + 1);
             }),
         );
-        chapterList.unshift([target.chapter, 'Chapter', 'Chapter']);
+        chapterList.unshift([0, 'Chapter', 'Chapter']);
         return await chose(event, isAllowAll, target.chapter, chapterList, {
             fontFamily: fontFamily ?? '',
         });
     };
     const choseVerseStart = async (
         event: any,
-        isAllowAll: boolean,
         bookKey = target.bookKey,
         chapter = target.chapter,
     ) => {
@@ -144,20 +137,16 @@ export default function BibleViewTitleEditorComp({
         if (verses === null) {
             return null;
         }
-        const verseCount = Object.keys(verses).length;
+        const verseCount = await getVersesCount(bibleKey, bookKey, chapter);
         const verseList = await Promise.all(
-            Array.from({ length: verseCount }, (_, i) => {
+            Array.from({ length: verseCount ?? 0 }, (_, i) => {
                 return i + 1;
-            })
-                .filter((n) => {
-                    return isAllowAll || n <= target.verseEnd;
-                })
-                .map((n) => {
-                    return getNumItem(bibleKey, n);
-                }),
+            }).map((n) => {
+                return getNumItem(bibleKey, n);
+            }),
         );
-        verseList.unshift([target.verseStart, 'Verse Start', 'Verse Start']);
-        return await chose(event, isAllowAll, target.verseStart, verseList, {
+        verseList.unshift([0, 'Verse Start', 'Verse Start']);
+        return await chose(event, false, target.verseStart, verseList, {
             fontFamily: fontFamily ?? '',
         });
     };
@@ -172,9 +161,9 @@ export default function BibleViewTitleEditorComp({
         if (verses === null) {
             return null;
         }
-        const verseCount = Object.keys(verses).length;
+        const verseCount = await getVersesCount(bibleKey, bookKey, chapter);
         const verseList = await Promise.all(
-            Array.from({ length: verseCount }, (_, i) => {
+            Array.from({ length: verseCount ?? 0 }, (_, i) => {
                 return i + 1;
             })
                 .filter((n) => {
@@ -184,7 +173,7 @@ export default function BibleViewTitleEditorComp({
                     return getNumItem(bibleKey, n);
                 }),
         );
-        verseList.unshift([target.verseEnd, 'Verse End', 'Verse End']);
+        verseList.unshift([0, 'Verse End', 'Verse End']);
         return await chose(event, isAllowAll, target.verseEnd, verseList, {
             fontFamily: fontFamily ?? '',
         });
@@ -205,11 +194,12 @@ export default function BibleViewTitleEditorComp({
     return (
         <span>
             {genEditor(book, async (event) => {
+                // TODO: optimize
                 const bookKVList = await getBookList(bibleKey);
                 if (bookKVList === null) {
                     return;
                 }
-                bookKVList.unshift([target.bookKey, 'Book', 'Book']);
+                bookKVList.unshift(['', 'Book', 'Book']);
                 const newBook = await chose(
                     event,
                     false,
@@ -222,19 +212,32 @@ export default function BibleViewTitleEditorComp({
                 if (newBook === null) {
                     return;
                 }
+                let verseCount = await getVersesCount(bibleKey, newBook, 1);
+                applyTarget(newBook, 1, 1, verseCount ?? 1);
                 const newChapter = await choseChapter(event, true, newBook);
                 if (newChapter === null) {
                     return;
                 }
+                verseCount = await getVersesCount(
+                    bibleKey,
+                    newBook,
+                    newChapter,
+                );
+                applyTarget(newBook, newChapter, 1, verseCount ?? 1);
                 const newVerseStart = await choseVerseStart(
                     event,
-                    true,
                     newBook,
                     newChapter,
                 );
                 if (newVerseStart === null) {
                     return;
                 }
+                applyTarget(
+                    newBook,
+                    newChapter,
+                    newVerseStart,
+                    verseCount ?? newVerseStart,
+                );
                 const newVerseEnd = await choseVerseEnd(
                     event,
                     true,
@@ -252,15 +255,31 @@ export default function BibleViewTitleEditorComp({
                 if (newChapter === null) {
                     return;
                 }
+                let verseCount = await getVersesCount(
+                    bibleKey,
+                    target.bookKey,
+                    newChapter,
+                );
+                applyTarget(target.bookKey, newChapter, 1, verseCount ?? 1);
                 const newVerseStart = await choseVerseStart(
                     event,
-                    true,
                     target.bookKey,
                     newChapter,
                 );
                 if (newVerseStart === null) {
                     return;
                 }
+                verseCount = await getVersesCount(
+                    bibleKey,
+                    target.bookKey,
+                    newChapter,
+                );
+                applyTarget(
+                    target.bookKey,
+                    newChapter,
+                    newVerseStart,
+                    verseCount ?? newVerseStart,
+                );
                 const newVerseEnd = await choseVerseEnd(
                     event,
                     true,
@@ -282,13 +301,23 @@ export default function BibleViewTitleEditorComp({
             {genEditor(localeVerseStart, async (event) => {
                 const newVerseStart = await choseVerseStart(
                     event,
-                    false,
                     target.bookKey,
                     target.chapter,
                 );
                 if (newVerseStart === null) {
                     return;
                 }
+                const verseCount = await getVersesCount(
+                    bibleKey,
+                    target.bookKey,
+                    target.chapter,
+                );
+                applyTarget(
+                    target.bookKey,
+                    target.chapter,
+                    newVerseStart,
+                    verseCount ?? newVerseStart,
+                );
                 const newVerseEnd = await choseVerseEnd(
                     event,
                     true,

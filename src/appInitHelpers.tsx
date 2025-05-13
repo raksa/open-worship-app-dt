@@ -17,6 +17,7 @@ import {
     getLangAsync,
     defaultLocale,
     getCurrentLocale,
+    getFontFamily,
 } from './lang';
 import appProvider from './server/appProvider';
 import initCrypto from './_owa-crypto';
@@ -174,9 +175,9 @@ export async function main(children: React.ReactNode) {
     await initApp();
     onDomChange(applyFontFamily);
     const locale = getCurrentLocale();
-    const lang = await getLangAsync(locale);
-    if (lang !== null) {
-        document.body.style.fontFamily = lang.fontFamily;
+    const fontFamily = await getFontFamily(locale);
+    if (fontFamily) {
+        document.body.style.fontFamily = fontFamily;
     }
     const container = getRootElement<HTMLDivElement>();
     const root = createRoot(container);

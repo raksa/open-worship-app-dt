@@ -26,10 +26,10 @@ const fullTextScreenHelper = {
         }
         const bibleRenderingLangList = await Promise.all(
             bibleRenderingList.map(async (item) => {
-                const lang = (await getLangAsync(item.locale, true))!;
+                const langData = (await getLangAsync(item.locale, true))!;
                 return {
                     ...item,
-                    lang,
+                    langData,
                 };
             }),
         );

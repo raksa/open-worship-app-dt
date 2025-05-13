@@ -10,6 +10,7 @@ import {
     getAllLocalBibleInfoList,
 } from '../helper/bible-helpers/bibleDownloadHelpers';
 import { showAppAlert } from '../popup-widget/popupWidgetHelpers';
+import { getFontFamily, LocaleType } from '../lang';
 
 export async function showBibleOption(
     event: any,
@@ -30,11 +31,24 @@ export async function showBibleOption(
     });
     const localeBibleInfoMap: { [locale: string]: BibleMinimalInfoType[] } = {};
     localeBibleInfoList.forEach((bibleInfo) => {
-        if (localeBibleInfoMap[bibleInfo.locale] === undefined) {
-            localeBibleInfoMap[bibleInfo.locale] = [];
-        }
+        localeBibleInfoMap[bibleInfo.locale] ??= [];
         localeBibleInfoMap[bibleInfo.locale].push(bibleInfo);
     });
+    const locales = Object.keys(localeBibleInfoMap);
+    const localeFontFamilyMap = Object.fromEntries(
+        (
+            await Promise.all(
+                locales.map((locale) => {
+                    return getFontFamily(locale as LocaleType);
+                }),
+            )
+        ).map((fontFamily, index) => {
+            const locale = locales[index];
+            return [locale, fontFamily];
+        }),
+    );
+    console.log(localeFontFamilyMap);
+
     const menuItems: ContextMenuItemType[] = [];
     for (const locale in localeBibleInfoMap) {
         const bibleInfoList = localeBibleInfoMap[locale];
@@ -50,6 +64,9 @@ export async function showBibleOption(
                         title: bibleInfo.title,
                         onSelect: () => {
                             onSelect(bibleInfo.key);
+                        },
+                        style: {
+                            fontFamily: localeFontFamilyMap[locale],
                         },
                     };
                 }),
