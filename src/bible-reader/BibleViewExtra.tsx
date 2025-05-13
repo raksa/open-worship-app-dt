@@ -12,7 +12,10 @@ import ColorNoteInf from '../helper/ColorNoteInf';
 import { useBibleItemViewControllerContext } from './BibleItemViewController';
 import { useBibleItemContext } from './BibleItemContext';
 import { BIBLE_VERSE_TEXT_TITLE } from '../helper/helpers';
-import { CompiledVerseType } from '../bible-list/bibleRenderHelpers';
+import {
+    BibleTargetType,
+    CompiledVerseType,
+} from '../bible-list/bibleRenderHelpers';
 import { useAppStateAsync } from '../helper/debuggerHelpers';
 import { setBibleLookupInputFocus } from '../bible-lookup/selectionHelpers';
 import BibleViewTitleEditorComp from './BibleViewTitleEditorComp';
@@ -147,7 +150,11 @@ export function BibleViewTitleComp({
     );
 }
 
-export function BibleViewTitleEditingComp() {
+export function BibleViewTitleEditingComp({
+    onTargetChange,
+}: Readonly<{
+    onTargetChange: (bibleTarget: BibleTargetType) => void;
+}>) {
     const bibleItem = useBibleItemContext();
     const fontSize = useBibleViewFontSizeContext();
     return (
@@ -158,9 +165,7 @@ export function BibleViewTitleEditingComp() {
         >
             <BibleViewTitleEditorComp
                 bibleItem={bibleItem}
-                onTargetChange={(newBibleTarget) => {
-                    console.log(newBibleTarget);
-                }}
+                onTargetChange={onTargetChange}
             />{' '}
             <span
                 className="pointer app-caught-hover"

@@ -268,7 +268,10 @@ export default function BibleViewTitleEditorComp({
                     newChapter,
                     newVerseStart,
                 );
-                console.log(
+                if (newVerseEnd === null) {
+                    return;
+                }
+                applyTarget(
                     target.bookKey,
                     newChapter,
                     newVerseStart,

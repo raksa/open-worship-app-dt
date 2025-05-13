@@ -32,7 +32,18 @@ export default function BibleLookupBodyPreviewerComp() {
             return (
                 <BibleViewTitleMaterialContext
                     value={{
-                        titleElement: <BibleViewTitleEditingComp />,
+                        titleElement: (
+                            <BibleViewTitleEditingComp
+                                onTargetChange={(newBibleTarget) => {
+                                    const bibleItem =
+                                        viewController.selectedBibleItem;
+                                    bibleItem.target = newBibleTarget;
+                                    bibleItem.toTitle().then((title) => {
+                                        viewController.inputText = title;
+                                    });
+                                }}
+                            />
+                        ),
                     }}
                 >
                     <RenderBibleLookupBodyComp />
