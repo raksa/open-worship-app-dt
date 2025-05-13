@@ -21,6 +21,7 @@ export type ContextMenuItemType = {
     ) => OptionalPromise<void>;
     disabled?: boolean;
     otherChild?: ReactElement;
+    style?: React.CSSProperties;
 };
 export type OptionsType = {
     maxHeigh?: number;

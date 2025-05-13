@@ -62,6 +62,7 @@ function ContextMenuItemComp({
                 `${APP_CONTEXT_MENU_ITEM_CLASS} d-flex w-100 overflow-hidden` +
                 `${item.disabled ? ' disabled' : ''}`
             }
+            style={item.style ?? {}}
             title={item.title ?? item.menuTitle}
             onClick={(event) => {
                 if (item.disabled) {
