@@ -217,8 +217,12 @@ export function BibleViewTitleEditableComp({
                 `${target.verseStart}-${target.verseEnd}`,
             ];
         }
-        const arr = title.split(' ');
-        return [arr[0], ...arr[1].split(':')];
+        const arr = title.split(':');
+        const arr1 = arr[0].split(' ');
+        if (arr1.length > 2) {
+            return [`${arr1[0]} ${arr1[1]}`, arr1[2], arr[1]];
+        }
+        return [arr1[0], arr1[1], arr[1]];
     }, [target, title]);
     if (onTargetChange === undefined) {
         return <span>{title}</span>;
