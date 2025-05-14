@@ -19,6 +19,10 @@ import {
 import { useAppStateAsync } from '../helper/debuggerHelpers';
 import { setBibleLookupInputFocus } from '../bible-lookup/selectionHelpers';
 import BibleViewTitleEditorComp from './BibleViewTitleEditorComp';
+import {
+    getVersesCount,
+    toLocaleNumBible,
+} from '../helper/bible-helpers/serverBibleHelpers2';
 
 export const BibleViewTitleMaterialContext = createContext<{
     titleElement: React.ReactNode;
@@ -180,7 +184,7 @@ export function BibleViewTitleEditingComp({
     );
 }
 
-function RendVerseTextComp({
+function RenderVerseTextComp({
     bibleItem,
     verseInfo,
     index,
@@ -240,13 +244,77 @@ function RendVerseTextComp({
     );
 }
 
+function RenderRestVerseNumListComp({
+    afterVerse,
+    bibleItem,
+}: Readonly<{
+    afterVerse: number;
+    bibleItem: BibleItem;
+}>) {
+    const { value: verseNumList } = useAppStateAsync(
+        new Promise<[string, number][]>((resolve) => {
+            getVersesCount(
+                bibleItem.bibleKey,
+                bibleItem.target.bookKey,
+                bibleItem.target.chapter,
+            ).then(async (verseCount) => {
+                if (!verseCount) {
+                    resolve([]);
+                    return;
+                }
+                const numList: number[] = [];
+                for (let i = afterVerse + 1; i <= verseCount; i++) {
+                    numList.push(i);
+                }
+                const localeVerseList = await Promise.all(
+                    numList.map((verse) => {
+                        return toLocaleNumBible(bibleItem.bibleKey, verse);
+                    }),
+                );
+                resolve(
+                    localeVerseList.map((localeVerse, i) => {
+                        return [
+                            localeVerse ?? numList[i].toString(),
+                            numList[i],
+                        ];
+                    }),
+                );
+            });
+        }),
+        [
+            bibleItem.bibleKey,
+            bibleItem.target.bookKey,
+            bibleItem.target.chapter,
+        ],
+    );
+    if (!verseNumList) {
+        return null;
+    }
+    return verseNumList.map(([localeVerse, verse]) => {
+        return (
+            <div key={localeVerse} className="verse-number">
+                <div
+                    className="verse-number-rest pointer"
+                    data-bible-key={bibleItem.bibleKey}
+                    title={verse.toString()}
+                    onClick={() => {
+                        console.log(verse);
+                    }}
+                >
+                    {localeVerse}
+                </div>
+            </div>
+        );
+    });
+}
+
 export function BibleViewTextComp() {
     const bibleItem = useBibleItemContext();
     const fontSize = useBibleViewFontSizeContext();
-    const { value: result } = useAppStateAsync(bibleItem.toVerseTextList(), [
+    const { value: verseList } = useAppStateAsync(bibleItem.toVerseTextList(), [
         bibleItem,
     ]);
-    if (!result) {
+    if (!verseList) {
         return null;
     }
     return (
@@ -258,9 +326,9 @@ export function BibleViewTextComp() {
                 paddingBottom: '100px',
             }}
         >
-            {result.map((verseInfo, i) => {
+            {verseList.map((verseInfo, i) => {
                 return (
-                    <RendVerseTextComp
+                    <RenderVerseTextComp
                         key={verseInfo.localeVerse}
                         bibleItem={bibleItem}
                         verseInfo={verseInfo}
@@ -268,6 +336,10 @@ export function BibleViewTextComp() {
                     />
                 );
             })}
+            <RenderRestVerseNumListComp
+                afterVerse={bibleItem.target.verseEnd}
+                bibleItem={bibleItem}
+            />
         </div>
     );
 }

@@ -154,17 +154,17 @@ export default class BibleItem
         bibleItem: BibleItem,
         presenterBibleItems: BibleItem[],
     ) {
-        let list;
+        let bibleItemList;
         if (presenterBibleItems.length < 2) {
-            list = [bibleItem.clone()];
+            bibleItemList = [bibleItem.clone()];
         } else {
-            list = presenterBibleItems.map((presenterBibleItem) => {
+            bibleItemList = presenterBibleItems.map((presenterBibleItem) => {
                 const newItem = bibleItem.clone();
                 newItem.bibleKey = presenterBibleItem.bibleKey;
                 return newItem;
             });
         }
-        return list.filter((item) => item !== null);
+        return bibleItemList.filter((item) => item !== null);
     }
     static setBiblePresenterSetting(bibleItems: BibleItem[]) {
         const jsonData = bibleItems.map((bibleItem) => {

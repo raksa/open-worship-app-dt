@@ -47,10 +47,10 @@ export async function showBibleOption(
             return [locale, fontFamily];
         }),
     );
-    console.log(localeFontFamilyMap);
-
     const menuItems: ContextMenuItemType[] = [];
-    for (const locale in localeBibleInfoMap) {
+    for (const locale of Object.keys(localeBibleInfoMap).sort((a, b) =>
+        a.localeCompare(b),
+    )) {
         const bibleInfoList = localeBibleInfoMap[locale];
         menuItems.push(
             ...[
