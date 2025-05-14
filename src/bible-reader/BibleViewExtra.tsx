@@ -1,4 +1,4 @@
-import React, { createContext, use } from 'react';
+import React, { createContext, use, useMemo } from 'react';
 
 import BibleItem from '../bible-list/BibleItem';
 import { BibleSelectionMiniComp } from '../bible-lookup/BibleSelectionComp';
@@ -245,63 +245,45 @@ function RenderVerseTextComp({
 }
 
 function RenderRestVerseNumListComp({
-    afterVerse,
+    to,
+    from,
     bibleItem,
+    verseCount,
 }: Readonly<{
-    afterVerse: number;
+    to?: number;
+    from?: number;
     bibleItem: BibleItem;
+    verseCount: number;
 }>) {
-    const { value: verseNumList } = useAppStateAsync(
-        new Promise<[string, number][]>((resolve) => {
-            getVersesCount(
-                bibleItem.bibleKey,
-                bibleItem.target.bookKey,
-                bibleItem.target.chapter,
-            ).then(async (verseCount) => {
-                if (!verseCount) {
-                    resolve([]);
-                    return;
-                }
-                const numList: number[] = [];
-                for (let i = afterVerse + 1; i <= verseCount; i++) {
-                    numList.push(i);
-                }
-                const localeVerseList = await Promise.all(
-                    numList.map((verse) => {
-                        return toLocaleNumBible(bibleItem.bibleKey, verse);
-                    }),
-                );
-                resolve(
-                    localeVerseList.map((localeVerse, i) => {
-                        return [
-                            localeVerse ?? numList[i].toString(),
-                            numList[i],
-                        ];
-                    }),
-                );
-            });
-        }),
-        [
-            bibleItem.bibleKey,
-            bibleItem.target.bookKey,
-            bibleItem.target.chapter,
-        ],
+    from ??= 1;
+    to ??= verseCount;
+    const numList = useMemo(() => {
+        const list = [];
+        for (let i = from; i <= to; i++) {
+            list.push(i);
+        }
+        return list;
+    }, [from, to]);
+    const { value: localeVerseList } = useAppStateAsync(
+        Promise.all(
+            numList.map((verse) => {
+                return toLocaleNumBible(bibleItem.bibleKey, verse);
+            }),
+        ),
+        [bibleItem.bibleKey, numList],
     );
-    if (!verseNumList) {
+    if (!localeVerseList) {
         return null;
     }
-    return verseNumList.map(([localeVerse, verse]) => {
+    return numList.map((verse, i) => {
         return (
-            <div key={localeVerse} className="verse-number">
+            <div key={verse} className="verse-number">
                 <div
-                    className="verse-number-rest pointer"
+                    className="verse-number-rest"
                     data-bible-key={bibleItem.bibleKey}
                     title={verse.toString()}
-                    onClick={() => {
-                        console.log(verse);
-                    }}
                 >
-                    {localeVerse}
+                    {localeVerseList[i]}
                 </div>
             </div>
         );
@@ -310,11 +292,16 @@ function RenderRestVerseNumListComp({
 
 export function BibleViewTextComp() {
     const bibleItem = useBibleItemContext();
+    const { bibleKey, target } = bibleItem;
     const fontSize = useBibleViewFontSizeContext();
     const { value: verseList } = useAppStateAsync(bibleItem.toVerseTextList(), [
         bibleItem,
     ]);
-    if (!verseList) {
+    const { value: verseCount } = useAppStateAsync(
+        getVersesCount(bibleKey, target.bookKey, target.chapter),
+        [bibleKey, target.bookKey, target.chapter],
+    );
+    if (!verseList || !verseCount) {
         return null;
     }
     return (
@@ -326,6 +313,12 @@ export function BibleViewTextComp() {
                 paddingBottom: '100px',
             }}
         >
+            <RenderRestVerseNumListComp
+                to={target.verseStart - 1}
+                bibleItem={bibleItem}
+                verseCount={verseCount}
+            />
+            <br />
             {verseList.map((verseInfo, i) => {
                 return (
                     <RenderVerseTextComp
@@ -336,9 +329,11 @@ export function BibleViewTextComp() {
                     />
                 );
             })}
+            <br />
             <RenderRestVerseNumListComp
-                afterVerse={bibleItem.target.verseEnd}
+                from={target.verseEnd + 1}
                 bibleItem={bibleItem}
+                verseCount={verseCount}
             />
         </div>
     );

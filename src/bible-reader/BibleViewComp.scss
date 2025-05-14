@@ -46,9 +46,9 @@
       opacity: 0.7;
       &.verse-number-rest {
         opacity: 0.2;
-        &:hover {
-          opacity: 0.7;
-        }
+        pointer-events: none;
+        padding: 0;
+        line-height: 0;
       }
     }
   }
