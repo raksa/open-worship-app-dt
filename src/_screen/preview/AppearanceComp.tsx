@@ -1,30 +1,28 @@
 import { useState } from 'react';
 
 import { AppColorType } from '../../others/color/colorHelpers';
-import { useScreenFullTextManagerEvents } from '../managers/screenEventHelpers';
-import ScreenFullTextManager from '../managers/ScreenFullTextManager';
+import { useScreenBibleManagerEvents } from '../managers/screenEventHelpers';
+import ScreenBibleManager from '../managers/ScreenBibleManager';
 import ScreenVaryAppDocumentManager from '../managers/ScreenVaryAppDocumentManager';
 import AppRangeComp from '../../others/AppRangeComp';
 import { getAllScreenManagers } from '../managers/screenManagerHelpers';
 
 export default function AppearanceComp() {
-    const [color, setColor] = useState(
-        ScreenFullTextManager.textStyleTextColor,
-    );
+    const [color, setColor] = useState(ScreenBibleManager.textStyleTextColor);
     const [fontSize, setFontSize] = useState(
-        ScreenFullTextManager.textStyleTextFontSize,
+        ScreenBibleManager.textStyleTextFontSize,
     );
-    useScreenFullTextManagerEvents(['text-style'], undefined, () => {
-        setColor(ScreenFullTextManager.textStyleTextColor);
-        setFontSize(ScreenFullTextManager.textStyleTextFontSize);
+    useScreenBibleManagerEvents(['text-style'], undefined, () => {
+        setColor(ScreenBibleManager.textStyleTextColor);
+        setFontSize(ScreenBibleManager.textStyleTextFontSize);
     });
     const setColorToStyle = (newColor: AppColorType) => {
-        ScreenFullTextManager.applyTextStyle({
+        ScreenBibleManager.applyTextStyle({
             color: newColor,
         });
     };
     const setFontSizeToStyle = (newFontSize: number) => {
-        ScreenFullTextManager.applyTextStyle({
+        ScreenBibleManager.applyTextStyle({
             fontSize: newFontSize,
         });
     };
@@ -71,7 +69,7 @@ export default function AppearanceComp() {
                     defaultSize={{
                         size: fontSize,
                         min: 1,
-                        max: ScreenFullTextManager.maxTextStyleTextFontSize,
+                        max: ScreenBibleManager.maxTextStyleTextFontSize,
                         step: 1,
                     }}
                 />

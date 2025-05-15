@@ -9,7 +9,7 @@ import { showSimpleToast } from '../toast/toastHelpers';
 import { AnyObjectType } from '../helper/helpers';
 import { BibleTargetType } from './bibleRenderHelpers';
 import { genShowOnScreensContextMenu } from '../others/FileItemHandlerComp';
-import ScreenFullTextManager from '../_screen/managers/ScreenFullTextManager';
+import ScreenBibleManager from '../_screen/managers/ScreenBibleManager';
 
 export type BibleItemType = {
     id: number;
@@ -77,11 +77,7 @@ export async function openBibleItemContextMenu(
             },
         },
         ...genShowOnScreensContextMenu((event) => {
-            ScreenFullTextManager.handleBibleItemSelecting(
-                event,
-                bibleItem,
-                true,
-            );
+            ScreenBibleManager.handleBibleItemSelecting(event, bibleItem, true);
         }),
         {
             menuTitle: '(*T) ' + 'Move To',

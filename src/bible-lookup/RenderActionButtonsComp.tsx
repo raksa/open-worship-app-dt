@@ -4,7 +4,7 @@ import {
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import { addBibleItem, updateBibleItem } from '../bible-list/bibleHelpers';
-import ScreenFullTextManager from '../_screen/managers/ScreenFullTextManager';
+import ScreenBibleManager from '../_screen/managers/ScreenBibleManager';
 import { getPopupWindowTypeData } from '../app-modal/helpers';
 import BibleItem from '../bible-list/BibleItem';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
@@ -61,7 +61,7 @@ export default function RenderActionButtonsComp() {
                             data,
                         );
                         if (updatedBibleItem !== null) {
-                            ScreenFullTextManager.handleBibleItemSelecting(
+                            ScreenBibleManager.handleBibleItemSelecting(
                                 event,
                                 bibleItem,
                             );
@@ -92,7 +92,7 @@ async function addBibleItemAndPresent(
 ) {
     const addedBibleItem = await addBibleItem(bibleItem, onDone);
     if (addedBibleItem !== null) {
-        ScreenFullTextManager.handleBibleItemSelecting(event, addedBibleItem);
+        ScreenBibleManager.handleBibleItemSelecting(event, addedBibleItem);
     } else {
         showAddingBibleItemFail();
     }
@@ -155,7 +155,7 @@ export function genFoundBibleItemContextMenu(
                   {
                       menuTitle: 'Show bible item',
                       onSelect: (event: any) => {
-                          ScreenFullTextManager.handleBibleItemSelecting(
+                          ScreenBibleManager.handleBibleItemSelecting(
                               event,
                               bibleItem,
                           );

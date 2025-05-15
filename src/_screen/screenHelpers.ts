@@ -7,10 +7,7 @@ import { isValidJson } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelpers';
 import { checkIsValidLocale } from '../lang';
 import { createMouseEvent } from '../context-menu/appContextMenuHelpers';
-import {
-    BibleItemRenderingType,
-    LyricRenderedType,
-} from './fullTextScreenComps';
+import { BibleItemRenderingType, LyricRenderedType } from './bibleScreenComps';
 import {
     ScreenTransitionEffectType,
     TargetType,
@@ -20,11 +17,11 @@ import { getValidOnScreen } from './managers/screenManagerBaseHelpers';
 import { VaryAppDocumentItemDataType } from '../app-document-list/appDocumentHelpers';
 import appProvider from '../server/appProvider';
 
-export const fullTextDataTypeList = ['bible-item', 'lyric'] as const;
-export type FullTextDataType = (typeof fullTextDataTypeList)[number];
-export type FullTextItemDataType = {
+export const bibleDataTypeList = ['bible-item', 'lyric'] as const;
+export type BibleDataType = (typeof bibleDataTypeList)[number];
+export type BibleItemDataType = {
     locale: string;
-    type: FullTextDataType;
+    type: BibleDataType;
     bibleItemData?: {
         renderedList: BibleItemRenderingType[];
         bibleItem: BibleItemType;
@@ -35,8 +32,8 @@ export type FullTextItemDataType = {
     scroll: number;
     selectedIndex: number | null;
 };
-export type FullTextListType = {
-    [key: string]: FullTextItemDataType;
+export type BibleListType = {
+    [key: string]: BibleItemDataType;
 };
 
 const _backgroundTypeList = ['color', 'image', 'video', 'sound'] as const;
@@ -278,7 +275,7 @@ const validateLyric = ({ renderedList }: any) => {
     );
 };
 
-export function getFullTextListOnScreenSetting(): FullTextListType {
+export function getBibleListOnScreenSetting(): BibleListType {
     const str = getSetting(screenManagerSettingNames.FULL_TEXT, '');
     try {
         if (!isValidJson(str, true)) {
@@ -287,7 +284,7 @@ export function getFullTextListOnScreenSetting(): FullTextListType {
         const json = JSON.parse(str);
         Object.values(json).forEach((item: any) => {
             if (
-                !fullTextDataTypeList.includes(item.type) ||
+                !bibleDataTypeList.includes(item.type) ||
                 (item.type === 'bible-item' &&
                     validateBible(item.bibleItemData)) ||
                 (item.type === 'lyric' && validateLyric(item.lyricData))

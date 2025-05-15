@@ -10,7 +10,7 @@ import {
 } from '../helper/dragHelpers';
 import ItemColorNoteComp from '../others/ItemColorNoteComp';
 import { BibleSelectionMiniComp } from '../bible-lookup/BibleSelectionComp';
-import ScreenFullTextManager from '../_screen/managers/ScreenFullTextManager';
+import ScreenBibleManager from '../_screen/managers/ScreenBibleManager';
 import { openBibleItemContextMenu } from './bibleItemHelpers';
 import { useShowBibleLookupContext } from '../others/commonButtons';
 import appProvider from '../server/appProvider';
@@ -116,7 +116,7 @@ export default function BibleItemRenderComp({
     };
     const handleDoubleClicking = (event: any) => {
         if (appProvider.isPagePresenter) {
-            ScreenFullTextManager.handleBibleItemSelecting(event, bibleItem);
+            ScreenBibleManager.handleBibleItemSelecting(event, bibleItem);
         } else if (appProvider.isPageReader) {
             const lookupViewController =
                 LookupBibleItemViewController.getInstance();

@@ -22,6 +22,11 @@ import {
     ScreenManagerBaseContext,
     useScreenManagerEvents,
 } from '../managers/screenManagerHooks';
+import BibleItemViewController, {
+    useBibleItemViewControllerContext,
+} from '../../bible-reader/BibleItemViewController';
+import { BibleItemDataType } from '../screenHelpers';
+import BibleItem from '../../bible-list/BibleItem';
 
 function openContextMenu(event: any) {
     showAppContextMenu(event, [
@@ -42,6 +47,55 @@ function openContextMenu(event: any) {
     ]);
 }
 
+function viewControllerAndScreenManagers(
+    screenManagers: ScreenManager[],
+    bibleItemViewController: BibleItemViewController,
+) {
+    bibleItemViewController.handleScreenBibleVersesHighlighting = (
+        kjvVerseKey: string,
+        isToTop: boolean,
+    ) => {
+        screenManagers.forEach(({ screenBibleManager }) => {
+            screenBibleManager.handleScreenVersesHighlighting(
+                kjvVerseKey,
+                isToTop,
+            );
+        });
+    };
+    screenManagers.forEach(({ screenBibleManager }) => {
+        screenBibleManager.applyBibleViewData = (
+            bibleData: BibleItemDataType | null,
+        ) => {
+            if (
+                bibleData?.bibleItemData?.bibleItem.target &&
+                bibleData.bibleItemData.renderedList.length > 0
+            ) {
+                bibleItemViewController.nestedBibleItems = [];
+                const { target } = bibleData.bibleItemData.bibleItem;
+                bibleData.bibleItemData.renderedList.forEach(({ bibleKey }) => {
+                    bibleItemViewController.appendBibleItem(
+                        BibleItem.fromJson({
+                            id: -1,
+                            bibleKey: bibleKey,
+                            target,
+                            metadata: {},
+                        }),
+                    );
+                });
+            }
+        };
+        screenBibleManager.handleBibleViewVersesHighlighting = (
+            kjvVerseKey: string,
+            isToTop: boolean,
+        ) => {
+            bibleItemViewController.handleVersesHighlighting(
+                kjvVerseKey,
+                isToTop,
+            );
+        };
+    });
+}
+
 ScreenManager.initReceiveScreenMessage();
 export default function MiniScreenComp() {
     const [isShowingTools, setIsShowingTools] = useStateSettingBoolean(
@@ -60,6 +114,9 @@ export default function MiniScreenComp() {
     };
     useScreenManagerEvents(['instance']);
     const screenManagers = getScreenManagersFromSetting();
+    const bibleItemViewController = useBibleItemViewControllerContext();
+    viewControllerAndScreenManagers(screenManagers, bibleItemViewController);
+
     const previewWidth = DEFAULT_PREVIEW_SIZE * previewScale;
     return (
         <div className="card w-100 h-100">

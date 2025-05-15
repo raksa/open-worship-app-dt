@@ -26,11 +26,11 @@ async function breakItem(bibleKey: string, bibleVerseKey: string) {
         metadata: {},
     });
     await bibleItem.toTitle();
-    const text = await bibleItem.toText();
+    const bibleText = await bibleItem.toText();
     return {
-        htmlText: text.substring(0, 150) + '...',
+        htmlText: bibleText.substring(0, 150) + '...',
         bibleItem,
-        fullText: text,
+        bibleText,
     };
 }
 
@@ -58,7 +58,7 @@ function RenderFoundItemComp({
             </div>
         );
     }
-    const { htmlText, bibleItem, fullText } = data;
+    const { htmlText, bibleItem, bibleText } = data;
     return (
         <div
             className="w-100 app-border-white-round my-2 p-2 pointer"
@@ -84,7 +84,7 @@ function RenderFoundItemComp({
                 {itemInfo.isLXXDSS ? 'LXXDSS ' : ''}
             </span>
             <span
-                title={fullText}
+                title={bibleText}
                 data-bible-key={bibleItem.bibleKey}
                 dangerouslySetInnerHTML={{
                     __html: htmlText,

@@ -29,15 +29,15 @@ export function openContextMenu(event: any, screenManager: ScreenManager) {
         selectedScreenIds.length === 1 &&
         selectedScreenIds.includes(screenManager.screenId);
     const isOne = screenManagers.length === 1;
-    const { screenFullTextManager } = screenManager;
-    const isShowingFT = !!screenFullTextManager.fullTextItemData;
-    const isLineSync = screenFullTextManager.isLineSync;
-    const extraMenuItems: ContextMenuItemType[] = isShowingFT
+    const { screenBibleManager } = screenManager;
+    const isShowingBible = !!screenBibleManager.bibleItemData;
+    const isLineSync = screenBibleManager.isLineSync;
+    const extraMenuItems: ContextMenuItemType[] = isShowingBible
         ? [
               {
                   menuTitle: `${isLineSync ? 'Unset' : 'Set'} Line Sync`,
                   onSelect() {
-                      screenFullTextManager.isLineSync = !isLineSync;
+                      screenBibleManager.isLineSync = !isLineSync;
                   },
               },
           ]

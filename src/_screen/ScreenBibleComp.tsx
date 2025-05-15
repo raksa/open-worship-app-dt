@@ -1,8 +1,8 @@
 import { useRef } from 'react';
 
 import { useAppEffect } from '../helper/debuggerHelpers';
-import { useScreenFullTextManagerEvents } from './managers/screenEventHelpers';
-import ScreenFullTextManager from './managers/ScreenFullTextManager';
+import { useScreenBibleManagerEvents } from './managers/screenEventHelpers';
+import ScreenBibleManager from './managers/ScreenBibleManager';
 import {
     useScreenManagerContext,
     useScreenManagerEvents,
@@ -108,17 +108,17 @@ const styleText = `
     }
 }`;
 
-export default function ScreenFullTextComp() {
+export default function ScreenBibleComp() {
     const screenManager = useScreenManagerContext();
     useScreenManagerEvents(['resize'], screenManager, () => {
-        screenManager.screenFullTextManager.render();
+        screenManager.screenBibleManager.render();
     });
-    useScreenFullTextManagerEvents(['text-style']);
+    useScreenBibleManagerEvents(['text-style']);
     const div = useRef<HTMLDivElement>(null);
-    const { screenFullTextManager } = screenManager;
+    const { screenBibleManager } = screenManager;
     useAppEffect(() => {
         if (div.current) {
-            screenFullTextManager.div = div.current;
+            screenBibleManager.div = div.current;
         }
     }, [div.current]);
     return (
@@ -126,13 +126,13 @@ export default function ScreenFullTextComp() {
             <style>{styleText}</style>
             <style>
                 {`#full-text th, #full-text td {
-                    ${ScreenFullTextManager.textStyleText}
+                    ${ScreenBibleManager.textStyleText}
                 }`}
             </style>
             <div
                 id="full-text"
                 ref={div}
-                style={screenFullTextManager.containerStyle}
+                style={screenBibleManager.containerStyle}
             />
         </>
     );

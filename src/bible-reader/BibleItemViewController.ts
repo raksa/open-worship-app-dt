@@ -254,7 +254,11 @@ export type MovingPositionType = keyof typeof movingPosition;
 const BIBLE_ITEMS_PREVIEW_SETTING = 'bible-items-preview';
 class BibleItemViewController extends EventHandler<UpdateEventType> {
     private readonly _settingNameSuffix: string;
-    setBibleVerseKey = (_: string) => {};
+    setBibleVerseKey = (_verseKey: string) => {};
+    handleScreenBibleVersesHighlighting = (
+        _verseKey: string,
+        _isToTop: boolean,
+    ) => {};
     constructor(settingNameSuffix: string) {
         super();
         this._settingNameSuffix = `-${settingNameSuffix}`;
@@ -350,7 +354,7 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
     }
 
     genBibleItemUniqueId() {
-        return new Date().getTime();
+        return new Date().getTime() + Math.floor(Math.random() * 1e6);
     }
 
     fireUpdateEvent() {
@@ -608,6 +612,14 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
             });
         });
     }
+    handleVersesHighlighting(kjvVerseKey: string, isToTop = false) {
+        const elements = document.querySelectorAll(
+            `.bible-view div[data-kjv-verse-key="${kjvVerseKey}"]`,
+        );
+        Array.from(elements).forEach((element: any) => {
+            this.handleVersesSelecting(element, isToTop, true);
+        });
+    }
     handleVersesSelecting(
         targetDom: HTMLDivElement,
         isToTop: boolean,
@@ -636,6 +648,8 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
         if (kjvBibleVerseKey === undefined) {
             return;
         }
+        this.handleScreenBibleVersesHighlighting(kjvBibleVerseKey, isToTop);
+
         const colorNote = this.getColorNote(bibleItem);
         if (!colorNote) {
             return;

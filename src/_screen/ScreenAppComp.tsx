@@ -2,7 +2,7 @@ import CloseButton from './ScreenCloseButtonComp';
 import ScreenBackgroundComp from './ScreenBackgroundComp';
 import ScreenSlideComp from './ScreenVaryAppDocumentComp';
 import ScreenAlertComp from './ScreenAlertComp';
-import ScreenFullTextComp from './ScreenFullTextComp';
+import ScreenBibleComp from './ScreenBibleComp';
 import { RendStyle } from './RenderTransitionEffectComp';
 import { createScreenManager } from './managers/screenManagerHelpers';
 import ScreenManager from './managers/ScreenManager';
@@ -40,7 +40,7 @@ export default function ScreenAppComp() {
             />
             <ScreenBackgroundComp />
             <ScreenSlideComp />
-            <ScreenFullTextComp />
+            <ScreenBibleComp />
             <ScreenAlertComp />
             <CloseButton />
         </ScreenManagerBaseContext>

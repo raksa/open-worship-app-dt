@@ -7,16 +7,15 @@ import {
 import BibleItem from '../bible-list/BibleItem';
 import {
     BibleItemRenderingType,
-    FTBibleTable,
-    LyricRenderedType,
-    FTLyricItem,
+    BibleBibleTable,
     BibleRenderVerseType,
-} from './fullTextScreenComps';
+} from './bibleScreenComps';
 import { getHTMLChild } from '../helper/helpers';
 import appProvider from '../server/appProvider';
 import { getLangAsync } from '../lang';
+import { bibleRenderHelper } from '../bible-list/bibleRenderHelpers';
 
-const fullTextScreenHelper = {
+const bibleScreenHelper = {
     async genHtmlFromFtBibleItem(
         bibleRenderingList: BibleItemRenderingType[],
         isLineSync: boolean,
@@ -35,7 +34,7 @@ const fullTextScreenHelper = {
         );
         const versesCount = bibleRenderingList[0].verses.length;
         const htmlString = ReactDOMServer.renderToStaticMarkup(
-            <FTBibleTable
+            <BibleBibleTable
                 bibleRenderingList={bibleRenderingLangList}
                 isLineSync={isLineSync}
                 versesCount={versesCount}
@@ -46,25 +45,6 @@ const fullTextScreenHelper = {
         return getHTMLChild<HTMLDivElement>(div, 'div');
     },
 
-    genHtmlFromFtLyric(
-        lyricRenderedList: LyricRenderedType[],
-        isLineSync: boolean,
-    ) {
-        if (lyricRenderedList.length === 0) {
-            return document.createElement('table');
-        }
-        const itemsCount = lyricRenderedList[0].items.length;
-        const htmlString = ReactDOMServer.renderToStaticMarkup(
-            <FTLyricItem
-                lyricRenderedList={lyricRenderedList}
-                isLineSync={isLineSync}
-                itemsCount={itemsCount}
-            />,
-        );
-        const div = document.createElement('div');
-        div.innerHTML = htmlString;
-        return getHTMLChild<HTMLTableElement>(div, 'table');
-    },
     removeClassName(parent: HTMLElement, className: string) {
         const targets = parent.querySelectorAll<HTMLSpanElement>(
             `span.${className}`,
@@ -181,10 +161,29 @@ const fullTextScreenHelper = {
                                     bibleItem.bibleKey,
                                     i,
                                 );
+                                const verseKey =
+                                    bibleRenderHelper.toBibleVersesKey(
+                                        bibleItem.bibleKey,
+                                        {
+                                            bookKey: bibleItem.target.bookKey,
+                                            chapter: bibleItem.target.chapter,
+                                            verseStart: i,
+                                            verseEnd: i,
+                                        },
+                                    );
+                                const kjvVerseKey =
+                                    bibleRenderHelper.toKJVBibleVersesKey({
+                                        bookKey: bibleItem.target.bookKey,
+                                        chapter: bibleItem.target.chapter,
+                                        verseStart: i,
+                                        verseEnd: i,
+                                    });
                                 if (verseNumb !== null) {
                                     verseList.push({
                                         num: verseNumb,
                                         text: verses[`${i}`],
+                                        verseKey,
+                                        kjvVerseKey,
                                     });
                                 }
                             }
@@ -203,4 +202,4 @@ const fullTextScreenHelper = {
     },
 };
 
-export default fullTextScreenHelper;
+export default bibleScreenHelper;

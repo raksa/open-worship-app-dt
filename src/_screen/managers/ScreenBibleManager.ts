@@ -10,18 +10,19 @@ import {
     isValidJson,
 } from '../../helper/helpers';
 import { getSetting, setSetting } from '../../helper/settingHelpers';
-import fullTextScreenHelper from '../fullTextScreenHelpers';
+import bibleScreenHelper from '../bibleScreenHelpers';
 import {
-    ScreenFTManagerEventType,
-    SCREEN_FT_SETTING_PREFIX,
-    renderScreenFullTextManager,
+    ScreenBibleManagerEventType,
+    SCREEN_BIBLE_SETTING_PREFIX,
+    renderScreenBibleManager,
     bibleItemJsonToFtData,
-} from '../screenFullTextHelpers';
+    onSelectIndex,
+} from '../screenBibleHelpers';
 import {
     BasicScreenMessageType,
-    FullTextItemDataType,
+    BibleItemDataType,
     genScreenMouseEvent,
-    getFullTextListOnScreenSetting,
+    getBibleListOnScreenSetting,
     ScreenMessageType,
 } from '../screenHelpers';
 import * as loggerHelpers from '../../helper/loggerHelpers';
@@ -36,22 +37,27 @@ import { applyAttachBackground } from './screenBackgroundHelpers';
 import { BibleItemType } from '../../bible-list/bibleItemHelpers';
 
 let textStyle: AnyObjectType = {};
-class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType> {
+class ScreenBibleManager extends ScreenEventHandler<ScreenBibleManagerEventType> {
     static readonly eventNamePrefix: string = 'screen-ft-m';
-    private _ftItemData: FullTextItemDataType | null = null;
+    private _ftItemData: BibleItemDataType | null = null;
     private _div: HTMLDivElement | null = null;
     private _syncScrollTimeout: any = null;
     private _divScrollListenerBind: (() => void) | null = null;
     public isToTop = false;
+    applyBibleViewData = (_bibleData: BibleItemDataType | null) => {};
+    handleBibleViewVersesHighlighting = (
+        _kjvVerseKey: string,
+        _isToTop: boolean,
+    ) => {};
 
     constructor(screenManagerBase: ScreenManagerBase) {
         super(screenManagerBase);
         if (appProvider.isPagePresenter) {
-            const allFTList = getFullTextListOnScreenSetting();
-            this._ftItemData = allFTList[this.key] ?? null;
+            const allBibleDataList = getBibleListOnScreenSetting();
+            this._ftItemData = allBibleDataList[this.key] ?? null;
 
             const str = getSetting(
-                `${SCREEN_FT_SETTING_PREFIX}-style-text`,
+                `${SCREEN_BIBLE_SETTING_PREFIX}-style-text`,
                 '',
             );
             try {
@@ -70,7 +76,7 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
     }
 
     get isShowing() {
-        return this.fullTextItemData !== null;
+        return this.bibleItemData !== null;
     }
 
     private _divScrollListener() {
@@ -82,16 +88,16 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
     }
 
     get isLineSync() {
-        const settingKey = `${SCREEN_FT_SETTING_PREFIX}-line-sync-${this.screenId}`;
+        const settingKey = `${SCREEN_BIBLE_SETTING_PREFIX}-line-sync-${this.screenId}`;
         return getSetting(settingKey) === 'true';
     }
 
     set isLineSync(isLineSync: boolean) {
         setSetting(
-            `${SCREEN_FT_SETTING_PREFIX}-line-sync-${this.screenId}`,
+            `${SCREEN_BIBLE_SETTING_PREFIX}-line-sync-${this.screenId}`,
             `${isLineSync}`,
         );
-        this.fullTextItemData = cloneJson(this.fullTextItemData);
+        this.bibleItemData = cloneJson(this.bibleItemData);
     }
 
     get div() {
@@ -104,28 +110,29 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
             if (event.ctrlKey) {
                 event.preventDefault();
                 const isUp = event.deltaY < 0;
-                ScreenFullTextManager.changeTextStyleTextFontSize(isUp);
+                ScreenBibleManager.changeTextStyleTextFontSize(isUp);
             }
         });
         this.registerScrollListener();
         this.render();
     }
 
-    get fullTextItemData() {
+    get bibleItemData() {
         return this._ftItemData;
     }
 
-    set fullTextItemData(ftItemData: FullTextItemDataType | null) {
-        this._ftItemData = ftItemData;
+    set bibleItemData(bibleItemData: BibleItemDataType | null) {
+        this._ftItemData = bibleItemData;
+        this.applyBibleViewData(bibleItemData);
         this.render();
         unlocking(`set-${screenManagerSettingNames.FULL_TEXT}`, () => {
-            const allFTList = getFullTextListOnScreenSetting();
-            if (ftItemData === null) {
-                delete allFTList[this.key];
+            const allBibleDataList = getBibleListOnScreenSetting();
+            if (bibleItemData === null) {
+                delete allBibleDataList[this.key];
             } else {
-                allFTList[this.key] = ftItemData;
+                allBibleDataList[this.key] = bibleItemData;
             }
-            const string = JSON.stringify(allFTList);
+            const string = JSON.stringify(allBibleDataList);
             setSetting(screenManagerSettingNames.FULL_TEXT, string);
         });
         this.sendSyncScreen();
@@ -148,9 +155,9 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
                 unlocking(
                     `set-meta-${screenManagerSettingNames.FULL_TEXT}`,
                     () => {
-                        const allFTList = getFullTextListOnScreenSetting();
-                        allFTList[this.key] = this._ftItemData as any;
-                        const string = JSON.stringify(allFTList);
+                        const allBibleDataList = getBibleListOnScreenSetting();
+                        allBibleDataList[this.key] = this._ftItemData as any;
+                        const string = JSON.stringify(allBibleDataList);
                         setSetting(screenManagerSettingNames.FULL_TEXT, string);
                     },
                 );
@@ -180,7 +187,7 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
     }
 
     get scroll() {
-        return this.fullTextItemData?.scroll ?? 0;
+        return this.bibleItemData?.scroll ?? 0;
     }
 
     set scroll(scroll: number) {
@@ -216,27 +223,27 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
 
     static receiveSyncScroll(message: ScreenMessageType) {
         const { data, screenId } = message;
-        const screenFTManager = this.getInstance(screenId);
-        if (screenFTManager === null) {
+        const screenBibleManager = this.getInstance(screenId);
+        if (screenBibleManager === null) {
             return;
         }
-        if (screenFTManager._syncScrollTimeout !== null) {
-            clearTimeout(screenFTManager._syncScrollTimeout);
+        if (screenBibleManager._syncScrollTimeout !== null) {
+            clearTimeout(screenBibleManager._syncScrollTimeout);
         }
-        screenFTManager.unregisterScrollListener();
+        screenBibleManager.unregisterScrollListener();
         const reRegisterScrollListener = () => {
-            if (screenFTManager._syncScrollTimeout !== null) {
-                clearTimeout(screenFTManager._syncScrollTimeout);
+            if (screenBibleManager._syncScrollTimeout !== null) {
+                clearTimeout(screenBibleManager._syncScrollTimeout);
             }
-            screenFTManager._syncScrollTimeout = null;
-            screenFTManager.registerScrollListener();
+            screenBibleManager._syncScrollTimeout = null;
+            screenBibleManager.registerScrollListener();
         };
-        screenFTManager._syncScrollTimeout = setTimeout(
+        screenBibleManager._syncScrollTimeout = setTimeout(
             reRegisterScrollListener,
             3e3,
         );
-        screenFTManager.scroll = data.scroll;
-        screenFTManager.renderScroll();
+        screenBibleManager.scroll = data.scroll;
+        screenBibleManager.renderScroll();
     }
 
     sendSyncSelectedIndex() {
@@ -254,32 +261,32 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
 
     static receiveSyncSelectedIndex(message: ScreenMessageType) {
         const { data, screenId } = message;
-        const screenFTManager = this.getInstance(screenId);
-        if (screenFTManager === null) {
+        const screenBibleManager = this.getInstance(screenId);
+        if (screenBibleManager === null) {
             return;
         }
-        screenFTManager.selectedIndex = data.selectedIndex;
+        screenBibleManager.selectedIndex = data.selectedIndex;
     }
 
     toSyncMessage(): BasicScreenMessageType {
         return {
             type: 'full-text',
-            data: this.fullTextItemData,
+            data: this.bibleItemData,
         };
     }
 
-    applyFullDataSrcWithSyncGroup(fullTextData: FullTextItemDataType | null) {
-        ScreenFullTextManager.enableSyncGroup(this.screenId);
-        this.fullTextItemData = fullTextData;
+    applyFullDataSrcWithSyncGroup(bibleData: BibleItemDataType | null) {
+        ScreenBibleManager.enableSyncGroup(this.screenId);
+        this.bibleItemData = bibleData;
     }
 
     receiveSyncScreen(message: ScreenMessageType) {
-        this.fullTextItemData = message.data;
+        this.bibleItemData = message.data;
     }
 
     fireUpdateEvent() {
         super.fireUpdateEvent();
-        ScreenFullTextManager.fireUpdateEvent();
+        ScreenBibleManager.fireUpdateEvent();
     }
 
     static readonly maxTextStyleTextFontSize = 200;
@@ -328,7 +335,7 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
     static set textStyle(style: AnyObjectType) {
         textStyle = style;
         const str = JSON.stringify(style);
-        setSetting(`${SCREEN_FT_SETTING_PREFIX}-style-text`, str);
+        setSetting(`${SCREEN_BIBLE_SETTING_PREFIX}-style-text`, str);
         this.sendSynTextStyle();
         this.addPropEvent('text-style');
     }
@@ -361,11 +368,11 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
         filePath: string | undefined,
     ) {
         const bibleKeys = this.getRenderedBibleKeys();
-        const newFtItemData = await bibleItemJsonToFtData(
+        const newBibleItemData = await bibleItemJsonToFtData(
             bibleItemJson,
             bibleKeys,
         );
-        this.applyFullDataSrcWithSyncGroup(newFtItemData);
+        this.applyFullDataSrcWithSyncGroup(newBibleItemData);
         if (filePath !== undefined) {
             applyAttachBackground(
                 this.screenId,
@@ -387,16 +394,13 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
         );
         const filePath = bibleItem.filePath;
         screenIds.forEach(async (screenId) => {
-            const screenFullTextManager = this.getInstance(screenId);
-            screenFullTextManager.applyNewBibleItemJson(
-                bibleItemJson,
-                filePath,
-            );
+            const screenBibleManager = this.getInstance(screenId);
+            screenBibleManager.applyNewBibleItemJson(bibleItemJson, filePath);
         });
     }
 
     render() {
-        renderScreenFullTextManager(this);
+        renderScreenBibleManager(this);
     }
 
     renderScroll(isImmediate?: boolean) {
@@ -414,24 +418,47 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
         });
     }
 
+    handleScreenVersesHighlighting(kjvVerseKey: string, isToTop: boolean) {
+        let index = -1;
+        this.bibleItemData?.bibleItemData?.renderedList[0]?.verses.forEach(
+            (verse, i) => {
+                if (verse.kjvVerseKey === kjvVerseKey) {
+                    index = i;
+                }
+            },
+        );
+        if (index === -1) {
+            return;
+        }
+        onSelectIndex(this, index, isToTop);
+    }
+
     renderSelectedIndex() {
         if (this.div === null) {
             return;
         }
-        fullTextScreenHelper.removeClassName(this.div, 'selected');
+        bibleScreenHelper.removeClassName(this.div, 'selected');
         const isToTop = this.isToTop;
         this.isToTop = false;
-        const selectedBlocks = fullTextScreenHelper.resetClassName(
+        const selectedBlocks = bibleScreenHelper.resetClassName(
             this.div,
             'selected',
             true,
             `${this.selectedIndex}`,
         );
-        selectedBlocks.forEach((block) => {
+        selectedBlocks.forEach((block: any) => {
             if (isToTop) {
                 bringDomToTopView(block);
+                this.handleBibleViewVersesHighlighting(
+                    block.dataset.kjvVerseKey,
+                    true,
+                );
             } else {
                 bringDomToNearestView(block);
+                this.handleBibleViewVersesHighlighting(
+                    block.dataset.kjvVerseKey,
+                    false,
+                );
             }
         });
     }
@@ -450,8 +477,8 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
 
     static receiveSyncScreen(message: ScreenMessageType) {
         const { screenId } = message;
-        const screenFullTextManager = this.getInstance(screenId);
-        screenFullTextManager.receiveSyncScreen(message);
+        const screenBibleManager = this.getInstance(screenId);
+        screenBibleManager.receiveSyncScreen(message);
     }
 
     clear() {
@@ -459,8 +486,8 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
     }
 
     static getInstance(screenId: number) {
-        return super.getInstanceBase<ScreenFullTextManager>(screenId);
+        return super.getInstanceBase<ScreenBibleManager>(screenId);
     }
 }
 
-export default ScreenFullTextManager;
+export default ScreenBibleManager;

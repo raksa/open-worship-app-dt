@@ -2,7 +2,7 @@ import { DragTypeEnum, DroppedDataType } from '../../helper/DragInf';
 import { log } from '../../helper/loggerHelpers';
 import ScreenAlertManager from './ScreenAlertManager';
 import ScreenBackgroundManager from './ScreenBackgroundManager';
-import ScreenFullTextManager from './ScreenFullTextManager';
+import ScreenBibleManager from './ScreenBibleManager';
 import ScreenVaryAppDocumentManager from './ScreenVaryAppDocumentManager';
 import ScreenEffectManager from './ScreenEffectManager';
 import {
@@ -19,7 +19,7 @@ import appProvider from '../../server/appProvider';
 export default class ScreenManager extends ScreenManagerBase {
     readonly screenBackgroundManager: ScreenBackgroundManager;
     readonly screenVaryAppDocumentManager: ScreenVaryAppDocumentManager;
-    readonly screenFullTextManager: ScreenFullTextManager;
+    readonly screenBibleManager: ScreenBibleManager;
     readonly screenAlertManager: ScreenAlertManager;
     readonly varyAppDocumentEffectManager: ScreenEffectManager;
     readonly backgroundEffectManager: ScreenEffectManager;
@@ -43,7 +43,7 @@ export default class ScreenManager extends ScreenManagerBase {
             this,
             this.varyAppDocumentEffectManager,
         );
-        this.screenFullTextManager = new ScreenFullTextManager(this);
+        this.screenBibleManager = new ScreenBibleManager(this);
         this.screenAlertManager = new ScreenAlertManager(this);
         this.registeredEventListeners = [];
         this.registeredEventListeners.push(
@@ -51,18 +51,15 @@ export default class ScreenManager extends ScreenManagerBase {
                 ['update'],
                 () => {
                     if (this.screenVaryAppDocumentManager.isShowing) {
-                        this.screenFullTextManager.clear();
+                        this.screenBibleManager.clear();
                     }
                 },
             ),
-            ...this.screenFullTextManager.registerEventListener(
-                ['update'],
-                () => {
-                    if (this.screenFullTextManager.isShowing) {
-                        this.screenVaryAppDocumentManager.clear();
-                    }
-                },
-            ),
+            ...this.screenBibleManager.registerEventListener(['update'], () => {
+                if (this.screenBibleManager.isShowing) {
+                    this.screenVaryAppDocumentManager.clear();
+                }
+            }),
         );
     }
 
@@ -84,17 +81,17 @@ export default class ScreenManager extends ScreenManagerBase {
     }
 
     sendSyncScreen() {
-        ScreenFullTextManager.sendSynTextStyle();
+        ScreenBibleManager.sendSynTextStyle();
         this.backgroundEffectManager.sendSyncScreen();
         this.screenBackgroundManager.sendSyncScreen();
         this.screenAlertManager.sendSyncScreen();
         this.screenVaryAppDocumentManager.sendSyncScreen();
         this.varyAppDocumentEffectManager.sendSyncScreen();
-        this.screenFullTextManager.sendSyncScreen();
+        this.screenBibleManager.sendSyncScreen();
     }
 
     clear() {
-        this.screenFullTextManager.clear();
+        this.screenBibleManager.clear();
         this.screenVaryAppDocumentManager.clear();
         this.screenAlertManager.clear();
         this.screenBackgroundManager.clear();
@@ -112,7 +109,7 @@ export default class ScreenManager extends ScreenManagerBase {
         this.backgroundEffectManager.delete();
         this.screenBackgroundManager.delete();
         this.screenVaryAppDocumentManager.delete();
-        this.screenFullTextManager.delete();
+        this.screenBibleManager.delete();
         this.screenAlertManager.delete();
         deleteScreenManagerBaseCache(this.key);
         await saveScreenManagersSetting(this.screenId);
@@ -139,7 +136,7 @@ export default class ScreenManager extends ScreenManagerBase {
                 droppedData.type,
             )
         ) {
-            this.screenFullTextManager.receiveScreenDropped(droppedData);
+            this.screenBibleManager.receiveScreenDropped(droppedData);
         } else {
             log(droppedData);
         }
@@ -152,7 +149,7 @@ export default class ScreenManager extends ScreenManagerBase {
         } else if (type === 'vary-app-document') {
             return ScreenVaryAppDocumentManager;
         } else if (type === 'full-text') {
-            return ScreenFullTextManager;
+            return ScreenBibleManager;
         } else if (type === 'alert') {
             return ScreenAlertManager;
         }
@@ -176,11 +173,11 @@ export default class ScreenManager extends ScreenManagerBase {
         } else if (type === 'effect') {
             ScreenEffectManager.receiveSyncScreen(message);
         } else if (type === 'full-text-scroll') {
-            ScreenFullTextManager.receiveSyncScroll(message);
+            ScreenBibleManager.receiveSyncScroll(message);
         } else if (type === 'full-text-selected-index') {
-            ScreenFullTextManager.receiveSyncSelectedIndex(message);
+            ScreenBibleManager.receiveSyncSelectedIndex(message);
         } else if (type === 'full-text-text-style') {
-            ScreenFullTextManager.receiveSyncTextStyle(message);
+            ScreenBibleManager.receiveSyncTextStyle(message);
         } else {
             log(message);
         }
