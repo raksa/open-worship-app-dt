@@ -11,11 +11,11 @@ import {
     useSplitBibleItemRenderer,
 } from '../bible-reader/readBibleHelpers';
 import {
-    BibleViewTitleComp,
     BibleViewTitleEditingComp,
     BibleViewTitleMaterialContext,
 } from '../bible-reader/BibleViewExtra';
 import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
+import { setBibleLookupInputFocus } from './selectionHelpers';
 
 const LazyBiblePreviewerRenderComp = lazy(() => {
     return import('../bible-reader/BiblePreviewerRenderComp');
@@ -42,7 +42,20 @@ export default function BibleLookupBodyPreviewerComp() {
                                         viewController.inputText = title;
                                     });
                                 }}
-                            />
+                            >
+                                <span
+                                    className="pointer app-caught-hover"
+                                    title='Hit "Escape" to force edit'
+                                    onClick={() => {
+                                        setBibleLookupInputFocus();
+                                    }}
+                                >
+                                    <i
+                                        style={{ color: 'green' }}
+                                        className="bi bi-pencil-fill"
+                                    />
+                                </span>
+                            </BibleViewTitleEditingComp>
                         ),
                     }}
                 >
@@ -54,14 +67,31 @@ export default function BibleLookupBodyPreviewerComp() {
             <BibleViewTitleMaterialContext
                 value={{
                     titleElement: (
-                        <BibleViewTitleComp
-                            onDBClick={() => {
-                                viewController.editBibleItem(bibleItem);
+                        <BibleViewTitleEditingComp
+                            onTargetChange={(newBibleTarget) => {
+                                bibleItem.target = newBibleTarget;
+                                viewController.changeBibleItem(
+                                    bibleItem,
+                                    bibleItem,
+                                );
                             }}
-                            onPencilClick={() => {
-                                viewController.editBibleItem(bibleItem);
-                            }}
-                        />
+                        >
+                            <span
+                                className={
+                                    'pointer app-low-hover-visible ' +
+                                    'app-caught-hover'
+                                }
+                                title='Hit "Escape" to force edit'
+                                onClick={() => {
+                                    viewController.editBibleItem(bibleItem);
+                                }}
+                            >
+                                <i
+                                    style={{ color: 'green' }}
+                                    className="bi bi-pencil"
+                                />
+                            </span>
+                        </BibleViewTitleEditingComp>
                     ),
                 }}
             >

@@ -9,7 +9,7 @@ import SlideEditHandlerComp from './app-document-presenter/SlideEditHandlerComp'
 import BibleViewComp from './bible-reader/BibleViewComp';
 import BibleItem from './bible-list/BibleItem';
 import {
-    BibleViewTitleComp,
+    BibleViewTitleEditingComp,
     BibleViewTitleMaterialContext,
 } from './bible-reader/BibleViewExtra';
 
@@ -30,7 +30,17 @@ export default function AppPresenterComp() {
             return (
                 <BibleViewTitleMaterialContext
                     value={{
-                        titleElement: <BibleViewTitleComp />,
+                        titleElement: (
+                            <BibleViewTitleEditingComp
+                                onTargetChange={(newBibleTarget) => {
+                                    bibleItem.target = newBibleTarget;
+                                    newViewController.changeBibleItem(
+                                        bibleItem,
+                                        bibleItem,
+                                    );
+                                }}
+                            />
+                        ),
                     }}
                 >
                     <BibleViewComp bibleItem={bibleItem} />

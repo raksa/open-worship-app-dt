@@ -17,7 +17,6 @@ import {
     CompiledVerseType,
 } from '../bible-list/bibleRenderHelpers';
 import { useAppStateAsync } from '../helper/debuggerHelpers';
-import { setBibleLookupInputFocus } from '../bible-lookup/selectionHelpers';
 import BibleViewTitleEditorComp from './BibleViewTitleEditorComp';
 import {
     getVersesCount,
@@ -156,8 +155,10 @@ export function BibleViewTitleComp({
 
 export function BibleViewTitleEditingComp({
     onTargetChange,
+    children,
 }: Readonly<{
     onTargetChange: (bibleTarget: BibleTargetType) => void;
+    children?: React.ReactNode;
 }>) {
     const bibleItem = useBibleItemContext();
     const fontSize = useBibleViewFontSizeContext();
@@ -171,15 +172,7 @@ export function BibleViewTitleEditingComp({
                 bibleItem={bibleItem}
                 onTargetChange={onTargetChange}
             />{' '}
-            <span
-                className="pointer app-caught-hover"
-                title='Hit "Escape" to force edit'
-                onClick={() => {
-                    setBibleLookupInputFocus();
-                }}
-            >
-                <i style={{ color: 'green' }} className="bi bi-pencil-fill" />
-            </span>
+            {children}
         </span>
     );
 }
@@ -255,15 +248,15 @@ function RenderRestVerseNumListComp({
     bibleItem: BibleItem;
     verseCount: number;
 }>) {
-    from ??= 1;
-    to ??= verseCount;
+    const actualFrom = from ?? 1;
+    const actualTo = to ?? verseCount;
     const numList = useMemo(() => {
         const list = [];
-        for (let i = from; i <= to; i++) {
+        for (let i = actualFrom; i <= actualTo; i++) {
             list.push(i);
         }
         return list;
-    }, [from, to]);
+    }, [actualFrom, actualTo]);
     const { value: localeVerseList } = useAppStateAsync(
         Promise.all(
             numList.map((verse) => {
@@ -272,22 +265,28 @@ function RenderRestVerseNumListComp({
         ),
         [bibleItem.bibleKey, numList],
     );
-    if (!localeVerseList) {
+    if (!localeVerseList || localeVerseList.length === 0) {
         return null;
     }
-    return numList.map((verse, i) => {
-        return (
-            <div key={verse} className="verse-number">
-                <div
-                    className="verse-number-rest"
-                    data-bible-key={bibleItem.bibleKey}
-                    title={verse.toString()}
-                >
-                    {localeVerseList[i]}
-                </div>
-            </div>
-        );
-    });
+    return (
+        <>
+            {from !== undefined ? <br /> : null}
+            {numList.map((verse, i) => {
+                return (
+                    <div key={verse} className="verse-number">
+                        <div
+                            className="verse-number-rest"
+                            data-bible-key={bibleItem.bibleKey}
+                            title={verse.toString()}
+                        >
+                            {localeVerseList[i]}
+                        </div>
+                    </div>
+                );
+            })}
+            {top !== undefined ? <br /> : null}
+        </>
+    );
 }
 
 export function BibleViewTextComp() {
@@ -318,7 +317,6 @@ export function BibleViewTextComp() {
                 bibleItem={bibleItem}
                 verseCount={verseCount}
             />
-            <br />
             {verseList.map((verseInfo, i) => {
                 return (
                     <RenderVerseTextComp
@@ -329,7 +327,6 @@ export function BibleViewTextComp() {
                     />
                 );
             })}
-            <br />
             <RenderRestVerseNumListComp
                 from={target.verseEnd + 1}
                 bibleItem={bibleItem}
