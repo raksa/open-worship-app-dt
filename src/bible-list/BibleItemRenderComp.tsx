@@ -19,7 +19,7 @@ import { useMemo } from 'react';
 import { changeDragEventStyle } from '../helper/helpers';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
-import { useAppStateAsync } from '../helper/debuggerHelpers';
+import BibleViewTitleEditorComp from '../bible-reader/BibleViewTitleEditorComp';
 
 function genAttachBackgroundComponent(
     droppedData: DroppedDataType | null | undefined,
@@ -65,6 +65,12 @@ function genAttachBackgroundComponent(
     return element;
 }
 
+async function getBible(bibleItem: BibleItem) {
+    return bibleItem.filePath
+        ? await Bible.fromFilePath(bibleItem.filePath)
+        : null;
+}
+
 export default function BibleItemRenderComp({
     index,
     bibleItem,
@@ -78,12 +84,9 @@ export default function BibleItemRenderComp({
 }>) {
     const showBibleLookupPopup = useShowBibleLookupContext();
     useFileSourceRefreshEvents(['select'], filePath);
-    const { value: title } = useAppStateAsync(bibleItem.toTitle(), [bibleItem]);
     const changeBible = async (newBibleKey: string) => {
-        const bible = bibleItem.filePath
-            ? await Bible.fromFilePath(bibleItem.filePath)
-            : null;
-        if (!bible) {
+        const bible = await getBible(bibleItem);
+        if (bible === null) {
             return;
         }
         bibleItem.bibleKey = newBibleKey;
@@ -96,8 +99,31 @@ export default function BibleItemRenderComp({
     const attachedBackgroundElement = useMemo(() => {
         return genAttachBackgroundComponent(attachedBackgroundData);
     }, [attachedBackgroundData]);
+    const handleOpening = (event: any) => {
+        if (appProvider.isPagePresenter) {
+            ScreenBibleManager.handleBibleItemSelecting(event, bibleItem);
+        } else if (appProvider.isPageReader) {
+            const lookupViewController =
+                LookupBibleItemViewController.getInstance();
+            if (event.shiftKey) {
+                lookupViewController.addBibleItemRight(
+                    lookupViewController.selectedBibleItem,
+                    bibleItem,
+                );
+            } else {
+                lookupViewController.setLookupContentFromBibleItem(bibleItem);
+            }
+        }
+    };
     const handleContextMenuOpening = (event: React.MouseEvent<any>) => {
-        const menuItems: ContextMenuItemType[] = [];
+        const menuItems: ContextMenuItemType[] = [
+            {
+                menuTitle: '(*T) Open',
+                onSelect: (event) => {
+                    handleOpening(event);
+                },
+            },
+        ];
         if (attachedBackgroundData) {
             menuItems.push(
                 ...genRemovingAttachedBackgroundMenu(
@@ -114,22 +140,6 @@ export default function BibleItemRenderComp({
             menuItems,
         );
     };
-    const handleDoubleClicking = (event: any) => {
-        if (appProvider.isPagePresenter) {
-            ScreenBibleManager.handleBibleItemSelecting(event, bibleItem);
-        } else if (appProvider.isPageReader) {
-            const lookupViewController =
-                LookupBibleItemViewController.getInstance();
-            if (event.shiftKey) {
-                lookupViewController.addBibleItemRight(
-                    lookupViewController.selectedBibleItem,
-                    bibleItem,
-                );
-            } else {
-                lookupViewController.setLookupContentFromBibleItem(bibleItem);
-            }
-        }
-    };
 
     if (bibleItem.isError) {
         return <ItemReadErrorComp onContextMenu={handleContextMenuOpening} />;
@@ -138,7 +148,7 @@ export default function BibleItemRenderComp({
     return (
         <li
             className="list-group-item item pointer px-1"
-            title={title ?? 'not found'}
+            title="Double click to view"
             data-index={index + 1}
             draggable
             onDragStart={(event) => {
@@ -158,7 +168,7 @@ export default function BibleItemRenderComp({
                     id: bibleItem.id,
                 });
             }}
-            onDoubleClick={handleDoubleClicking}
+            onDoubleClick={handleOpening}
             onContextMenu={handleContextMenuOpening}
         >
             <div className="d-flex">
@@ -177,7 +187,17 @@ export default function BibleItemRenderComp({
                         className="app-ellipsis"
                         data-bible-key={bibleItem.bibleKey}
                     >
-                        {title || 'not found'}
+                        <BibleViewTitleEditorComp
+                            bibleItem={bibleItem}
+                            onTargetChange={async (newBibleTarget) => {
+                                const bible = await getBible(bibleItem);
+                                if (bible === null) {
+                                    return;
+                                }
+                                bibleItem.target = newBibleTarget;
+                                bibleItem.save(bible);
+                            }}
+                        />
                     </span>
                     {warningMessage && (
                         <span className="float-end" title={warningMessage}>

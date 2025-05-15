@@ -53,18 +53,14 @@ export function useSelectedBibleKey() {
     return { isValid, bibleKey };
 }
 
-export default function RenderBibleLookupComp({
-    editorInputText = '',
-}: Readonly<{
-    editorInputText?: string;
-}>) {
+export default function RenderBibleLookupComp() {
     const [isLookupOnline, setIsLookupOnline] = useStateSettingBoolean(
         LOOKUP_ONLINE_SETTING_NAME,
         false,
     );
     const viewController = LookupBibleItemViewController.getInstance();
     const [inputText, setInputText] = useState<string>(
-        editorInputText || viewController.inputText,
+        viewController.inputText,
     );
     const { isValid, bibleKey } = useSelectedBibleKey();
     useAppEffect(() => {
@@ -124,7 +120,6 @@ export default function RenderBibleLookupComp({
         >
             <div id="bible-lookup-popup" className="shadow card w-100 h-100">
                 <RenderBibleLookupHeaderComp
-                    editorInputText={editorInputText}
                     isLookupOnline={isLookupOnline}
                     setIsLookupOnline={setIsLookupOnline}
                 />

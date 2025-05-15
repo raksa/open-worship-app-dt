@@ -1,7 +1,6 @@
 import InputHandlerComp, { useInputTextContext } from './InputHandlerComp';
 import { genInputText } from '../bible-list/bibleHelpers';
 import RenderExtraButtonsRightComp from './RenderExtraButtonsRightComp';
-import { getPopupWindowTypeData } from '../app-modal/helpers';
 import InputHistoryComp from './InputHistoryComp';
 import appProvider from '../server/appProvider';
 import { ModalCloseButton } from '../app-modal/ModalComp';
@@ -12,13 +11,11 @@ export default function RenderBibleLookupHeaderComp({
     isLookupOnline,
     setIsLookupOnline,
 }: Readonly<{
-    editorInputText: string;
     isLookupOnline: boolean;
     setIsLookupOnline: (isLookupOnline: boolean) => void;
 }>) {
     const hideBibleLookupPopup = useShowBibleLookupContext(false);
     const { inputText } = useInputTextContext();
-    const { data } = getPopupWindowTypeData();
 
     const handleBibleKeyChanging = async (
         oldBibleKey: string,
@@ -29,7 +26,6 @@ export default function RenderBibleLookupHeaderComp({
         viewController.bibleKey = newBibleKey;
         viewController.inputText = newText;
     };
-    const isEditingBibleItem = !!data;
     return (
         <div className="card-header d-flex text-center w-100">
             <div
@@ -52,14 +48,12 @@ export default function RenderBibleLookupHeaderComp({
                     (!appProvider.isPageReader ? ' pe-5' : '')
                 }
             >
-                {isEditingBibleItem ? null : (
-                    <div className="float-start">
-                        <RenderExtraButtonsRightComp
-                            setIsLookupOnline={setIsLookupOnline}
-                            isLookupOnline={isLookupOnline}
-                        />
-                    </div>
-                )}
+                <div className="float-start">
+                    <RenderExtraButtonsRightComp
+                        setIsLookupOnline={setIsLookupOnline}
+                        isLookupOnline={isLookupOnline}
+                    />
+                </div>
             </div>
             {hideBibleLookupPopup === null ? null : (
                 <ModalCloseButton

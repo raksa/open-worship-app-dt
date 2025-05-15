@@ -3,14 +3,12 @@ import {
     toShortcutKey,
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
-import { addBibleItem, updateBibleItem } from '../bible-list/bibleHelpers';
+import { addBibleItem } from '../bible-list/bibleHelpers';
 import ScreenBibleManager from '../_screen/managers/ScreenBibleManager';
-import { getPopupWindowTypeData } from '../app-modal/helpers';
 import BibleItem from '../bible-list/BibleItem';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { getIsKeepingPopup } from './RenderExtraButtonsRightComp';
-import { useBibleItemContext } from '../bible-reader/BibleItemContext';
 import appProvider from '../server/appProvider';
 import { useShowBibleLookupContext } from '../others/commonButtons';
 import { genContextMenuItemShortcutKey } from '../context-menu/AppContextMenuComp';
@@ -27,14 +25,7 @@ const addListEventMapper: KBEventMapper = {
 };
 
 export default function RenderActionButtonsComp() {
-    const bibleItem = useBibleItemContext();
-    const { data } = getPopupWindowTypeData();
-    const isBibleEditor = !!data;
-    if (!isBibleEditor) {
-        return null;
-    }
     const addingListShortcutKey = toShortcutKey(addListEventMapper);
-    const savingAndShowingShortcutKey = toShortcutKey(presenterEventMapper);
     return (
         <div className="btn-group mx-1">
             <button
@@ -42,41 +33,11 @@ export default function RenderActionButtonsComp() {
                 className="btn btn-sm btn-info"
                 title={`Save bible item [${addingListShortcutKey}]`}
                 onClick={() => {
-                    updateBibleItem(bibleItem, data);
+                    console.log('Save');
                 }}
             >
                 <i className="bi bi-floppy" />
             </button>
-            {!appProvider.isPagePresenter ? null : (
-                <button
-                    type="button"
-                    className="btn btn-sm btn-info ms-1"
-                    title={
-                        'Save bible item and show on screen ' +
-                        `[${savingAndShowingShortcutKey}]`
-                    }
-                    onClick={(event) => {
-                        const updatedBibleItem = updateBibleItem(
-                            bibleItem,
-                            data,
-                        );
-                        if (updatedBibleItem !== null) {
-                            ScreenBibleManager.handleBibleItemSelecting(
-                                event,
-                                bibleItem,
-                            );
-                        } else {
-                            showSimpleToast(
-                                'Update Bible Item',
-                                'Fail to update bible item',
-                            );
-                        }
-                    }}
-                >
-                    <i className="bi bi-floppy" />
-                    <i className="bi bi-easel" />
-                </button>
-            )}
         </div>
     );
 }

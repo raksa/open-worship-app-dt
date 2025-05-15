@@ -62,29 +62,6 @@ export async function genInputText(
     return inputText;
 }
 
-export async function updateBibleItem(bibleItem: BibleItem, data: string) {
-    const messageTitle = 'Saving Bible Item Failed';
-    const oldBibleItem = BibleItem.parseBibleLookupData(data);
-    if (!oldBibleItem?.filePath) {
-        showSimpleToast(messageTitle, 'Invalid bible item data');
-        return null;
-    }
-    const bible = await Bible.fromFilePath(oldBibleItem.filePath);
-    if (bible === null) {
-        showSimpleToast(messageTitle, 'Fail to read bible file');
-        return null;
-    }
-    const isSaved = await BibleItem.saveFromBibleLookup(
-        bible,
-        oldBibleItem,
-        bibleItem,
-    );
-    if (isSaved) {
-        showSimpleToast(messageTitle, 'Bible item saved successfully!');
-    }
-    return bibleItem;
-}
-
 export async function addBibleItem(bibleItem: BibleItem, onDone: () => void) {
     if (appProvider.isPageEditor) {
         // TODO: Implement this, find canvasController

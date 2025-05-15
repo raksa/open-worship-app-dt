@@ -10,6 +10,7 @@ import { AnyObjectType } from '../helper/helpers';
 import { BibleTargetType } from './bibleRenderHelpers';
 import { genShowOnScreensContextMenu } from '../others/FileItemHandlerComp';
 import ScreenBibleManager from '../_screen/managers/ScreenBibleManager';
+import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
 
 export type BibleItemType = {
     id: number;
@@ -62,9 +63,15 @@ export async function openBibleItemContextMenu(
         ...(openBibleLookup !== null
             ? [
                   {
-                      menuTitle: '(*T) ' + 'Quick Edit',
+                      menuTitle: '(*T) ' + 'Lookup',
                       onSelect: () => {
-                          openBibleLookup();
+                          const viewController =
+                              LookupBibleItemViewController.getInstance();
+                          viewController.bibleKey = bibleItem.bibleKey;
+                          bibleItem.toTitle().then((title) => {
+                              viewController.inputText = title;
+                              openBibleLookup();
+                          });
                       },
                   },
               ]
@@ -111,7 +118,7 @@ export async function openBibleItemContextMenu(
             },
         });
     }
-    showAppContextMenu(event, [...menuItem, ...extraMenuItems]);
+    showAppContextMenu(event, [...extraMenuItems, ...menuItem]);
 }
 
 export function genDuplicatedMessage(
