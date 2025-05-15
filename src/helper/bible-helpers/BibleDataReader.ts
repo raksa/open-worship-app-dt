@@ -10,6 +10,7 @@ import {
 } from '../../progress-bar/progressBarHelpers';
 import BibleDatabaseController from './BibleDatabaseController';
 import FileSource from '../FileSource';
+import CacheManager from '../../others/CacheManager';
 
 const { base64Decode } = appProvider.appUtils;
 
@@ -29,6 +30,7 @@ export type BookList = { [key: string]: string };
 export type VerseList = { [key: string]: string };
 export type ChapterType = { title: string; verses: VerseList };
 
+const bibleDataCacher = new CacheManager<BibleInfoType>(60); // 1 minute
 export default class BibleDataReader {
     private _writableBiblePath: string | null = null;
     private _dbController: BibleDatabaseController | null = null;
@@ -41,6 +43,10 @@ export default class BibleDataReader {
     async readBibleData(bibleKey: string, key: string) {
         const cacheKey = `${bibleKey}-${key}`;
         return unlocking(cacheKey, async () => {
+            const cachedData = await bibleDataCacher.get(cacheKey);
+            if (cachedData !== null) {
+                return cachedData;
+            }
             const biblePath = await this.toBiblePath(bibleKey);
             if (biblePath === null) {
                 return null;
@@ -72,7 +78,9 @@ export default class BibleDataReader {
                     });
                 }
                 const rawData = base64Decode(b64Data);
-                return JSON.parse(rawData) as BibleInfoType;
+                const parsedData = JSON.parse(rawData) as BibleInfoType;
+                await bibleDataCacher.set(cacheKey, parsedData);
+                return parsedData;
             } catch (error: any) {
                 if (error.code !== 'ENOENT') {
                     handleError(error);

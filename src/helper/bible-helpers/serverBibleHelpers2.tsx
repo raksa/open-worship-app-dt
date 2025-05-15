@@ -12,6 +12,8 @@ import {
 import { useAppEffect } from '../debuggerHelpers';
 import BibleItem from '../../bible-list/BibleItem';
 import { getKJVChapterCount } from './serverBibleHelpers';
+import CacheManager from '../../others/CacheManager';
+import { unlocking } from '../../server/appHelpers';
 
 export async function toInputText(
     bibleKey: string,
@@ -145,16 +147,26 @@ export async function parseChapterFromGuessing(
     return chapterNum;
 }
 
+const verseCountCacher = new CacheManager<number>(60); // 1 minute
 export async function getVersesCount(
     bibleKey: string,
     bookKey: string,
     chapterNum: number,
 ) {
-    const verses = await getVerses(bibleKey, bookKey, chapterNum);
-    if (verses === null) {
-        return null;
-    }
-    return Object.keys(verses).length;
+    const key = `${bibleKey}:${bookKey}:${chapterNum}`;
+    return await unlocking(key, async () => {
+        let verseCount = await verseCountCacher.get(key);
+        if (verseCount !== null) {
+            return verseCount;
+        }
+        const verses = await getVerses(bibleKey, bookKey, chapterNum);
+        if (verses === null) {
+            return null;
+        }
+        verseCount = Object.keys(verses).length;
+        await verseCountCacher.set(key, verseCount);
+        return verseCount;
+    });
 }
 
 async function transformExtracted(

@@ -19,6 +19,7 @@ import { genInputText } from '../bible-list/bibleHelpers';
 import LookupBibleItemViewController, {
     closeEventMapper,
 } from '../bible-reader/LookupBibleItemViewController';
+import RenderToTheTopComp from '../others/RenderToTheTopComp';
 
 export default function RenderBibleDataFoundComp({
     onVerseChange,
@@ -53,6 +54,7 @@ export default function RenderBibleDataFoundComp({
                 <div className="p-2">
                     <BibleViewTextComp />
                 </div>
+                <RenderToTheTopComp />
             </div>
         </div>
     );
