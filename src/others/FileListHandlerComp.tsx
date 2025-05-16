@@ -165,7 +165,7 @@ export default function FileListHandlerComp({
                             />
                         </ul>
                     )}
-                    <RenderToTheTopComp />
+                    <RenderToTheTopComp shouldSnowPlayToBottom={false} />
                 </div>
             </div>
         </DirSourceContext>

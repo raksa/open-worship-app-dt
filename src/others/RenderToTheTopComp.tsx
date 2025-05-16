@@ -157,24 +157,28 @@ function applyPlayToBottom(element: HTMLElement) {
 
 export default function RenderToTheTopComp({
     style,
+    shouldSnowPlayToBottom = true,
 }: Readonly<{
     style?: React.CSSProperties;
+    shouldSnowPlayToBottom?: boolean;
 }>) {
     return (
         <>
             <style>{TO_THE_TOP_STYLE_STRING}</style>
-            <i
-                className="play-to-bottom bi bi-chevron-double-down pointer"
-                style={{
-                    width: '45px',
-                    height: '45px',
-                }}
-                ref={(element) => {
-                    if (element) {
-                        applyPlayToBottom(element);
-                    }
-                }}
-            />
+            {shouldSnowPlayToBottom ? (
+                <i
+                    className="play-to-bottom bi bi-chevron-double-down pointer"
+                    style={{
+                        width: '45px',
+                        height: '45px',
+                    }}
+                    ref={(element) => {
+                        if (element) {
+                            applyPlayToBottom(element);
+                        }
+                    }}
+                />
+            ) : null}
             <i
                 className={`${TO_THE_TOP_CLASSNAME} bi bi-arrow-up-circle`}
                 title="Scroll to the top"
