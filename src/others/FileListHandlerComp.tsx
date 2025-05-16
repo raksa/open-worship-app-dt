@@ -19,6 +19,7 @@ import { useAppEffect } from '../helper/debuggerHelpers';
 import { handleError } from '../helper/errorHelpers';
 import NoDirSelectedComp from './NoDirSelectedComp';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
+import RenderToTheTopComp from './RenderToTheTopComp';
 
 const LazyAskingNewNameComp = lazy(() => {
     return import('./AskingNewNameComp');
@@ -164,6 +165,7 @@ export default function FileListHandlerComp({
                             />
                         </ul>
                     )}
+                    <RenderToTheTopComp />
                 </div>
             </div>
         </DirSourceContext>

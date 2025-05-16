@@ -7,7 +7,7 @@ import { isValidJson } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelpers';
 import { checkIsValidLocale } from '../lang';
 import { createMouseEvent } from '../context-menu/appContextMenuHelpers';
-import { BibleItemRenderingType, LyricRenderedType } from './bibleScreenComps';
+import { BibleItemRenderingType } from './bibleScreenComps';
 import {
     ScreenTransitionEffectType,
     TargetType,
@@ -26,11 +26,8 @@ export type BibleItemDataType = {
         renderedList: BibleItemRenderingType[];
         bibleItem: BibleItemType;
     };
-    lyricData?: {
-        renderedList: LyricRenderedType[];
-    };
     scroll: number;
-    selectedIndex: number | null;
+    selectedKJVVerseKey: string | null;
 };
 export type BibleListType = {
     [key: string]: BibleItemDataType;
@@ -259,21 +256,6 @@ const validateBible = ({ renderedList, bibleItem }: any) => {
         })
     );
 };
-const validateLyric = ({ renderedList }: any) => {
-    return (
-        !Array.isArray(renderedList) ||
-        renderedList.some((item: any) => {
-            const { title, items } = item;
-            return (
-                typeof title !== 'string' ||
-                !Array.isArray(items) ||
-                items.some(({ num, text }: any) => {
-                    return typeof num !== 'number' || typeof text !== 'string';
-                })
-            );
-        })
-    );
-};
 
 export function getBibleListOnScreenSetting(): BibleListType {
     const str = getSetting(screenManagerSettingNames.FULL_TEXT, '');
@@ -286,8 +268,7 @@ export function getBibleListOnScreenSetting(): BibleListType {
             if (
                 !bibleDataTypeList.includes(item.type) ||
                 (item.type === 'bible-item' &&
-                    validateBible(item.bibleItemData)) ||
-                (item.type === 'lyric' && validateLyric(item.lyricData))
+                    validateBible(item.bibleItemData))
             ) {
                 loggerHelpers.error(item);
                 throw new Error('Invalid full-text data');

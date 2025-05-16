@@ -44,7 +44,7 @@ export default function VaryAppDocumentItemsPreviewerComp() {
                 <SlidesMenuComp />
             ) : null}
             <AppDocumentItemsComp />
-            <RenderToTheTopComp />
+            <RenderToTheTopComp style={{ bottom: '40px' }} />
         </div>
     );
 }

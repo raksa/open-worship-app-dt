@@ -25,36 +25,27 @@ export type LyricRenderedType = {
 };
 
 function VerseTextElementComp({
-    highlightIndex,
     bibleKey,
-    kjvVerseKey,
-    verseKey,
-    num,
-    text,
     langData,
+    verseInfo,
 }: Readonly<{
-    highlightIndex: number;
     bibleKey: string;
-    kjvVerseKey: string;
-    verseKey: string;
-    num: string;
-    text: string;
     langData: LanguageDataType;
+    verseInfo: BibleRenderVerseType;
 }>) {
     return (
         <span
             className="highlight"
-            data-highlight={highlightIndex}
             title={BIBLE_VERSE_TEXT_TITLE}
             data-bible-key={bibleKey}
-            data-kjv-verse-key={kjvVerseKey}
-            data-verse-key={verseKey}
+            data-kjv-verse-key={verseInfo.kjvVerseKey}
+            data-verse-key={verseInfo.verseKey}
             style={{
                 fontFamily: langData.fontFamily,
             }}
         >
-            <div className="verse-number">{num}</div>
-            {text}
+            <div className="verse-number">{verseInfo.num}</div>
+            {verseInfo.text}
         </span>
     );
 }
@@ -99,17 +90,12 @@ export function BibleBibleTable({
         return (
             <tr key={i}>
                 {bibleRenderingList.map(({ langData, verses, bibleKey }, j) => {
-                    const { num, text, verseKey, kjvVerseKey } = verses[i];
                     return (
                         <td key={j}>
                             <VerseTextElementComp
-                                highlightIndex={i}
                                 bibleKey={bibleKey}
-                                kjvVerseKey={kjvVerseKey}
-                                verseKey={verseKey}
-                                num={num}
-                                text={text}
                                 langData={langData}
+                                verseInfo={verses[i]}
                             />
                         </td>
                     );
@@ -123,17 +109,13 @@ export function BibleBibleTable({
     ) => {
         return (
             <td key={i}>
-                {verses.map(({ num, text, kjvVerseKey, verseKey }, j) => {
+                {verses.map((verseInfo, j) => {
                     return (
                         <VerseTextElementComp
                             key={j}
-                            highlightIndex={j}
                             bibleKey={bibleKey}
-                            kjvVerseKey={kjvVerseKey}
-                            verseKey={verseKey}
-                            num={num}
-                            text={text}
                             langData={langData}
+                            verseInfo={verseInfo}
                         />
                     );
                 })}

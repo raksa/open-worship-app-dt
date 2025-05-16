@@ -16,7 +16,7 @@ import { getLangAsync } from '../lang';
 import { bibleRenderHelper } from '../bible-list/bibleRenderHelpers';
 
 const bibleScreenHelper = {
-    async genHtmlFromFtBibleItem(
+    async genHtmlFromScreenViewBibleItem(
         bibleRenderingList: BibleItemRenderingType[],
         isLineSync: boolean,
     ) {
@@ -59,10 +59,10 @@ const bibleScreenHelper = {
         parent: HTMLElement,
         className: string,
         isAdd: boolean,
-        blockId?: string,
+        kjvVerseKey?: string,
     ) {
         const currentBlocks = parent.querySelectorAll(
-            `[data-highlight="${blockId}"]`,
+            `[data-kjv-verse-key="${kjvVerseKey}"]`,
         );
         for (const currentBlock of currentBlocks) {
             if (isAdd) {
@@ -76,11 +76,11 @@ const bibleScreenHelper = {
     registerHighlight(
         div: HTMLDivElement,
         {
-            onSelectIndex,
+            onSelectKey,
             onBibleSelect,
         }: {
-            onSelectIndex: (
-                selectedIndex: number | null,
+            onSelectKey: (
+                selectedKJVVerseKey: string | null,
                 isToTop: boolean,
             ) => void;
             onBibleSelect: (event: MouseEvent, index: number) => void;
@@ -106,27 +106,20 @@ const bibleScreenHelper = {
         }
         const spans = div.querySelectorAll<HTMLSpanElement>('span.highlight');
         Array.from(spans).forEach((span) => {
+            const kjvVerseKey = span.dataset.kjvVerseKey;
             span.addEventListener('mouseover', () => {
-                this.resetClassName(div, 'hover', true, span.dataset.highlight);
+                this.resetClassName(div, 'hover', true, kjvVerseKey);
             });
             span.addEventListener('mouseout', () => {
-                this.resetClassName(
-                    div,
-                    'hover',
-                    false,
-                    span.dataset.highlight,
-                );
+                this.resetClassName(div, 'hover', false, kjvVerseKey);
             });
             const clickHandler = (isToTop: boolean) => {
                 const arrChildren = this.removeClassName(div, 'selected');
-                if (
-                    !arrChildren.includes(span) &&
-                    span.dataset.highlight &&
-                    !isNaN(parseInt(span.dataset.highlight))
-                ) {
-                    onSelectIndex(parseInt(span.dataset.highlight), isToTop);
+                const kjvVerseKey = span.dataset.kjvVerseKey;
+                if (!arrChildren.includes(span) && kjvVerseKey) {
+                    onSelectKey(kjvVerseKey, isToTop);
                 } else {
-                    onSelectIndex(null, false);
+                    onSelectKey(null, false);
                 }
             };
             span.addEventListener('click', (event) => {

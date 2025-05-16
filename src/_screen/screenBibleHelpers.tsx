@@ -17,13 +17,13 @@ export type ScreenBibleManagerEventType = 'update' | 'text-style';
 
 export const SCREEN_BIBLE_SETTING_PREFIX = 'screen-bible-';
 
-export function onSelectIndex(
+export function onSelectKey(
     screenBibleManager: ScreenBibleManager,
-    selectedIndex: number | null,
+    selectedKJVVerseKey: string | null,
     isToTop: boolean,
 ) {
     screenBibleManager.isToTop = isToTop;
-    screenBibleManager.selectedIndex = selectedIndex;
+    screenBibleManager.selectedKJVVerseKey = selectedKJVVerseKey;
     screenBibleManager.sendSyncSelectedIndex();
 }
 
@@ -41,11 +41,11 @@ async function applyBibleItems(
         );
         return;
     }
-    const newFtItemData = await bibleItemJsonToFtData(
+    const newScreenViewItemData = await bibleItemJsonToScreenViewData(
         bibleItemJson,
         newBibleKeys,
     );
-    screenBibleManager.bibleItemData = newFtItemData;
+    screenBibleManager.screenViewData = newScreenViewItemData;
 }
 
 async function onBibleSelect(
@@ -128,8 +128,8 @@ export async function renderScreenBibleManager(
     if (screenBibleManager.div === null) {
         return;
     }
-    const bibleItemData = screenBibleManager.bibleItemData;
-    if (bibleItemData === null) {
+    const screenViewData = screenBibleManager.screenViewData;
+    if (screenViewData === null) {
         if (screenBibleManager.div.lastChild !== null) {
             const targetDiv = screenBibleManager.div
                 .lastChild as HTMLDivElement;
@@ -141,11 +141,11 @@ export async function renderScreenBibleManager(
     screenBibleManager.div.style.pointerEvents = 'auto';
     let newDiv: HTMLDivElement | null = null;
     if (
-        bibleItemData.type === 'bible-item' &&
-        bibleItemData.bibleItemData !== undefined
+        screenViewData.type === 'bible-item' &&
+        screenViewData.bibleItemData !== undefined
     ) {
-        newDiv = await bibleScreenHelper.genHtmlFromFtBibleItem(
-            bibleItemData.bibleItemData.renderedList,
+        newDiv = await bibleScreenHelper.genHtmlFromScreenViewBibleItem(
+            screenViewData.bibleItemData.renderedList,
             screenBibleManager.isLineSync,
         );
     }
@@ -153,11 +153,11 @@ export async function renderScreenBibleManager(
         return;
     }
     bibleScreenHelper.registerHighlight(newDiv, {
-        onSelectIndex: (selectedIndex, isToTop) => {
-            onSelectIndex(screenBibleManager, selectedIndex, isToTop);
+        onSelectKey: (selectedKJVVerseKey, isToTop) => {
+            onSelectKey(screenBibleManager, selectedKJVVerseKey, isToTop);
         },
         onBibleSelect: (event: any, index) => {
-            onBibleSelect(screenBibleManager, event, index, bibleItemData);
+            onBibleSelect(screenBibleManager, event, index, screenViewData);
         },
     });
     const divHaftScale = document.createElement('div');
@@ -190,23 +190,7 @@ export async function renderScreenBibleManager(
     screenBibleManager.renderSelectedIndex();
 }
 
-export async function bibleItemJsonToFtData(
-    bibleItemJson: BibleItemType,
-    bibleKeys: string[],
-) {
-    const newBibleKeys = cloneJson(bibleKeys);
-    if (newBibleKeys.length === 0) {
-        return await bibleItemToFtData([BibleItem.fromJson(bibleItemJson)]);
-    }
-    const newBibleItems = newBibleKeys.map((bibleKey1) => {
-        const bibleItem = BibleItem.fromJson(bibleItemJson);
-        bibleItem.bibleKey = bibleKey1;
-        return bibleItem;
-    });
-    return await bibleItemToFtData(newBibleItems);
-}
-
-export async function bibleItemToFtData(bibleItems: BibleItem[]) {
+export async function bibleItemToScreenViewData(bibleItems: BibleItem[]) {
     const bibleRenderingList =
         await bibleScreenHelper.genBibleItemRenderList(bibleItems);
     return {
@@ -216,6 +200,24 @@ export async function bibleItemToFtData(bibleItems: BibleItem[]) {
             bibleItem: bibleItems[0].toJson(),
         },
         scroll: 0,
-        selectedIndex: null,
+        selectedKJVVerseKey: null,
     } as BibleItemDataType;
+}
+
+export async function bibleItemJsonToScreenViewData(
+    bibleItemJson: BibleItemType,
+    bibleKeys: string[],
+) {
+    const newBibleKeys = cloneJson(bibleKeys);
+    if (newBibleKeys.length === 0) {
+        return await bibleItemToScreenViewData([
+            BibleItem.fromJson(bibleItemJson),
+        ]);
+    }
+    const newBibleItems = newBibleKeys.map((bibleKey1) => {
+        const bibleItem = BibleItem.fromJson(bibleItemJson);
+        bibleItem.bibleKey = bibleKey1;
+        return bibleItem;
+    });
+    return await bibleItemToScreenViewData(newBibleItems);
 }

@@ -11,11 +11,16 @@ function applyToTheTop(element: HTMLElement) {
         }
     });
 }
-export default function RenderToTheTopComp() {
+export default function RenderToTheTopComp({
+    style,
+}: Readonly<{
+    style?: React.CSSProperties;
+}>) {
     return (
         <i
             className="app-to-the-top pointer bi bi-arrow-up-circle"
             title="Scroll to the top"
+            style={style}
             ref={(element) => {
                 if (element) {
                     applyToTheTop(element);

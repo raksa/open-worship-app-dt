@@ -30,7 +30,7 @@ export function openContextMenu(event: any, screenManager: ScreenManager) {
         selectedScreenIds.includes(screenManager.screenId);
     const isOne = screenManagers.length === 1;
     const { screenBibleManager } = screenManager;
-    const isShowingBible = !!screenBibleManager.bibleItemData;
+    const isShowingBible = !!screenBibleManager.screenViewData;
     const isLineSync = screenBibleManager.isLineSync;
     const extraMenuItems: ContextMenuItemType[] = isShowingBible
         ? [
