@@ -20,11 +20,13 @@ type DragDropEventType = React.DragEvent<HTMLDivElement>;
 export function genDraggingClass(event: DragDropEventType) {
     const { nativeEvent } = event;
     const { offsetX, offsetY } = nativeEvent;
-    const bc = (event.currentTarget as HTMLDivElement).getBoundingClientRect();
-    const isLeft = offsetX < bc.width / 3;
-    const isRight = offsetX > (bc.width * 2) / 3;
-    const isTop = offsetY < bc.height / 3;
-    const isBottom = offsetY > (bc.height * 2) / 3;
+    const rect = (
+        event.currentTarget as HTMLDivElement
+    ).getBoundingClientRect();
+    const isLeft = offsetX < rect.width / 3;
+    const isRight = offsetX > (rect.width * 2) / 3;
+    const isTop = offsetY < rect.height / 3;
+    const isBottom = offsetY > (rect.height * 2) / 3;
     let suffix = DraggingPosEnum.CENTER.toString();
     if (isLeft) {
         suffix += DraggingPosEnum.LEFT;

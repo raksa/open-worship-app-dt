@@ -26,10 +26,10 @@ function calculateIndexer(optionClass: string, selectedClass: string) {
         return element.classList.contains(selectedClass);
     });
     const cordList = elements.map((element: any) => {
-        const cRect = (element as HTMLDivElement).getBoundingClientRect();
+        const rect = (element as HTMLDivElement).getBoundingClientRect();
         return {
-            x: cRect.x,
-            y: cRect.y,
+            x: rect.x,
+            y: rect.y,
         };
     });
     const indexer = [];

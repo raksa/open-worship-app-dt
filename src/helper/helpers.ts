@@ -405,3 +405,15 @@ export function bringDomToCenterView(dom: Element) {
 export function bringDomToBottomView(dom: Element) {
     bringDomToView(dom, 'end');
 }
+
+export function checkIsPartialInvisible(
+    container: HTMLElement,
+    target: HTMLElement,
+) {
+    const containerRect = container.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+    const isPartialInvisible =
+        targetRect.top < containerRect.top - 1 ||
+        targetRect.bottom > containerRect.bottom + 1;
+    return isPartialInvisible;
+}

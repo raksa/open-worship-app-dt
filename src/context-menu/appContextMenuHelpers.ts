@@ -64,23 +64,23 @@ export const setPositionMenu = (
         event.stopPropagation();
         const x = options?.coord?.x ?? event.clientX;
         const y = options?.coord?.y ?? event.clientY;
-        const bc = menu.getBoundingClientRect();
-        const wd = getWindowDim();
+        const rect = menu.getBoundingClientRect();
+        const windowDim = getWindowDim();
         let maxWidth;
         let maxHeight;
-        if (x > wd.width / 2 && x + bc.width > wd.width) {
-            menu.style.right = `${wd.width - x}px`;
+        if (x > windowDim.width / 2 && x + rect.width > windowDim.width) {
+            menu.style.right = `${windowDim.width - x}px`;
             maxWidth = x;
         } else {
             menu.style.left = `${x}px`;
-            maxWidth = wd.width - x;
+            maxWidth = windowDim.width - x;
         }
-        if (y > wd.height / 2 && y + bc.height > wd.height) {
-            menu.style.bottom = `${wd.height - y}px`;
+        if (y > windowDim.height / 2 && y + rect.height > windowDim.height) {
+            menu.style.bottom = `${windowDim.height - y}px`;
             maxHeight = y;
         } else {
             menu.style.top = `${y}px`;
-            maxHeight = wd.height - y;
+            maxHeight = windowDim.height - y;
         }
         menu.style.maxWidth = `${Math.min(maxWidth, 210)}px`;
         menu.style.maxHeight = `${maxHeight}px`;
