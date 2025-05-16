@@ -5,12 +5,12 @@ import { genFoundBibleItemContextMenu } from '../bible-lookup/RenderActionButton
 import { closeCurrentEditingBibleItem } from './readBibleHelpers';
 import { EventMapper } from '../event/KeyboardEventListener';
 import { genContextMenuItemShortcutKey } from '../context-menu/AppContextMenuComp';
-import BibleItemViewController, {
+import BibleItemsViewController, {
     applyPendingText,
     attemptAddingHistory,
     splitHorizontalId,
     splitVerticalId,
-} from './BibleItemViewController';
+} from './BibleItemsViewController';
 import { setBibleLookupInputFocus } from '../bible-lookup/selectionHelpers';
 import { getSetting, setSetting } from '../helper/settingHelpers';
 import { extractBibleTitle } from '../helper/bible-helpers/serverBibleHelpers2';
@@ -29,7 +29,7 @@ export const ctrlShiftMetaKeys: any = {
 };
 
 let instance: LookupBibleItemViewController | null = null;
-class LookupBibleItemViewController extends BibleItemViewController {
+class LookupBibleItemViewController extends BibleItemsViewController {
     setInputText = (_: string) => {};
     setBibleKey = (_: string) => {};
     onLookupAddBibleItem = () => {};

@@ -253,7 +253,7 @@ const movingPosition: { [key: string]: [boolean, boolean] } = {
 export type MovingPositionType = keyof typeof movingPosition;
 
 const BIBLE_ITEMS_PREVIEW_SETTING = 'bible-items-preview';
-class BibleItemViewController extends EventHandler<UpdateEventType> {
+class BibleItemsViewController extends EventHandler<UpdateEventType> {
     private readonly _settingNameSuffix: string;
     setBibleVerseKey = (_verseKey: string) => {};
     handleScreenBibleVersesHighlighting = (
@@ -686,7 +686,7 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
 }
 
 export const BibleItemViewControllerContext =
-    createContext<BibleItemViewController | null>(null);
+    createContext<BibleItemsViewController | null>(null);
 
 export function useBibleItemViewControllerContext() {
     const viewController = use(BibleItemViewControllerContext);
@@ -719,4 +719,4 @@ export function useBibleItemViewControllerUpdateEvent() {
     return nestedBibleItems;
 }
 
-export default BibleItemViewController;
+export default BibleItemsViewController;

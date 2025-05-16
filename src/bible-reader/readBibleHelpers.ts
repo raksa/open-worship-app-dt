@@ -5,7 +5,7 @@ import LookupBibleItemViewController, {
 } from './LookupBibleItemViewController';
 import { handleError } from '../helper/errorHelpers';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
-import BibleItemViewController from './BibleItemViewController';
+import BibleItemsViewController from './BibleItemsViewController';
 
 enum DraggingPosEnum {
     TOP = '-top',
@@ -54,7 +54,7 @@ export function removeDraggingClass(event: DragDropEventType) {
 
 export function applyDragged(
     event: DragDropEventType,
-    bibleItemViewCtl: BibleItemViewController,
+    bibleItemViewCtl: BibleItemsViewController,
     bibleItem: BibleItem,
 ) {
     const allPos = removeDraggingClass(event);

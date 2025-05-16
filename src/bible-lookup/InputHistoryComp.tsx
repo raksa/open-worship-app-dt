@@ -3,7 +3,7 @@ import { useAppEffect } from '../helper/debuggerHelpers';
 import { getSetting, setSetting } from '../helper/settingHelpers';
 import { extractBibleTitle } from '../helper/bible-helpers/serverBibleHelpers2';
 import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
-import { historyStore } from '../bible-reader/BibleItemViewController';
+import { historyStore } from '../bible-reader/BibleItemsViewController';
 
 const HISTORY_TEXT_LIST_SETTING_NAME = 'history-text-list';
 function useHistoryTextList(maxHistoryCount: number) {

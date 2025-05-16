@@ -22,9 +22,9 @@ import {
     ScreenManagerBaseContext,
     useScreenManagerEvents,
 } from '../managers/screenManagerHooks';
-import BibleItemViewController, {
+import BibleItemsViewController, {
     useBibleItemViewControllerContext,
-} from '../../bible-reader/BibleItemViewController';
+} from '../../bible-reader/BibleItemsViewController';
 import { BibleItemDataType } from '../screenHelpers';
 import BibleItem from '../../bible-list/BibleItem';
 
@@ -49,7 +49,7 @@ function openContextMenu(event: any) {
 
 function viewControllerAndScreenManagers(
     screenManagers: ScreenManager[],
-    bibleItemViewController: BibleItemViewController,
+    bibleItemViewController: BibleItemsViewController,
 ) {
     bibleItemViewController.handleScreenBibleVersesHighlighting = (
         kjvVerseKey: string,

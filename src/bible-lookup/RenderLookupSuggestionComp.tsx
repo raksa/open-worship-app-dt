@@ -6,7 +6,7 @@ import { BibleItemContext } from '../bible-reader/BibleItemContext';
 import { BibleSelectionMiniComp } from './BibleSelectionComp';
 import { RENDER_FOUND_CLASS } from './selectionHelpers';
 import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
-import { attemptAddingHistory } from '../bible-reader/BibleItemViewController';
+import { attemptAddingHistory } from '../bible-reader/BibleItemsViewController';
 
 export default function RenderLookupSuggestionComp({
     bibleResult,

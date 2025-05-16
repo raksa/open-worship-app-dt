@@ -1,6 +1,6 @@
 import BibleItem from '../bible-list/BibleItem';
 import { handleError } from '../helper/errorHelpers';
-import { useBibleItemViewControllerContext } from './BibleItemViewController';
+import { useBibleItemViewControllerContext } from './BibleItemsViewController';
 
 export default function NoBibleViewAvailableComp() {
     const viewController = useBibleItemViewControllerContext();

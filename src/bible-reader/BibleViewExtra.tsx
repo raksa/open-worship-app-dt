@@ -9,7 +9,7 @@ import {
 } from '../helper/bibleViewHelpers';
 import ItemColorNoteComp from '../others/ItemColorNoteComp';
 import ColorNoteInf from '../helper/ColorNoteInf';
-import { useBibleItemViewControllerContext } from './BibleItemViewController';
+import { useBibleItemViewControllerContext } from './BibleItemsViewController';
 import { useBibleItemContext } from './BibleItemContext';
 import { BIBLE_VERSE_TEXT_TITLE } from '../helper/helpers';
 import {

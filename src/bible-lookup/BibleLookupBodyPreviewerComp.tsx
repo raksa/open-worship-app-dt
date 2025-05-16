@@ -1,7 +1,7 @@
 import { lazy } from 'react';
 
 import BibleItem from '../bible-list/BibleItem';
-import { BibleItemViewControllerContext } from '../bible-reader/BibleItemViewController';
+import { BibleItemViewControllerContext } from '../bible-reader/BibleItemsViewController';
 import BibleViewComp from '../bible-reader/BibleViewComp';
 import RenderBibleLookupBodyComp from './RenderBibleLookupBodyComp';
 import AppSuspenseComp from '../others/AppSuspenseComp';

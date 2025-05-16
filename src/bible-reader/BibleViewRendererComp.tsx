@@ -2,7 +2,7 @@ import {
     NestedBibleItemsType,
     RESIZE_SETTING_NAME,
     useBibleItemViewControllerContext,
-} from './BibleItemViewController';
+} from './BibleItemsViewController';
 import ResizeActorComp from '../resize-actor/ResizeActorComp';
 import NoBibleViewAvailableComp from './NoBibleViewAvailableComp';
 import { FlexSizeType, DataInputType } from '../resize-actor/flexSizeHelpers';

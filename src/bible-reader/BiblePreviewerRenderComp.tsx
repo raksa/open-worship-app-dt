@@ -5,7 +5,7 @@ import BibleViewSettingComp, { defaultRangeSize } from './BibleViewSettingComp';
 import {
     useBibleItemViewControllerContext,
     useBibleItemViewControllerUpdateEvent,
-} from './BibleItemViewController';
+} from './BibleItemsViewController';
 import BibleViewRendererComp from './BibleViewRendererComp';
 import {
     BibleViewFontSizeContext,
