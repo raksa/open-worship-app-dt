@@ -65,7 +65,10 @@ export function applyDragged(
             const newBibleItem = BibleItem.fromJson(json.data);
             for (const pos of allPos) {
                 if (pos === DraggingPosEnum.CENTER.toString()) {
-                    bibleItemViewCtl.applyTargetOrBibleKey(bibleItem, newBibleItem);
+                    bibleItemViewCtl.applyTargetOrBibleKey(
+                        bibleItem,
+                        newBibleItem,
+                    );
                 } else if (pos === DraggingPosEnum.LEFT.toString()) {
                     bibleItemViewCtl.addBibleItemLeft(bibleItem, newBibleItem);
                 } else if (pos === DraggingPosEnum.RIGHT.toString()) {

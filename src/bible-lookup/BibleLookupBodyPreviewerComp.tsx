@@ -69,11 +69,11 @@ export default function BibleLookupBodyPreviewerComp() {
                     titleElement: (
                         <BibleViewTitleEditingComp
                             onTargetChange={(newBibleTarget) => {
-                                bibleItem.target = newBibleTarget;
                                 viewController.applyTargetOrBibleKey(
                                     bibleItem,
                                     { target: newBibleTarget },
                                 );
+                                viewController.syncTargetByColorNote(bibleItem);
                             }}
                         >
                             <span

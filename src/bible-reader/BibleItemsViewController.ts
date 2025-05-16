@@ -673,13 +673,19 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
         });
     }
     syncTargetByColorNote(bibleItem: BibleItem) {
-        const colorNote = this.getColorNote(bibleItem);
+        const { parentNestedBibleItems, index } = this.seek(
+            bibleItem,
+            'Sync Target',
+            'Unable to change target',
+        );
+        const actualBibleItem = parentNestedBibleItems[index] as BibleItem;
+        const colorNote = this.getColorNote(actualBibleItem);
         for (const bibleItem1 of this.getBibleItemsByColorNote(colorNote)) {
-            if (bibleItem1.id === bibleItem.id) {
+            if (bibleItem1.id === actualBibleItem.id) {
                 continue;
             }
             this.applyTargetOrBibleKey(bibleItem1, {
-                target: bibleItem.target,
+                target: actualBibleItem.target,
             });
         }
     }

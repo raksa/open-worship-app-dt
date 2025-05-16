@@ -37,6 +37,9 @@ export default function AppPresenterComp() {
                                         bibleItem,
                                         { target: newBibleTarget },
                                     );
+                                    newViewController.syncTargetByColorNote(
+                                        bibleItem,
+                                    );
                                 }}
                             />
                         ),
