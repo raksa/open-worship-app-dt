@@ -336,6 +336,14 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
         } else {
             colorNoteMap[bibleItem.id] = color;
         }
+        const allBibleItemIds = this.straightBibleItems.map((item) => {
+            return item.id.toString();
+        });
+        for (const id in colorNoteMap) {
+            if (!allBibleItemIds.includes(id)) {
+                delete colorNoteMap[id];
+            }
+        }
         this.colorNoteMap = colorNoteMap;
     }
     setColorNote(bibleItem: BibleItem, color: string | null) {
