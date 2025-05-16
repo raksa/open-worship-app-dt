@@ -118,7 +118,7 @@ export default function BibleItemRenderComp({
     const handleContextMenuOpening = (event: React.MouseEvent<any>) => {
         const menuItems: ContextMenuItemType[] = [
             {
-                menuTitle: '(*T) Open',
+                menuTitle: '`Open',
                 onSelect: (event) => {
                     handleOpening(event);
                 },

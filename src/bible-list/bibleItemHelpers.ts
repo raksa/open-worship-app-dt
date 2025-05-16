@@ -24,19 +24,19 @@ export function genDefaultBibleItemContextMenu(
 ): ContextMenuItemType[] {
     return [
         {
-            menuTitle: '(*T) ' + 'Copy Title',
+            menuTitle: '`' + 'Copy Title',
             onSelect: () => {
                 bibleItem.copyTitleToClipboard();
             },
         },
         {
-            menuTitle: '(*T) ' + 'Copy Text',
+            menuTitle: '`' + 'Copy Text',
             onSelect: () => {
                 bibleItem.copyTextToClipboard();
             },
         },
         {
-            menuTitle: '(*T) ' + 'Copy All',
+            menuTitle: '`' + 'Copy All',
             onSelect: () => {
                 bibleItem.copyToClipboard();
             },
@@ -63,7 +63,7 @@ export async function openBibleItemContextMenu(
         ...(openBibleLookup !== null
             ? [
                   {
-                      menuTitle: '(*T) ' + 'Lookup',
+                      menuTitle: '`' + 'Lookup',
                       onSelect: () => {
                           const viewController =
                               LookupBibleItemViewController.getInstance();
@@ -77,7 +77,7 @@ export async function openBibleItemContextMenu(
               ]
             : []),
         {
-            menuTitle: '(*T) ' + 'Duplicate',
+            menuTitle: '`' + 'Duplicate',
             onSelect: () => {
                 bible.duplicate(index);
                 bible.save();
@@ -87,13 +87,13 @@ export async function openBibleItemContextMenu(
             ScreenBibleManager.handleBibleItemSelecting(event, bibleItem, true);
         }),
         {
-            menuTitle: '(*T) ' + 'Move To',
+            menuTitle: '`' + 'Move To',
             onSelect: (event1: any) => {
                 moveBibleItemTo(event1, bible, index);
             },
         },
         {
-            menuTitle: '(*T) ' + 'Delete',
+            menuTitle: '`' + 'Delete',
             onSelect: () => {
                 bible.deleteItemAtIndex(index);
                 bible.save();
@@ -102,7 +102,7 @@ export async function openBibleItemContextMenu(
     ];
     if (index !== 0) {
         menuItem.push({
-            menuTitle: '(*T) ' + 'Move up',
+            menuTitle: '`' + 'Move up',
             onSelect: () => {
                 bible.swapItem(index, index - 1);
                 bible.save();
@@ -111,7 +111,7 @@ export async function openBibleItemContextMenu(
     }
     if (index !== bible.itemsLength - 1) {
         menuItem.push({
-            menuTitle: '(*T) ' + 'Move down',
+            menuTitle: '`' + 'Move down',
             onSelect: () => {
                 bible.swapItem(index, index + 1);
                 bible.save();

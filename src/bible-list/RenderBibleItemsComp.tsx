@@ -48,7 +48,7 @@ export default function RenderBibleItemsComp({
                         showBibleLookupPopup();
                     }}
                 >
-                    <span title="Need translation">(*T)</span>Add Bible Item
+                    {'`'}Add Bible Item
                 </button>
             )}
         </ul>
