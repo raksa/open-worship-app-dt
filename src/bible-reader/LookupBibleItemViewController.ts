@@ -71,12 +71,11 @@ class LookupBibleItemViewController extends BibleItemViewController {
         return this.selectedBibleItem;
     }
     set selectedBibleItem(bibleItem: BibleItem) {
-        this.changeBibleItem(bibleItem, bibleItem);
-        const bibleItemId = bibleItem.id;
         setSetting(
             this.toSettingName('-selected-bible-item'),
-            bibleItemId.toString(),
+            bibleItem.id.toString(),
         );
+        this.applyTargetOrBibleKey(this.selectedBibleItem, bibleItem);
         this.setBibleKey(this.bibleKey);
     }
     checkIsBibleItemSelected(bibleItem: BibleItem) {
@@ -88,14 +87,15 @@ class LookupBibleItemViewController extends BibleItemViewController {
         });
     }
     setColorNote(bibleItem: BibleItem, color: string | null) {
-        super.setColorNote(bibleItem, color);
-        if (color) {
-            if (this.checkIsBibleItemSelected(bibleItem)) {
-                this.syncBibleItems();
-            } else {
-                this.syncBibleItem(bibleItem);
-            }
-        }
+        super._setColorNote(bibleItem, color);
+        const selectedBibleItem = this.selectedBibleItem;
+        const selectedColorNote = this.getColorNote(selectedBibleItem);
+        const currentColorNote = this.getColorNote(bibleItem);
+        const isSameWithSelected =
+            selectedColorNote && selectedColorNote === currentColorNote;
+        this.syncTargetByColorNote(
+            isSameWithSelected ? selectedBibleItem : bibleItem,
+        );
     }
     get inputText() {
         return getSetting(this.toSettingName('-input-text'), '');
@@ -144,7 +144,7 @@ class LookupBibleItemViewController extends BibleItemViewController {
             foundBibleItem.toTitle().then((inputText) => {
                 attemptAddingHistory(foundBibleItem.bibleKey, inputText, true);
             });
-            this.changeBibleItem(this.selectedBibleItem, foundBibleItem);
+            this.applyTargetOrBibleKey(this.selectedBibleItem, foundBibleItem);
         } else {
             this.deleteBibleItem(this.selectedBibleItem);
         }
@@ -209,28 +209,6 @@ class LookupBibleItemViewController extends BibleItemViewController {
               ];
         return [...menu1, ...menus2, ...menu3];
     }
-    syncBibleItems() {
-        this.straightBibleItems.forEach((bibleItem) => {
-            this.syncBibleItem(bibleItem);
-        });
-    }
-    syncBibleItem(bibleItem: BibleItem) {
-        const selectedBibleItem = this.selectedBibleItem;
-        if (
-            this.checkIsBibleItemSelected(bibleItem) ||
-            bibleItem.checkIsTargetIdentical(selectedBibleItem)
-        ) {
-            return;
-        }
-        const editingColor = this.getColorNote(selectedBibleItem);
-        const currentColor = this.getColorNote(bibleItem);
-        if (!editingColor || !currentColor || currentColor !== editingColor) {
-            return;
-        }
-        const newBibleItem = bibleItem.clone(true);
-        newBibleItem.target = selectedBibleItem.target;
-        this.changeBibleItem(bibleItem, newBibleItem);
-    }
     deleteBibleItem(bibleItem: BibleItem) {
         if (this.isAlone) {
             return;
@@ -245,7 +223,6 @@ class LookupBibleItemViewController extends BibleItemViewController {
     }
     async tryJumpingChapter(isNext: boolean) {
         const selectedBibleItem = this.selectedBibleItem;
-        const nextBibleItem = selectedBibleItem.clone(true);
         const nextTarget = await selectedBibleItem.getJumpingChapter(isNext);
         if (nextTarget === null) {
             showSimpleToast(
@@ -254,9 +231,10 @@ class LookupBibleItemViewController extends BibleItemViewController {
             );
             return;
         }
-        nextBibleItem.target = nextTarget;
-        this.changeBibleItem(selectedBibleItem, nextBibleItem);
-        this.editBibleItem(nextBibleItem);
+        selectedBibleItem.target = nextTarget;
+        selectedBibleItem.toTitle().then((title) => {
+            this.inputText = title;
+        });
     }
 }
 

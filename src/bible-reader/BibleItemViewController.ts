@@ -18,6 +18,7 @@ import {
 import { BIBLE_VIEW_TEXT_CLASS } from '../helper/bibleViewHelpers';
 import { getLangAsync } from '../lang';
 import { getBibleLocale } from '../helper/bible-helpers/serverBibleHelpers2';
+import { BibleTargetType } from '../bible-list/bibleRenderHelpers';
 
 export type UpdateEventType = 'update';
 export const RESIZE_SETTING_NAME = 'bible-previewer-render';
@@ -328,7 +329,7 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
     getColorNote(bibleItem: BibleItem) {
         return this.colorNoteMap[bibleItem.id] ?? '';
     }
-    setColorNote(bibleItem: BibleItem, color: string | null) {
+    _setColorNote(bibleItem: BibleItem, color: string | null) {
         const colorNoteMap = this.colorNoteMap;
         if (!color) {
             delete colorNoteMap[bibleItem.id];
@@ -336,6 +337,10 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
             colorNoteMap[bibleItem.id] = color;
         }
         this.colorNoteMap = colorNoteMap;
+    }
+    setColorNote(bibleItem: BibleItem, color: string | null) {
+        this._setColorNote(bibleItem, color);
+        this.syncTargetByColorNote(bibleItem);
     }
     getBibleItemsByColorNote(colorNote: string) {
         const allBibleItems = this.straightBibleItems;
@@ -441,18 +446,21 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
             isHorizontal,
         };
     }
-    changeBibleItem(bibleItem: BibleItem, newBibleItem: BibleItem) {
+    applyTargetOrBibleKey(
+        bibleItem: BibleItem,
+        { target, bibleKey }: { target?: BibleTargetType; bibleKey?: string },
+    ) {
         try {
-            newBibleItem.id = bibleItem.id;
             const { nestedBibleItems, parentNestedBibleItems, index } =
                 this.seek(
                     bibleItem,
                     'Change Item',
                     'Unable to change bible item',
                 );
-            parentNestedBibleItems[index] = newBibleItem;
+            const actualBibleItem = parentNestedBibleItems[index] as BibleItem;
+            actualBibleItem.bibleKey = bibleKey ?? actualBibleItem.bibleKey;
+            actualBibleItem.target = target ?? actualBibleItem.target;
 
-            this.setColorNote(newBibleItem, this.getColorNote(bibleItem));
             this.nestedBibleItems = nestedBibleItems;
         } catch (error) {
             handleError(error);
@@ -663,6 +671,17 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
                 );
             }
         });
+    }
+    syncTargetByColorNote(bibleItem: BibleItem) {
+        const colorNote = this.getColorNote(bibleItem);
+        for (const bibleItem1 of this.getBibleItemsByColorNote(colorNote)) {
+            if (bibleItem1.id === bibleItem.id) {
+                continue;
+            }
+            this.applyTargetOrBibleKey(bibleItem1, {
+                target: bibleItem.target,
+            });
+        }
     }
 }
 

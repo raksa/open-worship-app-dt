@@ -25,7 +25,9 @@ export function useSelectedBibleKey() {
     const [bibleKey, setBibleKey] = useState<string>(DEFAULT_UNKNOWN_BIBLE_KEY);
     const viewController = LookupBibleItemViewController.getInstance();
     useAppEffect(() => {
-        viewController.setBibleKey = setBibleKey;
+        viewController.setBibleKey = (newBibleKey: string) => {
+            setBibleKey(newBibleKey);
+        };
         return () => {
             viewController.setBibleKey = (_: string) => {};
         };

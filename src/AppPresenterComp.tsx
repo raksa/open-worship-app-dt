@@ -33,10 +33,9 @@ export default function AppPresenterComp() {
                         titleElement: (
                             <BibleViewTitleEditingComp
                                 onTargetChange={(newBibleTarget) => {
-                                    bibleItem.target = newBibleTarget;
-                                    newViewController.changeBibleItem(
+                                    newViewController.applyTargetOrBibleKey(
                                         bibleItem,
-                                        bibleItem,
+                                        { target: newBibleTarget },
                                     );
                                 }}
                             />

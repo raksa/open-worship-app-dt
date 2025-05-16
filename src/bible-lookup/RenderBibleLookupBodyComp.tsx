@@ -39,7 +39,10 @@ function checkAndSyncResult(
     syncTimeoutId = setTimeout(() => {
         syncTimeoutId = null;
         if (checkShouldSync(oldResult, newResult)) {
-            LookupBibleItemViewController.getInstance().syncBibleItems();
+            const viewController = LookupBibleItemViewController.getInstance();
+            viewController.syncTargetByColorNote(
+                viewController.selectedBibleItem,
+            );
         }
     }, 100);
 }
@@ -67,8 +70,7 @@ function useExtractInput(bibleKey: string, inputText: string) {
                 return;
             }
             if (result.bibleItem !== null) {
-                result.bibleItem.id = viewController.selectedBibleItem.id;
-                viewController.changeBibleItem(
+                viewController.applyTargetOrBibleKey(
                     viewController.selectedBibleItem,
                     result.bibleItem,
                 );

@@ -51,9 +51,9 @@ export default function BibleViewComp({
             >
                 <RenderHeaderComp
                     onChange={(_oldBibleKey: string, newBibleKey: string) => {
-                        const newBibleItem = bibleItem.clone(true);
-                        newBibleItem.bibleKey = newBibleKey;
-                        viewController.changeBibleItem(bibleItem, newBibleItem);
+                        viewController.applyTargetOrBibleKey(bibleItem, {
+                            bibleKey: newBibleKey,
+                        });
                     }}
                     onClose={() => {
                         viewController.deleteBibleItem(bibleItem);
