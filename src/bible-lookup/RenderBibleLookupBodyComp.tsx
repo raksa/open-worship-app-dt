@@ -69,10 +69,13 @@ function useExtractInput(bibleKey: string, inputText: string) {
             ) {
                 return;
             }
-            if (result.bibleItem !== null) {
+            const { bibleItem: foundBibleItem } = result;
+            if (foundBibleItem !== null) {
+                const selectedBibleItem = viewController.selectedBibleItem;
+                foundBibleItem.id = selectedBibleItem.id;
                 viewController.applyTargetOrBibleKey(
-                    viewController.selectedBibleItem,
-                    result.bibleItem,
+                    selectedBibleItem,
+                    foundBibleItem,
                 );
             }
             methodContext.setExtractedInput((previousResult) => {
