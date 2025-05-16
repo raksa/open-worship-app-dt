@@ -16,6 +16,11 @@ import { electronSendAsync, unlocking } from '../server/appHelpers';
 import { getValidOnScreen } from './managers/screenManagerBaseHelpers';
 import { VaryAppDocumentItemDataType } from '../app-document-list/appDocumentHelpers';
 import appProvider from '../server/appProvider';
+import {
+    applyToTheTop,
+    TO_THE_TOP_CLASSNAME,
+    TO_THE_TOP_STYLE_STRING,
+} from '../others/RenderToTheTopComp';
 
 export const bibleDataTypeList = ['bible-item', 'lyric'] as const;
 export type BibleDataType = (typeof bibleDataTypeList)[number];
@@ -83,11 +88,11 @@ export type AllDisplayType = {
 export const screenTypeList = [
     'background',
     'vary-app-document',
-    'full-text',
-    'full-text-scroll',
-    'full-text-text-style',
+    'bible-screen-view',
+    'bible-screen-view-scroll',
+    'bible-screen-view-text-style',
     'alert',
-    'full-text-selected-index',
+    'bible-screen-view-selected-index',
     'display-change',
     'visible',
     'init',
@@ -271,7 +276,7 @@ export function getBibleListOnScreenSetting(): BibleListType {
                     validateBible(item.bibleItemData))
             ) {
                 loggerHelpers.error(item);
-                throw new Error('Invalid full-text data');
+                throw new Error('Invalid bible-screen-view data');
             }
         });
         return getValidOnScreen(json);
@@ -282,4 +287,25 @@ export function getBibleListOnScreenSetting(): BibleListType {
         handleError(error);
     }
     return {};
+}
+
+export function addToTheTop(div: HTMLDivElement) {
+    const oldIcon = div.querySelector(`.${TO_THE_TOP_CLASSNAME}`);
+    if (oldIcon) {
+        const scrollCallback = (oldIcon as any)._scrollCallback;
+        if (scrollCallback !== undefined) {
+            div.removeEventListener('scroll', scrollCallback);
+        }
+        oldIcon.remove();
+    }
+    const style = document.createElement('style');
+    style.innerHTML = TO_THE_TOP_STYLE_STRING;
+    div.appendChild(style);
+    const target = document.createElement('img');
+    target.className = TO_THE_TOP_CLASSNAME;
+    target.title = 'Scroll to the top';
+    target.src = 'assets/arrow-up-circle.png';
+    target.style.position = 'fixed';
+    div.appendChild(target);
+    applyToTheTop(target);
 }

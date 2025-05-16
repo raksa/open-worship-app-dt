@@ -61,7 +61,7 @@ export default function BibleViewComp({
                 />
                 <div className="card-body p-3">
                     <BibleViewTextComp />
-                    <RenderToTheTopComp style={{ bottom: '40px' }} />
+                    <RenderToTheTopComp style={{ bottom: '60px' }} />
                 </div>
             </div>
         </BibleItemContext>

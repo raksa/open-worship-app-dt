@@ -8,7 +8,7 @@ import bibleScreenHelper from './bibleScreenHelpers';
 import ScreenBibleManager from './managers/ScreenBibleManager';
 import { showAppAlert } from '../popup-widget/popupWidgetHelpers';
 import { getAllLocalBibleInfoList } from '../helper/bible-helpers/bibleDownloadHelpers';
-import { BibleItemDataType } from './screenHelpers';
+import { addToTheTop, BibleItemDataType } from './screenHelpers';
 import { getDisplayByScreenId } from './managers/screenHelpers';
 import { BibleItemType } from '../bible-list/bibleItemHelpers';
 import { cloneJson } from '../helper/helpers';
@@ -125,20 +125,20 @@ async function onBibleSelect(
 export async function renderScreenBibleManager(
     screenBibleManager: ScreenBibleManager,
 ) {
-    if (screenBibleManager.div === null) {
+    const { div } = screenBibleManager;
+    if (div === null) {
         return;
     }
     const screenViewData = screenBibleManager.screenViewData;
     if (screenViewData === null) {
-        if (screenBibleManager.div.lastChild !== null) {
-            const targetDiv = screenBibleManager.div
-                .lastChild as HTMLDivElement;
+        if (div.lastChild !== null) {
+            const targetDiv = div.lastChild as HTMLDivElement;
             targetDiv.remove();
         }
-        screenBibleManager.div.style.pointerEvents = 'none';
+        div.style.pointerEvents = 'none';
         return;
     }
-    screenBibleManager.div.style.pointerEvents = 'auto';
+    div.style.pointerEvents = 'auto';
     let newDiv: HTMLDivElement | null = null;
     if (
         screenViewData.type === 'bible-item' &&
@@ -182,12 +182,13 @@ export async function renderScreenBibleManager(
         height: `${parentHeight}px`,
         transform: `scale(${scale},${scale}) translate(50%, 50%)`,
     });
-    Array.from(screenBibleManager.div.children).forEach((child) => {
+    Array.from(div.children).forEach((child) => {
         child.remove();
     });
-    screenBibleManager.div.appendChild(divContainer);
+    div.appendChild(divContainer);
     screenBibleManager.renderScroll(true);
     screenBibleManager.renderSelectedIndex();
+    addToTheTop(div);
 }
 
 export async function bibleItemToScreenViewData(bibleItems: BibleItem[]) {

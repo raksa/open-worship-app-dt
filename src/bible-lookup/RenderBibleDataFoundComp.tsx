@@ -54,7 +54,7 @@ export default function RenderBibleDataFoundComp({
                 <div className="p-2">
                     <BibleViewTextComp />
                 </div>
-                <RenderToTheTopComp style={{ bottom: '40px' }} />
+                <RenderToTheTopComp style={{ bottom: '60px' }} />
             </div>
         </div>
     );

@@ -213,7 +213,7 @@ class ScreenBibleManager extends ScreenEventHandler<ScreenBibleManagerEventType>
         this.screenManagerBase.sendScreenMessage(
             {
                 screenId: this.screenId,
-                type: 'full-text-scroll',
+                type: 'bible-screen-view-scroll',
                 data: {
                     scroll: this.scroll,
                 },
@@ -251,7 +251,7 @@ class ScreenBibleManager extends ScreenEventHandler<ScreenBibleManagerEventType>
         this.screenManagerBase.sendScreenMessage(
             {
                 screenId: this.screenId,
-                type: 'full-text-selected-index',
+                type: 'bible-screen-view-selected-index',
                 data: {
                     selectedKJVVerseKey: this.selectedKJVVerseKey,
                 },
@@ -271,7 +271,7 @@ class ScreenBibleManager extends ScreenEventHandler<ScreenBibleManagerEventType>
 
     toSyncMessage(): BasicScreenMessageType {
         return {
-            type: 'full-text',
+            type: 'bible-screen-view',
             data: this.screenViewData,
         };
     }
@@ -351,7 +351,7 @@ class ScreenBibleManager extends ScreenEventHandler<ScreenBibleManagerEventType>
         getAllScreenManagerBases().forEach((screenManagerBase) => {
             screenManagerBase.sendScreenMessage({
                 screenId: screenManagerBase.screenId,
-                type: 'full-text-text-style',
+                type: 'bible-screen-view-text-style',
                 data: {
                     textStyle: this.textStyle,
                 },

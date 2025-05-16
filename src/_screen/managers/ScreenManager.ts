@@ -148,7 +148,7 @@ export default class ScreenManager extends ScreenManagerBase {
             return ScreenBackgroundManager;
         } else if (type === 'vary-app-document') {
             return ScreenVaryAppDocumentManager;
-        } else if (type === 'full-text') {
+        } else if (type === 'bible-screen-view') {
             return ScreenBibleManager;
         } else if (type === 'alert') {
             return ScreenAlertManager;
@@ -172,11 +172,11 @@ export default class ScreenManager extends ScreenManagerBase {
             screenManagerBase.isShowing = data?.isShowing;
         } else if (type === 'effect') {
             ScreenEffectManager.receiveSyncScreen(message);
-        } else if (type === 'full-text-scroll') {
+        } else if (type === 'bible-screen-view-scroll') {
             ScreenBibleManager.receiveSyncScroll(message);
-        } else if (type === 'full-text-selected-index') {
+        } else if (type === 'bible-screen-view-selected-index') {
             ScreenBibleManager.receiveSyncSelectedIndex(message);
-        } else if (type === 'full-text-text-style') {
+        } else if (type === 'bible-screen-view-text-style') {
             ScreenBibleManager.receiveSyncTextStyle(message);
         } else {
             log(message);

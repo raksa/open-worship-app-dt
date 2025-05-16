@@ -9,30 +9,30 @@ import {
 } from './managers/screenManagerHooks';
 
 const styleText = `
-#full-text {
+#bible-screen-view {
     overflow-x: hidden;
     overflow-y: auto;
 }
 
-#full-text div {
+#bible-screen-view div {
     display: inline-block;
 }
 
-#full-text::-webkit-scrollbar {
+#bible-screen-view::-webkit-scrollbar {
     width: 0.2em;
 }
 
-#full-text::-webkit-scrollbar-track {
+#bible-screen-view::-webkit-scrollbar-track {
     background-color: #2752ff2a;
     border-radius: 5px;
 }
 
-#full-text::-webkit-scrollbar-thumb {
+#bible-screen-view::-webkit-scrollbar-thumb {
     border-radius: 5px;
     background-color: white;
 }
 
-#full-text table {
+#bible-screen-view table {
     table-layout: fixed;
     width: 100%;
     background-color: #2752ff2a;
@@ -43,19 +43,19 @@ const styleText = `
     border-collapse: separate;
 }
 
-#full-text thead {
+#bible-screen-view thead {
     background-color: #2752ff2a;
     padding-left: 0.5em;
     padding-right: 0.5em;
     -webkit-text-stroke-width: 0.01em;
 }
 
-#full-text th {
+#bible-screen-view th {
     border-radius: 0.1em;
 }
 
-#full-text th,
-#full-text td {
+#bible-screen-view th,
+#bible-screen-view td {
     -webkit-font-smoothing: antialiased;
     border-left: 1px solid #000;
     text-align: left;
@@ -65,43 +65,43 @@ const styleText = `
     box-sizing: border-box;
 }
 
-#full-text td>span {
+#bible-screen-view td>span {
     padding-left: 0.2em;
     padding-right: 0.2em;
 }
 
-#full-text td .verse-number {
+#bible-screen-view td .verse-number {
     -webkit-text-stroke: 0.01em greenyellow;
     color: rgba(172, 255, 47, 0.645);
     transform: scale(0.7) translateY(-0.3em);
     opacity: 0.7;
 }
 
-#full-text .header .bible-key {
+#bible-screen-view .header .bible-key {
     opacity: 0.5;
     font-weight: 100;
     transform: scale(0.7);
 }
 
-#full-text .header .title {
+#bible-screen-view .header .title {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
     text-align: left;
 }
 
-#full-text .highlight {
+#bible-screen-view .highlight {
     border-radius: 0.5em;
     transition: background-color 0.5s ease;
     border: 0.05em solid transparent;
     cursor: pointer;
 }
 
-#full-text .highlight.hover {
+#bible-screen-view .highlight.hover {
     border-bottom-color: rgba(255, 255, 255, 0.1);
 }
 
-#full-text .highlight.selected {
+#bible-screen-view .highlight.selected {
     background: ${
         'linear-gradient(transparent, transparent, ' +
         'rgba(255, 0, 157, 0.6), transparent);'
@@ -125,12 +125,12 @@ export default function ScreenBibleComp() {
         <>
             <style>{styleText}</style>
             <style>
-                {`#full-text th, #full-text td {
+                {`#bible-screen-view th, #bible-screen-view td {
                     ${ScreenBibleManager.textStyleText}
                 }`}
             </style>
             <div
-                id="full-text"
+                id="bible-screen-view"
                 ref={div}
                 style={screenBibleManager.containerStyle}
             />
