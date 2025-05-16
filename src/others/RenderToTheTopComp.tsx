@@ -30,6 +30,9 @@ export const TO_THE_TOP_STYLE_STRING = `
     opacity: 0;
     transition: opacity 0.3s ease-in-out;
 }
+.${TO_THE_TOP_CLASSNAME}.asking-to-top {
+    opacity: 0.4;
+}
 .${TO_THE_TOP_CLASSNAME}.show {
     opacity: 0.1;
     pointer-events: all;
@@ -56,22 +59,29 @@ export function applyToTheTop(element: HTMLElement) {
     });
     parent.addEventListener('scroll', scrollCallback);
     element.onclick = () => {
-        parent.scrollTo({
-            top: 0,
-            behavior: 'smooth',
-        });
+        if (
+            parent.querySelector('.play-to-bottom')?.classList.contains('going')
+        ) {
+            parent.classList.add('asking-to-top');
+        } else {
+            parent.scrollTo({
+                top: 0,
+                behavior: 'smooth',
+            });
+        }
     };
     checkElement(parent, element);
 }
-const speedOffset = 0.01;
+const INIT_TITLE =
+    'Click to scroll to the bottom, double click to speed up, ' +
+    'right click to slow down, Alt + right click to stop';
+const speedOffset = 0.07;
 function applyPlayToBottom(element: HTMLElement) {
     const parent = element.parentElement;
     if (!parent) {
         return;
     }
-    element.title =
-        'Click to scroll to the bottom, double click to speed up, ' +
-        'right click to slow down, Alt + right click to stop';
+    element.title = INIT_TITLE;
     let speed = 0;
     let scrollTop = 0;
     const setSpeed = (newSpeed: number) => {
@@ -80,6 +90,10 @@ function applyPlayToBottom(element: HTMLElement) {
         }
         speed = newSpeed;
         element.title = newSpeed.toString();
+        if (newSpeed <= 0) {
+            element.classList.remove('going');
+            element.title = INIT_TITLE;
+        }
     };
     const preventEvent = (event: Event) => {
         event.stopPropagation();
@@ -93,6 +107,7 @@ function applyPlayToBottom(element: HTMLElement) {
             if (speed <= 0) {
                 return;
             }
+            element.classList.add('going');
             const isAtBottom =
                 parent.scrollTop >=
                 parent.scrollHeight - parent.clientHeight - 1;
@@ -100,14 +115,28 @@ function applyPlayToBottom(element: HTMLElement) {
                 scrollTop += 0.05 + speed;
                 scrollTop = Math.max(parent.scrollTop, scrollTop);
                 parent.scrollTop = scrollTop;
-                element.classList.add('going');
-                requestAnimationFrame(scrollToBottom);
+                (parent as any)._isGoing = true;
+                if (parent.classList.contains('asking-to-top')) {
+                    (parent as any)._askingToTop = false;
+                    scrollTop = 0;
+                    parent.scrollTo({
+                        top: 0,
+                        behavior: 'smooth',
+                    });
+                    setTimeout(() => {
+                        parent.classList.remove('asking-to-top');
+                        requestAnimationFrame(scrollToBottom);
+                    }, 1000);
+                } else {
+                    requestAnimationFrame(scrollToBottom);
+                }
             } else {
-                element.classList.remove('going');
                 setSpeed(0);
             }
         };
-        scrollToBottom();
+        if (!element.classList.contains('going')) {
+            scrollToBottom();
+        }
     };
     element.oncontextmenu = (event) => {
         preventEvent(event);
