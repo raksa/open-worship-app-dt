@@ -105,6 +105,9 @@ export function initEventScreen(appController: ElectronAppController) {
         screenController.close();
         screenController.destroyInstance();
     });
+    ipcMain.on('app:hide-all-screens', () => {
+        ElectronScreenController.closeAll();
+    });
 
     ipcMain.on(
         'main:app:set-screen-display',

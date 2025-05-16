@@ -179,6 +179,10 @@ export function hideScreen(screenId: number) {
     messageUtils.sendData('app:hide-screen', screenId);
 }
 
+export function hideAllScreens() {
+    messageUtils.sendData('app:hide-all-screens');
+}
+
 export type PTEffectDataType = {
     target: TargetType;
     effect: ScreenTransitionEffectType;
