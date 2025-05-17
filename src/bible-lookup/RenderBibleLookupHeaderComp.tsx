@@ -5,7 +5,7 @@ import InputHistoryComp from './InputHistoryComp';
 import appProvider from '../server/appProvider';
 import { ModalCloseButton } from '../app-modal/ModalComp';
 import { useShowBibleLookupContext } from '../others/commonButtons';
-import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
+import { useLookupBibleItemControllerContext } from '../bible-reader/LookupBibleItemController';
 
 export default function RenderBibleLookupHeaderComp({
     isLookupOnline,
@@ -14,6 +14,7 @@ export default function RenderBibleLookupHeaderComp({
     isLookupOnline: boolean;
     setIsLookupOnline: (isLookupOnline: boolean) => void;
 }>) {
+    const viewController = useLookupBibleItemControllerContext();
     const hideBibleLookupPopup = useShowBibleLookupContext(false);
     const { inputText } = useInputTextContext();
 
@@ -22,7 +23,6 @@ export default function RenderBibleLookupHeaderComp({
         newBibleKey: string,
     ) => {
         const newText = await genInputText(oldBibleKey, newBibleKey, inputText);
-        const viewController = LookupBibleItemViewController.getInstance();
         viewController.bibleKey = newBibleKey;
         viewController.inputText = newText;
     };

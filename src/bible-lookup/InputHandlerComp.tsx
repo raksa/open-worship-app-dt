@@ -11,9 +11,9 @@ import {
     setBibleLookupInputFocus,
 } from './selectionHelpers';
 import { useBibleKeyContext } from '../bible-list/bibleHelpers';
-import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
 import { useAppStateAsync } from '../helper/debuggerHelpers';
 import { toInputText } from '../helper/bible-helpers/serverBibleHelpers2';
+import { useLookupBibleItemControllerContext } from '../bible-reader/LookupBibleItemController';
 
 export const InputTextContext = createContext<{
     inputText: string;
@@ -37,7 +37,7 @@ export default function InputHandlerComp({
     onBibleKeyChange: (oldBibleKey: string, newBibleKey: string) => void;
 }>) {
     const { inputText } = useInputTextContext();
-    const bibleViewController = LookupBibleItemViewController.getInstance();
+    const bibleViewController = useLookupBibleItemControllerContext();
     const setInputText = (text: string) => {
         bibleViewController.inputText = text;
     };

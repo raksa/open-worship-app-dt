@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { getSetting, setSetting } from '../helper/settingHelpers';
 import { extractBibleTitle } from '../helper/bible-helpers/serverBibleHelpers2';
-import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
+import LookupBibleItemController, {
+    useLookupBibleItemControllerContext,
+} from '../bible-reader/LookupBibleItemController';
 import { historyStore } from '../bible-reader/BibleItemsViewController';
 
 const HISTORY_TEXT_LIST_SETTING_NAME = 'history-text-list';
@@ -52,7 +54,11 @@ function extractHistoryText(historyText: string) {
     };
 }
 
-async function handleDoubleClicking(event: any, historyText: string) {
+async function handleDoubleClicking(
+    event: any,
+    viewController: LookupBibleItemController,
+    historyText: string,
+) {
     event.preventDefault();
     const extracted = extractHistoryText(historyText);
     if (extracted === null) {
@@ -63,7 +69,6 @@ async function handleDoubleClicking(event: any, historyText: string) {
     if (result.bibleItem === null) {
         return;
     }
-    const viewController = LookupBibleItemViewController.getInstance();
     if (event.shiftKey) {
         viewController.addBibleItemLeft(
             viewController.selectedBibleItem,
@@ -89,6 +94,7 @@ export default function InputHistoryComp({
 }: Readonly<{
     maxHistoryCount?: number;
 }>) {
+    const viewController = useLookupBibleItemControllerContext();
     const [historyTextList, setHistoryTextList] =
         useHistoryTextList(maxHistoryCount);
 
@@ -114,7 +120,11 @@ export default function InputHistoryComp({
                         className="btn btn-sm d-flex app-border-white-round"
                         style={{ height: '25px' }}
                         onDoubleClick={(event) => {
-                            handleDoubleClicking(event, historyText);
+                            handleDoubleClicking(
+                                event,
+                                viewController,
+                                historyText,
+                            );
                         }}
                     >
                         <small className="flex-fill">{historyText}</small>

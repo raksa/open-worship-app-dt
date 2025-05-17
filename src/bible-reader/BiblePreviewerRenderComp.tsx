@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useStateSettingNumber } from '../helper/settingHelpers';
 import BibleViewSettingComp, { defaultRangeSize } from './BibleViewSettingComp';
 import {
-    useBibleItemViewControllerContext,
+    useBibleItemsViewControllerContext,
     useBibleItemViewControllerUpdateEvent,
 } from './BibleItemsViewController';
 import BibleViewRendererComp from './BibleViewRendererComp';
@@ -17,7 +17,7 @@ import { handleCtrlWheel } from '../others/AppRangeComp';
 import appProvider from '../server/appProvider';
 
 function NewLineSettingComp() {
-    const viewController = useBibleItemViewControllerContext();
+    const viewController = useBibleItemsViewControllerContext();
     const [shouldNewLine, setShouldNewLine] = useState(
         viewController.shouldNewLine,
     );

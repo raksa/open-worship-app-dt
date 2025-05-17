@@ -3,13 +3,13 @@ import { BibleItemContext } from '../bible-reader/BibleItemContext';
 import RefRendererComp from '../bible-refs/RefRendererComp';
 import BibleItem from '../bible-list/BibleItem';
 import { useAppEffect } from '../helper/debuggerHelpers';
-import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
 import { bibleRenderHelper } from '../bible-list/bibleRenderHelpers';
+import { useLookupBibleItemControllerContext } from '../bible-reader/LookupBibleItemController';
 
 export default function BibleCrossReferentPreviewerComp() {
+    const viewController = useLookupBibleItemControllerContext();
     const [bileItem, setBileItem] = useState<BibleItem | null>(null);
     useAppEffect(() => {
-        const viewController = LookupBibleItemViewController.getInstance();
         viewController.setBibleVerseKey = (bibleVerseKey: string) => {
             if (!bibleVerseKey) {
                 return;

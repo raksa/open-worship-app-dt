@@ -51,7 +51,7 @@ function checkElement(parent: HTMLElement, element: HTMLElement) {
 }
 export function applyToTheTop(element: HTMLElement) {
     const parent = element.parentElement;
-    if (!parent) {
+    if (parent === null) {
         return;
     }
     const scrollCallback = ((element as any)._scrollCallback = () => {
@@ -72,87 +72,116 @@ export function applyToTheTop(element: HTMLElement) {
     };
     checkElement(parent, element);
 }
+
+function startAnimToBottom(
+    parent: HTMLElement,
+    element: HTMLElement,
+    store: {
+        speed: number;
+        scrollTop: number;
+    },
+    onStop: () => void,
+) {
+    const shouldStop =
+        store.speed <= 0 ||
+        parent.scrollTop >= parent.scrollHeight - parent.clientHeight - 5;
+
+    if (shouldStop) {
+        onStop();
+        return;
+    }
+    const nexTargetCallback = startAnimToBottom.bind(
+        null,
+        parent,
+        element,
+        store,
+        onStop,
+    );
+    if (parent.classList.contains('asking-to-top')) {
+        (parent as any)._askingToTop = false;
+        store.scrollTop = 0;
+        parent.scrollTo({
+            top: 0,
+            behavior: 'smooth',
+        });
+        setTimeout(() => {
+            parent.classList.remove('asking-to-top');
+            requestAnimationFrame(nexTargetCallback);
+        }, 1000);
+        return;
+    }
+
+    store.scrollTop += 0.05 + store.speed;
+    store.scrollTop = Math.max(parent.scrollTop, store.scrollTop);
+    parent.scrollTop = store.scrollTop;
+    requestAnimationFrame(nexTargetCallback);
+}
+
+function preventEvent(event: Event) {
+    event.stopPropagation();
+    event.preventDefault();
+}
+
 const INIT_TITLE =
     'Click to scroll to the bottom, double click to speed up, ' +
     'right click to slow down, Alt + right click to stop';
 const speedOffset = 0.07;
 function applyPlayToBottom(element: HTMLElement) {
     const parent = element.parentElement;
-    if (!parent) {
+    if (parent === null) {
         return;
     }
     element.title = INIT_TITLE;
-    let speed = 0;
-    let scrollTop = 0;
-    const setSpeed = (newSpeed: number) => {
-        if (newSpeed < 0) {
-            newSpeed = 0;
-        }
-        speed = newSpeed;
-        element.title = newSpeed.toString();
-        if (newSpeed <= 0) {
-            element.classList.remove('going');
-            element.title = INIT_TITLE;
-        }
+    const store = {
+        speed: 0,
+        scrollTop: 0,
     };
-    const preventEvent = (event: Event) => {
-        event.stopPropagation();
-        event.preventDefault();
+    const setSpeed = (newSpeed: number) => {
+        store.speed = Math.max(0, newSpeed);
+        element.title = newSpeed.toString();
+    };
+    const start = () => {
+        if (element.classList.contains('going')) {
+            return;
+        }
+        store.scrollTop = parent.scrollTop;
+        element.classList.add('going');
+        element.title = INIT_TITLE;
+        startAnimToBottom(parent, element, store, () => {
+            element.classList.remove('going');
+            setSpeed(0);
+            element.title = INIT_TITLE;
+        });
     };
     element.onclick = (event) => {
         preventEvent(event);
-        setSpeed(speed + speedOffset);
-        scrollTop = parent.scrollTop;
-        const scrollToBottom = () => {
-            if (speed <= 0) {
-                return;
-            }
-            element.classList.add('going');
-            const isAtBottom =
-                parent.scrollTop >=
-                parent.scrollHeight - parent.clientHeight - 1;
-            if (!isAtBottom) {
-                scrollTop += 0.05 + speed;
-                scrollTop = Math.max(parent.scrollTop, scrollTop);
-                parent.scrollTop = scrollTop;
-                (parent as any)._isGoing = true;
-                if (parent.classList.contains('asking-to-top')) {
-                    (parent as any)._askingToTop = false;
-                    scrollTop = 0;
-                    parent.scrollTo({
-                        top: 0,
-                        behavior: 'smooth',
-                    });
-                    setTimeout(() => {
-                        parent.classList.remove('asking-to-top');
-                        requestAnimationFrame(scrollToBottom);
-                    }, 1000);
-                } else {
-                    requestAnimationFrame(scrollToBottom);
-                }
-            } else {
-                setSpeed(0);
-            }
-        };
-        if (!element.classList.contains('going')) {
-            scrollToBottom();
-        }
+        setSpeed(store.speed + speedOffset);
+        start();
     };
     element.oncontextmenu = (event) => {
         preventEvent(event);
+        if (!element.classList.contains('going')) {
+            return;
+        }
         if (event.altKey) {
             setSpeed(0);
             return;
         }
-        setSpeed(speed - speedOffset);
+        setSpeed(store.speed - speedOffset);
     };
     element.ondblclick = (event) => {
         preventEvent(event);
-        if (speed <= 0) {
-            return;
-        }
-        setSpeed(speed + speedOffset * 3);
+        setSpeed(store.speed + speedOffset * 3);
+        start();
     };
+    const resizeObserver = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+            if (entry.contentRect.height < entry.target.clientHeight) {
+                console.log('on overflow');
+            }
+        }
+    });
+    resizeObserver.observe(parent);
 }
 
 export default function RenderToTheTopComp({

@@ -3,7 +3,7 @@ import { lazy, useMemo } from 'react';
 import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActorComp from './resize-actor/ResizeActorComp';
 import BibleItemsViewController, {
-    BibleItemViewControllerContext,
+    BibleItemsViewControllerContext,
 } from './bible-reader/BibleItemsViewController';
 import SlideEditHandlerComp from './app-document-presenter/SlideEditHandlerComp';
 import BibleViewComp from './bible-reader/BibleViewComp';
@@ -12,6 +12,8 @@ import {
     BibleViewTitleEditingComp,
     BibleViewTitleMaterialContext,
 } from './bible-reader/BibleViewExtra';
+import { BibleItemContext } from './bible-reader/BibleItemContext';
+import { MultiContextRender } from './helper/MultiContextRender';
 
 const LazyAppPresenterLeftComp = lazy(() => {
     return import('./AppPresenterLeftComp');
@@ -28,31 +30,37 @@ export default function AppPresenterComp() {
         const newViewController = new BibleItemsViewController('presenter');
         newViewController.finalRenderer = (bibleItem: BibleItem) => {
             return (
-                <BibleViewTitleMaterialContext
-                    value={{
-                        titleElement: (
-                            <BibleViewTitleEditingComp
-                                onTargetChange={(newBibleTarget) => {
-                                    newViewController.applyTargetOrBibleKey(
-                                        bibleItem,
-                                        { target: newBibleTarget },
-                                    );
-                                    newViewController.syncTargetByColorNote(
-                                        bibleItem,
-                                    );
-                                }}
-                            />
-                        ),
-                    }}
+                <MultiContextRender
+                    contexts={[
+                        { context: BibleItemContext, value: bibleItem },
+                        {
+                            context: BibleViewTitleMaterialContext,
+                            value: {
+                                titleElement: (
+                                    <BibleViewTitleEditingComp
+                                        onTargetChange={(newBibleTarget) => {
+                                            newViewController.applyTargetOrBibleKey(
+                                                bibleItem,
+                                                { target: newBibleTarget },
+                                            );
+                                            newViewController.syncTargetByColorNote(
+                                                bibleItem,
+                                            );
+                                        }}
+                                    />
+                                ),
+                            },
+                        },
+                    ]}
                 >
-                    <BibleViewComp bibleItem={bibleItem} />
-                </BibleViewTitleMaterialContext>
+                    <BibleViewComp />
+                </MultiContextRender>
             );
         };
         return newViewController;
     }, []);
     return (
-        <BibleItemViewControllerContext value={viewController}>
+        <BibleItemsViewControllerContext value={viewController}>
             <ResizeActorComp
                 flexSizeName={resizeSettingNames.appPresenter}
                 isHorizontal
@@ -80,6 +88,6 @@ export default function AppPresenterComp() {
                 ]}
             />
             <SlideEditHandlerComp />
-        </BibleItemViewControllerContext>
+        </BibleItemsViewControllerContext>
     );
 }

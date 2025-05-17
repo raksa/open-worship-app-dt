@@ -14,7 +14,7 @@ export default function RenderVerseNumOptionComp({
     index: number;
     verseNum: number;
     verseNumText: string;
-    onVerseChange: (verseStart?: number, verseEnd?: number) => void;
+    onVerseChange: (verseStart: number, verseEnd?: number) => void;
 }>) {
     const bibleItem = useBibleItemContext();
     const { target } = bibleItem;
@@ -38,7 +38,11 @@ export default function RenderVerseNumOptionComp({
                     const arr = [ind, sVerse, eVerse].sort((a, b) => {
                         return a - b;
                     });
-                    onVerseChange(arr.shift(), arr.pop());
+                    const verse = arr.shift();
+                    if (verse === undefined) {
+                        return;
+                    }
+                    onVerseChange(verse, arr.pop());
                 } else {
                     onVerseChange(ind);
                     mouseDownInd = ind;

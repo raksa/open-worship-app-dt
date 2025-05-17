@@ -1,8 +1,9 @@
 import BibleItem from '../bible-list/BibleItem';
-import LookupBibleItemViewController, {
+import LookupBibleItemController, {
     closeEventMapper,
     ctrlShiftMetaKeys,
-} from './LookupBibleItemViewController';
+    useLookupBibleItemControllerContext,
+} from './LookupBibleItemController';
 import { handleError } from '../helper/errorHelpers';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
 import BibleItemsViewController from './BibleItemsViewController';
@@ -91,9 +92,9 @@ export function applyDragged(
 }
 
 function changeEditingBibleItem(
+    viewController: LookupBibleItemController,
     eventKey: 'ArrowLeft' | 'ArrowRight' | 'ArrowUp' | 'ArrowDown',
 ) {
-    const viewController = LookupBibleItemViewController.getInstance();
     const allBibleItems = viewController.straightBibleItems;
     if (allBibleItems.length === 0) {
         return;
@@ -133,6 +134,7 @@ function changeEditingBibleItem(
 }
 
 export function useNextEditingBibleItem() {
+    const viewController = useLookupBibleItemControllerContext();
     const eventMapperList = [
         'ArrowLeft',
         'ArrowRight',
@@ -145,19 +147,19 @@ export function useNextEditingBibleItem() {
         eventMapperList,
         (event) => {
             event.preventDefault();
-            changeEditingBibleItem(event.key as any);
+            changeEditingBibleItem(viewController, event.key as any);
         },
         [],
     );
 }
 
 export function useSplitBibleItemRenderer() {
+    const viewController = useLookupBibleItemControllerContext();
     useKeyboardRegistering(
         ['s', 'v'].map((key) => {
             return { ...ctrlShiftMetaKeys, key };
         }),
         (event) => {
-            const viewController = LookupBibleItemViewController.getInstance();
             const bibleItem = viewController.selectedBibleItem;
             if (event.key.toLowerCase() === 's') {
                 viewController.addBibleItemLeft(bibleItem, bibleItem);
@@ -169,8 +171,9 @@ export function useSplitBibleItemRenderer() {
     );
 }
 
-export function closeCurrentEditingBibleItem() {
-    const viewController = LookupBibleItemViewController.getInstance();
+export function closeCurrentEditingBibleItem(
+    viewController: LookupBibleItemController,
+) {
     const selectedBibleItem = viewController.selectedBibleItem;
     if (viewController.straightBibleItems.length < 2) {
         return;
@@ -179,11 +182,12 @@ export function closeCurrentEditingBibleItem() {
 }
 
 export function useCloseBibleItemRenderer() {
+    const viewController = useLookupBibleItemControllerContext();
     useKeyboardRegistering(
         [closeEventMapper],
         (event) => {
             event.preventDefault();
-            closeCurrentEditingBibleItem();
+            closeCurrentEditingBibleItem(viewController);
         },
         [],
     );

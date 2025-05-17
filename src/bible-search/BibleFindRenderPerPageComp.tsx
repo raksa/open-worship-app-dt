@@ -1,4 +1,5 @@
 import { BibleDirectViewTitleComp } from '../bible-reader/BibleViewExtra';
+import { useLookupBibleItemControllerContext } from '../bible-reader/LookupBibleItemController';
 import { useAppPromise } from '../helper/helpers';
 import { useBibleFindController } from './BibleFindController';
 import { breakItem, handleClicking } from './bibleFindHelpers';
@@ -14,6 +15,7 @@ function RenderFoundItemComp({
     text: string;
     bibleKey: string;
 }>) {
+    const viewController = useLookupBibleItemControllerContext();
     const bibleFindController = useBibleFindController();
     const data = useAppPromise(
         breakItem(bibleFindController.locale, findText, text, bibleKey),
@@ -30,7 +32,7 @@ function RenderFoundItemComp({
             className="w-100 app-border-white-round my-2 p-2 pointer"
             title="shift + click to append"
             onClick={(event) => {
-                handleClicking(event, bibleItem);
+                handleClicking(event, viewController, bibleItem);
             }}
         >
             <BibleDirectViewTitleComp bibleItem={bibleItem} />

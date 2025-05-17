@@ -1,9 +1,9 @@
 import BibleItem from '../bible-list/BibleItem';
 import { handleError } from '../helper/errorHelpers';
-import { useBibleItemViewControllerContext } from './BibleItemsViewController';
+import { useBibleItemsViewControllerContext } from './BibleItemsViewController';
 
 export default function NoBibleViewAvailableComp() {
-    const viewController = useBibleItemViewControllerContext();
+    const viewController = useBibleItemsViewControllerContext();
     return (
         <div
             className="bible-view card flex-fill"

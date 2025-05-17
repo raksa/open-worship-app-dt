@@ -18,8 +18,8 @@ import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
 import { useMemo } from 'react';
 import { changeDragEventStyle } from '../helper/helpers';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
-import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
 import BibleViewTitleEditorComp from '../bible-reader/BibleViewTitleEditorComp';
+import LookupBibleItemController from '../bible-reader/LookupBibleItemController';
 
 function genAttachBackgroundComponent(
     droppedData: DroppedDataType | null | undefined,
@@ -103,15 +103,14 @@ export default function BibleItemRenderComp({
         if (appProvider.isPagePresenter) {
             ScreenBibleManager.handleBibleItemSelecting(event, bibleItem);
         } else if (appProvider.isPageReader) {
-            const lookupViewController =
-                LookupBibleItemViewController.getInstance();
+            const viewController = new LookupBibleItemController();
             if (event.shiftKey) {
-                lookupViewController.addBibleItemRight(
-                    lookupViewController.selectedBibleItem,
+                viewController.addBibleItemRight(
+                    viewController.selectedBibleItem,
                     bibleItem,
                 );
             } else {
-                lookupViewController.setLookupContentFromBibleItem(bibleItem);
+                viewController.setLookupContentFromBibleItem(bibleItem);
             }
         }
     };

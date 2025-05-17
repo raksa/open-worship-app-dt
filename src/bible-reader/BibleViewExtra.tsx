@@ -9,7 +9,7 @@ import {
 } from '../helper/bibleViewHelpers';
 import ItemColorNoteComp from '../others/ItemColorNoteComp';
 import ColorNoteInf from '../helper/ColorNoteInf';
-import { useBibleItemViewControllerContext } from './BibleItemsViewController';
+import { useBibleItemsViewControllerContext } from './BibleItemsViewController';
 import { useBibleItemContext } from './BibleItemContext';
 import { BIBLE_VERSE_TEXT_TITLE } from '../helper/helpers';
 import {
@@ -46,7 +46,7 @@ export function RenderTitleMaterialComp({
     onBibleKeyChange?: (oldBibleKey: string, newBibleKey: string) => void;
 }>) {
     const bibleItem = useBibleItemContext();
-    const viewController = useBibleItemViewControllerContext();
+    const viewController = useBibleItemsViewControllerContext();
     const materialContext = useBibleViewTitleMaterialContext();
     const colorNoteHandler: ColorNoteInf = {
         getColorNote: async () => {
@@ -79,25 +79,30 @@ export function RenderTitleMaterialComp({
     );
 }
 
-export function RenderHeaderComp({
-    onChange,
-    onClose,
-}: Readonly<{
-    onChange: (oldBibleKey: string, newBibleKey: string) => void;
-    onClose: () => void;
-}>) {
+export function RenderHeaderComp() {
+    const viewController = useBibleItemsViewControllerContext();
+    const bibleItem = useBibleItemContext();
     const fontSize = useBibleViewFontSizeContext();
     return (
         <div
             className="card-header d-flex app-top-hover-visible"
             style={{ ...fontSizeToHeightStyle(fontSize) }}
         >
-            <RenderTitleMaterialComp onBibleKeyChange={onChange} />
+            <RenderTitleMaterialComp
+                onBibleKeyChange={(
+                    _oldBibleKey: string,
+                    newBibleKey: string,
+                ) => {
+                    viewController.applyTargetOrBibleKey(bibleItem, {
+                        bibleKey: newBibleKey,
+                    });
+                }}
+            />
             <div>
                 <button
                     className="btn-close"
                     onClick={() => {
-                        onClose();
+                        viewController.deleteBibleItem(bibleItem);
                     }}
                 />
             </div>
@@ -186,7 +191,7 @@ function RenderVerseTextComp({
     verseInfo: CompiledVerseType;
     index: number;
 }>) {
-    const viewController = useBibleItemViewControllerContext();
+    const viewController = useBibleItemsViewControllerContext();
     return (
         <>
             {viewController.shouldNewLine &&

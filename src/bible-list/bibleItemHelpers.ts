@@ -10,7 +10,7 @@ import { AnyObjectType } from '../helper/helpers';
 import { BibleTargetType } from './bibleRenderHelpers';
 import { genShowOnScreensContextMenu } from '../others/FileItemHandlerComp';
 import ScreenBibleManager from '../_screen/managers/ScreenBibleManager';
-import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
+import LookupBibleItemController from '../bible-reader/LookupBibleItemController';
 
 export type BibleItemType = {
     id: number;
@@ -66,7 +66,7 @@ export async function openBibleItemContextMenu(
                       menuTitle: '`' + 'Lookup',
                       onSelect: () => {
                           const viewController =
-                              LookupBibleItemViewController.getInstance();
+                              new LookupBibleItemController();
                           viewController.bibleKey = bibleItem.bibleKey;
                           bibleItem.toTitle().then((title) => {
                               viewController.inputText = title;

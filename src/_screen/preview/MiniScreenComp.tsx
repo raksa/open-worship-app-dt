@@ -23,7 +23,7 @@ import {
     useScreenManagerEvents,
 } from '../managers/screenManagerHooks';
 import BibleItemsViewController, {
-    useBibleItemViewControllerContext,
+    useBibleItemsViewControllerContext,
 } from '../../bible-reader/BibleItemsViewController';
 import { BibleItemDataType } from '../screenHelpers';
 import BibleItem from '../../bible-list/BibleItem';
@@ -114,7 +114,7 @@ export default function MiniScreenComp() {
     };
     useScreenManagerEvents(['instance']);
     const screenManagers = getScreenManagersFromSetting();
-    const bibleItemViewController = useBibleItemViewControllerContext();
+    const bibleItemViewController = useBibleItemsViewControllerContext();
     viewControllerAndScreenManagers(screenManagers, bibleItemViewController);
 
     const previewWidth = DEFAULT_PREVIEW_SIZE * previewScale;

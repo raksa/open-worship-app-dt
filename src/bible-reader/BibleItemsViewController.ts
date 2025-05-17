@@ -699,11 +699,11 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
     }
 }
 
-export const BibleItemViewControllerContext =
+export const BibleItemsViewControllerContext =
     createContext<BibleItemsViewController | null>(null);
 
-export function useBibleItemViewControllerContext() {
-    const viewController = use(BibleItemViewControllerContext);
+export function useBibleItemsViewControllerContext() {
+    const viewController = use(BibleItemsViewControllerContext);
     if (viewController === null) {
         throw new Error(
             'useBibleItemViewControllerUpdateEvent must be used within a' +
@@ -714,7 +714,7 @@ export function useBibleItemViewControllerContext() {
 }
 
 export function useBibleItemViewControllerUpdateEvent() {
-    const viewController = useBibleItemViewControllerContext();
+    const viewController = useBibleItemsViewControllerContext();
     const [nestedBibleItems, setNestedBibleItems] = useState(
         viewController.nestedBibleItems,
     );

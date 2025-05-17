@@ -4,14 +4,12 @@ import RenderVerseNumOptionComp, { mouseUp } from './RenderVerseNumOptionComp';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { useGenVerseList } from '../helper/bible-helpers/serverBibleHelpers';
 import { useBibleItemContext } from '../bible-reader/BibleItemContext';
+import { useBibleItemsViewControllerContext } from '../bible-reader/BibleItemsViewController';
 
-export default function RenderVerseOptionsComp({
-    onVersesChange,
-}: Readonly<{
-    onVersesChange: (verseStart?: number, verseEnd?: number) => void;
-}>) {
+export default function RenderVerseOptionsComp() {
     const bibleItem = useBibleItemContext();
     const verseList = useGenVerseList(bibleItem);
+    const viewController = useBibleItemsViewControllerContext();
     useAppEffect(() => {
         document.body.addEventListener('mouseup', mouseUp);
         return () => {
@@ -35,7 +33,19 @@ export default function RenderVerseOptionsComp({
                             index={i}
                             verseNum={verseNum}
                             verseNumText={verseNumStr}
-                            onVerseChange={onVersesChange}
+                            onVerseChange={(newVerseStart, newVerseEnd) => {
+                                viewController.applyTargetOrBibleKey(
+                                    bibleItem,
+                                    {
+                                        target: {
+                                            ...bibleItem.target,
+                                            verseStart: newVerseStart,
+                                            verseEnd:
+                                                newVerseEnd ?? newVerseStart,
+                                        },
+                                    },
+                                );
+                            }}
                         />
                     );
                 })}
@@ -43,7 +53,13 @@ export default function RenderVerseOptionsComp({
                     className="p-2 pointer"
                     title="Full Verse"
                     onClick={() => {
-                        onVersesChange(1, verseList.length);
+                        viewController.applyTargetOrBibleKey(bibleItem, {
+                            target: {
+                                ...bibleItem.target,
+                                verseStart: 1,
+                                verseEnd: verseList.length,
+                            },
+                        });
                     }}
                 >
                     <i className="bi bi-asterisk" />

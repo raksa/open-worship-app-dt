@@ -1,8 +1,7 @@
 import './BibleViewComp.scss';
 
-import BibleItem from '../bible-list/BibleItem';
 import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
-import { useBibleItemViewControllerContext } from './BibleItemsViewController';
+import { useBibleItemsViewControllerContext } from './BibleItemsViewController';
 import {
     applyDragged,
     genDraggingClass,
@@ -10,60 +9,57 @@ import {
 } from './readBibleHelpers';
 import { BibleViewTextComp, RenderHeaderComp } from './BibleViewExtra';
 import { genDefaultBibleItemContextMenu } from '../bible-list/bibleItemHelpers';
-import { BibleItemContext } from './BibleItemContext';
 import RenderToTheTopComp from '../others/RenderToTheTopComp';
+import { useBibleItemContext } from './BibleItemContext';
+import RenderBibleEditingHeader from '../bible-lookup/RenderBibleEditingHeader';
+import RenderBibleLookupBodyComp from '../bible-lookup/RenderBibleLookupBodyComp';
+import { useMemo } from 'react';
+import LookupBibleItemController from './LookupBibleItemController';
 
-export default function BibleViewComp({
-    bibleItem,
-}: Readonly<{
-    bibleItem: BibleItem;
-}>) {
-    const viewController = useBibleItemViewControllerContext();
+export default function BibleViewComp() {
+    const viewController = useBibleItemsViewControllerContext();
     const uuid = crypto.randomUUID();
+    const bibleItem = useBibleItemContext();
+    const isSelected = useMemo(() => {
+        return (
+            viewController instanceof LookupBibleItemController &&
+            viewController.checkIsBibleItemSelected(bibleItem)
+        );
+    }, [viewController, bibleItem]);
     return (
-        <BibleItemContext value={bibleItem}>
-            <div
-                id={`uuid-${uuid}`}
-                className="bible-view card flex-fill w-100 h-100"
-                style={{ minWidth: '30%' }}
-                onDragOver={(event) => {
-                    event.preventDefault();
-                    removeDraggingClass(event);
-                    const className = genDraggingClass(event);
-                    event.currentTarget.classList.add(className);
-                }}
-                onDragLeave={(event) => {
-                    event.preventDefault();
-                    removeDraggingClass(event);
-                }}
-                onDrop={async (event) => {
-                    applyDragged(event, viewController, bibleItem);
-                }}
-                onContextMenu={async (event: any) => {
-                    showAppContextMenu(event, [
-                        ...genDefaultBibleItemContextMenu(bibleItem),
-                        ...(await viewController.genContextMenu(
-                            bibleItem,
-                            uuid,
-                        )),
-                    ]);
-                }}
-            >
-                <RenderHeaderComp
-                    onChange={(_oldBibleKey: string, newBibleKey: string) => {
-                        viewController.applyTargetOrBibleKey(bibleItem, {
-                            bibleKey: newBibleKey,
-                        });
-                    }}
-                    onClose={() => {
-                        viewController.deleteBibleItem(bibleItem);
-                    }}
-                />
-                <div className="card-body p-3">
+        <div
+            id={`uuid-${uuid}`}
+            className="bible-view card flex-fill w-100 h-100"
+            style={{ minWidth: '30%' }}
+            onDragOver={(event) => {
+                event.preventDefault();
+                removeDraggingClass(event);
+                const className = genDraggingClass(event);
+                event.currentTarget.classList.add(className);
+            }}
+            onDragLeave={(event) => {
+                event.preventDefault();
+                removeDraggingClass(event);
+            }}
+            onDrop={async (event) => {
+                applyDragged(event, viewController, bibleItem);
+            }}
+            onContextMenu={async (event: any) => {
+                showAppContextMenu(event, [
+                    ...genDefaultBibleItemContextMenu(bibleItem),
+                    ...(await viewController.genContextMenu(bibleItem, uuid)),
+                ]);
+            }}
+        >
+            {!isSelected ? <RenderHeaderComp /> : <RenderBibleEditingHeader />}
+            <div className="card-body p-3">
+                {isSelected ? (
+                    <RenderBibleLookupBodyComp />
+                ) : (
                     <BibleViewTextComp />
-                    <RenderToTheTopComp style={{ bottom: '60px' }} />
-                </div>
+                )}
+                <RenderToTheTopComp style={{ bottom: '60px' }} />
             </div>
-        </BibleItemContext>
+        </div>
     );
 }

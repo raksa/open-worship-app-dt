@@ -6,6 +6,9 @@ import {
     resizeSettingNames,
 } from './resize-actor/flexSizeHelpers';
 import ResizeActorComp from './resize-actor/ResizeActorComp';
+import AppSuspenseComp from './others/AppSuspenseComp';
+import LookupBibleItemController from './bible-reader/LookupBibleItemController';
+import { BibleItemsViewControllerContext } from './bible-reader/BibleItemsViewController';
 
 const LazyBibleListComp = lazy(() => {
     return import('./bible-list/BibleListComp');
@@ -18,6 +21,7 @@ const flexSizeDefault: FlexSizeType = {
     h1: ['1'],
     h2: ['4'],
 };
+let viewController: LookupBibleItemController | null = null;
 const dataInput: DataInputType[] = [
     {
         children: LazyBibleListComp,
@@ -25,7 +29,20 @@ const dataInput: DataInputType[] = [
         widgetName: 'Bible List',
     },
     {
-        children: LazyRenderBibleLookupComp,
+        children: {
+            render: () => {
+                if (viewController === null) {
+                    viewController = new LookupBibleItemController();
+                }
+                return (
+                    <AppSuspenseComp>
+                        <BibleItemsViewControllerContext value={viewController}>
+                            <LazyRenderBibleLookupComp />
+                        </BibleItemsViewControllerContext>
+                    </AppSuspenseComp>
+                );
+            },
+        },
         key: 'h2',
         widgetName: 'Bible Previewer',
     },

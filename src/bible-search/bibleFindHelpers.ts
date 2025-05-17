@@ -4,7 +4,7 @@ import * as loggerHelpers from '../helper/loggerHelpers';
 import BibleItem from '../bible-list/BibleItem';
 import { BibleItemType } from '../bible-list/bibleItemHelpers';
 import { LocaleType, sanitizeFindingText } from '../lang';
-import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
+import LookupBibleItemController from '../bible-reader/LookupBibleItemController';
 
 export type SelectedBookKeyType = {
     bookKey: string;
@@ -176,10 +176,10 @@ export async function findOnline(
 
 export function handleClicking(
     event: any,
+    viewController: LookupBibleItemController,
     bibleItem: BibleItem,
     isForceNew = false,
 ) {
-    const viewController = LookupBibleItemViewController.getInstance();
     if (isForceNew || event.shiftKey) {
         viewController.appendBibleItem(bibleItem);
     } else {

@@ -13,7 +13,9 @@ import { keyToBook } from '../helper/bible-helpers/bibleInfoHelpers';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
 import { useBibleKeyContext } from '../bible-list/bibleHelpers';
 import { getInputTrueValue, useInputTextContext } from './InputHandlerComp';
-import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
+import LookupBibleItemController, {
+    useLookupBibleItemControllerContext,
+} from '../bible-reader/LookupBibleItemController';
 
 let syncTimeoutId: any = null;
 function checkShouldSync(
@@ -30,6 +32,7 @@ function checkShouldSync(
 }
 
 function checkAndSyncResult(
+    viewController: LookupBibleItemController,
     oldResult: ExtractedBibleResult,
     newResult: ExtractedBibleResult,
 ) {
@@ -39,7 +42,6 @@ function checkAndSyncResult(
     syncTimeoutId = setTimeout(() => {
         syncTimeoutId = null;
         if (checkShouldSync(oldResult, newResult)) {
-            const viewController = LookupBibleItemViewController.getInstance();
             viewController.syncTargetByColorNote(
                 viewController.selectedBibleItem,
             );
@@ -50,7 +52,7 @@ function checkAndSyncResult(
 function useExtractInput(bibleKey: string, inputText: string) {
     const [extractedInput, setExtractedInput] =
         useState<ExtractedBibleResult>(genExtractedBible());
-    const viewController = LookupBibleItemViewController.getInstance();
+    const viewController = useLookupBibleItemControllerContext();
     useAppEffectAsync(
         async (methodContext) => {
             const extractedResult = await extractBibleTitle(
@@ -79,7 +81,7 @@ function useExtractInput(bibleKey: string, inputText: string) {
                 );
             }
             methodContext.setExtractedInput((previousResult) => {
-                checkAndSyncResult(previousResult, result);
+                checkAndSyncResult(viewController, previousResult, result);
                 return result;
             });
         },
@@ -135,47 +137,25 @@ function useMethods(
         const newText = await toInputText(bibleKey, book, newChapter);
         setInputText(`${newText}:`);
     };
-    const handleVerseSelecting = async (
-        newVerseStart?: number,
-        newVerseEnd?: number,
-    ) => {
-        if (bibleKey === null || extractedInput.bookKey === null) {
-            return;
-        }
-        const book = await keyToBook(bibleKey, extractedInput.bookKey);
-        const txt = await toInputText(
-            bibleKey,
-            book,
-            extractedInput.chapter,
-            newVerseStart,
-            newVerseEnd,
-        );
-        setInputText(txt);
-    };
     return {
         applyBookSelectionCallback: handleBookSelecting,
         applyChapterSelectionCallback: handleChapterSelecting,
-        applyVerseSelectionCallback: handleVerseSelecting,
     };
 }
 
 export default function RenderBibleLookupBodyComp() {
+    const viewController = useLookupBibleItemControllerContext();
     const { inputText } = useInputTextContext();
     const bibleKey = useBibleKeyContext();
     const extractedInput = useExtractInput(bibleKey, inputText);
-    const {
-        applyBookSelectionCallback,
-        applyChapterSelectionCallback,
-        applyVerseSelectionCallback,
-    } = useMethods(bibleKey, extractedInput, inputText, (text: string) => {
-        const viewController = LookupBibleItemViewController.getInstance();
-        viewController.inputText = text;
-    });
+    const { applyBookSelectionCallback, applyChapterSelectionCallback } =
+        useMethods(bibleKey, extractedInput, inputText, (text: string) => {
+            viewController.inputText = text;
+        });
     return (
         <RenderLookupSuggestionComp
             bibleResult={extractedInput}
             applyChapterSelection={applyChapterSelectionCallback}
-            applyVerseSelection={applyVerseSelectionCallback}
             applyBookSelection={applyBookSelectionCallback}
         />
     );

@@ -9,9 +9,9 @@ import { MultiContextRender } from '../helper/MultiContextRender';
 import RenderBibleLookupHeaderComp from './RenderBibleLookupHeaderComp';
 import RenderExtraButtonsRightComp from './RenderExtraButtonsRightComp';
 import { useStateSettingBoolean } from '../helper/settingHelpers';
-import LookupBibleItemViewController from '../bible-reader/LookupBibleItemViewController';
 import { useAppEffect, useAppEffectAsync } from '../helper/debuggerHelpers';
 import { getAllLocalBibleInfoList } from '../helper/bible-helpers/bibleDownloadHelpers';
+import { useLookupBibleItemControllerContext } from '../bible-reader/LookupBibleItemController';
 
 const LazyBibleSearchBodyPreviewerComp = lazy(() => {
     return import('../bible-search/BibleSearchPreviewerComp');
@@ -21,9 +21,9 @@ const LOOKUP_ONLINE_SETTING_NAME = 'bible-lookup-online';
 const DEFAULT_UNKNOWN_BIBLE_KEY = 'Unknown';
 
 export function useSelectedBibleKey() {
+    const viewController = useLookupBibleItemControllerContext();
     const [isValid, setIsValid] = useState(true);
     const [bibleKey, setBibleKey] = useState<string>(DEFAULT_UNKNOWN_BIBLE_KEY);
-    const viewController = LookupBibleItemViewController.getInstance();
     useAppEffect(() => {
         viewController.setBibleKey = (newBibleKey: string) => {
             setBibleKey(newBibleKey);
@@ -60,7 +60,7 @@ export default function RenderBibleLookupComp() {
         LOOKUP_ONLINE_SETTING_NAME,
         false,
     );
-    const viewController = LookupBibleItemViewController.getInstance();
+    const viewController = useLookupBibleItemControllerContext();
     const [inputText, setInputText] = useState<string>(
         viewController.inputText,
     );
