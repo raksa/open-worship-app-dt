@@ -121,6 +121,13 @@ function preventEvent(event: Event) {
     event.stopPropagation();
     event.preventDefault();
 }
+function showOnScrollable(parent: HTMLElement, element: HTMLElement) {
+    if (parent.scrollHeight <= parent.clientHeight) {
+        element.style.display = 'none';
+    } else {
+        element.style.display = 'block';
+    }
+}
 
 const INIT_TITLE =
     'Click to scroll to the bottom, double click to speed up, ' +
@@ -138,7 +145,7 @@ function applyPlayToBottom(element: HTMLElement) {
     };
     const setSpeed = (newSpeed: number) => {
         store.speed = Math.max(0, newSpeed);
-        element.title = newSpeed.toString();
+        element.title = store.speed.toFixed(2);
     };
     const start = () => {
         if (element.classList.contains('going')) {
@@ -146,7 +153,6 @@ function applyPlayToBottom(element: HTMLElement) {
         }
         store.scrollTop = parent.scrollTop;
         element.classList.add('going');
-        element.title = INIT_TITLE;
         startAnimToBottom(parent, element, store, () => {
             element.classList.remove('going');
             setSpeed(0);
@@ -176,12 +182,11 @@ function applyPlayToBottom(element: HTMLElement) {
     };
     const resizeObserver = new ResizeObserver((entries) => {
         for (const entry of entries) {
-            if (entry.contentRect.height < entry.target.clientHeight) {
-                console.log('on overflow');
-            }
+            showOnScrollable(entry.target as HTMLElement, element);
         }
     });
     resizeObserver.observe(parent);
+    showOnScrollable(parent, element);
 }
 
 export default function RenderToTheTopComp({
