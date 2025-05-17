@@ -55,6 +55,28 @@ export default function BibleLookupBodyPreviewerComp() {
                     isSelected ? (
                         <BibleViewTitleEditingComp
                             onTargetChange={(newBibleTarget) => {
+                                bibleItem.target = newBibleTarget;
+                                bibleItem.toTitle().then((title) => {
+                                    viewController.inputText = title;
+                                });
+                            }}
+                        >
+                            <span
+                                className="pointer app-caught-hover"
+                                title='Hit "Escape" to force edit'
+                                onClick={() => {
+                                    setBibleLookupInputFocus();
+                                }}
+                            >
+                                <i
+                                    style={{ color: 'green' }}
+                                    className="bi bi-pencil-fill"
+                                />
+                            </span>
+                        </BibleViewTitleEditingComp>
+                    ) : (
+                        <BibleViewTitleEditingComp
+                            onTargetChange={(newBibleTarget) => {
                                 viewController.applyTargetOrBibleKey(
                                     bibleItem,
                                     {
@@ -77,28 +99,6 @@ export default function BibleLookupBodyPreviewerComp() {
                                 <i
                                     style={{ color: 'green' }}
                                     className="bi bi-pencil"
-                                />
-                            </span>
-                        </BibleViewTitleEditingComp>
-                    ) : (
-                        <BibleViewTitleEditingComp
-                            onTargetChange={(newBibleTarget) => {
-                                bibleItem.target = newBibleTarget;
-                                bibleItem.toTitle().then((title) => {
-                                    viewController.inputText = title;
-                                });
-                            }}
-                        >
-                            <span
-                                className="pointer app-caught-hover"
-                                title='Hit "Escape" to force edit'
-                                onClick={() => {
-                                    setBibleLookupInputFocus();
-                                }}
-                            >
-                                <i
-                                    style={{ color: 'green' }}
-                                    className="bi bi-pencil-fill"
                                 />
                             </span>
                         </BibleViewTitleEditingComp>

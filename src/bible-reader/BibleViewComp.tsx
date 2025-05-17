@@ -52,7 +52,7 @@ export default function BibleViewComp() {
             }}
         >
             {!isSelected ? <RenderHeaderComp /> : <RenderBibleEditingHeader />}
-            <div className="card-body p-3">
+            <div className="card-body">
                 {isSelected ? (
                     <RenderBibleLookupBodyComp />
                 ) : (

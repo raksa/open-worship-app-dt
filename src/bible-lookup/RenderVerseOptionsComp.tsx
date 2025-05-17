@@ -1,14 +1,25 @@
 import './RenderVersesOptionComp.scss';
 
 import RenderVerseNumOptionComp, { mouseUp } from './RenderVerseNumOptionComp';
-import { useAppEffect } from '../helper/debuggerHelpers';
-import { useGenVerseList } from '../helper/bible-helpers/serverBibleHelpers';
+import { useAppEffect, useAppStateAsync } from '../helper/debuggerHelpers';
 import { useBibleItemContext } from '../bible-reader/BibleItemContext';
 import { useBibleItemsViewControllerContext } from '../bible-reader/BibleItemsViewController';
+import { genVerseList } from '../bible-list/bibleHelpers';
 
 export default function RenderVerseOptionsComp() {
     const bibleItem = useBibleItemContext();
-    const verseList = useGenVerseList(bibleItem);
+    const { value: verseList } = useAppStateAsync(
+        genVerseList({
+            bibleKey: bibleItem.bibleKey,
+            bookKey: bibleItem.target.bookKey,
+            chapter: bibleItem.target.chapter,
+        }),
+        [
+            bibleItem.bibleKey,
+            bibleItem.target.bookKey,
+            bibleItem.target.chapter,
+        ],
+    );
     const viewController = useBibleItemsViewControllerContext();
     useAppEffect(() => {
         document.body.addEventListener('mouseup', mouseUp);
@@ -16,14 +27,14 @@ export default function RenderVerseOptionsComp() {
             document.body.removeEventListener('mouseup', mouseUp);
         };
     }, []);
-    if (verseList === null) {
+    if (!verseList) {
         return null;
     }
     return (
         <div className="render-found" data-bible-key={bibleItem.bibleKey}>
             <div
                 className={
-                    'verse-select d-flex p-1 align-content-start flex-wrap'
+                    'verse-select w-100 d-flex p-1 align-content-start flex-wrap'
                 }
             >
                 {verseList.map(([verseNum, verseNumStr], i) => {

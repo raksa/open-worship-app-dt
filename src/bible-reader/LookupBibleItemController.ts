@@ -139,18 +139,22 @@ class LookupBibleItemController extends BibleItemsViewController {
         { target, bibleKey }: { target?: BibleTargetType; bibleKey?: string },
     ) {
         if (this.checkIsBibleItemSelected(bibleItem)) {
-            if (bibleKey !== undefined && bibleKey !== this.bibleKey) {
-                this.bibleKey = bibleKey;
-            }
-            if (target !== undefined) {
-                bibleItem.bibleKey = this.bibleKey;
-                bibleItem.target = target;
+            this.getFoundBibleItem().then((foundBibleItem) => {
+                if (bibleKey !== undefined && bibleKey !== this.bibleKey) {
+                    this.bibleKey = bibleKey;
+                }
+                if (foundBibleItem !== null) {
+                    bibleItem = foundBibleItem;
+                }
+                if (target !== undefined) {
+                    bibleItem.target = target;
+                }
                 bibleItem.toTitle().then((title) => {
                     if (this.inputText !== title) {
                         this.inputText = title;
                     }
                 });
-            }
+            });
             return;
         }
         super.applyTargetOrBibleKey(bibleItem, {

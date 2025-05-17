@@ -1,5 +1,4 @@
-import InputHandlerComp, { useInputTextContext } from './InputHandlerComp';
-import { genInputText } from '../bible-list/bibleHelpers';
+import InputHandlerComp from './InputHandlerComp';
 import RenderExtraButtonsRightComp from './RenderExtraButtonsRightComp';
 import InputHistoryComp from './InputHistoryComp';
 import appProvider from '../server/appProvider';
@@ -16,15 +15,14 @@ export default function RenderBibleLookupHeaderComp({
 }>) {
     const viewController = useLookupBibleItemControllerContext();
     const hideBibleLookupPopup = useShowBibleLookupContext(false);
-    const { inputText } = useInputTextContext();
 
     const handleBibleKeyChanging = async (
-        oldBibleKey: string,
+        _oldBibleKey: string,
         newBibleKey: string,
     ) => {
-        const newText = await genInputText(oldBibleKey, newBibleKey, inputText);
-        viewController.bibleKey = newBibleKey;
-        viewController.inputText = newText;
+        viewController.applyTargetOrBibleKey(viewController.selectedBibleItem, {
+            bibleKey: newBibleKey,
+        });
     };
     return (
         <div className="card-header d-flex text-center w-100">

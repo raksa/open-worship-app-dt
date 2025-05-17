@@ -310,7 +310,7 @@ export function BibleViewTextComp() {
     }
     return (
         <div
-            className={`${BIBLE_VIEW_TEXT_CLASS} app-selectable-text pt-3`}
+            className={`${BIBLE_VIEW_TEXT_CLASS} app-selectable-text p-1`}
             data-bible-item-id={bibleItem.id}
             style={{
                 fontSize: `${fontSize}px`,

@@ -9,8 +9,6 @@ import bibleJson from './bible.json';
 import { getOnlineBibleInfoList } from './bibleDownloadHelpers';
 import { useAppEffect, useAppEffectAsync } from '../debuggerHelpers';
 import { toLocaleNumBible } from './serverBibleHelpers2';
-import { genVerseList } from '../../bible-list/bibleHelpers';
-import BibleItem from '../../bible-list/BibleItem';
 import { freezeObject } from '../helpers';
 
 freezeObject(bibleJson);
@@ -191,6 +189,7 @@ export async function genBookMatches(
     return mappedKeys;
 }
 export function useBookMatch(bibleKey: string, guessingBook: string) {
+    // TODO: change to use app state async
     const [matches, setMatches] = useState<BookMatchDataType[] | null>(null);
     useAppEffect(() => {
         genBookMatches(bibleKey, guessingBook).then((bookMatches) => {
@@ -199,18 +198,8 @@ export function useBookMatch(bibleKey: string, guessingBook: string) {
     }, [bibleKey, guessingBook]);
     return matches;
 }
-export function useGenVerseList(bibleItem: BibleItem) {
-    const [verseList, setVerseList] = useState<[number, string][] | null>(null);
-    const { bibleKey, target } = bibleItem;
-    const { bookKey, chapter } = target;
-    useAppEffect(() => {
-        genVerseList({ bibleKey, bookKey, chapter }).then((verseNumList) => {
-            setVerseList(verseNumList);
-        });
-    }, [bibleKey, bookKey, chapter]);
-    return verseList;
-}
 export function useGetBookKVList(bibleKey: string) {
+    // TODO: change to use app state async
     const [bookKVList, setBookKVList] = useState<{
         [key: string]: string;
     } | null>(null);
@@ -222,6 +211,7 @@ export function useGetBookKVList(bibleKey: string) {
     return bookKVList;
 }
 export function useGetBibleWithStatus(bibleKey: string) {
+    // TODO: change to use app state async
     const [bibleStatus, setBibleStatus] = useState<BibleStatusType | null>(
         null,
     );
