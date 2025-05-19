@@ -158,8 +158,8 @@ export default class AppDocument
 
     async duplicateSlide(slide: Slide) {
         const slides = await this.getItems();
-        const index = slides.findIndex((slide) => {
-            return slide.checkIsSame(slide);
+        const index = slides.findIndex((slide1) => {
+            return slide1.checkIsSame(slide);
         });
         if (index === -1) {
             showSimpleToast('Duplicate Slide', 'Unable to find a slide');
