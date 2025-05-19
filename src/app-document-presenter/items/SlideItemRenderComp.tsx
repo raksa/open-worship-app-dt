@@ -82,7 +82,8 @@ function RenderInfoComp({
 
 function RenderHeaderInfoComp({
     item,
-}: Readonly<{ item: VaryAppDocumentItemType }>) {
+    viewIndex,
+}: Readonly<{ item: VaryAppDocumentItemType; viewIndex: number }>) {
     return (
         <div
             className="card-header d-flex"
@@ -91,7 +92,7 @@ function RenderHeaderInfoComp({
                 backgroundColor: 'var(--bs-gray-800)',
             }}
         >
-            <RenderInfoComp viewIndex={1} varyAppDocumentItem={item} />
+            <RenderInfoComp viewIndex={viewIndex} varyAppDocumentItem={item} />
         </div>
     );
 }
@@ -189,6 +190,7 @@ export function useScale(item: VaryAppDocumentItemType, thumbnailSize: number) {
 export default function SlideItemRenderComp({
     item,
     width,
+    index,
     onClick,
     onContextMenu,
     onCopy,
@@ -261,7 +263,7 @@ export default function SlideItemRenderComp({
             }}
             onCopy={onCopy ?? (() => {})}
         >
-            <RenderHeaderInfoComp item={item} />
+            <RenderHeaderInfoComp item={item} viewIndex={index + 1} />
             <div className="card-body overflow-hidden w-100" style={style}>
                 {attachedBackgroundElement && (
                     <div
