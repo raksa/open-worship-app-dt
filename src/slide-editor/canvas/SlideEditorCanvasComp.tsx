@@ -118,6 +118,9 @@ function BodyRendererComp() {
                     });
             }}
             onMouseUp={(event) => {
+                if (event.target instanceof HTMLTextAreaElement) {
+                    return;
+                }
                 const dataset = (event.target as HTMLDivElement).dataset;
                 if (dataset.mouseDown) {
                     const mouseDown = JSON.parse(dataset.mouseDown);
