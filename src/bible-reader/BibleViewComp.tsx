@@ -58,7 +58,10 @@ export default function BibleViewComp() {
                 ) : (
                     <BibleViewTextComp />
                 )}
-                <RenderToTheTopComp style={{ bottom: '60px' }} />
+                <RenderToTheTopComp
+                    style={{ bottom: '60px' }}
+                    shouldSnowPlayToBottom
+                />
             </div>
         </div>
     );

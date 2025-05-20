@@ -191,7 +191,7 @@ function applyPlayToBottom(element: HTMLElement) {
 
 export default function RenderToTheTopComp({
     style,
-    shouldSnowPlayToBottom = true,
+    shouldSnowPlayToBottom = false,
 }: Readonly<{
     style?: React.CSSProperties;
     shouldSnowPlayToBottom?: boolean;
