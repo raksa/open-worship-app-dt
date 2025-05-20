@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 
-import { useBookMatch } from '../helper/bible-helpers/serverBibleHelpers';
+import { genBookMatches } from '../helper/bible-helpers/serverBibleHelpers';
 import {
     allArrows,
     KeyboardType,
@@ -12,6 +12,7 @@ import {
     userEnteringSelected,
 } from './selectionHelpers';
 import { useBibleKeyContext } from '../bible-list/bibleHelpers';
+import { useAppStateAsync } from '../helper/debuggerHelpers';
 
 const OPTION_CLASS = 'bible-lookup-book-option';
 const OPTION_SELECTED_CLASS = 'active';
@@ -73,7 +74,9 @@ function BookOptionsComp({
     guessingBook: string;
 }>) {
     const bibleKey = useBibleKeyContext();
-    const matches = useBookMatch(bibleKey, guessingBook);
+    const { value: matches } = useAppStateAsync(() => {
+        return genBookMatches(bibleKey, guessingBook);
+    });
     const useKeyEvent = (key: KeyboardType) => {
         useKeyboardRegistering(
             [{ key }],
@@ -90,7 +93,7 @@ function BookOptionsComp({
     allArrows.forEach(useKeyEvent);
     userEnteringSelected(OPTION_CLASS, OPTION_SELECTED_CLASS);
 
-    if (matches === null) {
+    if (!matches) {
         return <div>No book options available</div>;
     }
     return (

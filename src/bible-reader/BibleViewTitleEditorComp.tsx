@@ -74,12 +74,13 @@ export default function BibleViewTitleEditorComp({
     bibleItem: BibleItem;
     onTargetChange?: (target: BibleTargetType) => void;
 }>) {
-    const { value: title } = useAppStateAsync(bibleItem.toTitle(), [bibleItem]);
+    const { value: title } = useAppStateAsync(() => {
+        return bibleItem.toTitle();
+    }, [bibleItem]);
     const { bibleKey, target } = bibleItem;
-    const { value: fontFamily } = useAppStateAsync(
-        getBibleFontFamily(bibleKey),
-        [bibleKey],
-    );
+    const { value: fontFamily } = useAppStateAsync(() => {
+        return getBibleFontFamily(bibleKey);
+    }, [bibleKey]);
     const [book, localeChapter, localeVerseStart, localeVerseEnd] =
         useMemo(() => {
             if (!title) {

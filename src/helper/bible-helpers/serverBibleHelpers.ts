@@ -1,13 +1,9 @@
 import { useState } from 'react';
 
-import {
-    checkIsBookAvailable,
-    getBibleInfo,
-    getBookKVList,
-} from './bibleInfoHelpers';
+import { checkIsBookAvailable, getBibleInfo } from './bibleInfoHelpers';
 import bibleJson from './bible.json';
 import { getOnlineBibleInfoList } from './bibleDownloadHelpers';
-import { useAppEffect, useAppEffectAsync } from '../debuggerHelpers';
+import { useAppEffectAsync } from '../debuggerHelpers';
 import { toLocaleNumBible } from './serverBibleHelpers2';
 import { freezeObject } from '../helpers';
 
@@ -187,38 +183,6 @@ export async function genBookMatches(
             };
         });
     return mappedKeys;
-}
-export function useBookMatch(bibleKey: string, guessingBook: string) {
-    // TODO: change to use app state async
-    const [matches, setMatches] = useState<BookMatchDataType[] | null>(null);
-    useAppEffect(() => {
-        genBookMatches(bibleKey, guessingBook).then((bookMatches) => {
-            setMatches(bookMatches);
-        });
-    }, [bibleKey, guessingBook]);
-    return matches;
-}
-export function useGetBookKVList(bibleKey: string) {
-    // TODO: change to use app state async
-    const [bookKVList, setBookKVList] = useState<{
-        [key: string]: string;
-    } | null>(null);
-    useAppEffect(() => {
-        getBookKVList(bibleKey).then((list) => {
-            setBookKVList(list);
-        });
-    }, [bibleKey]);
-    return bookKVList;
-}
-export function useGetBibleWithStatus(bibleKey: string) {
-    // TODO: change to use app state async
-    const [bibleStatus, setBibleStatus] = useState<BibleStatusType | null>(
-        null,
-    );
-    useAppEffect(() => {
-        getBibleInfoWithStatus(bibleKey).then((bs) => setBibleStatus(bs));
-    }, [bibleKey]);
-    return bibleStatus;
 }
 
 export function getKJVKeyValue() {

@@ -113,7 +113,9 @@ export function RenderHeaderComp() {
 export function BibleDirectViewTitleComp({
     bibleItem,
 }: Readonly<{ bibleItem: BibleItem }>) {
-    const { value: title } = useAppStateAsync(bibleItem.toTitle(), [bibleItem]);
+    const { value: title } = useAppStateAsync(() => {
+        return bibleItem.toTitle();
+    }, [bibleItem]);
     return (
         <span
             data-bible-key={bibleItem.bibleKey}
@@ -132,7 +134,9 @@ export function BibleViewTitleComp({
     onPencilClick?: (event: any) => void;
 }> = {}) {
     const bibleItem = useBibleItemContext();
-    const { value: title } = useAppStateAsync(bibleItem.toTitle(), [bibleItem]);
+    const { value: title } = useAppStateAsync(() => {
+        return bibleItem.toTitle();
+    }, [bibleItem]);
     const fontSize = useBibleViewFontSizeContext();
     return (
         <span
@@ -158,6 +162,20 @@ export function BibleViewTitleComp({
     );
 }
 
+export function BibleViewTitleWrapperComp({
+    children,
+    bibleKey,
+}: Readonly<{
+    children: React.ReactNode;
+    bibleKey: string;
+}>) {
+    const fontSize = useBibleViewFontSizeContext();
+    return (
+        <span className="title" data-bible-key={bibleKey} style={{ fontSize }}>
+            {children}
+        </span>
+    );
+}
 export function BibleViewTitleEditingComp({
     onTargetChange,
     children,
@@ -166,19 +184,14 @@ export function BibleViewTitleEditingComp({
     children?: React.ReactNode;
 }>) {
     const bibleItem = useBibleItemContext();
-    const fontSize = useBibleViewFontSizeContext();
     return (
-        <span
-            className="title"
-            data-bible-key={bibleItem.bibleKey}
-            style={{ fontSize }}
-        >
+        <BibleViewTitleWrapperComp bibleKey={bibleItem.bibleKey}>
             <BibleViewTitleEditorComp
                 bibleItem={bibleItem}
                 onTargetChange={onTargetChange}
             />{' '}
             {children}
-        </span>
+        </BibleViewTitleWrapperComp>
     );
 }
 
@@ -262,14 +275,13 @@ function RenderRestVerseNumListComp({
         }
         return list;
     }, [actualFrom, actualTo]);
-    const { value: localeVerseList } = useAppStateAsync(
-        Promise.all(
+    const { value: localeVerseList } = useAppStateAsync(() => {
+        return Promise.all(
             numList.map((verse) => {
                 return toLocaleNumBible(bibleItem.bibleKey, verse);
             }),
-        ),
-        [bibleItem.bibleKey, numList],
-    );
+        );
+    }, [bibleItem.bibleKey, numList]);
     if (!localeVerseList || localeVerseList.length === 0) {
         return null;
     }
@@ -298,13 +310,12 @@ export function BibleViewTextComp() {
     const bibleItem = useBibleItemContext();
     const { bibleKey, target } = bibleItem;
     const fontSize = useBibleViewFontSizeContext();
-    const { value: verseList } = useAppStateAsync(bibleItem.toVerseTextList(), [
-        bibleItem,
-    ]);
-    const { value: verseCount } = useAppStateAsync(
-        getVersesCount(bibleKey, target.bookKey, target.chapter),
-        [bibleKey, target.bookKey, target.chapter],
-    );
+    const { value: verseList } = useAppStateAsync(() => {
+        return bibleItem.toVerseTextList();
+    }, [bibleItem]);
+    const { value: verseCount } = useAppStateAsync(() => {
+        return getVersesCount(bibleKey, target.bookKey, target.chapter);
+    }, [bibleKey, target.bookKey, target.chapter]);
     if (!verseList || !verseCount) {
         return null;
     }

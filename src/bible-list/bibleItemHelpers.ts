@@ -64,14 +64,18 @@ export async function openBibleItemContextMenu(
             ? [
                   {
                       menuTitle: '`' + 'Lookup',
-                      onSelect: () => {
+                      onSelect: async () => {
                           const viewController =
                               new LookupBibleItemController();
-                          viewController.bibleKey = bibleItem.bibleKey;
-                          bibleItem.toTitle().then((title) => {
-                              viewController.inputText = title;
-                              openBibleLookup();
-                          });
+                          viewController.applyTargetOrBibleKey(
+                              viewController.selectedBibleItem,
+                              {
+                                  bibleKey: bibleItem.bibleKey,
+                              },
+                          );
+                          await viewController.setLookupContentFromBibleItem(
+                              bibleItem,
+                          );
                       },
                   },
               ]

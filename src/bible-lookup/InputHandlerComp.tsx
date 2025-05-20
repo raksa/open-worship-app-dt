@@ -1,6 +1,5 @@
 import { createContext, Fragment, use } from 'react';
 
-import { useGetBookKVList } from '../helper/bible-helpers/serverBibleHelpers';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
 import BibleSelectionComp from './BibleSelectionComp';
 import {
@@ -14,6 +13,7 @@ import { useBibleKeyContext } from '../bible-list/bibleHelpers';
 import { useAppStateAsync } from '../helper/debuggerHelpers';
 import { toInputText } from '../helper/bible-helpers/serverBibleHelpers2';
 import { useLookupBibleItemControllerContext } from '../bible-reader/LookupBibleItemController';
+import { getBookKVList } from '../helper/bible-helpers/bibleInfoHelpers';
 
 export const InputTextContext = createContext<{
     inputText: string;
@@ -42,11 +42,13 @@ export default function InputHandlerComp({
         bibleViewController.inputText = text;
     };
     const bibleKey = useBibleKeyContext();
-    const books = useGetBookKVList(bibleKey);
-    const bookKey = books === null ? null : books['GEN'];
-    const { value: placeholder } = useAppStateAsync(
-        toInputText(bibleKey, bookKey, 1, 1, 2),
-    );
+    const { value: books } = useAppStateAsync(() => {
+        return getBookKVList(bibleKey);
+    }, [bibleKey]);
+    const bookKey = !books ? null : books['GEN'];
+    const { value: placeholder } = useAppStateAsync(() => {
+        return toInputText(bibleKey, bookKey, 1, 1, 2);
+    });
     useKeyboardRegistering(
         [{ key: 'Escape' }],
         () => {

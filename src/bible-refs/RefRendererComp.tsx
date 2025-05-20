@@ -2,6 +2,7 @@ import BibleItem from '../bible-list/BibleItem';
 import { bibleRenderHelper } from '../bible-list/bibleRenderHelpers';
 import { useBibleItemContext } from '../bible-reader/BibleItemContext';
 import { BibleDirectViewTitleComp } from '../bible-reader/BibleViewExtra';
+import { useLookupBibleItemControllerContext } from '../bible-reader/LookupBibleItemController';
 import { handleClicking } from '../bible-search/bibleFindHelpers';
 import { bibleObj } from '../helper/bible-helpers/serverBibleHelpers';
 import { useAppStateAsync } from '../helper/debuggerHelpers';
@@ -43,6 +44,7 @@ function RenderFoundItemComp({
     bibleVersesKey: string;
     itemInfo: BibleRefType;
 }>) {
+    const viewController = useLookupBibleItemControllerContext();
     const data = useAppPromise(breakItem(bibleKey, bibleVersesKey));
     if (data === undefined) {
         return <div>Loading...</div>;
@@ -63,7 +65,7 @@ function RenderFoundItemComp({
         <div
             className="w-100 app-border-white-round my-2 p-2 pointer"
             onClick={(event) => {
-                handleClicking(event, bibleItem, true);
+                handleClicking(event, viewController, bibleItem, true);
             }}
         >
             <BibleDirectViewTitleComp bibleItem={bibleItem} />
@@ -136,7 +138,9 @@ function RefItemRendererComp({
 
 export default function RefRendererComp() {
     const bibleItem = useBibleItemContext();
-    const { value: title } = useAppStateAsync(bibleItem.toTitle(), [bibleItem]);
+    const { value: title } = useAppStateAsync(() => {
+        return bibleItem.toTitle();
+    }, [bibleItem]);
     const { bookKey: book, chapter, verseStart, verseEnd } = bibleItem.target;
     const arr: number[] = [];
     for (let i = verseStart; i <= verseEnd; i++) {

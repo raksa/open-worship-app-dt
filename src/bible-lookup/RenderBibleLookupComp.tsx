@@ -9,7 +9,7 @@ import { MultiContextRender } from '../helper/MultiContextRender';
 import RenderBibleLookupHeaderComp from './RenderBibleLookupHeaderComp';
 import RenderExtraButtonsRightComp from './RenderExtraButtonsRightComp';
 import { useStateSettingBoolean } from '../helper/settingHelpers';
-import { useAppEffect, useAppEffectAsync } from '../helper/debuggerHelpers';
+import { useAppEffect, useAppStateAsync } from '../helper/debuggerHelpers';
 import { getAllLocalBibleInfoList } from '../helper/bible-helpers/bibleDownloadHelpers';
 import { useLookupBibleItemControllerContext } from '../bible-reader/LookupBibleItemController';
 
@@ -18,12 +18,15 @@ const LazyBibleSearchBodyPreviewerComp = lazy(() => {
 });
 
 const LOOKUP_ONLINE_SETTING_NAME = 'bible-lookup-online';
-const DEFAULT_UNKNOWN_BIBLE_KEY = 'Unknown';
 
 export function useSelectedBibleKey() {
     const viewController = useLookupBibleItemControllerContext();
-    const [isValid, setIsValid] = useState(true);
-    const [bibleKey, setBibleKey] = useState<string>(DEFAULT_UNKNOWN_BIBLE_KEY);
+    const [bibleKey, setBibleKey] = useState<string>(
+        viewController.selectedBibleItem.bibleKey,
+    );
+    const { value: localBibleInfoList } = useAppStateAsync(() => {
+        return getAllLocalBibleInfoList();
+    }, []);
     useAppEffect(() => {
         viewController.setBibleKey = (newBibleKey: string) => {
             setBibleKey(newBibleKey);
@@ -32,26 +35,9 @@ export function useSelectedBibleKey() {
             viewController.setBibleKey = (_: string) => {};
         };
     }, []);
-    useAppEffectAsync(
-        async (methodContext) => {
-            const localBibleInfoList = await getAllLocalBibleInfoList();
-            const newBibleKey =
-                DEFAULT_UNKNOWN_BIBLE_KEY !== viewController.bibleKey
-                    ? viewController.bibleKey
-                    : 'KJV';
-            if (localBibleInfoList.length === 0) {
-                methodContext.setIsValid(false);
-            } else if (
-                localBibleInfoList.find((bibleInfo) => {
-                    return bibleInfo.key === newBibleKey;
-                }) !== undefined
-            ) {
-                viewController.bibleKey = newBibleKey;
-            }
-        },
-        [],
-        { setIsValid },
-    );
+    const isValid = (localBibleInfoList ?? []).some((bibleInfo) => {
+        return bibleInfo.key === bibleKey;
+    });
     return { isValid, bibleKey };
 }
 

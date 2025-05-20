@@ -69,7 +69,9 @@ export function BibleNotAvailableComp({
         _oldBibleKey: string,
         newBibleKey: string,
     ) => {
-        viewController.bibleKey = newBibleKey;
+        viewController.applyTargetOrBibleKey(viewController.selectedBibleItem, {
+            bibleKey: newBibleKey,
+        });
     };
 
     return (

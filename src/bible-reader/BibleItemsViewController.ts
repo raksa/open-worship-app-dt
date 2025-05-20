@@ -34,7 +34,7 @@ export const historyStore: {
 } = {
     addHistory: (_text: string) => {},
 };
-export function applyPendingText() {
+export function applyHistoryPendingText() {
     if (!pendingText) {
         return;
     }
@@ -50,11 +50,11 @@ export function attemptAddingHistory(
 ) {
     pendingText = `(${bibleKey}) ${text}`;
     if (isImmediate) {
-        applyPendingText();
+        applyHistoryPendingText();
         return;
     }
     attemptTimeout(() => {
-        applyPendingText();
+        applyHistoryPendingText();
     });
 }
 
@@ -351,6 +351,9 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
         this.syncTargetByColorNote(bibleItem);
     }
     getBibleItemsByColorNote(colorNote: string) {
+        if (!colorNote) {
+            return [];
+        }
         const allBibleItems = this.straightBibleItems;
         return allBibleItems.filter((bibleItem) => {
             return this.getColorNote(bibleItem) === colorNote;

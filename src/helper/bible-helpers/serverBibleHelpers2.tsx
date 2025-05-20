@@ -344,14 +344,16 @@ const regexTitleMap: [
         },
     ],
 ];
-export async function extractBibleTitle(
-    bibleKey: string,
-    inputText: string,
-): Promise<{
+
+export type EditingResultType = {
     result: ExtractedBibleResult;
     bibleKey: string;
     inputText: string;
-}> {
+};
+export async function extractBibleTitle(
+    bibleKey: string,
+    inputText: string,
+): Promise<EditingResultType> {
     const cleanText = inputText.trim().replace(/\s+/g, ' ');
     if (cleanText === '') {
         return { result: genExtractedBible(), bibleKey, inputText: '' };

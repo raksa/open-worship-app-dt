@@ -8,18 +8,17 @@ import { genVerseList } from '../bible-list/bibleHelpers';
 
 export default function RenderVerseOptionsComp() {
     const bibleItem = useBibleItemContext();
-    const { value: verseList } = useAppStateAsync(
-        genVerseList({
+    const { value: verseList } = useAppStateAsync(() => {
+        return genVerseList({
             bibleKey: bibleItem.bibleKey,
             bookKey: bibleItem.target.bookKey,
             chapter: bibleItem.target.chapter,
-        }),
-        [
-            bibleItem.bibleKey,
-            bibleItem.target.bookKey,
-            bibleItem.target.chapter,
-        ],
-    );
+        });
+    }, [
+        bibleItem.bibleKey,
+        bibleItem.target.bookKey,
+        bibleItem.target.chapter,
+    ]);
     const viewController = useBibleItemsViewControllerContext();
     useAppEffect(() => {
         document.body.addEventListener('mouseup', mouseUp);

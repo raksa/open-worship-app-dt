@@ -6,7 +6,7 @@ import { closeCurrentEditingBibleItem } from './readBibleHelpers';
 import { EventMapper } from '../event/KeyboardEventListener';
 import { genContextMenuItemShortcutKey } from '../context-menu/AppContextMenuComp';
 import BibleItemsViewController, {
-    applyPendingText,
+    applyHistoryPendingText,
     attemptAddingHistory,
     splitHorizontalId,
     splitVerticalId,
@@ -14,8 +14,12 @@ import BibleItemsViewController, {
 } from './BibleItemsViewController';
 import { setBibleLookupInputFocus } from '../bible-lookup/selectionHelpers';
 import { getSetting, setSetting } from '../helper/settingHelpers';
-import { extractBibleTitle } from '../helper/bible-helpers/serverBibleHelpers2';
+import {
+    EditingResultType,
+    extractBibleTitle,
+} from '../helper/bible-helpers/serverBibleHelpers2';
 import { BibleTargetType } from '../bible-list/bibleRenderHelpers';
+import { createContext, use } from 'react';
 
 export const closeEventMapper: EventMapper = {
     wControlKey: ['Ctrl'],
@@ -77,7 +81,6 @@ class LookupBibleItemController extends BibleItemsViewController {
             bibleItem.id.toString(),
         );
         this.applyTargetOrBibleKey(this.selectedBibleItem, bibleItem);
-        this.setBibleKey(this.bibleKey);
     }
     checkIsBibleItemSelected(bibleItem: BibleItem) {
         return bibleItem.id === this.selectedBibleItem.id;
@@ -106,32 +109,23 @@ class LookupBibleItemController extends BibleItemsViewController {
         this.setInputText(newText);
         setBibleLookupInputFocus();
     }
-    get bibleKey() {
-        return this.selectedBibleItem.bibleKey;
-    }
-    set bibleKey(newBibleKey: string) {
-        super.applyTargetOrBibleKey(this.selectedBibleItem, {
-            bibleKey: newBibleKey,
-        });
-        this.setBibleKey(newBibleKey);
-    }
 
     async setLookupContentFromBibleItem(bibleItem: BibleItem) {
-        applyPendingText();
-        this.setBibleKey(bibleItem.bibleKey);
+        applyHistoryPendingText();
+        this.applyTargetOrBibleKey(this.selectedBibleItem, bibleItem);
         const bibleText = await bibleItem.toTitle();
         this.inputText = bibleText;
     }
 
-    async getFoundBibleItem() {
-        const { result } = await extractBibleTitle(
-            this.bibleKey,
+    async getEditingResult() {
+        const editingResult = await extractBibleTitle(
+            this.selectedBibleItem.bibleKey,
             this.inputText,
         );
-        if (result.bibleItem !== null) {
-            return result.bibleItem;
+        if (editingResult.result.bibleItem !== null) {
+            editingResult.result.bibleItem.id = this.selectedBibleItem.id;
         }
-        return null;
+        return editingResult;
     }
 
     applyTargetOrBibleKey(
@@ -139,22 +133,23 @@ class LookupBibleItemController extends BibleItemsViewController {
         { target, bibleKey }: { target?: BibleTargetType; bibleKey?: string },
     ) {
         if (this.checkIsBibleItemSelected(bibleItem)) {
-            this.getFoundBibleItem().then((foundBibleItem) => {
-                if (bibleKey !== undefined && bibleKey !== this.bibleKey) {
-                    this.bibleKey = bibleKey;
-                }
-                if (foundBibleItem !== null) {
-                    bibleItem = foundBibleItem;
-                }
-                if (target !== undefined) {
-                    bibleItem.target = target;
-                }
-                bibleItem.toTitle().then((title) => {
-                    if (this.inputText !== title) {
-                        this.inputText = title;
+            if (
+                bibleKey !== undefined &&
+                bibleKey !== this.selectedBibleItem.bibleKey
+            ) {
+                super.applyTargetOrBibleKey(bibleItem, {
+                    bibleKey,
+                });
+                this.setBibleKey(bibleKey);
+                this.getEditingResult().then((editingResult) => {
+                    const foundBibleItem = editingResult.result.bibleItem;
+                    if (foundBibleItem !== null) {
+                        foundBibleItem.toTitle().then((inputText) => {
+                            this.inputText = inputText;
+                        });
                     }
                 });
-            });
+            }
             return;
         }
         super.applyTargetOrBibleKey(bibleItem, {
@@ -164,16 +159,16 @@ class LookupBibleItemController extends BibleItemsViewController {
     }
 
     async editBibleItem(bibleItem: BibleItem) {
-        const foundBibleItem = await this.getFoundBibleItem();
-        if (foundBibleItem !== null) {
+        const oldSelectedBibleItem = this.selectedBibleItem;
+        this.selectedBibleItem = bibleItem;
+        const foundBibleItem = (await this.getEditingResult()).result.bibleItem;
+        if (foundBibleItem === null) {
+            this.deleteBibleItem(oldSelectedBibleItem);
+        } else {
             foundBibleItem.toTitle().then((inputText) => {
                 attemptAddingHistory(foundBibleItem.bibleKey, inputText, true);
             });
-            this.applyTargetOrBibleKey(this.selectedBibleItem, foundBibleItem);
-        } else {
-            this.deleteBibleItem(this.selectedBibleItem);
         }
-        this.selectedBibleItem = bibleItem;
         this.setLookupContentFromBibleItem(bibleItem);
     }
     async genContextMenu(
@@ -262,6 +257,7 @@ class LookupBibleItemController extends BibleItemsViewController {
         });
     }
 }
+export default LookupBibleItemController;
 
 export function useLookupBibleItemControllerContext() {
     const viewController = useBibleItemsViewControllerContext();
@@ -274,4 +270,13 @@ export function useLookupBibleItemControllerContext() {
     return viewController;
 }
 
-export default LookupBibleItemController;
+export const EditingResultContext = createContext<EditingResultType | null>(
+    null,
+);
+export function useEditingResultContext() {
+    const editingResult = use(EditingResultContext);
+    if (editingResult === null) {
+        throw new Error('EditingResultContext is null');
+    }
+    return editingResult;
+}

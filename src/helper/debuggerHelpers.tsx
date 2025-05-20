@@ -7,6 +7,7 @@ import {
 } from 'react';
 
 import { warn } from './loggerHelpers';
+import { OptionalPromise } from '../others/otherHelpers';
 
 const THRESHOLD = 10;
 const MILLIE_SECOND = 1000;
@@ -126,14 +127,14 @@ function TestInfinite() {
 }
 
 export function useAppStateAsync<T>(
-    promise: Promise<T>,
+    callee: () => OptionalPromise<T>,
     deps: DependencyList = [],
     defaultValue?: T | null,
 ) {
     const [value, setValue] = useState<T | null | undefined>(defaultValue);
     useAppEffectAsync(
         async (contextMethods) => {
-            const newValue = await promise;
+            const newValue = await callee();
             contextMethods.setValue(newValue);
         },
         [...deps],

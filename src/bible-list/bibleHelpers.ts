@@ -23,7 +23,11 @@ import { VerseList } from '../helper/bible-helpers/BibleDataReader';
 
 export const SelectedBibleKeyContext = createContext<string>('KJV');
 export function useBibleKeyContext() {
-    return use(SelectedBibleKeyContext);
+    const bibleKey = use(SelectedBibleKeyContext);
+    if (!bibleKey) {
+        throw new Error('SelectedBibleKeyContext is not provided');
+    }
+    return bibleKey;
 }
 
 export function useGetDefaultInputText(bibleItem: BibleItem | null) {
