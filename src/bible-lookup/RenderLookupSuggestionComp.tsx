@@ -1,24 +1,25 @@
 import RenderBookOptionsComp from './RenderBookOptionsComp';
 import RenderChapterOptionsComp from './RenderChapterOptionsComp';
-import { ExtractedBibleResult } from '../helper/bible-helpers/serverBibleHelpers2';
 import { BibleSelectionMiniComp } from './BibleSelectionComp';
 import { RENDER_FOUND_CLASS } from './selectionHelpers';
 import { BibleViewTextComp } from '../bible-reader/BibleViewExtra';
 import { BibleItemContext } from '../bible-reader/BibleItemContext';
-import { useLookupBibleItemControllerContext } from '../bible-reader/LookupBibleItemController';
+import {
+    useEditingResultContext,
+    useLookupBibleItemControllerContext,
+} from '../bible-reader/LookupBibleItemController';
 import RenderVerseOptionsComp from './RenderVerseOptionsComp';
 
 export default function RenderLookupSuggestionComp({
-    bibleResult,
     applyChapterSelection,
     applyBookSelection,
 }: Readonly<{
-    bibleResult: ExtractedBibleResult;
     applyChapterSelection: (newChapter: number) => void;
     applyBookSelection: (newBookKey: string, newBook: string) => void;
 }>) {
+    const editingResult = useEditingResultContext();
     const { bookKey, guessingBook, chapter, guessingChapter, bibleItem } =
-        bibleResult;
+        editingResult.result;
 
     if (bibleItem !== null) {
         return (

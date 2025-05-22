@@ -76,7 +76,7 @@ function BookOptionsComp({
     const bibleKey = useBibleKeyContext();
     const { value: matches } = useAppStateAsync(() => {
         return genBookMatches(bibleKey, guessingBook);
-    });
+    }, [bibleKey, guessingBook]);
     const useKeyEvent = (key: KeyboardType) => {
         useKeyboardRegistering(
             [{ key }],
@@ -131,7 +131,6 @@ export default function RenderBookOptionsComp({
     if (bookKey !== null) {
         return null;
     }
-
     return (
         <BookOptionsComp
             onSelect={onSelect}

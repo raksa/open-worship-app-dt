@@ -37,10 +37,7 @@ export default function InputHandlerComp({
     onBibleKeyChange: (oldBibleKey: string, newBibleKey: string) => void;
 }>) {
     const { inputText } = useInputTextContext();
-    const bibleViewController = useLookupBibleItemControllerContext();
-    const setInputText = (text: string) => {
-        bibleViewController.inputText = text;
-    };
+    const viewController = useLookupBibleItemControllerContext();
     const bibleKey = useBibleKeyContext();
     const { value: books } = useAppStateAsync(() => {
         return getBookKVList(bibleKey);
@@ -58,11 +55,12 @@ export default function InputHandlerComp({
             }
             const arr = inputText.split(' ').filter((str) => str !== '');
             if (arr.length === 1) {
-                setInputText('');
+                viewController.inputText = '';
                 return;
             }
             arr.pop();
-            setInputText(arr.join(' ') + (arr.length > 0 ? ' ' : ''));
+            const newInputText = arr.join(' ') + (arr.length > 0 ? ' ' : '');
+            viewController.inputText = newInputText;
         },
         [inputText],
     );
@@ -79,7 +77,7 @@ export default function InputHandlerComp({
                 className={`form-control ${INPUT_TEXT_CLASS}`}
                 value={inputText}
                 autoFocus
-                placeholder={placeholder ?? 'not found'}
+                placeholder={placeholder ?? ''}
                 onKeyUp={(event) => {
                     if (['ArrowDown', 'ArrowUp'].includes(event.key)) {
                         event.stopPropagation();
@@ -90,7 +88,7 @@ export default function InputHandlerComp({
                 }}
                 onChange={(event) => {
                     const value = event.target.value;
-                    setInputText(value);
+                    viewController.inputText = value;
                 }}
             />
             <div className="d-flex justify-content-between h-100">
@@ -98,7 +96,7 @@ export default function InputHandlerComp({
                     className="btn btn-sm btn-outline-secondary"
                     title="Previous"
                     onClick={() => {
-                        bibleViewController.tryJumpingChapter(false);
+                        viewController.tryJumpingChapter(false);
                     }}
                 >
                     <i className="bi bi-caret-left" />
@@ -107,7 +105,7 @@ export default function InputHandlerComp({
                     className="btn btn-sm btn-outline-secondary"
                     title="Next"
                     onClick={() => {
-                        bibleViewController.tryJumpingChapter(true);
+                        viewController.tryJumpingChapter(true);
                     }}
                 >
                     <i className="bi bi-caret-right" />

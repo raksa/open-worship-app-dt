@@ -20,6 +20,10 @@ import {
 } from '../helper/bible-helpers/serverBibleHelpers2';
 import { BibleTargetType } from '../bible-list/bibleRenderHelpers';
 import { createContext, use } from 'react';
+import CacheManager from '../others/CacheManager';
+import { unlocking } from '../server/appHelpers';
+import { AnyObjectType } from '../helper/helpers';
+import { BibleItemType } from '../bible-list/bibleItemHelpers';
 
 export const closeEventMapper: EventMapper = {
     wControlKey: ['Ctrl'],
@@ -34,6 +38,26 @@ export const ctrlShiftMetaKeys: any = {
     mControlKey: ['Meta', 'Shift'],
 };
 
+class EditingBibleItem extends BibleItem {
+    get metadata() {
+        throw new Error('metadata is not available');
+    }
+    set metadata(_metadata: AnyObjectType) {
+        throw new Error('metadata is not available');
+    }
+    get target() {
+        throw new Error('target is not available');
+    }
+    set target(_target: BibleTargetType) {
+        throw new Error('target is not available');
+    }
+    static fromJson(json: BibleItemType) {
+        this.validate(json);
+        return new EditingBibleItem(json.id, json);
+    }
+}
+
+const editingResultCacher = new CacheManager<EditingResultType>(3);
 class LookupBibleItemController extends BibleItemsViewController {
     setInputText = (_: string) => {};
     setBibleKey = (_: string) => {};
@@ -42,7 +66,7 @@ class LookupBibleItemController extends BibleItemsViewController {
     constructor() {
         super('lookup');
         if (this.straightBibleItems.length === 0) {
-            const bibleItem = BibleItem.fromJson({
+            const bibleItem = this.bibleItemFromJson({
                 id: this.genBibleItemUniqueId(),
                 bibleKey: 'KJV',
                 metadata: {},
@@ -56,11 +80,21 @@ class LookupBibleItemController extends BibleItemsViewController {
             this.nestedBibleItems = [bibleItem];
         }
     }
-    get selectedBibleItem() {
+    bibleItemFromJson(json: any): BibleItem {
+        if (json.id === this.getSavedBibleId()) {
+            return EditingBibleItem.fromJson(json);
+        }
+        return super.bibleItemFromJson(json);
+    }
+    getSavedBibleId() {
         const settingId = getSetting(
             this.toSettingName('-selected-bible-item'),
         );
         const bibleItemId = settingId ? parseInt(settingId) : -1;
+        return bibleItemId;
+    }
+    get selectedBibleItem() {
+        const bibleItemId = this.getSavedBibleId();
         if (bibleItemId !== -1) {
             const bibleItem = this.straightBibleItems.find((bibleItem) => {
                 return bibleItem.id === bibleItemId;
@@ -118,14 +152,49 @@ class LookupBibleItemController extends BibleItemsViewController {
     }
 
     async getEditingResult() {
-        const editingResult = await extractBibleTitle(
-            this.selectedBibleItem.bibleKey,
-            this.inputText,
-        );
-        if (editingResult.result.bibleItem !== null) {
-            editingResult.result.bibleItem.id = this.selectedBibleItem.id;
+        const cachedKey = `${this.selectedBibleItem.bibleKey}-${this.inputText}`;
+        return unlocking(cachedKey, async () => {
+            const cachedEditingResult =
+                await editingResultCacher.get(cachedKey);
+            if (cachedEditingResult !== null) {
+                return cachedEditingResult;
+            }
+            const editingResult = await extractBibleTitle(
+                this.selectedBibleItem.bibleKey,
+                this.inputText,
+            );
+            if (editingResult.result.bibleItem !== null) {
+                editingResult.result.bibleItem.id = this.selectedBibleItem.id;
+            }
+            await editingResultCacher.set(cachedKey, editingResult);
+            return editingResult;
+        });
+    }
+
+    private async setEditingData(
+        bibleKey: string | null,
+        target: BibleTargetType | null,
+    ) {
+        const selectedBibleItem = this.selectedBibleItem;
+        const editingResult = await this.getEditingResult();
+        if (bibleKey !== null && bibleKey !== selectedBibleItem.bibleKey) {
+            super.applyTargetOrBibleKey(selectedBibleItem, {
+                bibleKey,
+            });
+            this.setBibleKey(bibleKey);
         }
-        return editingResult;
+        const foundBibleItem = editingResult.result.bibleItem;
+        if (foundBibleItem === null) {
+            return;
+        }
+        if (bibleKey !== null) {
+            foundBibleItem.bibleKey = bibleKey;
+        }
+        if (target !== null) {
+            foundBibleItem.target = target;
+        }
+        const title = await foundBibleItem.toTitle();
+        this.inputText = title;
     }
 
     applyTargetOrBibleKey(
@@ -133,23 +202,7 @@ class LookupBibleItemController extends BibleItemsViewController {
         { target, bibleKey }: { target?: BibleTargetType; bibleKey?: string },
     ) {
         if (this.checkIsBibleItemSelected(bibleItem)) {
-            if (
-                bibleKey !== undefined &&
-                bibleKey !== this.selectedBibleItem.bibleKey
-            ) {
-                super.applyTargetOrBibleKey(bibleItem, {
-                    bibleKey,
-                });
-                this.setBibleKey(bibleKey);
-                this.getEditingResult().then((editingResult) => {
-                    const foundBibleItem = editingResult.result.bibleItem;
-                    if (foundBibleItem !== null) {
-                        foundBibleItem.toTitle().then((inputText) => {
-                            this.inputText = inputText;
-                        });
-                    }
-                });
-            }
+            this.setEditingData(bibleKey ?? null, target ?? null);
             return;
         }
         super.applyTargetOrBibleKey(bibleItem, {
@@ -242,8 +295,16 @@ class LookupBibleItemController extends BibleItemsViewController {
         }
     }
     async tryJumpingChapter(isNext: boolean) {
-        const selectedBibleItem = this.selectedBibleItem;
-        const nextTarget = await selectedBibleItem.getJumpingChapter(isNext);
+        const editingResult = await this.getEditingResult();
+        const foundBibleItem = editingResult.result.bibleItem;
+        if (foundBibleItem === null) {
+            showSimpleToast(
+                'Jumping Chapter',
+                'Unable to find the target bible item',
+            );
+            return;
+        }
+        const nextTarget = await foundBibleItem.getJumpingChapter(isNext);
         if (nextTarget === null) {
             showSimpleToast(
                 `Try ${isNext ? 'Next' : 'Previous'} Chapter`,
@@ -251,10 +312,9 @@ class LookupBibleItemController extends BibleItemsViewController {
             );
             return;
         }
-        selectedBibleItem.target = nextTarget;
-        selectedBibleItem.toTitle().then((title) => {
-            this.inputText = title;
-        });
+        foundBibleItem.target = nextTarget;
+        const title = await foundBibleItem.toTitle();
+        this.inputText = title;
     }
 }
 export default LookupBibleItemController;

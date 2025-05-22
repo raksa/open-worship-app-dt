@@ -8,17 +8,14 @@ import { genVerseList } from '../bible-list/bibleHelpers';
 
 export default function RenderVerseOptionsComp() {
     const bibleItem = useBibleItemContext();
+    const { bibleKey, target } = bibleItem;
     const { value: verseList } = useAppStateAsync(() => {
         return genVerseList({
-            bibleKey: bibleItem.bibleKey,
-            bookKey: bibleItem.target.bookKey,
-            chapter: bibleItem.target.chapter,
+            bibleKey: bibleKey,
+            bookKey: target.bookKey,
+            chapter: target.chapter,
         });
-    }, [
-        bibleItem.bibleKey,
-        bibleItem.target.bookKey,
-        bibleItem.target.chapter,
-    ]);
+    }, [bibleKey, target.bookKey, target.chapter]);
     const viewController = useBibleItemsViewControllerContext();
     useAppEffect(() => {
         document.body.addEventListener('mouseup', mouseUp);
@@ -30,7 +27,7 @@ export default function RenderVerseOptionsComp() {
         return null;
     }
     return (
-        <div className="render-found" data-bible-key={bibleItem.bibleKey}>
+        <div className="render-found" data-bible-key={bibleKey}>
             <div
                 className={
                     'verse-select w-100 d-flex p-1 align-content-start flex-wrap'
@@ -48,7 +45,7 @@ export default function RenderVerseOptionsComp() {
                                     bibleItem,
                                     {
                                         target: {
-                                            ...bibleItem.target,
+                                            ...target,
                                             verseStart: newVerseStart,
                                             verseEnd:
                                                 newVerseEnd ?? newVerseStart,
@@ -65,7 +62,7 @@ export default function RenderVerseOptionsComp() {
                     onClick={() => {
                         viewController.applyTargetOrBibleKey(bibleItem, {
                             target: {
-                                ...bibleItem.target,
+                                ...target,
                                 verseStart: 1,
                                 verseEnd: verseList.length,
                             },

@@ -44,7 +44,10 @@ export default class BibleItem
     set metadata(metadata: AnyObjectType) {
         this.originalJson.metadata = metadata;
     }
-    checkIsSameId(bibleItem: BibleItem) {
+    checkIsSameId(bibleItem: BibleItem | number) {
+        if (typeof bibleItem === 'number') {
+            return this.id === bibleItem;
+        }
         return this.id === bibleItem.id;
     }
     checkIsTargetIdentical(bibleItem: BibleItem) {
@@ -106,8 +109,8 @@ export default class BibleItem
         return {
             id: this.id,
             bibleKey: this.bibleKey,
-            target: this.target,
-            metadata: this.metadata,
+            target: this.originalJson.target,
+            metadata: this.originalJson.metadata,
         };
     }
     static validate(json: AnyObjectType) {

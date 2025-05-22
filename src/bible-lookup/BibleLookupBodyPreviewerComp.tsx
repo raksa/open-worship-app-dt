@@ -16,13 +16,11 @@ import {
 } from '../bible-reader/BibleViewExtra';
 import { BibleItemContext } from '../bible-reader/BibleItemContext';
 import {
-    EditingResultContext,
+    useEditingResultContext,
     useLookupBibleItemControllerContext,
 } from '../bible-reader/LookupBibleItemController';
-import { useAppStateAsync } from '../helper/debuggerHelpers';
 import { setBibleLookupInputFocus } from './selectionHelpers';
 import { MultiContextRender } from '../helper/MultiContextRender';
-import { useInputTextContext } from './InputHandlerComp';
 
 const LazyBiblePreviewerRenderComp = lazy(() => {
     return import('../bible-reader/BiblePreviewerRenderComp');
@@ -30,12 +28,9 @@ const LazyBiblePreviewerRenderComp = lazy(() => {
 
 function RenderBodyEditingComp() {
     const viewController = useLookupBibleItemControllerContext();
-    const { inputText } = useInputTextContext();
-    const { value: editingResult } = useAppStateAsync(() => {
-        return viewController.getEditingResult();
-    }, [inputText]);
     const selectedBibleItem = viewController.selectedBibleItem;
-    const bibleItem = editingResult?.result.bibleItem ?? null;
+    const editingResult = useEditingResultContext();
+    const foundBibleItem = editingResult?.result.bibleItem ?? null;
     return (
         <MultiContextRender
             contexts={[
@@ -43,17 +38,18 @@ function RenderBodyEditingComp() {
                     context: BibleViewTitleMaterialContext,
                     value: {
                         titleElement:
-                            bibleItem === null ? (
+                            foundBibleItem === null ? (
                                 <BibleViewTitleWrapperComp
                                     bibleKey={selectedBibleItem.bibleKey}
                                 >
-                                    {inputText}
+                                    {editingResult?.oldInputText ?? ''}
                                 </BibleViewTitleWrapperComp>
                             ) : (
                                 <BibleViewTitleEditingComp
                                     onTargetChange={async (newBibleTarget) => {
-                                        bibleItem.target = newBibleTarget;
-                                        const title = await bibleItem.toTitle();
+                                        foundBibleItem.target = newBibleTarget;
+                                        const title =
+                                            await foundBibleItem.toTitle();
                                         viewController.inputText = title;
                                     }}
                                 >
@@ -75,15 +71,11 @@ function RenderBodyEditingComp() {
                 },
                 {
                     context: BibleItemContext,
-                    value: selectedBibleItem,
+                    value: foundBibleItem,
                 },
             ]}
         >
-            {editingResult ? (
-                <EditingResultContext value={editingResult}>
-                    <BibleViewComp />
-                </EditingResultContext>
-            ) : null}
+            <BibleViewComp />
         </MultiContextRender>
     );
 }

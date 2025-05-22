@@ -11,7 +11,10 @@ import RenderExtraButtonsRightComp from './RenderExtraButtonsRightComp';
 import { useStateSettingBoolean } from '../helper/settingHelpers';
 import { useAppEffect, useAppStateAsync } from '../helper/debuggerHelpers';
 import { getAllLocalBibleInfoList } from '../helper/bible-helpers/bibleDownloadHelpers';
-import { useLookupBibleItemControllerContext } from '../bible-reader/LookupBibleItemController';
+import {
+    EditingResultContext,
+    useLookupBibleItemControllerContext,
+} from '../bible-reader/LookupBibleItemController';
 
 const LazyBibleSearchBodyPreviewerComp = lazy(() => {
     return import('../bible-search/BibleSearchPreviewerComp');
@@ -50,6 +53,9 @@ export default function RenderBibleLookupComp() {
     const [inputText, setInputText] = useState<string>(
         viewController.inputText,
     );
+    const { value: editingResult } = useAppStateAsync(() => {
+        return viewController.getEditingResult();
+    }, [inputText]);
     const { isValid, bibleKey } = useSelectedBibleKey();
     useAppEffect(() => {
         viewController.setInputText = setInputText;
@@ -74,7 +80,11 @@ export default function RenderBibleLookupComp() {
             </div>
         );
     }
-    const lookupBody = <BibleLookupBodyPreviewerComp />;
+    const lookupBody = (
+        <EditingResultContext value={editingResult ?? null}>
+            <BibleLookupBodyPreviewerComp />
+        </EditingResultContext>
+    );
     const resizeData = [
         {
             children: {

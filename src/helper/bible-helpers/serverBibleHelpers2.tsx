@@ -349,6 +349,7 @@ export type EditingResultType = {
     result: ExtractedBibleResult;
     bibleKey: string;
     inputText: string;
+    oldInputText: string;
 };
 export async function extractBibleTitle(
     bibleKey: string,
@@ -356,7 +357,12 @@ export async function extractBibleTitle(
 ): Promise<EditingResultType> {
     const cleanText = inputText.trim().replace(/\s+/g, ' ');
     if (cleanText === '') {
-        return { result: genExtractedBible(), bibleKey, inputText: '' };
+        return {
+            result: genExtractedBible(),
+            bibleKey,
+            inputText: '',
+            oldInputText: inputText,
+        };
     }
     for (const [regexStr, matcher] of regexTitleMap) {
         const regex = new RegExp(regexStr);
@@ -366,10 +372,10 @@ export async function extractBibleTitle(
         }
         const result = await matcher(bibleKey, matches);
         if (result !== null) {
-            return { result, bibleKey, inputText };
+            return { result, bibleKey, inputText, oldInputText: inputText };
         }
     }
     const result = genExtractedBible();
     result.guessingBook = cleanText;
-    return { result, bibleKey, inputText: '' };
+    return { result, bibleKey, inputText: '', oldInputText: inputText };
 }

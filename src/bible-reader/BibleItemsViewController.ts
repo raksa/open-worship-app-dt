@@ -71,30 +71,6 @@ function toStraightItems(nestedBibleItems: NestedBibleItemsType): BibleItem[] {
     return allBibleItems;
 }
 
-function parseNestedBibleItem(json: any): NestedBibleItemsType {
-    if (json instanceof Array) {
-        const nestedBibleItems: NestedBibleItemsType = json.map((item: any) => {
-            return parseNestedBibleItem(item);
-        });
-        const straightBibleItems = toStraightItems(nestedBibleItems);
-        const allIds = straightBibleItems.map((item) => {
-            return item.id;
-        });
-        if (
-            allIds.length !==
-            new Set(
-                allIds.filter((id) => {
-                    return id !== -1;
-                }),
-            ).size
-        ) {
-            throw new Error('Duplicate BibleItem ID found');
-        }
-        return nestedBibleItems;
-    }
-    return BibleItem.fromJson(json);
-}
-
 function deepSanitizeNestedItems(nestedBibleItems: NestedBibleItemsType): {
     nestedBibleItems: NestedBibleItemsType;
     isFoundError: boolean;
@@ -157,7 +133,7 @@ export function stringifyNestedBibleItem(
 
 function checkIsIdentical(
     nestedBibleItem1: NestedBibleItemsType,
-    nestedBibleItem2: NestedBibleItemsType,
+    nestedBibleItem2: NestedBibleItemsType | number,
 ) {
     if (nestedBibleItem1 instanceof Array) {
         if (!(nestedBibleItem2 instanceof Array)) {
@@ -187,7 +163,7 @@ function checkIsIndexLTLengthM1(index: number, length: number) {
 
 function seekParent(
     nestedBibleItems: NestedBibleItemsType,
-    targetNestedBibleItem: NestedBibleItemsType,
+    targetNestedBibleItemOrId: NestedBibleItemsType | number,
     isHorizontal: boolean = true,
 ): {
     parentNestedBibleItems: NestedBibleItemsType[];
@@ -196,7 +172,7 @@ function seekParent(
 } | null {
     if (nestedBibleItems instanceof Array) {
         for (const nestedBibleItem of nestedBibleItems) {
-            if (checkIsIdentical(nestedBibleItem, targetNestedBibleItem)) {
+            if (checkIsIdentical(nestedBibleItem, targetNestedBibleItemOrId)) {
                 return {
                     parentNestedBibleItems: nestedBibleItems,
                     isHorizontal,
@@ -205,7 +181,7 @@ function seekParent(
             } else if (nestedBibleItem instanceof Array) {
                 const foundParent = seekParent(
                     nestedBibleItem,
-                    targetNestedBibleItem,
+                    targetNestedBibleItemOrId,
                     !isHorizontal,
                 );
                 if (foundParent !== null) {
@@ -297,6 +273,34 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
         }
         return '';
     }
+    bibleItemFromJson(json: any): BibleItem {
+        return BibleItem.fromJson(json);
+    }
+    parseNestedBibleItem(json: any): NestedBibleItemsType {
+        if (json instanceof Array) {
+            const nestedBibleItems: NestedBibleItemsType = json.map(
+                (item: any) => {
+                    return this.parseNestedBibleItem(item);
+                },
+            );
+            const straightBibleItems = toStraightItems(nestedBibleItems);
+            const allIds = straightBibleItems.map((item) => {
+                return item.id;
+            });
+            if (
+                allIds.length !==
+                new Set(
+                    allIds.filter((id) => {
+                        return id !== -1;
+                    }),
+                ).size
+            ) {
+                throw new Error('Duplicate BibleItem ID found');
+            }
+            return nestedBibleItems;
+        }
+        return this.bibleItemFromJson(json);
+    }
     set bibleVerseKey(bibleVerseKey: string) {
         setSetting(this.toSettingName('-bible-verse-key'), bibleVerseKey);
         this.setBibleVerseKey(bibleVerseKey);
@@ -305,7 +309,7 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
         try {
             const jsonStr = getSetting(this.toSettingName('-data')) || '[]';
             const json = JSON.parse(jsonStr);
-            return parseNestedBibleItem(json);
+            return this.parseNestedBibleItem(json);
         } catch (error) {
             handleError(error);
         }
@@ -437,9 +441,13 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
             bottom,
         };
     }
-    seek(bibleItem: BibleItem, toastTitle: string, toastMessage: string) {
+    seek(
+        bibleItemOrId: BibleItem | number,
+        toastTitle: string = 'Seek Item',
+        toastMessage: string = 'Unable to seek bible item',
+    ) {
         const nestedBibleItems = this.nestedBibleItems;
-        const foundParent = seekParent(nestedBibleItems, bibleItem);
+        const foundParent = seekParent(nestedBibleItems, bibleItemOrId);
         if (foundParent === null) {
             showSimpleToast(toastTitle, toastMessage);
             throw new Error();
