@@ -533,10 +533,10 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
                     ? [newBibleItem, bibleItem]
                     : [bibleItem, newBibleItem];
             }
+            this.nestedBibleItems = nestedBibleItems;
             if (sourceColor) {
                 this.setColorNote(newBibleItem, sourceColor);
             }
-            this.nestedBibleItems = nestedBibleItems;
             newBibleItem.toTitle().then((title) => {
                 attemptAddingHistory(newBibleItem.bibleKey, title, true);
             });
