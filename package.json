@@ -3,7 +3,7 @@
     "description": "Fully Open-Source and completely free forever for worship service.",
     "author": "Raksa Eng <eng.raksa@gmail.com> (https://www.linkedin.com/in/raks-eng/)",
     "homepage": "https://github.com/OpenWorshipApp/open-worship-app-dt",
-    "version": "2025.02.18",
+    "version": "2025.04.11",
     "type": "commonjs",
     "main": "./electron-build/electron/index.js",
     "scripts": {
@@ -30,14 +30,14 @@
     },
     "browserslist": {
         "production": [
-            ">0.2%",
-            "not dead",
-            "not op_mini all"
+        ">0.2%",
+        "not dead",
+        "not op_mini all"
         ],
         "development": [
-            "last 1 chrome version",
-            "last 1 firefox version",
-            "last 1 safari version"
+        "last 1 chrome version",
+        "last 1 firefox version",
+        "last 1 safari version"
         ]
     },
     "build": {
@@ -46,45 +46,54 @@
         "appId": "app.openworship.desktop",
         "nodeGypRebuild": "false",
         "files": [
-            "electron-build/**/*",
-            "build/**/*",
-            "dist/**/*",
-            "package.json"
+        "electron-build/**/*",
+        "build/**/*",
+        "dist/**/*",
+        "package.json"
         ],
         "dmg": {
-            "contents": [
-                {
-                    "x": 130,
-                    "y": 220
-                },
-                {
-                    "x": 410,
-                    "y": 220,
-                    "type": "link",
-                    "path": "/Applications"
-                }
-            ]
+        "contents": [
+            {
+            "x": 130,
+            "y": 220
+            },
+            {
+            "x": 410,
+            "y": 220,
+            "type": "link",
+            "path": "/Applications"
+            }
+        ]
         },
         "win": {
-            "target": [
-                "nsis"
-            ]
+        "target": [
+            "nsis",
+            "zip"
+        ]
         },
         "linux": {
-            "target": [
-                "deb",
-                "AppImage"
-            ],
-            "category": "Productivity"
+        "target": [
+            "deb",
+            "AppImage",
+            "tar.gz"
+        ],
+        "category": "Productivity"
+        },
+        "mac": {
+        "target": [
+            "dmg",
+            "zip"
+        ],
+        "category": "public.app-category.productivity"
         },
         "directories": {
-            "buildResources": "resources",
-            "output": "release"
+        "buildResources": "resources",
+        "output": "release"
         },
         "nsis": {
-            "allowToChangeInstallationDirectory": true,
-            "oneClick": false,
-            "license": "LICENSE.txt"
+        "allowToChangeInstallationDirectory": true,
+        "oneClick": false,
+        "license": "LICENSE.txt"
         }
     },
     "engines": {
@@ -125,3 +134,4 @@
         "tar": "^7.4.3"
     }
 }
+
