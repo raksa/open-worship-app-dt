@@ -1,6 +1,5 @@
 import BibleItem from '../bible-list/BibleItem';
 import { bibleRenderHelper } from '../bible-list/bibleRenderHelpers';
-import { useBibleItemContext } from '../bible-reader/BibleItemContext';
 import { BibleDirectViewTitleComp } from '../bible-reader/BibleViewExtra';
 import { useLookupBibleItemControllerContext } from '../bible-reader/LookupBibleItemController';
 import { handleClicking } from '../bible-search/bibleFindHelpers';
@@ -136,11 +135,14 @@ function RefItemRendererComp({
     );
 }
 
-export default function RefRendererComp() {
-    const bibleItem = useBibleItemContext();
+export default function RefRendererComp({
+    bibleItem,
+}: Readonly<{
+    bibleItem: BibleItem;
+}>) {
     const [title] = useAppStateAsync(() => {
         return bibleItem.toTitle();
-    }, [bibleItem]);
+    }, [bibleItem.bibleKey, bibleItem.target]);
     const { bookKey: book, chapter, verseStart, verseEnd } = bibleItem.target;
     const arr: number[] = [];
     for (let i = verseStart; i <= verseEnd; i++) {

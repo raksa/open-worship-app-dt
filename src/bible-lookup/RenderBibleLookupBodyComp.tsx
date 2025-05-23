@@ -8,9 +8,10 @@ import { keyToBook } from '../helper/bible-helpers/bibleInfoHelpers';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
 import { useBibleKeyContext } from '../bible-list/bibleHelpers';
 import LookupBibleItemController, {
-    useEditingResultContext,
+    EditingResultContext,
     useLookupBibleItemControllerContext,
 } from '../bible-reader/LookupBibleItemController';
+import { use } from 'react';
 
 async function handleTab(
     event: KeyboardEvent,
@@ -42,10 +43,13 @@ async function handleTab(
 export default function RenderBibleLookupBodyComp() {
     const viewController = useLookupBibleItemControllerContext();
     const bibleKey = useBibleKeyContext();
-    const editingResult = useEditingResultContext();
+    const editingResult = use(EditingResultContext);
     useKeyboardRegistering(
         [{ key: 'Tab' }],
         async (event) => {
+            if (editingResult === null) {
+                return;
+            }
             handleTab(event, viewController, editingResult);
         },
         [],
@@ -55,6 +59,9 @@ export default function RenderBibleLookupBodyComp() {
         viewController.inputText = newText;
     };
     const handleChapterSelecting = async (newChapter: number) => {
+        if (editingResult === null) {
+            return;
+        }
         if (bibleKey === null || editingResult.result.bookKey === null) {
             return;
         }

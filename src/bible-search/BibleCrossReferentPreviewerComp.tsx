@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { BibleItemContext } from '../bible-reader/BibleItemContext';
 import RefRendererComp from '../bible-refs/RefRendererComp';
 import BibleItem from '../bible-list/BibleItem';
 import { useAppEffect } from '../helper/debuggerHelpers';
@@ -42,9 +41,5 @@ export default function BibleCrossReferentPreviewerComp() {
             </div>
         );
     }
-    return (
-        <BibleItemContext value={bileItem}>
-            <RefRendererComp />
-        </BibleItemContext>
-    );
+    return <RefRendererComp bibleItem={bileItem} />;
 }

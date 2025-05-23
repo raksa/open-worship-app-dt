@@ -1,4 +1,4 @@
-import { lazy } from 'react';
+import { lazy, use } from 'react';
 
 import BibleItem from '../bible-list/BibleItem';
 import { BibleItemsViewControllerContext } from '../bible-reader/BibleItemsViewController';
@@ -14,13 +14,11 @@ import {
     BibleViewTitleMaterialContext,
     BibleViewTitleWrapperComp,
 } from '../bible-reader/BibleViewExtra';
-import { BibleItemContext } from '../bible-reader/BibleItemContext';
 import {
-    useEditingResultContext,
+    EditingResultContext,
     useLookupBibleItemControllerContext,
 } from '../bible-reader/LookupBibleItemController';
 import { setBibleLookupInputFocus } from './selectionHelpers';
-import { MultiContextRender } from '../helper/MultiContextRender';
 
 const LazyBiblePreviewerRenderComp = lazy(() => {
     return import('../bible-reader/BiblePreviewerRenderComp');
@@ -29,54 +27,45 @@ const LazyBiblePreviewerRenderComp = lazy(() => {
 function RenderBodyEditingComp() {
     const viewController = useLookupBibleItemControllerContext();
     const selectedBibleItem = viewController.selectedBibleItem;
-    const editingResult = useEditingResultContext();
+    const editingResult = use(EditingResultContext);
     const foundBibleItem = editingResult?.result.bibleItem ?? null;
     return (
-        <MultiContextRender
-            contexts={[
-                {
-                    context: BibleViewTitleMaterialContext,
-                    value: {
-                        titleElement:
-                            foundBibleItem === null ? (
-                                <BibleViewTitleWrapperComp
-                                    bibleKey={selectedBibleItem.bibleKey}
-                                >
-                                    {editingResult?.oldInputText ?? ''}
-                                </BibleViewTitleWrapperComp>
-                            ) : (
-                                <BibleViewTitleEditingComp
-                                    onTargetChange={async (newBibleTarget) => {
-                                        foundBibleItem.target = newBibleTarget;
-                                        const title =
-                                            await foundBibleItem.toTitle();
-                                        viewController.inputText = title;
-                                    }}
-                                >
-                                    <span
-                                        className="pointer app-caught-hover"
-                                        title='Hit "Escape" to force edit'
-                                        onClick={() => {
-                                            setBibleLookupInputFocus();
-                                        }}
-                                    >
-                                        <i
-                                            style={{ color: 'green' }}
-                                            className="bi bi-pencil-fill"
-                                        />
-                                    </span>
-                                </BibleViewTitleEditingComp>
-                            ),
-                    },
-                },
-                {
-                    context: BibleItemContext,
-                    value: foundBibleItem,
-                },
-            ]}
+        <BibleViewTitleMaterialContext
+            value={{
+                titleElement:
+                    foundBibleItem === null ? (
+                        <BibleViewTitleWrapperComp
+                            bibleKey={selectedBibleItem.bibleKey}
+                        >
+                            {editingResult?.oldInputText ?? ''}
+                        </BibleViewTitleWrapperComp>
+                    ) : (
+                        <BibleViewTitleEditingComp
+                            bibleItem={foundBibleItem}
+                            onTargetChange={async (newBibleTarget) => {
+                                foundBibleItem.target = newBibleTarget;
+                                const title = await foundBibleItem.toTitle();
+                                viewController.inputText = title;
+                            }}
+                        >
+                            <span
+                                className="pointer app-caught-hover"
+                                title='Hit "Escape" to force edit'
+                                onClick={() => {
+                                    setBibleLookupInputFocus();
+                                }}
+                            >
+                                <i
+                                    style={{ color: 'green' }}
+                                    className="bi bi-pencil-fill"
+                                />
+                            </span>
+                        </BibleViewTitleEditingComp>
+                    ),
+            }}
         >
-            <BibleViewComp />
-        </MultiContextRender>
+            <BibleViewComp bibleItem={foundBibleItem} />
+        </BibleViewTitleMaterialContext>
     );
 }
 
@@ -87,52 +76,39 @@ function RenderBodyComp({
 }>) {
     const viewController = useLookupBibleItemControllerContext();
     return (
-        <MultiContextRender
-            contexts={[
-                {
-                    context: BibleViewTitleMaterialContext,
-                    value: {
-                        titleElement: (
-                            <BibleViewTitleEditingComp
-                                onTargetChange={(newBibleTarget) => {
-                                    viewController.applyTargetOrBibleKey(
-                                        bibleItem,
-                                        {
-                                            target: newBibleTarget,
-                                        },
-                                    );
-                                    viewController.syncTargetByColorNote(
-                                        bibleItem,
-                                    );
-                                }}
-                            >
-                                <span
-                                    className={
-                                        'pointer app-low-hover-visible ' +
-                                        'app-caught-hover'
-                                    }
-                                    title='Hit "Escape" to force edit'
-                                    onClick={() => {
-                                        viewController.editBibleItem(bibleItem);
-                                    }}
-                                >
-                                    <i
-                                        style={{ color: 'green' }}
-                                        className="bi bi-pencil"
-                                    />
-                                </span>
-                            </BibleViewTitleEditingComp>
-                        ),
-                    },
-                },
-                {
-                    context: BibleItemContext,
-                    value: bibleItem,
-                },
-            ]}
+        <BibleViewTitleMaterialContext
+            value={{
+                titleElement: (
+                    <BibleViewTitleEditingComp
+                        bibleItem={bibleItem}
+                        onTargetChange={(newBibleTarget) => {
+                            viewController.applyTargetOrBibleKey(bibleItem, {
+                                target: newBibleTarget,
+                            });
+                            viewController.syncTargetByColorNote(bibleItem);
+                        }}
+                    >
+                        <span
+                            className={
+                                'pointer app-low-hover-visible ' +
+                                'app-caught-hover'
+                            }
+                            title='Hit "Escape" to force edit'
+                            onClick={() => {
+                                viewController.editBibleItem(bibleItem);
+                            }}
+                        >
+                            <i
+                                style={{ color: 'green' }}
+                                className="bi bi-pencil"
+                            />
+                        </span>
+                    </BibleViewTitleEditingComp>
+                ),
+            }}
         >
-            <BibleViewComp />
-        </MultiContextRender>
+            <BibleViewComp bibleItem={bibleItem} />
+        </BibleViewTitleMaterialContext>
     );
 }
 

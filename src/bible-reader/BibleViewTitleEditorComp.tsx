@@ -76,7 +76,7 @@ export default function BibleViewTitleEditorComp({
 }>) {
     const [title] = useAppStateAsync(() => {
         return bibleItem.toTitle();
-    }, [bibleItem]);
+    }, [bibleItem.bibleKey, bibleItem.target]);
     const { bibleKey, target } = bibleItem;
     const [fontFamily] = useAppStateAsync(() => {
         return getBibleFontFamily(bibleKey);
@@ -147,7 +147,7 @@ export default function BibleViewTitleEditorComp({
             }),
         );
         verseList.unshift([0, 'Verse Start', 'Verse Start']);
-        return await chose(event, false, target.verseStart, verseList, {
+        return await chose(event, true, target.verseStart, verseList, {
             fontFamily: fontFamily ?? '',
         });
     };

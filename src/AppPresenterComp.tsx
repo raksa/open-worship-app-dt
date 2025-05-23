@@ -12,8 +12,6 @@ import {
     BibleViewTitleEditingComp,
     BibleViewTitleMaterialContext,
 } from './bible-reader/BibleViewExtra';
-import { BibleItemContext } from './bible-reader/BibleItemContext';
-import { MultiContextRender } from './helper/MultiContextRender';
 
 const LazyAppPresenterLeftComp = lazy(() => {
     return import('./AppPresenterLeftComp');
@@ -30,31 +28,26 @@ export default function AppPresenterComp() {
         const newViewController = new BibleItemsViewController('presenter');
         newViewController.finalRenderer = (bibleItem: BibleItem) => {
             return (
-                <MultiContextRender
-                    contexts={[
-                        { context: BibleItemContext, value: bibleItem },
-                        {
-                            context: BibleViewTitleMaterialContext,
-                            value: {
-                                titleElement: (
-                                    <BibleViewTitleEditingComp
-                                        onTargetChange={(newBibleTarget) => {
-                                            newViewController.applyTargetOrBibleKey(
-                                                bibleItem,
-                                                { target: newBibleTarget },
-                                            );
-                                            newViewController.syncTargetByColorNote(
-                                                bibleItem,
-                                            );
-                                        }}
-                                    />
-                                ),
-                            },
-                        },
-                    ]}
+                <BibleViewTitleMaterialContext
+                    value={{
+                        titleElement: (
+                            <BibleViewTitleEditingComp
+                                bibleItem={bibleItem}
+                                onTargetChange={(newBibleTarget) => {
+                                    newViewController.applyTargetOrBibleKey(
+                                        bibleItem,
+                                        { target: newBibleTarget },
+                                    );
+                                    newViewController.syncTargetByColorNote(
+                                        bibleItem,
+                                    );
+                                }}
+                            />
+                        ),
+                    }}
                 >
-                    <BibleViewComp />
-                </MultiContextRender>
+                    <BibleViewComp bibleItem={bibleItem} />
+                </BibleViewTitleMaterialContext>
             );
         };
         return newViewController;

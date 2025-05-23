@@ -10,7 +10,6 @@ import {
 import ItemColorNoteComp from '../others/ItemColorNoteComp';
 import ColorNoteInf from '../helper/ColorNoteInf';
 import { useBibleItemsViewControllerContext } from './BibleItemsViewController';
-import { useBibleItemContext } from './BibleItemContext';
 import { BIBLE_VERSE_TEXT_TITLE } from '../helper/helpers';
 import {
     BibleTargetType,
@@ -39,21 +38,20 @@ export function useBibleViewTitleMaterialContext() {
 }
 
 export function RenderTitleMaterialComp({
-    editingBibleItem,
+    bibleItem,
     onBibleKeyChange,
 }: Readonly<{
-    editingBibleItem?: BibleItem;
+    bibleItem: BibleItem;
     onBibleKeyChange?: (oldBibleKey: string, newBibleKey: string) => void;
 }>) {
-    const bibleItem = useBibleItemContext();
     const viewController = useBibleItemsViewControllerContext();
     const materialContext = useBibleViewTitleMaterialContext();
     const colorNoteHandler: ColorNoteInf = {
         getColorNote: async () => {
-            return viewController.getColorNote(editingBibleItem ?? bibleItem);
+            return viewController.getColorNote(bibleItem);
         },
         setColorNote: async (color) => {
-            viewController.setColorNote(editingBibleItem ?? bibleItem, color);
+            viewController.setColorNote(bibleItem, color);
         },
     };
     return (
@@ -79,9 +77,10 @@ export function RenderTitleMaterialComp({
     );
 }
 
-export function RenderHeaderComp() {
+export function RenderHeaderComp({
+    bibleItem,
+}: Readonly<{ bibleItem: BibleItem }>) {
     const viewController = useBibleItemsViewControllerContext();
-    const bibleItem = useBibleItemContext();
     const fontSize = useBibleViewFontSizeContext();
     return (
         <div
@@ -89,6 +88,7 @@ export function RenderHeaderComp() {
             style={{ ...fontSizeToHeightStyle(fontSize) }}
         >
             <RenderTitleMaterialComp
+                bibleItem={bibleItem}
                 onBibleKeyChange={(
                     _oldBibleKey: string,
                     newBibleKey: string,
@@ -115,49 +115,13 @@ export function BibleDirectViewTitleComp({
 }: Readonly<{ bibleItem: BibleItem }>) {
     const [title] = useAppStateAsync(() => {
         return bibleItem.toTitle();
-    }, [bibleItem]);
+    }, [bibleItem.bibleKey, bibleItem.target]);
     return (
         <span
             data-bible-key={bibleItem.bibleKey}
             className="title app-border-white-round m-1 px-1"
         >
             {title}
-        </span>
-    );
-}
-
-export function BibleViewTitleComp({
-    onDBClick,
-    onPencilClick,
-}: Readonly<{
-    onDBClick?: (event: any) => void;
-    onPencilClick?: (event: any) => void;
-}> = {}) {
-    const bibleItem = useBibleItemContext();
-    const [title] = useAppStateAsync(() => {
-        return bibleItem.toTitle();
-    }, [bibleItem]);
-    const fontSize = useBibleViewFontSizeContext();
-    return (
-        <span
-            className="title"
-            data-bible-key={bibleItem.bibleKey}
-            style={{ fontSize }}
-            title={onDBClick !== undefined ? 'Double click to edit' : undefined}
-            onDoubleClick={onDBClick}
-        >
-            {title}{' '}
-            {onPencilClick ? (
-                <span
-                    className="pointer app-low-hover-visible app-caught-hover"
-                    style={{ color: 'green' }}
-                    onClick={() => {
-                        onPencilClick(bibleItem);
-                    }}
-                >
-                    <i className="bi bi-pencil" />
-                </span>
-            ) : null}
         </span>
     );
 }
@@ -177,13 +141,14 @@ export function BibleViewTitleWrapperComp({
     );
 }
 export function BibleViewTitleEditingComp({
+    bibleItem,
     onTargetChange,
     children,
 }: Readonly<{
+    bibleItem: BibleItem;
     onTargetChange: (bibleTarget: BibleTargetType) => void;
     children?: React.ReactNode;
 }>) {
-    const bibleItem = useBibleItemContext();
     return (
         <BibleViewTitleWrapperComp bibleKey={bibleItem.bibleKey}>
             <BibleViewTitleEditorComp
@@ -306,13 +271,14 @@ function RenderRestVerseNumListComp({
     );
 }
 
-export function BibleViewTextComp() {
-    const bibleItem = useBibleItemContext();
+export function BibleViewTextComp({
+    bibleItem,
+}: Readonly<{ bibleItem: BibleItem }>) {
     const { bibleKey, target } = bibleItem;
     const fontSize = useBibleViewFontSizeContext();
     const [verseList] = useAppStateAsync(() => {
         return bibleItem.toVerseTextList();
-    }, [bibleItem]);
+    }, [bibleItem.bibleKey, bibleItem.target]);
     const [verseCount] = useAppStateAsync(() => {
         return getVersesCount(bibleKey, target.bookKey, target.chapter);
     }, [bibleKey, target.bookKey, target.chapter]);

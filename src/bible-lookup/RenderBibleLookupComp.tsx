@@ -15,6 +15,7 @@ import {
     EditingResultContext,
     useLookupBibleItemControllerContext,
 } from '../bible-reader/LookupBibleItemController';
+import { EditingResultType } from '../helper/bible-helpers/serverBibleHelpers2';
 
 const LazyBibleSearchBodyPreviewerComp = lazy(() => {
     return import('../bible-search/BibleSearchPreviewerComp');
@@ -53,17 +54,22 @@ export default function RenderBibleLookupComp() {
     const [inputText, setInputText] = useState<string>(
         viewController.inputText,
     );
-    const [editingResult] = useAppStateAsync(() => {
-        return viewController.getEditingResult();
-    }, [inputText]);
+    const [editingResult, setEditingResult] =
+        useAppStateAsync<EditingResultType>(() => {
+            return viewController.getEditingResult();
+        }, []);
     const { isValid, bibleKey } = useSelectedBibleKey();
     useAppEffect(() => {
-        viewController.setInputText = setInputText;
+        viewController.setInputText = async (newInputText: string) => {
+            const newEditingResult =
+                await viewController.getEditingResult(newInputText);
+            setEditingResult(newEditingResult);
+            setInputText(newInputText);
+        };
         return () => {
             viewController.setInputText = (_: string) => {};
         };
     }, []);
-
     if (!isValid) {
         return (
             <div className="w-100 h-100">

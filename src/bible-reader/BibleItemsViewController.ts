@@ -477,8 +477,12 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
                     'Unable to change bible item',
                 );
             const actualBibleItem = parentNestedBibleItems[index] as BibleItem;
-            actualBibleItem.bibleKey = bibleKey ?? actualBibleItem.bibleKey;
-            actualBibleItem.target = target ?? actualBibleItem.target;
+            if (bibleKey !== undefined) {
+                actualBibleItem.bibleKey = bibleKey;
+            }
+            if (target !== undefined) {
+                actualBibleItem.target = target;
+            }
 
             this.nestedBibleItems = nestedBibleItems;
         } catch (error) {
@@ -692,19 +696,13 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
         });
     }
     syncTargetByColorNote(bibleItem: BibleItem) {
-        const { parentNestedBibleItems, index } = this.seek(
-            bibleItem,
-            'Sync Target',
-            'Unable to change target',
-        );
-        const actualBibleItem = parentNestedBibleItems[index] as BibleItem;
-        const colorNote = this.getColorNote(actualBibleItem);
+        const colorNote = this.getColorNote(bibleItem);
         for (const bibleItem1 of this.getBibleItemsByColorNote(colorNote)) {
-            if (bibleItem1.id === actualBibleItem.id) {
+            if (bibleItem1.id === bibleItem.id) {
                 continue;
             }
             this.applyTargetOrBibleKey(bibleItem1, {
-                target: actualBibleItem.target,
+                target: bibleItem.target,
             });
         }
     }

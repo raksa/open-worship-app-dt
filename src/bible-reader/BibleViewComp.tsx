@@ -10,22 +10,35 @@ import {
 import { BibleViewTextComp, RenderHeaderComp } from './BibleViewExtra';
 import { genDefaultBibleItemContextMenu } from '../bible-list/bibleItemHelpers';
 import RenderToTheTopComp from '../others/RenderToTheTopComp';
-import { useBibleItemContext } from './BibleItemContext';
 import RenderBibleEditingHeader from '../bible-lookup/RenderBibleEditingHeader';
 import RenderBibleLookupBodyComp from '../bible-lookup/RenderBibleLookupBodyComp';
 import { useMemo } from 'react';
 import LookupBibleItemController from './LookupBibleItemController';
+import BibleItem from '../bible-list/BibleItem';
 
-export default function BibleViewComp() {
+export default function BibleViewComp({
+    bibleItem,
+}: Readonly<{
+    bibleItem: BibleItem | null;
+}>) {
     const viewController = useBibleItemsViewControllerContext();
     const uuid = crypto.randomUUID();
-    const bibleItem = useBibleItemContext();
     const isSelected = useMemo(() => {
         return (
-            viewController instanceof LookupBibleItemController &&
-            viewController.checkIsBibleItemSelected(bibleItem)
+            bibleItem === null ||
+            (viewController instanceof LookupBibleItemController &&
+                viewController.checkIsBibleItemSelected(bibleItem))
         );
     }, [viewController, bibleItem]);
+    const actualBibleItem = useMemo(() => {
+        if (bibleItem !== null) {
+            return bibleItem;
+        }
+        if (viewController instanceof LookupBibleItemController) {
+            return viewController.selectedBibleItem;
+        }
+        return null;
+    }, [bibleItem, viewController]);
     return (
         <div
             id={`uuid-${uuid}`}
@@ -42,21 +55,34 @@ export default function BibleViewComp() {
                 removeDraggingClass(event);
             }}
             onDrop={async (event) => {
-                applyDragged(event, viewController, bibleItem);
+                if (actualBibleItem === null) {
+                    return;
+                }
+                applyDragged(event, viewController, actualBibleItem);
             }}
             onContextMenu={async (event: any) => {
+                if (actualBibleItem === null) {
+                    return;
+                }
                 showAppContextMenu(event, [
-                    ...genDefaultBibleItemContextMenu(bibleItem),
-                    ...(await viewController.genContextMenu(bibleItem, uuid)),
+                    ...genDefaultBibleItemContextMenu(actualBibleItem),
+                    ...(await viewController.genContextMenu(
+                        actualBibleItem,
+                        uuid,
+                    )),
                 ]);
             }}
         >
-            {!isSelected ? <RenderHeaderComp /> : <RenderBibleEditingHeader />}
+            {isSelected ? (
+                <RenderBibleEditingHeader />
+            ) : (
+                <RenderHeaderComp bibleItem={bibleItem!} />
+            )}
             <div className="card-body">
                 {isSelected ? (
                     <RenderBibleLookupBodyComp />
                 ) : (
-                    <BibleViewTextComp />
+                    <BibleViewTextComp bibleItem={bibleItem!} />
                 )}
                 <RenderToTheTopComp
                     style={{ bottom: '60px' }}

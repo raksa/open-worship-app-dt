@@ -3,12 +3,12 @@ import RenderChapterOptionsComp from './RenderChapterOptionsComp';
 import { BibleSelectionMiniComp } from './BibleSelectionComp';
 import { RENDER_FOUND_CLASS } from './selectionHelpers';
 import { BibleViewTextComp } from '../bible-reader/BibleViewExtra';
-import { BibleItemContext } from '../bible-reader/BibleItemContext';
 import {
-    useEditingResultContext,
+    EditingResultContext,
     useLookupBibleItemControllerContext,
 } from '../bible-reader/LookupBibleItemController';
 import RenderVerseOptionsComp from './RenderVerseOptionsComp';
+import { use } from 'react';
 
 export default function RenderLookupSuggestionComp({
     applyChapterSelection,
@@ -17,16 +17,19 @@ export default function RenderLookupSuggestionComp({
     applyChapterSelection: (newChapter: number) => void;
     applyBookSelection: (newBookKey: string, newBook: string) => void;
 }>) {
-    const editingResult = useEditingResultContext();
+    const editingResult = use(EditingResultContext);
+    if (editingResult === null) {
+        return <div>Loading...</div>;
+    }
     const { bookKey, guessingBook, chapter, guessingChapter, bibleItem } =
         editingResult.result;
 
     if (bibleItem !== null) {
         return (
-            <BibleItemContext value={bibleItem}>
-                <RenderVerseOptionsComp />
-                <BibleViewTextComp />
-            </BibleItemContext>
+            <>
+                <RenderVerseOptionsComp bibleItem={bibleItem} />
+                <BibleViewTextComp bibleItem={bibleItem} />
+            </>
         );
     }
     return (

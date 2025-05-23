@@ -2,12 +2,17 @@ import './RenderVersesOptionComp.scss';
 
 import RenderVerseNumOptionComp, { mouseUp } from './RenderVerseNumOptionComp';
 import { useAppEffect, useAppStateAsync } from '../helper/debuggerHelpers';
-import { useBibleItemContext } from '../bible-reader/BibleItemContext';
 import { useBibleItemsViewControllerContext } from '../bible-reader/BibleItemsViewController';
 import { genVerseList } from '../bible-list/bibleHelpers';
+import { useMemo } from 'react';
+import { getVersesCount } from '../helper/bible-helpers/serverBibleHelpers2';
+import BibleItem from '../bible-list/BibleItem';
 
-export default function RenderVerseOptionsComp() {
-    const bibleItem = useBibleItemContext();
+export default function RenderVerseOptionsComp({
+    bibleItem,
+}: Readonly<{
+    bibleItem: BibleItem;
+}>) {
     const { bibleKey, target } = bibleItem;
     const [verseList] = useAppStateAsync(() => {
         return genVerseList({
@@ -17,6 +22,16 @@ export default function RenderVerseOptionsComp() {
         });
     }, [bibleKey, target.bookKey, target.chapter]);
     const viewController = useBibleItemsViewControllerContext();
+    const [verseCount] = useAppStateAsync(() => {
+        return getVersesCount(bibleKey, target.bookKey, target.chapter);
+    }, [bibleKey, target.bookKey, target.chapter]);
+    const isFull = useMemo(() => {
+        return (
+            target.verseStart === 1 &&
+            verseCount &&
+            target.verseEnd === verseCount
+        );
+    }, [verseCount, target.verseStart, target.verseEnd]);
     useAppEffect(() => {
         document.body.addEventListener('mouseup', mouseUp);
         return () => {
@@ -37,6 +52,7 @@ export default function RenderVerseOptionsComp() {
                     return (
                         <RenderVerseNumOptionComp
                             key={verseNumStr}
+                            bibleItem={bibleItem}
                             index={i}
                             verseNum={verseNum}
                             verseNumText={verseNumStr}
@@ -56,21 +72,23 @@ export default function RenderVerseOptionsComp() {
                         />
                     );
                 })}
-                <span
-                    className="p-2 pointer"
-                    title="Full Verse"
-                    onClick={() => {
-                        viewController.applyTargetOrBibleKey(bibleItem, {
-                            target: {
-                                ...target,
-                                verseStart: 1,
-                                verseEnd: verseList.length,
-                            },
-                        });
-                    }}
-                >
-                    <i className="bi bi-asterisk" />
-                </span>
+                {isFull ? null : (
+                    <span
+                        className="p-2 pointer"
+                        title="Full Verse"
+                        onClick={() => {
+                            viewController.applyTargetOrBibleKey(bibleItem, {
+                                target: {
+                                    ...target,
+                                    verseStart: 1,
+                                    verseEnd: verseList.length,
+                                },
+                            });
+                        }}
+                    >
+                        <i className="bi bi-asterisk" />
+                    </span>
+                )}
             </div>
         </div>
     );

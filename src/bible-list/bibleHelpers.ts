@@ -1,4 +1,4 @@
-import { createContext, use, useState } from 'react';
+import { createContext, use } from 'react';
 
 import BibleItem from './BibleItem';
 import {
@@ -13,7 +13,6 @@ import {
 } from '../helper/bible-helpers/serverBibleHelpers2';
 import Bible from './Bible';
 import { showSimpleToast } from '../toast/toastHelpers';
-import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import DirSource from '../helper/DirSource';
 import FileSource from '../helper/FileSource';
 import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
@@ -28,21 +27,6 @@ export function useBibleKeyContext() {
         throw new Error('SelectedBibleKeyContext is not provided');
     }
     return bibleKey;
-}
-
-export function useGetDefaultInputText(bibleItem: BibleItem | null) {
-    const [inputText, setInputText] = useState<string>('');
-    useAppEffectAsync(
-        async (methodContext) => {
-            if (bibleItem !== null) {
-                const title = await bibleItem.toTitle();
-                methodContext.setInputText(title);
-            }
-        },
-        [bibleItem],
-        { setInputText },
-    );
-    return [inputText, setInputText] as [string, (s: string) => void];
 }
 
 export async function genInputText(

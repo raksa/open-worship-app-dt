@@ -1,4 +1,4 @@
-import { useBibleItemContext } from '../bible-reader/BibleItemContext';
+import BibleItem from '../bible-list/BibleItem';
 
 let mouseDownInd: number | null = null;
 export function mouseUp() {
@@ -6,24 +6,25 @@ export function mouseUp() {
 }
 
 export default function RenderVerseNumOptionComp({
+    bibleItem,
     index,
     verseNum,
     verseNumText,
     onVerseChange,
 }: Readonly<{
+    bibleItem: BibleItem;
     index: number;
     verseNum: number;
     verseNumText: string;
     onVerseChange: (verseStart: number, verseEnd?: number) => void;
 }>) {
-    const bibleItem = useBibleItemContext();
     const { target } = bibleItem;
-    const sVerse = target.verseStart;
-    const eVerse = target.verseEnd;
+    const verseStart = target.verseStart;
+    const verseEnd = target.verseEnd;
     const ind = index + 1;
-    const started = sVerse === ind;
-    const inside = sVerse <= ind && ind <= eVerse;
-    const ended = eVerse === ind;
+    const started = verseStart === ind;
+    const inside = verseStart <= ind && ind <= verseEnd;
+    const ended = verseEnd === ind;
     let select = `${started ? 'selected-start' : ''}`;
     select += ` ${inside ? 'selected' : ''}`;
     select += ` ${ended ? 'selected-end' : ''}`;
@@ -35,7 +36,7 @@ export default function RenderVerseNumOptionComp({
             }
             onMouseDown={(event) => {
                 if (event.shiftKey) {
-                    const arr = [ind, sVerse, eVerse].sort((a, b) => {
+                    const arr = [ind, verseStart, verseEnd].sort((a, b) => {
                         return a - b;
                     });
                     const verse = arr.shift();
