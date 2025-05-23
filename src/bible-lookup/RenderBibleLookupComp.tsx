@@ -27,7 +27,7 @@ export function useSelectedBibleKey() {
     const [bibleKey, setBibleKey] = useState<string>(
         viewController.selectedBibleItem.bibleKey,
     );
-    const { value: localBibleInfoList } = useAppStateAsync(() => {
+    const [localBibleInfoList] = useAppStateAsync(() => {
         return getAllLocalBibleInfoList();
     }, []);
     useAppEffect(() => {
@@ -53,7 +53,7 @@ export default function RenderBibleLookupComp() {
     const [inputText, setInputText] = useState<string>(
         viewController.inputText,
     );
-    const { value: editingResult } = useAppStateAsync(() => {
+    const [editingResult] = useAppStateAsync(() => {
         return viewController.getEditingResult();
     }, [inputText]);
     const { isValid, bibleKey } = useSelectedBibleKey();

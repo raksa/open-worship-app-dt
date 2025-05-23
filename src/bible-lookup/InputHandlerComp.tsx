@@ -39,11 +39,11 @@ export default function InputHandlerComp({
     const { inputText } = useInputTextContext();
     const viewController = useLookupBibleItemControllerContext();
     const bibleKey = useBibleKeyContext();
-    const { value: books } = useAppStateAsync(() => {
+    const [books] = useAppStateAsync(() => {
         return getBookKVList(bibleKey);
     }, [bibleKey]);
     const bookKey = !books ? null : books['GEN'];
-    const { value: placeholder } = useAppStateAsync(() => {
+    const [placeholder] = useAppStateAsync(() => {
         return toInputText(bibleKey, bookKey, 1, 1, 2);
     });
     useKeyboardRegistering(

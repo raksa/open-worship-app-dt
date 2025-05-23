@@ -138,7 +138,7 @@ function RefItemRendererComp({
 
 export default function RefRendererComp() {
     const bibleItem = useBibleItemContext();
-    const { value: title } = useAppStateAsync(() => {
+    const [title] = useAppStateAsync(() => {
         return bibleItem.toTitle();
     }, [bibleItem]);
     const { bookKey: book, chapter, verseStart, verseEnd } = bibleItem.target;

@@ -140,8 +140,5 @@ export function useAppStateAsync<T>(
         [...deps],
         { setValue },
     );
-    return {
-        value,
-        setValue,
-    };
+    return [value, setValue] as const;
 }

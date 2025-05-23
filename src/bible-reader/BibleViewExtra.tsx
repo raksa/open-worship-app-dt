@@ -113,7 +113,7 @@ export function RenderHeaderComp() {
 export function BibleDirectViewTitleComp({
     bibleItem,
 }: Readonly<{ bibleItem: BibleItem }>) {
-    const { value: title } = useAppStateAsync(() => {
+    const [title] = useAppStateAsync(() => {
         return bibleItem.toTitle();
     }, [bibleItem]);
     return (
@@ -134,7 +134,7 @@ export function BibleViewTitleComp({
     onPencilClick?: (event: any) => void;
 }> = {}) {
     const bibleItem = useBibleItemContext();
-    const { value: title } = useAppStateAsync(() => {
+    const [title] = useAppStateAsync(() => {
         return bibleItem.toTitle();
     }, [bibleItem]);
     const fontSize = useBibleViewFontSizeContext();
@@ -275,7 +275,7 @@ function RenderRestVerseNumListComp({
         }
         return list;
     }, [actualFrom, actualTo]);
-    const { value: localeVerseList } = useAppStateAsync(() => {
+    const [localeVerseList] = useAppStateAsync(() => {
         return Promise.all(
             numList.map((verse) => {
                 return toLocaleNumBible(bibleItem.bibleKey, verse);
@@ -310,10 +310,10 @@ export function BibleViewTextComp() {
     const bibleItem = useBibleItemContext();
     const { bibleKey, target } = bibleItem;
     const fontSize = useBibleViewFontSizeContext();
-    const { value: verseList } = useAppStateAsync(() => {
+    const [verseList] = useAppStateAsync(() => {
         return bibleItem.toVerseTextList();
     }, [bibleItem]);
-    const { value: verseCount } = useAppStateAsync(() => {
+    const [verseCount] = useAppStateAsync(() => {
         return getVersesCount(bibleKey, target.bookKey, target.chapter);
     }, [bibleKey, target.bookKey, target.chapter]);
     if (!verseList || !verseCount) {

@@ -9,7 +9,7 @@ import { genVerseList } from '../bible-list/bibleHelpers';
 export default function RenderVerseOptionsComp() {
     const bibleItem = useBibleItemContext();
     const { bibleKey, target } = bibleItem;
-    const { value: verseList } = useAppStateAsync(() => {
+    const [verseList] = useAppStateAsync(() => {
         return genVerseList({
             bibleKey: bibleKey,
             bookKey: target.bookKey,

@@ -5,10 +5,10 @@ import { useAppStateAsync } from '../helper/debuggerHelpers';
 export default function SettingAboutComp() {
     const bookKey = 'PSA';
     const bibleItem = BibleItem.fromData('KJV', bookKey, 150, 6, 6);
-    const { value: text } = useAppStateAsync(() => {
+    const [text] = useAppStateAsync(() => {
         return bibleItem.toText();
     }, [bibleItem]);
-    const { value: title } = useAppStateAsync(() => {
+    const [title] = useAppStateAsync(() => {
         return toInputText('KJV', bookKey, 150, 6, 6);
     });
     const onClick = () => {
