@@ -18,7 +18,10 @@ import {
     EditingResultType,
     extractBibleTitle,
 } from '../helper/bible-helpers/serverBibleHelpers2';
-import { BibleTargetType } from '../bible-list/bibleRenderHelpers';
+import {
+    bibleRenderHelper,
+    BibleTargetType,
+} from '../bible-list/bibleRenderHelpers';
 import { createContext } from 'react';
 import CacheManager from '../others/CacheManager';
 import { unlocking } from '../server/appHelpers';
@@ -113,25 +116,32 @@ class LookupBibleItemController extends BibleItemsViewController {
         return this.selectedBibleItem;
     }
     set selectedBibleItem(bibleItem: BibleItem) {
-        if (this.checkIsBibleItemSelected(bibleItem)) {
-            return;
-        }
         setSetting(
             this.toSettingName('-selected-bible-item'),
             bibleItem.id.toString(),
         );
         this.applyTargetOrBibleKey(this.selectedBibleItem, bibleItem);
+        this.fireUpdateEvent();
     }
     checkIsBibleItemSelected(bibleItem: BibleItem) {
-        return (
-            bibleItem instanceof EditingBibleItem ||
-            bibleItem.id === this.selectedBibleItem.id
-        );
+        return bibleItem.id === this.selectedBibleItem.id;
     }
     get selectedIndex() {
         return this.straightBibleItems.findIndex((bibleItem) => {
             return this.checkIsBibleItemSelected(bibleItem);
         });
+    }
+    protected syncTargetByColorNote(bibleItem: BibleItem) {
+        if (this.checkIsBibleItemSelected(bibleItem)) {
+            this.getEditingResult().then(({ result }) => {
+                if (result.bibleItem === null) {
+                    return;
+                }
+                super.syncTargetByColorNote(result.bibleItem);
+            });
+            return;
+        }
+        super.syncTargetByColorNote(bibleItem);
     }
     setColorNote(bibleItem: BibleItem, color: string | null) {
         super._setColorNote(bibleItem, color);
@@ -140,12 +150,7 @@ class LookupBibleItemController extends BibleItemsViewController {
         const isSameWithSelected =
             selectedColorNote && selectedColorNote === currentColorNote;
         if (isSameWithSelected) {
-            this.getEditingResult().then((editingResult) => {
-                if (editingResult.result.bibleItem === null) {
-                    return;
-                }
-                this.syncTargetByColorNote(editingResult.result.bibleItem);
-            });
+            this.syncTargetByColorNote(this.selectedBibleItem);
         } else {
             this.syncTargetByColorNote(bibleItem);
         }
@@ -153,17 +158,20 @@ class LookupBibleItemController extends BibleItemsViewController {
     get inputText() {
         return getSetting(this.toSettingName('-input-text'), '');
     }
-    set inputText(newText: string) {
-        setSetting(this.toSettingName('-input-text'), newText);
-        this.setInputText(newText);
+    _setInputText(inputText: string) {
+        setSetting(this.toSettingName('-input-text'), inputText);
+        this.setInputText(inputText);
         setBibleLookupInputFocus();
+    }
+    set inputText(inputText: string) {
+        this._setInputText(inputText);
+        this.syncTargetByColorNote(this.selectedBibleItem);
     }
 
     async setLookupContentFromBibleItem(bibleItem: BibleItem) {
         applyHistoryPendingText();
         this.applyTargetOrBibleKey(this.selectedBibleItem, bibleItem);
-        const bibleText = await bibleItem.toTitle();
-        this.inputText = bibleText;
+        this.inputText = await bibleItem.toTitle();
     }
 
     async getEditingResult(inputText?: string) {
@@ -190,56 +198,79 @@ class LookupBibleItemController extends BibleItemsViewController {
     private async setEditingData(
         bibleKey: string | null,
         target: BibleTargetType | null,
+        isSkipColorSync: boolean,
     ) {
-        const selectedBibleItem = this.selectedBibleItem;
         const editingResult = await this.getEditingResult();
-        if (bibleKey !== null && bibleKey !== selectedBibleItem.bibleKey) {
-            super.applyTargetOrBibleKey(selectedBibleItem, {
-                bibleKey,
-            });
+        const foundBibleItem = editingResult.result.bibleItem;
+        if (target === null && foundBibleItem !== null) {
+            target = foundBibleItem.target;
+        }
+        const selectedBibleItem = this.selectedBibleItem;
+        if (bibleKey !== null) {
+            super.applyTargetOrBibleKey(
+                selectedBibleItem,
+                {
+                    bibleKey,
+                },
+                isSkipColorSync,
+            );
             this.setBibleKey(bibleKey);
         }
-        const foundBibleItem = editingResult.result.bibleItem;
-        if (foundBibleItem === null) {
-            return;
-        }
-        if (bibleKey !== null) {
-            foundBibleItem.bibleKey = bibleKey;
-        }
         if (target !== null) {
-            foundBibleItem.target = target;
+            const inputText = await bibleRenderHelper.toTitle(
+                selectedBibleItem.bibleKey,
+                target,
+            );
+            if (isSkipColorSync) {
+                this._setInputText(inputText);
+            } else {
+                this.inputText = inputText;
+            }
         }
-        const title = await foundBibleItem.toTitle();
-        this.inputText = title;
     }
 
     applyTargetOrBibleKey(
         bibleItem: BibleItem,
         { target, bibleKey }: { target?: BibleTargetType; bibleKey?: string },
+        isSkipColorSync = false,
     ) {
         if (this.checkIsBibleItemSelected(bibleItem)) {
-            this.setEditingData(bibleKey ?? null, target ?? null);
+            this.setEditingData(
+                bibleKey ?? null,
+                target ?? null,
+                isSkipColorSync,
+            );
             return;
         }
-        super.applyTargetOrBibleKey(bibleItem, {
-            bibleKey,
-            target,
-        });
+        super.applyTargetOrBibleKey(
+            bibleItem,
+            {
+                bibleKey,
+                target,
+            },
+            isSkipColorSync,
+        );
     }
 
     async editBibleItem(bibleItem: BibleItem) {
+        if (this.checkIsBibleItemSelected(bibleItem)) {
+            return;
+        }
+        const foundBibleItem = (await this.getEditingResult()).result.bibleItem;
         const oldSelectedBibleItem = this.selectedBibleItem;
         this.selectedBibleItem = bibleItem;
-        const foundBibleItem = (await this.getEditingResult()).result.bibleItem;
         if (foundBibleItem === null) {
             this.deleteBibleItem(oldSelectedBibleItem);
         } else {
-            foundBibleItem.toTitle().then((inputText) => {
-                attemptAddingHistory(foundBibleItem.bibleKey, inputText, true);
-            });
+            attemptAddingHistory(
+                foundBibleItem.bibleKey,
+                await foundBibleItem.toTitle(),
+                true,
+            );
+            this.applyTargetOrBibleKey(oldSelectedBibleItem, foundBibleItem);
         }
-        this.setLookupContentFromBibleItem(bibleItem);
     }
+
     async genContextMenu(
         bibleItem: BibleItem,
         uuid: string,
@@ -303,18 +334,6 @@ class LookupBibleItemController extends BibleItemsViewController {
             return;
         }
         super.deleteBibleItem(bibleItem);
-        const straightBibleItems = this.straightBibleItems;
-        if (
-            straightBibleItems
-                .map((bibleItem) => {
-                    return bibleItem.id;
-                })
-                .includes(this.selectedBibleItem.id)
-        ) {
-            const lastBibleItem =
-                straightBibleItems[straightBibleItems.length - 1];
-            this.editBibleItem(lastBibleItem);
-        }
     }
     async tryJumpingChapter(isNext: boolean) {
         const editingResult = await this.getEditingResult();

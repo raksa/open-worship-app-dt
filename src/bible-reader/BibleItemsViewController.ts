@@ -468,6 +468,7 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
     applyTargetOrBibleKey(
         bibleItem: BibleItem,
         { target, bibleKey }: { target?: BibleTargetType; bibleKey?: string },
+        isSkipColorSync = false,
     ) {
         try {
             const { nestedBibleItems, parentNestedBibleItems, index } =
@@ -478,6 +479,7 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
                 );
             const actualBibleItem = parentNestedBibleItems[index] as BibleItem;
             if (bibleKey !== undefined) {
+                bibleItem.bibleKey = bibleKey;
                 actualBibleItem.bibleKey = bibleKey;
             }
             if (target !== undefined) {
@@ -485,6 +487,9 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
             }
 
             this.nestedBibleItems = nestedBibleItems;
+            if (!isSkipColorSync) {
+                this.syncTargetByColorNote(actualBibleItem);
+            }
         } catch (error) {
             handleError(error);
         }
@@ -695,15 +700,20 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
             }
         });
     }
-    syncTargetByColorNote(bibleItem: BibleItem) {
+    protected syncTargetByColorNote(bibleItem: BibleItem) {
         const colorNote = this.getColorNote(bibleItem);
-        for (const bibleItem1 of this.getBibleItemsByColorNote(colorNote)) {
-            if (bibleItem1.id === bibleItem.id) {
+        const targetBibleItems = this.getBibleItemsByColorNote(colorNote);
+        for (const targetBibleItem of targetBibleItems) {
+            if (targetBibleItem.id === bibleItem.id) {
                 continue;
             }
-            this.applyTargetOrBibleKey(bibleItem1, {
-                target: bibleItem.target,
-            });
+            this.applyTargetOrBibleKey(
+                targetBibleItem,
+                {
+                    target: bibleItem.target,
+                },
+                true,
+            );
         }
     }
 }

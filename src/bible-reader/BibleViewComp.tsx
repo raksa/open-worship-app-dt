@@ -3,7 +3,7 @@ import './BibleViewComp.scss';
 import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
 import { useBibleItemsViewControllerContext } from './BibleItemsViewController';
 import {
-    applyDragged,
+    applyDropped,
     genDraggingClass,
     removeDraggingClass,
 } from './readBibleHelpers';
@@ -12,33 +12,23 @@ import { genDefaultBibleItemContextMenu } from '../bible-list/bibleItemHelpers';
 import RenderToTheTopComp from '../others/RenderToTheTopComp';
 import RenderBibleEditingHeader from '../bible-lookup/RenderBibleEditingHeader';
 import RenderBibleLookupBodyComp from '../bible-lookup/RenderBibleLookupBodyComp';
-import { useMemo } from 'react';
-import LookupBibleItemController from './LookupBibleItemController';
 import BibleItem from '../bible-list/BibleItem';
+import { use } from 'react';
+import { EditingResultContext } from './LookupBibleItemController';
 
 export default function BibleViewComp({
     bibleItem,
+    isEditing = false,
 }: Readonly<{
-    bibleItem: BibleItem | null;
+    bibleItem: BibleItem;
+    isEditing?: boolean;
 }>) {
     const viewController = useBibleItemsViewControllerContext();
     const uuid = crypto.randomUUID();
-    const isSelected = useMemo(() => {
-        return (
-            bibleItem === null ||
-            (viewController instanceof LookupBibleItemController &&
-                viewController.checkIsBibleItemSelected(bibleItem))
-        );
-    }, [viewController, bibleItem]);
-    const actualBibleItem = useMemo(() => {
-        if (bibleItem !== null) {
-            return bibleItem;
-        }
-        if (viewController instanceof LookupBibleItemController) {
-            return viewController.selectedBibleItem;
-        }
-        return null;
-    }, [bibleItem, viewController]);
+    const editingResult = use(EditingResultContext);
+    const foundBibleItem = isEditing
+        ? (editingResult?.result.bibleItem ?? null)
+        : bibleItem;
     return (
         <div
             id={`uuid-${uuid}`}
@@ -55,34 +45,32 @@ export default function BibleViewComp({
                 removeDraggingClass(event);
             }}
             onDrop={async (event) => {
-                if (actualBibleItem === null) {
-                    return;
-                }
-                applyDragged(event, viewController, actualBibleItem);
+                applyDropped(event, viewController, bibleItem);
             }}
-            onContextMenu={async (event: any) => {
-                if (actualBibleItem === null) {
-                    return;
-                }
-                showAppContextMenu(event, [
-                    ...genDefaultBibleItemContextMenu(actualBibleItem),
-                    ...(await viewController.genContextMenu(
-                        actualBibleItem,
-                        uuid,
-                    )),
-                ]);
-            }}
+            onContextMenu={
+                foundBibleItem === null
+                    ? undefined
+                    : async (event: any) => {
+                          showAppContextMenu(event, [
+                              ...genDefaultBibleItemContextMenu(foundBibleItem),
+                              ...(await viewController.genContextMenu(
+                                  foundBibleItem,
+                                  uuid,
+                              )),
+                          ]);
+                      }
+            }
         >
-            {isSelected ? (
+            {isEditing ? (
                 <RenderBibleEditingHeader />
             ) : (
-                <RenderHeaderComp bibleItem={bibleItem!} />
+                <RenderHeaderComp bibleItem={bibleItem} />
             )}
             <div className="card-body">
-                {isSelected ? (
+                {isEditing ? (
                     <RenderBibleLookupBodyComp />
                 ) : (
-                    <BibleViewTextComp bibleItem={bibleItem!} />
+                    <BibleViewTextComp bibleItem={bibleItem} />
                 )}
                 <RenderToTheTopComp
                     style={{ bottom: '60px' }}

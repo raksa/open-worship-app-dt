@@ -55,7 +55,7 @@ export function removeDraggingClass(event: DragDropEventType) {
         .filter((suffix) => suffix !== null);
 }
 
-export function applyDragged(
+export function applyDropped(
     event: DragDropEventType,
     bibleItemViewCtl: BibleItemsViewController,
     bibleItem: BibleItem,
@@ -148,24 +148,6 @@ export function useNextEditingBibleItem() {
         (event) => {
             event.preventDefault();
             changeEditingBibleItem(viewController, event.key as any);
-        },
-        [],
-    );
-}
-
-export function useSplitBibleItemRenderer() {
-    const viewController = useLookupBibleItemControllerContext();
-    useKeyboardRegistering(
-        ['s', 'v'].map((key) => {
-            return { ...ctrlShiftMetaKeys, key };
-        }),
-        (event) => {
-            const bibleItem = viewController.selectedBibleItem;
-            if (event.key.toLowerCase() === 's') {
-                viewController.addBibleItemLeft(bibleItem, bibleItem);
-            } else {
-                viewController.addBibleItemBottom(bibleItem, bibleItem);
-            }
         },
         [],
     );

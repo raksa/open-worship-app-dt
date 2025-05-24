@@ -8,12 +8,16 @@ import { closeCurrentEditingBibleItem } from '../bible-reader/readBibleHelpers';
 import { toShortcutKey } from '../event/KeyboardEventListener';
 import {
     closeEventMapper,
+    EditingResultContext,
     useLookupBibleItemControllerContext,
 } from '../bible-reader/LookupBibleItemController';
+import { use } from 'react';
 
 export default function RenderBibleEditingHeader() {
     const fontSize = useBibleViewFontSizeContext();
     const viewController = useLookupBibleItemControllerContext();
+    const editingResult = use(EditingResultContext);
+    const foundBibleItem = editingResult?.result.bibleItem ?? null;
     return (
         <div
             className="card-header bg-transparent border-success"
@@ -29,9 +33,11 @@ export default function RenderBibleEditingHeader() {
                         );
                     }}
                 />
-                <div>
-                    <RenderActionButtonsComp />
-                </div>
+                {foundBibleItem === null ? null : (
+                    <div>
+                        <RenderActionButtonsComp bibleItem={foundBibleItem} />
+                    </div>
+                )}
                 <div>
                     {viewController.isAlone ? null : (
                         <button

@@ -7,7 +7,6 @@ import AppSuspenseComp from '../others/AppSuspenseComp';
 import {
     useCloseBibleItemRenderer,
     useNextEditingBibleItem,
-    useSplitBibleItemRenderer,
 } from '../bible-reader/readBibleHelpers';
 import {
     BibleViewTitleEditingComp,
@@ -64,7 +63,7 @@ function RenderBodyEditingComp() {
                     ),
             }}
         >
-            <BibleViewComp bibleItem={foundBibleItem} />
+            <BibleViewComp bibleItem={selectedBibleItem} isEditing />
         </BibleViewTitleMaterialContext>
     );
 }
@@ -85,7 +84,6 @@ function RenderBodyComp({
                             viewController.applyTargetOrBibleKey(bibleItem, {
                                 target: newBibleTarget,
                             });
-                            viewController.syncTargetByColorNote(bibleItem);
                         }}
                     >
                         <span
@@ -115,7 +113,6 @@ function RenderBodyComp({
 export default function BibleLookupBodyPreviewerComp() {
     useNextEditingBibleItem();
     useCloseBibleItemRenderer();
-    useSplitBibleItemRenderer();
     const viewController = useLookupBibleItemControllerContext();
     viewController.finalRenderer = function (bibleItem: BibleItem) {
         if (!viewController.checkIsBibleItemSelected(bibleItem)) {

@@ -63,7 +63,7 @@ export default function RenderBibleLookupComp() {
         viewController.setInputText = async (newInputText: string) => {
             const newEditingResult =
                 await viewController.getEditingResult(newInputText);
-            setEditingResult(newEditingResult);
+            setEditingResult({ ...newEditingResult });
             setInputText(newInputText);
         };
         return () => {
