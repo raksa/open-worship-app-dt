@@ -30,11 +30,11 @@ const varyAppDocumentItemsToView: { [key: string]: VaryAppDocumentItemType } =
 
 function useAppDocumentItems() {
     const selectedAppDocument = useSelectedVaryAppDocumentContext();
-    const { value: varyAppDocumentItems, setValue: setVaryAppDocumentItems } =
-        useAppStateAsync<VaryAppDocumentItemType[]>(
-            selectedAppDocument.getItems(),
-            [selectedAppDocument],
-        );
+    const [varyAppDocumentItems, setVaryAppDocumentItems] = useAppStateAsync<
+        VaryAppDocumentItemType[]
+    >(() => {
+        return selectedAppDocument.getItems();
+    }, [selectedAppDocument]);
 
     useAppEffectAsync(
         async (context) => {
