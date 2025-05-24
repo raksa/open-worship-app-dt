@@ -2,11 +2,16 @@ import { useState } from 'react';
 
 import { decrypt, bible_ref } from '../_owa-crypto';
 import { handleError } from '../helper/errorHelpers';
-import { toBibleFileName } from '../helper/bible-helpers/serverBibleHelpers';
+import {
+    bibleObj,
+    toBibleFileName,
+} from '../helper/bible-helpers/serverBibleHelpers';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { appApiFetch } from '../helper/networkHelpers';
 import { unlocking } from '../server/appHelpers';
 import CacheManager from '../others/CacheManager';
+import { bibleRenderHelper } from '../bible-list/bibleRenderHelpers';
+import BibleItem from '../bible-list/BibleItem';
 
 export type RawBibleRefListType = string[][];
 export type BibleRefType = {
@@ -136,5 +141,31 @@ export function fromBibleRefText(text: string): BibleRefType {
         isStar: tokeIsStar.isStar,
         isTitle: tokeIsTitle.isTitle,
         isLXXDSS: tokeIsLXXDSS.isLXXDSS,
+    };
+}
+
+export async function breakItem(bibleKey: string, bibleVerseKey: string) {
+    const extracted = bibleRenderHelper.fromKJVBibleVersesKey(bibleVerseKey);
+    const booksOrder = bibleObj.booksOrder;
+    if (!booksOrder.includes(extracted.bookKey)) {
+        return null;
+    }
+    const bibleItem = BibleItem.fromJson({
+        id: -1,
+        bibleKey,
+        target: {
+            bookKey: extracted.bookKey,
+            chapter: extracted.chapter,
+            verseStart: extracted.verseStart,
+            verseEnd: extracted.verseEnd,
+        },
+        metadata: {},
+    });
+    await bibleItem.toTitle();
+    const bibleText = await bibleItem.toText();
+    return {
+        htmlText: bibleText.substring(0, 150) + '...',
+        bibleItem,
+        bibleText,
     };
 }
