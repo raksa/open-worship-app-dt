@@ -1,7 +1,6 @@
 import { lazy, use } from 'react';
 
 import BibleItem from '../bible-list/BibleItem';
-import { BibleItemsViewControllerContext } from '../bible-reader/BibleItemsViewController';
 import BibleViewComp from '../bible-reader/BibleViewComp';
 import AppSuspenseComp from '../others/AppSuspenseComp';
 import {
@@ -121,10 +120,8 @@ export default function BibleLookupBodyPreviewerComp() {
         return <RenderBodyEditingComp />;
     };
     return (
-        <BibleItemsViewControllerContext value={viewController}>
-            <AppSuspenseComp>
-                <LazyBiblePreviewerRenderComp />
-            </AppSuspenseComp>
-        </BibleItemsViewControllerContext>
+        <AppSuspenseComp>
+            <LazyBiblePreviewerRenderComp />
+        </AppSuspenseComp>
     );
 }

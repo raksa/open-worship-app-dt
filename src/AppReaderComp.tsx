@@ -1,4 +1,4 @@
-import { lazy } from 'react';
+import { lazy, useMemo } from 'react';
 
 import {
     DataInputType,
@@ -6,7 +6,6 @@ import {
     resizeSettingNames,
 } from './resize-actor/flexSizeHelpers';
 import ResizeActorComp from './resize-actor/ResizeActorComp';
-import AppSuspenseComp from './others/AppSuspenseComp';
 import LookupBibleItemController from './bible-reader/LookupBibleItemController';
 import { BibleItemsViewControllerContext } from './bible-reader/BibleItemsViewController';
 
@@ -21,7 +20,6 @@ const flexSizeDefault: FlexSizeType = {
     h1: ['1'],
     h2: ['4'],
 };
-let viewController: LookupBibleItemController | null = null;
 const dataInput: DataInputType[] = [
     {
         children: LazyBibleListComp,
@@ -29,31 +27,23 @@ const dataInput: DataInputType[] = [
         widgetName: 'Bible List',
     },
     {
-        children: {
-            render: () => {
-                if (viewController === null) {
-                    viewController = new LookupBibleItemController();
-                }
-                return (
-                    <AppSuspenseComp>
-                        <BibleItemsViewControllerContext value={viewController}>
-                            <LazyRenderBibleLookupComp />
-                        </BibleItemsViewControllerContext>
-                    </AppSuspenseComp>
-                );
-            },
-        },
+        children: LazyRenderBibleLookupComp,
         key: 'h2',
         widgetName: 'Bible Previewer',
     },
 ];
 export default function AppReaderComp() {
+    const viewController = useMemo(() => {
+        return new LookupBibleItemController();
+    }, []);
     return (
-        <ResizeActorComp
-            flexSizeName={resizeSettingNames.read}
-            isHorizontal
-            flexSizeDefault={flexSizeDefault}
-            dataInput={dataInput}
-        />
+        <BibleItemsViewControllerContext value={viewController}>
+            <ResizeActorComp
+                flexSizeName={resizeSettingNames.read}
+                isHorizontal
+                flexSizeDefault={flexSizeDefault}
+                dataInput={dataInput}
+            />
+        </BibleItemsViewControllerContext>
     );
 }

@@ -20,6 +20,7 @@ import { changeDragEventStyle } from '../helper/helpers';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 import BibleViewTitleEditorComp from '../bible-reader/BibleViewTitleEditorComp';
 import LookupBibleItemController from '../bible-reader/LookupBibleItemController';
+import { useBibleItemsViewControllerContext } from '../bible-reader/BibleItemsViewController';
 
 function genAttachBackgroundComponent(
     droppedData: DroppedDataType | null | undefined,
@@ -82,6 +83,7 @@ export default function BibleItemRenderComp({
     warningMessage?: string;
     filePath: string;
 }>) {
+    const viewController = useBibleItemsViewControllerContext();
     const showBibleLookupPopup = useShowBibleLookupContext();
     useFileSourceRefreshEvents(['select'], filePath);
     const changeBible = async (newBibleKey: string) => {
@@ -103,7 +105,21 @@ export default function BibleItemRenderComp({
         if (appProvider.isPagePresenter) {
             ScreenBibleManager.handleBibleItemSelecting(event, bibleItem);
         } else if (appProvider.isPageReader) {
-            const viewController = new LookupBibleItemController();
+            if (viewController instanceof LookupBibleItemController === false) {
+                const lastBibleItem = viewController.straightBibleItems.pop();
+                if (lastBibleItem !== undefined) {
+                    viewController.addBibleItemRight(lastBibleItem, bibleItem);
+                } else {
+                    viewController.addBibleItem(
+                        null,
+                        bibleItem,
+                        false,
+                        false,
+                        false,
+                    );
+                }
+                return;
+            }
             if (event.shiftKey) {
                 viewController.addBibleItemRight(
                     viewController.selectedBibleItem,
