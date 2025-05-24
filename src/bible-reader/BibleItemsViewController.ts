@@ -515,6 +515,7 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
         newBibleItem: BibleItem,
         isHorizontal: boolean,
         isBefore: boolean,
+        isNoColorNote: boolean,
     ) {
         const sourceColor =
             bibleItem === null ? null : this.getColorNote(bibleItem);
@@ -543,7 +544,7 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
                     : [bibleItem, newBibleItem];
             }
             this.nestedBibleItems = nestedBibleItems;
-            if (sourceColor) {
+            if (!isNoColorNote && sourceColor) {
                 this.setColorNote(newBibleItem, sourceColor);
             }
             newBibleItem.toTitle().then((title) => {
@@ -553,17 +554,33 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
             handleError(error);
         }
     }
-    addBibleItemLeft(bibleItem: BibleItem, newBibleItem: BibleItem) {
-        this.addBibleItem(bibleItem, newBibleItem, true, true);
+    addBibleItemLeft(
+        bibleItem: BibleItem,
+        newBibleItem: BibleItem,
+        isNoColorNote = false,
+    ) {
+        this.addBibleItem(bibleItem, newBibleItem, true, true, isNoColorNote);
     }
-    addBibleItemRight(bibleItem: BibleItem, newBibleItem: BibleItem) {
-        this.addBibleItem(bibleItem, newBibleItem, true, false);
+    addBibleItemRight(
+        bibleItem: BibleItem,
+        newBibleItem: BibleItem,
+        isNoColorNote = false,
+    ) {
+        this.addBibleItem(bibleItem, newBibleItem, true, false, isNoColorNote);
     }
-    addBibleItemTop(bibleItem: BibleItem, newBibleItem: BibleItem) {
-        this.addBibleItem(bibleItem, newBibleItem, false, true);
+    addBibleItemTop(
+        bibleItem: BibleItem,
+        newBibleItem: BibleItem,
+        isNoColorNote = false,
+    ) {
+        this.addBibleItem(bibleItem, newBibleItem, false, true, isNoColorNote);
     }
-    addBibleItemBottom(bibleItem: BibleItem, newBibleItem: BibleItem) {
-        this.addBibleItem(bibleItem, newBibleItem, false, false);
+    addBibleItemBottom(
+        bibleItem: BibleItem,
+        newBibleItem: BibleItem,
+        isNoColorNote = false,
+    ) {
+        this.addBibleItem(bibleItem, newBibleItem, false, false, isNoColorNote);
     }
     async genContextMenu(
         bibleItem: BibleItem,

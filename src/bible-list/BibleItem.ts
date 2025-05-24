@@ -18,13 +18,20 @@ export default class BibleItem
 {
     static readonly SELECT_SETTING_NAME = 'bible-item-selected';
     private originalJson: BibleItemType;
-    id: number;
+    _id: number;
     filePath?: string;
     constructor(id: number, json: BibleItemType, filePath?: string) {
         super();
-        this.id = id;
+        this._id = id;
         this.filePath = filePath;
         this.originalJson = cloneJson(json);
+    }
+    get id() {
+        return this._id;
+    }
+    set id(id: number) {
+        this._id = id;
+        this.originalJson.id = id;
     }
     get bibleKey() {
         return this.originalJson.bibleKey;

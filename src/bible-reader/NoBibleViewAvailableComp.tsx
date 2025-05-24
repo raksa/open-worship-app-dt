@@ -28,6 +28,7 @@ export default function NoBibleViewAvailableComp() {
                             bibleItem,
                             false,
                             false,
+                            false,
                         );
                     }
                 } catch (error) {

@@ -237,8 +237,12 @@ async function transformExtracted(
                     : verseCount;
         }
     }
-    const { verseStart: sVerse, verseEnd: eVerse } = target;
-    if (eVerse < 1 || eVerse < sVerse || sVerse > verseCount) {
+    const { verseStart: newVerseStart, verseEnd: newVerseEnd } = target;
+    if (
+        newVerseEnd < 1 ||
+        newVerseEnd < newVerseStart ||
+        newVerseStart > verseCount
+    ) {
         target.verseStart = 1;
         target.verseEnd = verseCount;
     }

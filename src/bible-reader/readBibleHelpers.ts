@@ -73,15 +73,28 @@ export function applyDropped(
                         newBibleItem,
                     );
                 } else if (pos === DraggingPosEnum.LEFT.toString()) {
-                    bibleItemViewCtl.addBibleItemLeft(bibleItem, newBibleItem);
+                    bibleItemViewCtl.addBibleItemLeft(
+                        bibleItem,
+                        newBibleItem,
+                        true,
+                    );
                 } else if (pos === DraggingPosEnum.RIGHT.toString()) {
-                    bibleItemViewCtl.addBibleItemRight(bibleItem, newBibleItem);
+                    bibleItemViewCtl.addBibleItemRight(
+                        bibleItem,
+                        newBibleItem,
+                        true,
+                    );
                 } else if (pos === DraggingPosEnum.TOP.toString()) {
-                    bibleItemViewCtl.addBibleItemTop(bibleItem, newBibleItem);
+                    bibleItemViewCtl.addBibleItemTop(
+                        bibleItem,
+                        newBibleItem,
+                        true,
+                    );
                 } else if (pos === DraggingPosEnum.BOTTOM.toString()) {
                     bibleItemViewCtl.addBibleItemBottom(
                         bibleItem,
                         newBibleItem,
+                        true,
                     );
                 }
             }
