@@ -17,10 +17,10 @@ import { getValidOnScreen } from './managers/screenManagerBaseHelpers';
 import { VaryAppDocumentItemDataType } from '../app-document-list/appDocumentHelpers';
 import appProvider from '../server/appProvider';
 import {
-    applyToTheTop,
     TO_THE_TOP_CLASSNAME,
     TO_THE_TOP_STYLE_STRING,
-} from '../others/RenderToTheTopComp';
+    applyToTheTop,
+} from '../scrolling/scrollingHandlerHelpers';
 
 export const bibleDataTypeList = ['bible-item', 'lyric'] as const;
 export type BibleDataType = (typeof bibleDataTypeList)[number];

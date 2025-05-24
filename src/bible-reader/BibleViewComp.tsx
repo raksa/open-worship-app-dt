@@ -9,7 +9,7 @@ import {
 } from './readBibleHelpers';
 import { BibleViewTextComp, RenderHeaderComp } from './BibleViewExtra';
 import { genDefaultBibleItemContextMenu } from '../bible-list/bibleItemHelpers';
-import RenderToTheTopComp from '../others/RenderToTheTopComp';
+import ScrollingHandlerComp from '../scrolling/ScrollingHandlerComp';
 import RenderBibleEditingHeader from '../bible-lookup/RenderBibleEditingHeader';
 import RenderBibleLookupBodyComp from '../bible-lookup/RenderBibleLookupBodyComp';
 import BibleItem from '../bible-list/BibleItem';
@@ -72,7 +72,7 @@ export default function BibleViewComp({
                 ) : (
                     <BibleViewTextComp bibleItem={bibleItem} />
                 )}
-                <RenderToTheTopComp
+                <ScrollingHandlerComp
                     style={{ bottom: '60px' }}
                     shouldSnowPlayToBottom
                 />

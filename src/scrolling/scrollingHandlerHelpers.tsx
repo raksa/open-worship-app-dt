@@ -133,7 +133,7 @@ const INIT_TITLE =
     'Click to scroll to the bottom, double click to speed up, ' +
     'right click to slow down, Alt + right click to stop';
 const speedOffset = 0.07;
-function applyPlayToBottom(element: HTMLElement) {
+export function applyPlayToBottom(element: HTMLElement) {
     const parent = element.parentElement;
     if (parent === null) {
         return;
@@ -189,7 +189,7 @@ function applyPlayToBottom(element: HTMLElement) {
     showOnScrollable(parent, element);
 }
 
-export default function RenderToTheTopComp({
+export default function ScrollingHandlerComp({
     style,
     shouldSnowPlayToBottom = false,
 }: Readonly<{

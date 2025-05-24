@@ -19,7 +19,7 @@ import { useAppEffect } from '../helper/debuggerHelpers';
 import { handleError } from '../helper/errorHelpers';
 import NoDirSelectedComp from './NoDirSelectedComp';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
-import RenderToTheTopComp from './RenderToTheTopComp';
+import ScrollingHandlerComp from '../scrolling/ScrollingHandlerComp';
 
 const LazyAskingNewNameComp = lazy(() => {
     return import('./AskingNewNameComp');
@@ -165,7 +165,7 @@ export default function FileListHandlerComp({
                             />
                         </ul>
                     )}
-                    <RenderToTheTopComp shouldSnowPlayToBottom={false} />
+                    <ScrollingHandlerComp shouldSnowPlayToBottom={false} />
                 </div>
             </div>
         </DirSourceContext>

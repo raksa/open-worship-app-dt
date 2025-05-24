@@ -7,7 +7,7 @@ import SlidesMenuComp from './SlidesMenuComp';
 import { DIV_CLASS_NAME } from './varyAppDocumentHelpers';
 import { useSelectedVaryAppDocumentContext } from '../../app-document-list/appDocumentHelpers';
 import PdfSlide from '../../app-document-list/PdfSlide';
-import RenderToTheTopComp from '../../others/RenderToTheTopComp';
+import ScrollingHandlerComp from '../../scrolling/ScrollingHandlerComp';
 
 export default function VaryAppDocumentItemsPreviewerComp() {
     const varyAppDocument = useSelectedVaryAppDocumentContext();
@@ -44,7 +44,7 @@ export default function VaryAppDocumentItemsPreviewerComp() {
                 <SlidesMenuComp />
             ) : null}
             <AppDocumentItemsComp />
-            <RenderToTheTopComp style={{ bottom: '40px' }} />
+            <ScrollingHandlerComp style={{ bottom: '40px' }} />
         </div>
     );
 }
