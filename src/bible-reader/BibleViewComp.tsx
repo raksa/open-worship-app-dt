@@ -1,68 +1,146 @@
 import './BibleViewComp.scss';
 
-import BibleItem from '../bible-list/BibleItem';
 import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
-import { useBibleItemViewControllerContext } from './BibleItemViewController';
+import BibleItemsViewController, {
+    useBibleItemsViewControllerContext,
+} from './BibleItemsViewController';
 import {
-    applyDragged,
+    applyDropped,
     genDraggingClass,
     removeDraggingClass,
 } from './readBibleHelpers';
 import { BibleViewTextComp, RenderHeaderComp } from './BibleViewExtra';
 import { genDefaultBibleItemContextMenu } from '../bible-list/bibleItemHelpers';
-import { BibleItemContext } from './BibleItemContext';
+import ScrollingHandlerComp from '../scrolling/ScrollingHandlerComp';
+import RenderBibleEditingHeader from '../bible-lookup/RenderBibleEditingHeader';
+import RenderBibleLookupBodyComp from '../bible-lookup/RenderBibleLookupBodyComp';
+import BibleItem from '../bible-list/BibleItem';
+import { use } from 'react';
+import { EditingResultContext } from './LookupBibleItemController';
+import { useBibleViewFontSizeContext } from '../helper/bibleViewHelpers';
+import {
+    bringDomToNearestView,
+    checkIsVerticalPartialInvisible,
+} from '../helper/helpers';
+
+function handMovedChecking(
+    viewController: BibleItemsViewController,
+    bibleItem: BibleItem,
+    container: HTMLElement,
+    threshold: number,
+) {
+    let kjvVerseKey = null;
+    const currentElements = viewController.getVerseElements<HTMLElement>(
+        bibleItem.id,
+    );
+    for (const currentElement of Array.from(currentElements).reverse()) {
+        if (
+            checkIsVerticalPartialInvisible(
+                container,
+                currentElement,
+                threshold,
+            )
+        ) {
+            kjvVerseKey = currentElement.dataset.kjvVerseKey;
+            break;
+        }
+    }
+    if (kjvVerseKey === null) {
+        return;
+    }
+    const colorNote = viewController.getColorNote(bibleItem);
+    const bibleItems = viewController
+        .getBibleItemsByColorNote(colorNote)
+        .filter((targetBibleItem) => {
+            return bibleItem.id !== targetBibleItem.id;
+        });
+    bibleItems.forEach((targetBibleItem) => {
+        const elements = viewController.getVerseElements<HTMLElement>(
+            targetBibleItem.id,
+            kjvVerseKey,
+        );
+        elements.forEach((element) => {
+            bringDomToNearestView(element);
+        });
+    });
+}
 
 export default function BibleViewComp({
     bibleItem,
+    isEditing = false,
 }: Readonly<{
     bibleItem: BibleItem;
+    isEditing?: boolean;
 }>) {
-    const viewController = useBibleItemViewControllerContext();
+    const viewController = useBibleItemsViewControllerContext();
+    const uuid = crypto.randomUUID();
+    const editingResult = use(EditingResultContext);
+    const textViewFontSize = useBibleViewFontSizeContext();
+    const foundBibleItem = isEditing
+        ? (editingResult?.result.bibleItem ?? null)
+        : bibleItem;
     return (
-        <BibleItemContext value={bibleItem}>
-            <div
-                className="bible-view card flex-fill w-100 h-100"
-                style={{ minWidth: '30%' }}
-                onDragOver={(event) => {
-                    event.preventDefault();
-                    removeDraggingClass(event);
-                    const className = genDraggingClass(event);
-                    event.currentTarget.classList.add(className);
-                }}
-                onDragLeave={(event) => {
-                    event.preventDefault();
-                    removeDraggingClass(event);
-                }}
-                onDrop={async (event) => {
-                    applyDragged(event, viewController, bibleItem);
-                }}
-                onContextMenu={(event: any) => {
-                    showAppContextMenu(event, [
-                        ...genDefaultBibleItemContextMenu(bibleItem),
-                        ...viewController.genContextMenu(bibleItem),
-                    ]);
-                }}
-            >
-                <RenderHeaderComp
-                    onChange={(_oldBibleKey: string, newBibleKey: string) => {
-                        const newBibleItem = bibleItem.clone(true);
-                        newBibleItem.bibleKey = newBibleKey;
-                        viewController.changeBibleItem(bibleItem, newBibleItem);
-                    }}
-                    onClose={() => {
-                        viewController.deleteBibleItem(bibleItem);
+        <div
+            id={`uuid-${uuid}`}
+            className={
+                'bible-view card flex-fill w-100 h-100 app-top-hover-motion-0' +
+                (isEditing ? ' highlight-selected ' : '')
+            }
+            style={{ minWidth: '30%' }}
+            onDragOver={(event) => {
+                event.preventDefault();
+                removeDraggingClass(event);
+                const className = genDraggingClass(event);
+                event.currentTarget.classList.add(className);
+            }}
+            onDragLeave={(event) => {
+                event.preventDefault();
+                removeDraggingClass(event);
+            }}
+            onDrop={async (event) => {
+                applyDropped(event, viewController, bibleItem);
+            }}
+            onContextMenu={
+                foundBibleItem === null
+                    ? undefined
+                    : async (event: any) => {
+                          showAppContextMenu(event, [
+                              ...genDefaultBibleItemContextMenu(foundBibleItem),
+                              ...(await viewController.genContextMenu(
+                                  foundBibleItem,
+                                  uuid,
+                              )),
+                          ]);
+                      }
+            }
+        >
+            {isEditing ? (
+                <RenderBibleEditingHeader />
+            ) : (
+                <RenderHeaderComp bibleItem={bibleItem} />
+            )}
+            <div className="card-body app-top-hover-motion-1">
+                {isEditing ? (
+                    <RenderBibleLookupBodyComp />
+                ) : (
+                    <BibleViewTextComp bibleItem={bibleItem} />
+                )}
+                <ScrollingHandlerComp
+                    style={{ bottom: '60px' }}
+                    shouldSnowPlayToBottom
+                    movedCheck={{
+                        check: (container: HTMLElement) => {
+                            handMovedChecking(
+                                viewController,
+                                bibleItem,
+                                container,
+                                textViewFontSize,
+                            );
+                        },
+                        threshold: textViewFontSize,
                     }}
                 />
-                <div className="card-body p-3">
-                    <BibleViewTextComp />
-                    {/* TODO: implement this
-                <RefRenderer /> */}
-                </div>
             </div>
-        </BibleItemContext>
+        </div>
     );
-}
-
-export function finalRenderer(bibleItem: BibleItem) {
-    return <BibleViewComp bibleItem={bibleItem} />;
 }

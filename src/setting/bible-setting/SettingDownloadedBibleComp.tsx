@@ -2,11 +2,12 @@ import DownloadedBibleItemComp from './DownloadedBibleItemComp';
 import { BibleListType } from './bibleSettingHelpers';
 import OnlineBibleItemComp from './OnlineBibleItemComp';
 import LoadingComp from '../../others/LoadingComp';
+import { LocaleType } from '../../lang';
 
 type DownloadingBibleInfoType = {
     isUpdatable: boolean;
     filePath: string | undefined;
-    locale: string;
+    locale: LocaleType;
     title: string;
     key: string;
     version: number;

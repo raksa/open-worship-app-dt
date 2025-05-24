@@ -24,17 +24,6 @@ export default function RenderColors({
     };
     return (
         <div>
-            <div>
-                {selectedColor ? (
-                    <RenderColor
-                        name={selectedColor}
-                        color={selectedColor}
-                        isSelected
-                    />
-                ) : (
-                    <RenderNoColor isSelected />
-                )}
-            </div>
             <div className="d-flex flex-wrap app-border-white-round">
                 <RenderNoColor
                     isSelected={!selectedColor}

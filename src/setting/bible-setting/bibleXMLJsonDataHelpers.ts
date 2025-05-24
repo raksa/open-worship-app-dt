@@ -278,7 +278,7 @@ export async function getBibleInfoJson(bible: Element) {
         return null;
     }
     const locale = guessValue(bible, attributesMap.locale) ?? DEFAULT_LOCALE;
-    if (getLangCode(locale) === null) {
+    if (getLangCode(locale as any) === null) {
         return null;
     }
     const filePath = await bibleKeyToFilePath(bibleKey);

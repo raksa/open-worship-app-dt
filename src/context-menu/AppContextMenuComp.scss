@@ -11,6 +11,7 @@
   .app-context-menu {
     position: fixed;
     max-width: 210px;
+    min-width: 50px;
     border-radius: 4px;
     background-color: var(--bs-gray-600);
     padding: 10px 0;

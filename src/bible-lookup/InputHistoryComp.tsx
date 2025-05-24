@@ -2,33 +2,10 @@ import { useState } from 'react';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { getSetting, setSetting } from '../helper/settingHelpers';
 import { extractBibleTitle } from '../helper/bible-helpers/serverBibleHelpers2';
-import { LookupBibleItemViewController } from '../bible-reader/BibleItemViewController';
-import { genTimeoutAttempt } from '../helper/helpers';
-
-let addHistory: (text: string) => void = () => {};
-export function applyPendingText() {
-    if (!pendingText) {
-        return;
-    }
-    addHistory(pendingText);
-    pendingText = '';
-}
-const attemptTimeout = genTimeoutAttempt(4e3);
-let pendingText = '';
-export function attemptAddingHistory(
-    bibleKey: string,
-    text: string,
-    isImmediate = false,
-) {
-    pendingText = `(${bibleKey}) ${text}`;
-    if (isImmediate) {
-        applyPendingText();
-        return;
-    }
-    attemptTimeout(() => {
-        applyPendingText();
-    });
-}
+import LookupBibleItemController, {
+    useLookupBibleItemControllerContext,
+} from '../bible-reader/LookupBibleItemController';
+import { historyStore } from '../bible-reader/BibleItemsViewController';
 
 const HISTORY_TEXT_LIST_SETTING_NAME = 'history-text-list';
 function useHistoryTextList(maxHistoryCount: number) {
@@ -48,7 +25,7 @@ function useHistoryTextList(maxHistoryCount: number) {
         );
     };
     useAppEffect(() => {
-        addHistory = (text: string) => {
+        historyStore.addHistory = (text: string) => {
             if (historyTextList.includes(text)) {
                 return historyTextList;
             }
@@ -57,10 +34,59 @@ function useHistoryTextList(maxHistoryCount: number) {
             setHistoryTextList1(newHistory);
         };
         return () => {
-            addHistory = () => {};
+            historyStore.addHistory = () => {};
         };
     }, [historyTextList]);
     return [historyTextList, setHistoryTextList1] as const;
+}
+
+function extractHistoryText(historyText: string) {
+    const regex = /^\((.+)\)\s(.+)$/;
+    const found = regex.exec(historyText);
+    if (found === null) {
+        return null;
+    }
+    const bibleKey = found[1];
+    const bibleTitle = found[2];
+    return {
+        bibleKey,
+        bibleTitle,
+    };
+}
+
+async function handleDoubleClicking(
+    event: any,
+    viewController: LookupBibleItemController,
+    historyText: string,
+) {
+    event.preventDefault();
+    const extracted = extractHistoryText(historyText);
+    if (extracted === null) {
+        return;
+    }
+    const { bibleKey, bibleTitle } = extracted;
+    const { result } = await extractBibleTitle(bibleKey, bibleTitle);
+    if (result.bibleItem === null) {
+        return;
+    }
+    if (event.shiftKey) {
+        viewController.addBibleItemLeft(
+            viewController.selectedBibleItem,
+            viewController.selectedBibleItem,
+        );
+    }
+    viewController.setLookupContentFromBibleItem(result.bibleItem);
+}
+
+function handleHistoryRemoving(
+    historyTextList: string[],
+    historyText: string,
+    setHistoryTextList: (newHistoryTextList: string[]) => void,
+) {
+    const newHistoryTextList = historyTextList.filter((historyText1) => {
+        return historyText1 !== historyText;
+    });
+    setHistoryTextList(newHistoryTextList);
 }
 
 export default function InputHistoryComp({
@@ -68,36 +94,10 @@ export default function InputHistoryComp({
 }: Readonly<{
     maxHistoryCount?: number;
 }>) {
+    const viewController = useLookupBibleItemControllerContext();
     const [historyTextList, setHistoryTextList] =
         useHistoryTextList(maxHistoryCount);
-    const handleHistoryRemoving = (historyText: string) => {
-        const newHistoryTextList = historyTextList.filter((h) => {
-            return h !== historyText;
-        });
-        setHistoryTextList(newHistoryTextList);
-    };
-    const handleDoubleClicking = async (event: any, historyText: string) => {
-        event.preventDefault();
-        const regex = /^\((.+)\)\s(.+)$/;
-        const found = regex.exec(historyText);
-        if (found === null) {
-            return;
-        }
-        const bibleKey = found[1];
-        const bibleTitle = found[2];
-        const { result } = await extractBibleTitle(bibleKey, bibleTitle);
-        if (result.bibleItem === null) {
-            return;
-        }
-        const viewController = LookupBibleItemViewController.getInstance();
-        if (event.shiftKey) {
-            viewController.addBibleItemLeft(
-                viewController.selectedBibleItem,
-                viewController.selectedBibleItem,
-            );
-        }
-        viewController.setLookupContentFromBibleItem(result.bibleItem);
-    };
+
     return (
         <div
             className="d-flex shadow-sm rounded px-1 me-1"
@@ -108,9 +108,11 @@ export default function InputHistoryComp({
             }}
         >
             {historyTextList.map((historyText) => {
+                const extracted = extractHistoryText(historyText);
                 return (
                     <button
                         key={historyText}
+                        data-bible-key={extracted?.bibleKey || ''}
                         title={
                             'Double click to put back, shift double click to ' +
                             'put back split'
@@ -118,7 +120,11 @@ export default function InputHistoryComp({
                         className="btn btn-sm d-flex app-border-white-round"
                         style={{ height: '25px' }}
                         onDoubleClick={(event) => {
-                            handleDoubleClicking(event, historyText);
+                            handleDoubleClicking(
+                                event,
+                                viewController,
+                                historyText,
+                            );
                         }}
                     >
                         <small className="flex-fill">{historyText}</small>
@@ -126,7 +132,11 @@ export default function InputHistoryComp({
                             title="Remove"
                             style={{ color: 'red' }}
                             onClick={() => {
-                                handleHistoryRemoving(historyText);
+                                handleHistoryRemoving(
+                                    historyTextList,
+                                    historyText,
+                                    setHistoryTextList,
+                                );
                             }}
                         >
                             <i className="bi bi-x" />

@@ -1,13 +1,14 @@
 import BibleItem from '../bible-list/BibleItem';
-import BibleItemViewController, {
+import LookupBibleItemController, {
     closeEventMapper,
     ctrlShiftMetaKeys,
-    LookupBibleItemViewController,
-} from './BibleItemViewController';
+    useLookupBibleItemControllerContext,
+} from './LookupBibleItemController';
 import { handleError } from '../helper/errorHelpers';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
+import BibleItemsViewController from './BibleItemsViewController';
 
-export enum DraggingPosEnum {
+enum DraggingPosEnum {
     TOP = '-top',
     BOTTOM = '-bottom',
     LEFT = '-left',
@@ -20,11 +21,13 @@ type DragDropEventType = React.DragEvent<HTMLDivElement>;
 export function genDraggingClass(event: DragDropEventType) {
     const { nativeEvent } = event;
     const { offsetX, offsetY } = nativeEvent;
-    const bc = (event.currentTarget as HTMLDivElement).getBoundingClientRect();
-    const isLeft = offsetX < bc.width / 3;
-    const isRight = offsetX > (bc.width * 2) / 3;
-    const isTop = offsetY < bc.height / 3;
-    const isBottom = offsetY > (bc.height * 2) / 3;
+    const rect = (
+        event.currentTarget as HTMLDivElement
+    ).getBoundingClientRect();
+    const isLeft = offsetX < rect.width / 3;
+    const isRight = offsetX > (rect.width * 2) / 3;
+    const isTop = offsetY < rect.height / 3;
+    const isBottom = offsetY > (rect.height * 2) / 3;
     let suffix = DraggingPosEnum.CENTER.toString();
     if (isLeft) {
         suffix += DraggingPosEnum.LEFT;
@@ -52,9 +55,9 @@ export function removeDraggingClass(event: DragDropEventType) {
         .filter((suffix) => suffix !== null);
 }
 
-export function applyDragged(
+export function applyDropped(
     event: DragDropEventType,
-    bibleItemViewCtl: BibleItemViewController,
+    bibleItemViewCtl: BibleItemsViewController,
     bibleItem: BibleItem,
 ) {
     const allPos = removeDraggingClass(event);
@@ -65,17 +68,33 @@ export function applyDragged(
             const newBibleItem = BibleItem.fromJson(json.data);
             for (const pos of allPos) {
                 if (pos === DraggingPosEnum.CENTER.toString()) {
-                    bibleItemViewCtl.changeBibleItem(bibleItem, newBibleItem);
+                    bibleItemViewCtl.applyTargetOrBibleKey(
+                        bibleItem,
+                        newBibleItem,
+                    );
                 } else if (pos === DraggingPosEnum.LEFT.toString()) {
-                    bibleItemViewCtl.addBibleItemLeft(bibleItem, newBibleItem);
+                    bibleItemViewCtl.addBibleItemLeft(
+                        bibleItem,
+                        newBibleItem,
+                        true,
+                    );
                 } else if (pos === DraggingPosEnum.RIGHT.toString()) {
-                    bibleItemViewCtl.addBibleItemRight(bibleItem, newBibleItem);
+                    bibleItemViewCtl.addBibleItemRight(
+                        bibleItem,
+                        newBibleItem,
+                        true,
+                    );
                 } else if (pos === DraggingPosEnum.TOP.toString()) {
-                    bibleItemViewCtl.addBibleItemTop(bibleItem, newBibleItem);
+                    bibleItemViewCtl.addBibleItemTop(
+                        bibleItem,
+                        newBibleItem,
+                        true,
+                    );
                 } else if (pos === DraggingPosEnum.BOTTOM.toString()) {
                     bibleItemViewCtl.addBibleItemBottom(
                         bibleItem,
                         newBibleItem,
+                        true,
                     );
                 }
             }
@@ -86,9 +105,9 @@ export function applyDragged(
 }
 
 function changeEditingBibleItem(
+    viewController: LookupBibleItemController,
     eventKey: 'ArrowLeft' | 'ArrowRight' | 'ArrowUp' | 'ArrowDown',
 ) {
-    const viewController = LookupBibleItemViewController.getInstance();
     const allBibleItems = viewController.straightBibleItems;
     if (allBibleItems.length === 0) {
         return;
@@ -128,6 +147,7 @@ function changeEditingBibleItem(
 }
 
 export function useNextEditingBibleItem() {
+    const viewController = useLookupBibleItemControllerContext();
     const eventMapperList = [
         'ArrowLeft',
         'ArrowRight',
@@ -140,32 +160,15 @@ export function useNextEditingBibleItem() {
         eventMapperList,
         (event) => {
             event.preventDefault();
-            changeEditingBibleItem(event.key as any);
+            changeEditingBibleItem(viewController, event.key as any);
         },
         [],
     );
 }
 
-export function useSplitBibleItemRenderer() {
-    useKeyboardRegistering(
-        ['s', 'v'].map((key) => {
-            return { ...ctrlShiftMetaKeys, key };
-        }),
-        (event) => {
-            const viewController = LookupBibleItemViewController.getInstance();
-            const bibleItem = viewController.selectedBibleItem;
-            if (event.key.toLowerCase() === 's') {
-                viewController.addBibleItemLeft(bibleItem, bibleItem);
-            } else {
-                viewController.addBibleItemBottom(bibleItem, bibleItem);
-            }
-        },
-        [],
-    );
-}
-
-export function closeCurrentEditingBibleItem() {
-    const viewController = LookupBibleItemViewController.getInstance();
+export function closeCurrentEditingBibleItem(
+    viewController: LookupBibleItemController,
+) {
     const selectedBibleItem = viewController.selectedBibleItem;
     if (viewController.straightBibleItems.length < 2) {
         return;
@@ -174,11 +177,12 @@ export function closeCurrentEditingBibleItem() {
 }
 
 export function useCloseBibleItemRenderer() {
+    const viewController = useLookupBibleItemControllerContext();
     useKeyboardRegistering(
         [closeEventMapper],
         (event) => {
             event.preventDefault();
-            closeCurrentEditingBibleItem();
+            closeCurrentEditingBibleItem(viewController);
         },
         [],
     );

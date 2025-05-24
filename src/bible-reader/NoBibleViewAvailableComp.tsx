@@ -1,9 +1,9 @@
 import BibleItem from '../bible-list/BibleItem';
 import { handleError } from '../helper/errorHelpers';
-import { useBibleItemViewControllerContext } from './BibleItemViewController';
+import { useBibleItemsViewControllerContext } from './BibleItemsViewController';
 
 export default function NoBibleViewAvailableComp() {
-    const viewController = useBibleItemViewControllerContext();
+    const viewController = useBibleItemsViewControllerContext();
     return (
         <div
             className="bible-view card flex-fill"
@@ -28,6 +28,7 @@ export default function NoBibleViewAvailableComp() {
                             bibleItem,
                             false,
                             false,
+                            false,
                         );
                     }
                 } catch (error) {
@@ -35,7 +36,7 @@ export default function NoBibleViewAvailableComp() {
                 }
             }}
         >
-            '(*T) ' + 'No Bible Available'
+            '`' + 'No Bible Available'
         </div>
     );
 }

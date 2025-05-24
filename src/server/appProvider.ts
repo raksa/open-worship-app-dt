@@ -115,7 +115,7 @@ export type SQLiteDatabaseType = {
     close: () => void;
 };
 
-const appProvider = (window as any).provider as Readonly<
+export type AppProviderType = Readonly<
     PagePropsType & {
         appType: AppTypeEnum;
         isDesktop: boolean;
@@ -129,6 +129,7 @@ const appProvider = (window as any).provider as Readonly<
         browserUtils: {
             copyToClipboard: (str: string) => void;
             pathToFileURL: (filePath: string) => string;
+            openExternalURL: (url: string) => void;
         };
         messageUtils: MessageUtilsType;
         httpUtils: {
@@ -150,5 +151,7 @@ const appProvider = (window as any).provider as Readonly<
         currentHomePage: string;
     }
 >;
+
+const appProvider = (window as any).provider as AppProviderType;
 
 export default appProvider;

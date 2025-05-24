@@ -21,7 +21,7 @@ declare module 'react' {
     interface IntrinsicElements {
         [HTML_TAG_NAME]: CustomElement<
             CustomHTMLScreenPreviewer,
-            'FTScroll' | 'VerseHover' | 'VerseSelect'
+            'BibleScroll' | 'VerseHover' | 'VerseSelect'
         >;
     }
 }

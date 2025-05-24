@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import Bible from './Bible';
 import {
     ContextMenuItemType,
@@ -9,11 +7,11 @@ import { moveBibleItemTo } from './bibleHelpers';
 import BibleItem from './BibleItem';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { AnyObjectType } from '../helper/helpers';
-import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { BibleTargetType } from './bibleRenderHelpers';
-import { toInputText } from '../helper/bible-helpers/serverBibleHelpers2';
 import { genShowOnScreensContextMenu } from '../others/FileItemHandlerComp';
-import ScreenFullTextManager from '../_screen/managers/ScreenFullTextManager';
+import ScreenBibleManager from '../_screen/managers/ScreenBibleManager';
+import LookupBibleItemController from '../bible-reader/LookupBibleItemController';
+import { genContextMenuItemIcon } from '../context-menu/AppContextMenuComp';
 
 export type BibleItemType = {
     id: number;
@@ -27,19 +25,28 @@ export function genDefaultBibleItemContextMenu(
 ): ContextMenuItemType[] {
     return [
         {
-            menuTitle: '(*T) ' + 'Copy Title',
+            childBefore: genContextMenuItemIcon('copy', {
+                color: 'var(--bs-secondary-text-emphasis)',
+            }),
+            menuTitle: '`' + 'Copy Title',
             onSelect: () => {
                 bibleItem.copyTitleToClipboard();
             },
         },
         {
-            menuTitle: '(*T) ' + 'Copy Text',
+            childBefore: genContextMenuItemIcon('copy', {
+                color: 'var(--bs-secondary-text-emphasis)',
+            }),
+            menuTitle: '`' + 'Copy Text',
             onSelect: () => {
                 bibleItem.copyTextToClipboard();
             },
         },
         {
-            menuTitle: '(*T) ' + 'Copy All',
+            childBefore: genContextMenuItemIcon('copy', {
+                color: 'var(--bs-secondary-text-emphasis)',
+            }),
+            menuTitle: '`' + 'Copy All',
             onSelect: () => {
                 bibleItem.copyToClipboard();
             },
@@ -52,6 +59,7 @@ export async function openBibleItemContextMenu(
     bibleItem: BibleItem,
     index: number,
     openBibleLookup: (() => void) | null,
+    extraMenuItems: ContextMenuItemType[],
 ) {
     const bible = bibleItem.filePath
         ? await Bible.fromFilePath(bibleItem.filePath)
@@ -65,35 +73,41 @@ export async function openBibleItemContextMenu(
         ...(openBibleLookup !== null
             ? [
                   {
-                      menuTitle: '(*T) ' + 'Quick Edit',
-                      onSelect: () => {
-                          openBibleLookup();
+                      menuTitle: '`' + 'Lookup',
+                      onSelect: async () => {
+                          const viewController =
+                              new LookupBibleItemController();
+                          viewController.applyTargetOrBibleKey(
+                              viewController.selectedBibleItem,
+                              {
+                                  bibleKey: bibleItem.bibleKey,
+                              },
+                          );
+                          await viewController.setLookupContentFromBibleItem(
+                              bibleItem,
+                          );
                       },
                   },
               ]
             : []),
         {
-            menuTitle: '(*T) ' + 'Duplicate',
+            menuTitle: '`' + 'Duplicate',
             onSelect: () => {
                 bible.duplicate(index);
                 bible.save();
             },
         },
         ...genShowOnScreensContextMenu((event) => {
-            ScreenFullTextManager.handleBibleItemSelecting(
-                event,
-                [bibleItem],
-                true,
-            );
+            ScreenBibleManager.handleBibleItemSelecting(event, bibleItem, true);
         }),
         {
-            menuTitle: '(*T) ' + 'Move To',
+            menuTitle: '`' + 'Move To',
             onSelect: (event1: any) => {
                 moveBibleItemTo(event1, bible, index);
             },
         },
         {
-            menuTitle: '(*T) ' + 'Delete',
+            menuTitle: '`' + 'Delete',
             onSelect: () => {
                 bible.deleteItemAtIndex(index);
                 bible.save();
@@ -102,7 +116,7 @@ export async function openBibleItemContextMenu(
     ];
     if (index !== 0) {
         menuItem.push({
-            menuTitle: '(*T) ' + 'Move up',
+            menuTitle: '`' + 'Move up',
             onSelect: () => {
                 bible.swapItem(index, index - 1);
                 bible.save();
@@ -111,14 +125,14 @@ export async function openBibleItemContextMenu(
     }
     if (index !== bible.itemsLength - 1) {
         menuItem.push({
-            menuTitle: '(*T) ' + 'Move down',
+            menuTitle: '`' + 'Move down',
             onSelect: () => {
                 bible.swapItem(index, index + 1);
                 bible.save();
             },
         });
     }
-    showAppContextMenu(event, menuItem);
+    showAppContextMenu(event, [...extraMenuItems, ...menuItem]);
 }
 
 export function genDuplicatedMessage(
@@ -141,66 +155,4 @@ export function genDuplicatedMessage(
         warningMessage = `Duplicated with item number ${itemNum}`;
     }
     return warningMessage;
-}
-
-export function useBibleItemRenderTitle(bibleItem: BibleItem) {
-    const [title, setTitle] = useState<string>('');
-    useAppEffectAsync(
-        async (methodContext) => {
-            const title = await bibleItem.toTitle();
-            methodContext.setTitle(title);
-        },
-        [bibleItem],
-        { setTitle },
-    );
-    return title;
-}
-export function useBibleItemRenderText(bibleItem: BibleItem) {
-    const [text, setText] = useState<string>('');
-    useAppEffectAsync(
-        async (methodContext) => {
-            const text = await bibleItem.toText();
-            methodContext.setText(text);
-        },
-        [bibleItem],
-        { setText },
-    );
-    return text;
-}
-export function useBibleItemVerseTextList(bibleItem: BibleItem) {
-    const [result, setResult] = useState<[string, string][] | null>(null);
-    useAppEffectAsync(
-        async (methodContext) => {
-            const result = await bibleItem.toVerseTextList();
-            methodContext.setResult(result);
-        },
-        [bibleItem],
-        { setResult },
-    );
-    return result;
-}
-
-export function useBibleItemPropsToInputText(
-    bibleKey: string,
-    book?: string | null,
-    chapter?: number | null,
-    verseStart?: number | null,
-    verseEnd?: number | null,
-) {
-    const [text, setText] = useState<string>('');
-    useAppEffectAsync(
-        async (methodContext) => {
-            const text1 = await toInputText(
-                bibleKey,
-                book,
-                chapter,
-                verseStart,
-                verseEnd,
-            );
-            methodContext.setText(text1);
-        },
-        [bibleKey, book, chapter, verseStart, verseEnd],
-        { setText },
-    );
-    return text;
 }

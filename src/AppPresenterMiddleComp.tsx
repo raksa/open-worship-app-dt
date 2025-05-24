@@ -3,10 +3,10 @@ import { lazy } from 'react';
 import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActorComp from './resize-actor/ResizeActorComp';
 
-const LazyPresenter = lazy(() => {
+const LazyPresenterComp = lazy(() => {
     return import('./app-document-presenter/PresenterComp');
 });
-const LazyBackground = lazy(() => {
+const LazyBackgroundComp = lazy(() => {
     return import('./background/BackgroundComp');
 });
 
@@ -21,13 +21,13 @@ export default function AppPresenterMiddleComp() {
             }}
             dataInput={[
                 {
-                    children: LazyPresenter,
+                    children: LazyPresenterComp,
                     key: 'v1',
                     widgetName: 'Presenter',
                     className: 'flex-item',
                 },
                 {
-                    children: LazyBackground,
+                    children: LazyBackgroundComp,
                     key: 'v2',
                     widgetName: 'Background',
                     className: 'flex-item',

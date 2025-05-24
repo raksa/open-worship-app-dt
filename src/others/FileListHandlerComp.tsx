@@ -19,8 +19,9 @@ import { useAppEffect } from '../helper/debuggerHelpers';
 import { handleError } from '../helper/errorHelpers';
 import NoDirSelectedComp from './NoDirSelectedComp';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
+import ScrollingHandlerComp from '../scrolling/ScrollingHandlerComp';
 
-const LazyAskingNewName = lazy(() => {
+const LazyAskingNewNameComp = lazy(() => {
     return import('./AskingNewNameComp');
 });
 
@@ -153,7 +154,7 @@ export default function FileListHandlerComp({
                     ) : (
                         <ul className="list-group flex-fill d-flex">
                             {onNewFile && isCreatingNew && (
-                                <LazyAskingNewName
+                                <LazyAskingNewNameComp
                                     applyName={handleNameApplying}
                                 />
                             )}
@@ -164,6 +165,7 @@ export default function FileListHandlerComp({
                             />
                         </ul>
                     )}
+                    <ScrollingHandlerComp shouldSnowPlayToBottom={false} />
                 </div>
             </div>
         </DirSourceContext>

@@ -13,9 +13,16 @@ import {
     fsCopyFilePathToPath,
 } from '../server/fileHelpers';
 
+export type MutationType = 'added' | 'attr-modified';
+
 export type AnyObjectType = {
     [key: string]: any;
 };
+
+export const APP_FULL_VIEW_CLASSNAME = 'app-full-view';
+
+export const BIBLE_VERSE_TEXT_TITLE =
+    'Click to highlight, double click or ' + 'Alt + click to bring to view';
 
 export function getRandomUUID() {
     return (
@@ -337,4 +344,111 @@ export function cumulativeOffset(element: HTMLElement | null) {
         element = element.offsetParent as HTMLElement;
     } while (element);
     return { top, left };
+}
+
+// TODO: this function does not work for async function
+export function useAppPromise<T>(
+    promise: Promise<T>,
+    onError?: (error: any) => void,
+) {
+    const [state, setState] = useState<T | null | undefined>(undefined);
+    useAppEffect(() => {
+        if (state !== undefined) {
+            return;
+        }
+        const timeOut = setTimeout(() => {
+            if (state === undefined) {
+                onError?.(
+                    new Error('Promise timeout, please check your network'),
+                );
+                setState(null);
+            }
+        }, 5000); // 5 seconds
+        promise
+            .then((data) => {
+                setState(data);
+                clearTimeout(timeOut);
+            })
+            .catch((error) => {
+                onError?.(error);
+                setState(null);
+                clearTimeout(timeOut);
+            });
+    }, [state, promise]);
+
+    return state;
+}
+
+export function changeDragEventStyle(
+    event: React.DragEvent<HTMLElement>,
+    key: string,
+    value: string,
+) {
+    (event.currentTarget.style as any)[key] = value;
+}
+
+export function bringDomToView(dom: Element, block: ScrollLogicalPosition) {
+    dom.scrollIntoView({
+        behavior: 'smooth',
+        block,
+    });
+}
+
+export function bringDomToNearestView(dom: Element) {
+    bringDomToView(dom, 'nearest');
+}
+
+export function bringDomToTopView(dom: Element) {
+    bringDomToView(dom, 'start');
+}
+
+export function bringDomToCenterView(dom: Element) {
+    bringDomToView(dom, 'center');
+}
+
+export function bringDomToBottomView(dom: Element) {
+    bringDomToView(dom, 'end');
+}
+
+export function checkIsVerticalPartialInvisible(
+    container: HTMLElement,
+    target: HTMLElement,
+    threshold: number = 0,
+) {
+    const containerRect = container.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+    const containerTop = containerRect.top + threshold;
+    const containerBottom = containerRect.bottom - threshold;
+    const targetTop = targetRect.top + threshold;
+    const targetBottom = targetRect.bottom - threshold;
+    return targetTop < containerBottom && targetBottom > containerTop;
+}
+
+const callBackListeners = new Set<
+    (element: Node, type: MutationType) => void
+>();
+const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+        if (mutation.type === 'childList') {
+            mutation.addedNodes.forEach((node) => {
+                for (const callback of callBackListeners) {
+                    callback(node, 'added');
+                }
+            });
+        } else if (mutation.type === 'attributes') {
+            for (const callback of callBackListeners) {
+                callback(mutation.target, 'attr-modified');
+            }
+        }
+    });
+});
+observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+});
+export function onDomChange(
+    callback: (element: Node, type: MutationType) => void,
+) {
+    callBackListeners.add(callback);
 }

@@ -37,6 +37,7 @@ export default function BoxEditorTextAreaComp({
             style={{
                 ...style,
                 ...calcAlignmentStyle(props),
+                overflow: 'auto',
             }}
             className="w-100 h-100"
             value={localText}

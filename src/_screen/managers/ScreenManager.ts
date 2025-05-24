@@ -2,7 +2,7 @@ import { DragTypeEnum, DroppedDataType } from '../../helper/DragInf';
 import { log } from '../../helper/loggerHelpers';
 import ScreenAlertManager from './ScreenAlertManager';
 import ScreenBackgroundManager from './ScreenBackgroundManager';
-import ScreenFullTextManager from './ScreenFullTextManager';
+import ScreenBibleManager from './ScreenBibleManager';
 import ScreenVaryAppDocumentManager from './ScreenVaryAppDocumentManager';
 import ScreenEffectManager from './ScreenEffectManager';
 import {
@@ -13,13 +13,13 @@ import {
 } from './screenManagerBaseHelpers';
 import ScreenManagerBase from './ScreenManagerBase';
 import { RegisteredEventType } from '../../event/EventHandler';
-import appProviderScreen from '../appProviderScreen';
 import { ScreenMessageType } from '../screenHelpers';
+import appProvider from '../../server/appProvider';
 
 export default class ScreenManager extends ScreenManagerBase {
     readonly screenBackgroundManager: ScreenBackgroundManager;
     readonly screenVaryAppDocumentManager: ScreenVaryAppDocumentManager;
-    readonly screenFullTextManager: ScreenFullTextManager;
+    readonly screenBibleManager: ScreenBibleManager;
     readonly screenAlertManager: ScreenAlertManager;
     readonly varyAppDocumentEffectManager: ScreenEffectManager;
     readonly backgroundEffectManager: ScreenEffectManager;
@@ -43,7 +43,7 @@ export default class ScreenManager extends ScreenManagerBase {
             this,
             this.varyAppDocumentEffectManager,
         );
-        this.screenFullTextManager = new ScreenFullTextManager(this);
+        this.screenBibleManager = new ScreenBibleManager(this);
         this.screenAlertManager = new ScreenAlertManager(this);
         this.registeredEventListeners = [];
         this.registeredEventListeners.push(
@@ -51,18 +51,15 @@ export default class ScreenManager extends ScreenManagerBase {
                 ['update'],
                 () => {
                     if (this.screenVaryAppDocumentManager.isShowing) {
-                        this.screenFullTextManager.clear();
+                        this.screenBibleManager.clear();
                     }
                 },
             ),
-            ...this.screenFullTextManager.registerEventListener(
-                ['update'],
-                () => {
-                    if (this.screenFullTextManager.isShowing) {
-                        this.screenVaryAppDocumentManager.clear();
-                    }
-                },
-            ),
+            ...this.screenBibleManager.registerEventListener(['update'], () => {
+                if (this.screenBibleManager.isShowing) {
+                    this.screenVaryAppDocumentManager.clear();
+                }
+            }),
         );
     }
 
@@ -84,17 +81,17 @@ export default class ScreenManager extends ScreenManagerBase {
     }
 
     sendSyncScreen() {
-        ScreenFullTextManager.sendSynTextStyle();
+        ScreenBibleManager.sendSynTextStyle();
         this.backgroundEffectManager.sendSyncScreen();
         this.screenBackgroundManager.sendSyncScreen();
         this.screenAlertManager.sendSyncScreen();
         this.screenVaryAppDocumentManager.sendSyncScreen();
         this.varyAppDocumentEffectManager.sendSyncScreen();
-        this.screenFullTextManager.sendSyncScreen();
+        this.screenBibleManager.sendSyncScreen();
     }
 
     clear() {
-        this.screenFullTextManager.clear();
+        this.screenBibleManager.clear();
         this.screenVaryAppDocumentManager.clear();
         this.screenAlertManager.clear();
         this.screenBackgroundManager.clear();
@@ -112,7 +109,7 @@ export default class ScreenManager extends ScreenManagerBase {
         this.backgroundEffectManager.delete();
         this.screenBackgroundManager.delete();
         this.screenVaryAppDocumentManager.delete();
-        this.screenFullTextManager.delete();
+        this.screenBibleManager.delete();
         this.screenAlertManager.delete();
         deleteScreenManagerBaseCache(this.key);
         await saveScreenManagersSetting(this.screenId);
@@ -139,7 +136,7 @@ export default class ScreenManager extends ScreenManagerBase {
                 droppedData.type,
             )
         ) {
-            this.screenFullTextManager.receiveScreenDropped(droppedData);
+            this.screenBibleManager.receiveScreenDropped(droppedData);
         } else {
             log(droppedData);
         }
@@ -151,8 +148,8 @@ export default class ScreenManager extends ScreenManagerBase {
             return ScreenBackgroundManager;
         } else if (type === 'vary-app-document') {
             return ScreenVaryAppDocumentManager;
-        } else if (type === 'full-text') {
-            return ScreenFullTextManager;
+        } else if (type === 'bible-screen-view') {
+            return ScreenBibleManager;
         } else if (type === 'alert') {
             return ScreenAlertManager;
         }
@@ -175,19 +172,19 @@ export default class ScreenManager extends ScreenManagerBase {
             screenManagerBase.isShowing = data?.isShowing;
         } else if (type === 'effect') {
             ScreenEffectManager.receiveSyncScreen(message);
-        } else if (type === 'full-text-scroll') {
-            ScreenFullTextManager.receiveSyncScroll(message);
-        } else if (type === 'full-text-selected-index') {
-            ScreenFullTextManager.receiveSyncSelectedIndex(message);
-        } else if (type === 'full-text-text-style') {
-            ScreenFullTextManager.receiveSyncTextStyle(message);
+        } else if (type === 'bible-screen-view-scroll') {
+            ScreenBibleManager.receiveSyncScroll(message);
+        } else if (type === 'bible-screen-view-selected-index') {
+            ScreenBibleManager.receiveSyncSelectedIndex(message);
+        } else if (type === 'bible-screen-view-text-style') {
+            ScreenBibleManager.receiveSyncTextStyle(message);
         } else {
             log(message);
         }
     }
 
     static initReceiveScreenMessage() {
-        const messageUtils = appProviderScreen.messageUtils;
+        const messageUtils = appProvider.messageUtils;
         const channel = messageUtils.channels.screenMessageChannel;
         messageUtils.listenForData(channel, (_, message: ScreenMessageType) => {
             this.applyScreenManagerSyncScreen(message);
@@ -248,14 +245,14 @@ export default class ScreenManager extends ScreenManagerBase {
     }
 
     sendScreenMessage(message: ScreenMessageType, isForce?: boolean) {
-        if (appProviderScreen.isScreen && !isForce) {
+        if (appProvider.isPageScreen && !isForce) {
             return;
         }
-        const messageUtils = appProviderScreen.messageUtils;
+        const messageUtils = appProvider.messageUtils;
         const channel = messageUtils.channels.screenMessageChannel;
         const isSent = messageUtils.sendDataSync(channel, {
             ...message,
-            isScreen: appProviderScreen.isScreen,
+            isScreen: appProvider.isPageScreen,
         });
         console.assert(isSent, JSON.stringify({ channel, message }));
         ScreenManager.syncScreenManagerGroup(message);

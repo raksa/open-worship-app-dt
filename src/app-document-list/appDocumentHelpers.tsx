@@ -58,7 +58,11 @@ export interface ClipboardInf {
     clipboardSerialize(): OptionalPromise<string | null>;
 }
 
-export function showPdfDocumentContextMenu(event: any, pdfSlide: PdfSlide) {
+export function showPdfDocumentContextMenu(
+    event: any,
+    pdfSlide: PdfSlide,
+    extraMenuItems: ContextMenuItemType[],
+) {
     const menuItemOnScreens = genShowOnScreensContextMenu((event) => {
         ScreenVaryAppDocumentManager.handleSlideSelecting(
             event,
@@ -67,13 +71,14 @@ export function showPdfDocumentContextMenu(event: any, pdfSlide: PdfSlide) {
             true,
         );
     });
-    showAppContextMenu(event, menuItemOnScreens);
+    showAppContextMenu(event, [...menuItemOnScreens, ...extraMenuItems]);
 }
 
 export function showAppDocumentContextMenu(
     event: any,
     appDocument: AppDocument,
     slide: Slide,
+    extraMenuItems: ContextMenuItemType[],
 ) {
     const menuItemOnScreens = genShowOnScreensContextMenu((event) => {
         ScreenVaryAppDocumentManager.handleSlideSelecting(
@@ -121,7 +126,7 @@ export function showAppDocumentContextMenu(
             },
         },
     ];
-    showAppContextMenu(event, menuItems);
+    showAppContextMenu(event, [...menuItems, ...extraMenuItems]);
 }
 
 export function checkIsPdf(ext: string) {

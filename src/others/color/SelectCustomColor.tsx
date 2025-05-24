@@ -11,8 +11,8 @@ export default function SelectCustomColor({
     onColorSelected: (color: AppColorType, event: MouseEvent) => void;
 }>) {
     const inputRef = useRef<HTMLInputElement>(null);
-    const [localColor, setLocalColor] = useState<AppColorType>(
-        color || '#ffffff',
+    const [localColor, setLocalColor] = useState(
+        (color || '#ffffff').substring(0, 7) as AppColorType,
     );
     const applyColor = (newColor: AppColorType) => {
         setLocalColor(newColor);
@@ -26,23 +26,26 @@ export default function SelectCustomColor({
         onColorSelected(newColor, e);
     };
     return (
-        <input
-            ref={inputRef}
-            title="Select custom color"
-            className="pointer"
-            type="color"
-            value={localColor}
-            onKeyUp={(event) => {
-                if (event.key === 'Enter') {
+        <>
+            <span>Mix Color: </span>
+            <input
+                ref={inputRef}
+                title="Select custom color"
+                className="pointer"
+                type="color"
+                value={localColor}
+                onKeyUp={(event) => {
+                    if (event.key === 'Enter') {
+                        applyColor(localColor);
+                    }
+                }}
+                onBlur={() => {
                     applyColor(localColor);
-                }
-            }}
-            onBlur={() => {
-                applyColor(localColor);
-            }}
-            onChange={(event) => {
-                setLocalColor(event.target.value as any);
-            }}
-        />
+                }}
+                onChange={(event) => {
+                    setLocalColor(event.target.value as any);
+                }}
+            />
+        </>
     );
 }

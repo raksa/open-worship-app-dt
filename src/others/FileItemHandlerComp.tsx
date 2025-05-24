@@ -11,7 +11,7 @@ import { showAppConfirm } from '../popup-widget/popupWidgetHelpers';
 import ItemColorNoteComp from './ItemColorNoteComp';
 import { menuTitleRealFile } from '../helper/helpers';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
-const LazyRenderRenaming = lazy(() => {
+const LazyRenderRenamingComp = lazy(() => {
     return import('./RenderRenamingComp');
 });
 
@@ -189,7 +189,7 @@ export default function FileItemHandlerComp({
             }}
         >
             {isRenaming ? (
-                <LazyRenderRenaming
+                <LazyRenderRenamingComp
                     setIsRenaming={setIsRenaming}
                     filePath={filePath}
                     renamedCallback={renamedCallback}

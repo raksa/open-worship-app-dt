@@ -13,7 +13,7 @@ import AppRangeComp from '../../../others/AppRangeComp';
 import SlideEditorPropertiesComp from './SlideEditorPropertiesComp';
 import { useSelectedCanvasItemsAndSetterContext } from '../CanvasItem';
 
-const LazyToolCanvasItems = lazy(() => {
+const LazyToolCanvasItemsComp = lazy(() => {
     return import('./ToolCanvasItemsComp');
 });
 
@@ -81,7 +81,7 @@ export default function SlideEditorToolsComp() {
                         canvasItems={selectedCanvasItems}
                     />
                 ) : null}
-                {genTabBody<TabType>(tabType, ['c', LazyToolCanvasItems])}
+                {genTabBody<TabType>(tabType, ['c', LazyToolCanvasItemsComp])}
             </div>
         </div>
     );

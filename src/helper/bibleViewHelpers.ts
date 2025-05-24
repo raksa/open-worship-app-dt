@@ -1,5 +1,8 @@
 import { CSSProperties, createContext, use } from 'react';
 
+export const BIBLE_VIEW_TEXT_CLASS = 'bible-view-text';
+export const VERSE_TEXT_CLASS = 'verse-text';
+
 export function fontSizeToHeightStyle(fontSize: number): CSSProperties {
     return { height: fontSize >= 20 ? fontSize + 30 : undefined };
 }

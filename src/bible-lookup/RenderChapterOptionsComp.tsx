@@ -64,7 +64,7 @@ function ChapterOptions({
     }
     return (
         <>
-            {matches.map(([chapter, chapterNumStr], i) => {
+            {matches.map(([chapter, chapterNumStr, bibleKey], i) => {
                 const className =
                     'chapter-select btn btn-outline-success' +
                     ` ${OPTION_CLASS}` +
@@ -84,7 +84,9 @@ function ChapterOptions({
                             }}
                         >
                             <span>
-                                {chapterNumStr}
+                                <span data-bible-key={bibleKey}>
+                                    {chapterNumStr}
+                                </span>
                                 {isDiff ? (
                                     <small className="text-muted">
                                         ({chapter})

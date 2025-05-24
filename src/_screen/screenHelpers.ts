@@ -7,11 +7,7 @@ import { isValidJson } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelpers';
 import { checkIsValidLocale } from '../lang';
 import { createMouseEvent } from '../context-menu/appContextMenuHelpers';
-import appProviderScreen from './appProviderScreen';
-import {
-    BibleItemRenderedType,
-    LyricRenderedType,
-} from './fullTextScreenComps';
+import { BibleItemRenderingType } from './bibleScreenComps';
 import {
     ScreenTransitionEffectType,
     TargetType,
@@ -19,23 +15,27 @@ import {
 import { electronSendAsync, unlocking } from '../server/appHelpers';
 import { getValidOnScreen } from './managers/screenManagerBaseHelpers';
 import { VaryAppDocumentItemDataType } from '../app-document-list/appDocumentHelpers';
+import appProvider from '../server/appProvider';
+import {
+    TO_THE_TOP_CLASSNAME,
+    TO_THE_TOP_STYLE_STRING,
+    applyToTheTop,
+} from '../scrolling/scrollingHandlerHelpers';
 
-export const fullTextDataTypeList = ['bible-item', 'lyric'] as const;
-export type FullTextDataType = (typeof fullTextDataTypeList)[number];
-export type FullTextItemDataType = {
-    type: FullTextDataType;
+export const bibleDataTypeList = ['bible-item', 'lyric'] as const;
+export type BibleDataType = (typeof bibleDataTypeList)[number];
+export type BibleItemDataType = {
+    locale: string;
+    type: BibleDataType;
     bibleItemData?: {
-        renderedList: BibleItemRenderedType[];
+        renderedList: BibleItemRenderingType[];
         bibleItem: BibleItemType;
     };
-    lyricData?: {
-        renderedList: LyricRenderedType[];
-    };
     scroll: number;
-    selectedIndex: number | null;
+    selectedKJVVerseKey: string | null;
 };
-export type FullTextListType = {
-    [key: string]: FullTextItemDataType;
+export type BibleListType = {
+    [key: string]: BibleItemDataType;
 };
 
 const _backgroundTypeList = ['color', 'image', 'video', 'sound'] as const;
@@ -88,11 +88,11 @@ export type AllDisplayType = {
 export const screenTypeList = [
     'background',
     'vary-app-document',
-    'full-text',
-    'full-text-scroll',
-    'full-text-text-style',
+    'bible-screen-view',
+    'bible-screen-view-scroll',
+    'bible-screen-view-text-style',
     'alert',
-    'full-text-selected-index',
+    'bible-screen-view-selected-index',
     'display-change',
     'visible',
     'init',
@@ -107,7 +107,7 @@ export type ScreenMessageType = BasicScreenMessageType & {
     screenId: number;
 };
 
-const messageUtils = appProviderScreen.messageUtils;
+const messageUtils = appProvider.messageUtils;
 
 export function calMediaSizes(
     {
@@ -177,6 +177,10 @@ export function showScreen({ screenId, displayId }: SetDisplayType) {
 
 export function hideScreen(screenId: number) {
     messageUtils.sendData('app:hide-screen', screenId);
+}
+
+export function hideAllScreens() {
+    messageUtils.sendData('app:hide-all-screens');
 }
 
 export type PTEffectDataType = {
@@ -261,23 +265,8 @@ const validateBible = ({ renderedList, bibleItem }: any) => {
         })
     );
 };
-const validateLyric = ({ renderedList }: any) => {
-    return (
-        !Array.isArray(renderedList) ||
-        renderedList.some((item: any) => {
-            const { title, items } = item;
-            return (
-                typeof title !== 'string' ||
-                !Array.isArray(items) ||
-                items.some(({ num, text }: any) => {
-                    return typeof num !== 'number' || typeof text !== 'string';
-                })
-            );
-        })
-    );
-};
 
-export function getFullTextListOnScreenSetting(): FullTextListType {
+export function getBibleListOnScreenSetting(): BibleListType {
     const str = getSetting(screenManagerSettingNames.FULL_TEXT, '');
     try {
         if (!isValidJson(str, true)) {
@@ -286,13 +275,12 @@ export function getFullTextListOnScreenSetting(): FullTextListType {
         const json = JSON.parse(str);
         Object.values(json).forEach((item: any) => {
             if (
-                !fullTextDataTypeList.includes(item.type) ||
+                !bibleDataTypeList.includes(item.type) ||
                 (item.type === 'bible-item' &&
-                    validateBible(item.bibleItemData)) ||
-                (item.type === 'lyric' && validateLyric(item.lyricData))
+                    validateBible(item.bibleItemData))
             ) {
                 loggerHelpers.error(item);
-                throw new Error('Invalid full-text data');
+                throw new Error('Invalid bible-screen-view data');
             }
         });
         return getValidOnScreen(json);
@@ -303,4 +291,25 @@ export function getFullTextListOnScreenSetting(): FullTextListType {
         handleError(error);
     }
     return {};
+}
+
+export function addToTheTop(div: HTMLDivElement) {
+    const oldIcon = div.querySelector(`.${TO_THE_TOP_CLASSNAME}`);
+    if (oldIcon) {
+        const scrollCallback = (oldIcon as any)._scrollCallback;
+        if (scrollCallback !== undefined) {
+            div.removeEventListener('scroll', scrollCallback);
+        }
+        oldIcon.remove();
+    }
+    const style = document.createElement('style');
+    style.innerHTML = TO_THE_TOP_STYLE_STRING;
+    div.appendChild(style);
+    const target = document.createElement('img');
+    target.className = TO_THE_TOP_CLASSNAME;
+    target.title = 'Scroll to the top';
+    target.src = 'assets/arrow-up-circle.png';
+    target.style.position = 'fixed';
+    div.appendChild(target);
+    applyToTheTop(target);
 }

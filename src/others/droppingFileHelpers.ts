@@ -8,14 +8,7 @@ import DirSource from '../helper/DirSource';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { selectFiles } from '../server/appHelpers';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
-
-function changeDragEventStyle(
-    event: React.DragEvent<HTMLDivElement>,
-    key: string,
-    value: string,
-) {
-    (event.currentTarget.style as any)[key] = value;
-}
+import { changeDragEventStyle } from '../helper/helpers';
 
 export function genOnDragOver(dirSource: DirSource) {
     return (event: React.DragEvent<HTMLDivElement>) => {
@@ -47,30 +40,25 @@ export type DroppedFileType = File | string;
 
 async function* readDroppedFiles(
     event: React.DragEvent<HTMLDivElement>,
-): AsyncGenerator<DroppedFileType> {
+): AsyncGenerator<File> {
     async function* readDirectory(
-        directoryHandle: FileSystemFileHandle,
-    ): AsyncGenerator<DroppedFileType> {
-        for await (const [_, handle] of (directoryHandle as any).entries()) {
-            if (handle.kind === 'file') {
-                const file = await handle.getFile();
+        item: DataTransferItem,
+    ): AsyncGenerator<File> {
+        const handle = item.webkitGetAsEntry?.() as FileSystemDirectoryEntry;
+        if (!handle) {
+            return;
+        }
+        if (handle.isFile) {
+            const file = item.getAsFile();
+            if (file) {
                 yield file;
-            } else if (handle.kind === 'directory') {
-                yield* readDirectory(handle);
             }
         }
+        // TODO: Handle directory reading
     }
     for (const item of event.dataTransfer.items) {
         if (item.kind === 'file') {
-            const entry: FileSystemFileHandle = await (
-                item as any
-            ).getAsFileSystemHandle();
-            if ((entry as any).kind === 'directory') {
-                yield* readDirectory(entry);
-            } else {
-                const file = await entry.getFile();
-                yield file;
-            }
+            yield* readDirectory(item);
         }
     }
 }

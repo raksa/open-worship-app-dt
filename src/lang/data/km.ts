@@ -1,4 +1,4 @@
-import { LanguageType } from '..';
+import { LanguageDataType } from '..';
 
 const numList = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
 
@@ -21,11 +21,30 @@ const dictionary = {
     Slide: 'ស្លាយ',
     'Full Text': 'បង្ហាញពេញ',
 };
-const km: LanguageType = {
+const lang: LanguageDataType = {
+    langCode: 'km',
+    genCss: () => {
+        if (lang.dirPath === undefined) {
+            return '';
+        }
+        const fontBR = `${lang.dirPath}/Battambang-Regular.ttf`;
+        const fontBB = `${lang.dirPath}/Battambang-Bold.ttf`;
+        return `
+        @font-face {
+            font-family: KhmerFont;
+            src: url(${fontBR}) format("truetype");
+        }
+        @font-face {
+            font-family: KhmerFont;
+            src: url(${fontBB}) format("truetype");
+            font-weight: bold;
+        }
+        `;
+    },
+    fontFamily: 'KhmerFont',
     numList,
     dictionary,
     name: 'Khmer',
-    locale: 'km',
     flagSVG: `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="flag-icons-kh" viewBox="0 0 640 480">
     <path fill="#032ea1" d="M0 0h640v480H0z"/>
     <path fill="#e00025" d="M0 120h640v240H0z"/>
@@ -87,7 +106,7 @@ const km: LanguageType = {
       <path fill="none" d="M99 664.2h193M115.8 713h9.2m-9.2-6.3h9.2m-9.2-6.2h9.2m-9.2-6.3h9.2m-9.2-6.2h9.2m-9.2-6.3h9.2m-9.2-6.2h9.2m65.8 37.5h8.6m-8.6-6.3h8.6m-8.6-6.2h8.6m-8.6-6.3h8.6m-8.6-6.2h8.6m-8.6-6.3h8.6m-8.6-6.2h8.6m66.2 37.5h9.2m-9.2-6.3h9.2m-9.2-6.2h9.2m-9.2-6.3h9.2m-9.2-6.2h9.2m-9.2-6.3h9.2m-9.2-6.2h9.2"/>
     </g>
   </svg>`,
-    sanitizeSearchingText: (text: string) => {
+    sanitizeFindingText: (text: string) => {
         // khmer characters from https://en.wikipedia.org/wiki/Khmer_script
         const chars = [
             'ក',
@@ -193,7 +212,7 @@ const km: LanguageType = {
             }
         }
         newText = newText.replace(/\s+/g, ' ');
-        newText = km.trimText(newText);
+        newText = lang.trimText(newText);
         return newText;
     },
     trimText: (text: string) => {
@@ -202,6 +221,25 @@ const km: LanguageType = {
     endWord: (text: string) => {
         return text + '\u200B';
     },
+    checkShouldNewLine: (text: string) => {
+        const endWord = text.slice(-1);
+        return endWord === '។' || endWord === '៕';
+    },
+    extraBibleContextMenuItems: (bibleItem, appProvider) => {
+        return [
+            {
+                menuTitle: '📖Open Khmer Study Bible',
+                onSelect: () => {
+                    const url = 'https://sb1954sb.openworship.app';
+                    const bookKey = bibleItem.target.bookKey;
+                    const chapterKey = bibleItem.target.chapter;
+                    appProvider.browserUtils.openExternalURL(
+                        `${url}/view.html?bookKey=${bookKey}&chapterKey=${chapterKey}`,
+                    );
+                },
+            },
+        ];
+    },
 };
 
-export default km;
+export default lang;
