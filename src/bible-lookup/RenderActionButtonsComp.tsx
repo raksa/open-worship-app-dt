@@ -1,5 +1,5 @@
 import {
-    EventMapper as KBEventMapper,
+    EventMapper as KeyboardEventMapper,
     toShortcutKey,
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
@@ -11,19 +11,22 @@ import { showSimpleToast } from '../toast/toastHelpers';
 import { getIsKeepingPopup } from './RenderExtraButtonsRightComp';
 import appProvider from '../server/appProvider';
 import { useShowBibleLookupContext } from '../others/commonButtons';
-import { genContextMenuItemShortcutKey } from '../context-menu/AppContextMenuComp';
+import {
+    genContextMenuItemIcon,
+    genContextMenuItemShortcutKey,
+} from '../context-menu/AppContextMenuComp';
 import {
     ctrlShiftMetaKeys,
     useLookupBibleItemControllerContext,
 } from '../bible-reader/LookupBibleItemController';
 import { useMemo } from 'react';
 
-const presenterEventMapper: KBEventMapper = {
+const presenterEventMapper: KeyboardEventMapper = {
     allControlKey: ['Ctrl', 'Shift'],
     key: 'Enter',
 };
 
-const addListEventMapper: KBEventMapper = {
+const addListEventMapper: KeyboardEventMapper = {
     allControlKey: ['Ctrl'],
     key: 'Enter',
 };
@@ -143,8 +146,9 @@ export function genFoundBibleItemContextMenu(
     }
     return [
         {
-            menuTitle: 'Save bible item',
-            otherChild: isKeyboardShortcut
+            childBefore: genContextMenuItemIcon('floppy'),
+            menuTitle: '`Save bible item',
+            childAfter: isKeyboardShortcut
                 ? genContextMenuItemShortcutKey(addListEventMapper)
                 : undefined,
             onSelect: async () => {
@@ -166,7 +170,7 @@ export function genFoundBibleItemContextMenu(
                       },
                   },
                   {
-                      otherChild: isKeyboardShortcut
+                      childAfter: isKeyboardShortcut
                           ? genContextMenuItemShortcutKey(presenterEventMapper)
                           : undefined,
                       menuTitle: 'Save bible item and show on screen',

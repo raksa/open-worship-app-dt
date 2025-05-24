@@ -1,6 +1,6 @@
 import { getDefaultScreenDisplay } from '../../_screen/managers/screenHelpers';
 import {
-    EventMapper as KBEventMapper,
+    EventMapper as KeyboardEventMapper,
     useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
 import { useEditingHistoryStatus } from '../../others/EditingHistoryManager';
@@ -13,7 +13,7 @@ import AppDocument, {
 } from '../../app-document-list/AppDocument';
 import MenuIsModifying from './MenuIsModifying';
 
-const savingEventMapper: KBEventMapper = {
+const savingEventMapper: KeyboardEventMapper = {
     allControlKey: ['Ctrl'],
     key: 's',
 };

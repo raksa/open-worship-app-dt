@@ -64,7 +64,7 @@ export default function ItemColorNoteComp({
                     onSelect: () => {
                         setColorNote1(colorCode);
                     },
-                    otherChild: (
+                    childAfter: (
                         <div className="flex-fill">
                             <i
                                 className="bi bi-record-circle float-end"

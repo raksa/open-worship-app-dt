@@ -13,14 +13,15 @@ import { OptionalPromise } from '../others/otherHelpers';
 export type ContextMenuEventType = MouseEvent;
 export type ContextMenuItemType = {
     id?: string;
-    menuTitle: string;
+    menuTitle: React.ReactNode | string;
     title?: string;
     onSelect?: (
         event: MouseEvent | KeyboardEvent,
         data?: any,
     ) => OptionalPromise<void>;
     disabled?: boolean;
-    otherChild?: ReactElement;
+    childBefore?: ReactElement;
+    childAfter?: ReactElement;
     style?: React.CSSProperties;
 };
 export type OptionsType = {

@@ -4,7 +4,10 @@ import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 import { genFoundBibleItemContextMenu } from '../bible-lookup/RenderActionButtonsComp';
 import { closeCurrentEditingBibleItem } from './readBibleHelpers';
 import { EventMapper } from '../event/KeyboardEventListener';
-import { genContextMenuItemShortcutKey } from '../context-menu/AppContextMenuComp';
+import {
+    genContextMenuItemIcon,
+    genContextMenuItemShortcutKey,
+} from '../context-menu/AppContextMenuComp';
 import BibleItemsViewController, {
     applyHistoryPendingText,
     attemptAddingHistory,
@@ -304,14 +307,14 @@ class LookupBibleItemController extends BibleItemsViewController {
                     menus2.map((menuItem) => [menuItem.id, menuItem]),
                 );
             if (menu2IdMap[splitHorizontalId]) {
-                menu2IdMap[splitHorizontalId].otherChild =
+                menu2IdMap[splitHorizontalId].childAfter =
                     genContextMenuItemShortcutKey({
                         ...ctrlShiftMetaKeys,
                         key: 's',
                     });
             }
             if (menu2IdMap[splitVerticalId]) {
-                menu2IdMap[splitVerticalId].otherChild =
+                menu2IdMap[splitVerticalId].childAfter =
                     genContextMenuItemShortcutKey({
                         ...ctrlShiftMetaKeys,
                         key: 'v',
@@ -322,8 +325,11 @@ class LookupBibleItemController extends BibleItemsViewController {
             ? []
             : [
                   {
+                      childBefore: genContextMenuItemIcon('x-lg', {
+                          color: 'var(--bs-danger-text-emphasis)',
+                      }),
                       menuTitle: 'Close',
-                      otherChild: isBibleItemSelected
+                      childAfter: isBibleItemSelected
                           ? genContextMenuItemShortcutKey(closeEventMapper)
                           : undefined,
                       onSelect: () => {

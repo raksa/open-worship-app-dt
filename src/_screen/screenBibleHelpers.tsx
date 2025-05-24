@@ -86,7 +86,7 @@ async function onBibleSelect(
                               bibleItemingList,
                           );
                       },
-                      otherChild: (
+                      childAfter: (
                           <i className="bi bi-x-lg" style={{ color: 'red' }} />
                       ),
                   },

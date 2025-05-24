@@ -11,6 +11,7 @@ import { BibleTargetType } from './bibleRenderHelpers';
 import { genShowOnScreensContextMenu } from '../others/FileItemHandlerComp';
 import ScreenBibleManager from '../_screen/managers/ScreenBibleManager';
 import LookupBibleItemController from '../bible-reader/LookupBibleItemController';
+import { genContextMenuItemIcon } from '../context-menu/AppContextMenuComp';
 
 export type BibleItemType = {
     id: number;
@@ -24,18 +25,27 @@ export function genDefaultBibleItemContextMenu(
 ): ContextMenuItemType[] {
     return [
         {
+            childBefore: genContextMenuItemIcon('copy', {
+                color: 'var(--bs-secondary-text-emphasis)',
+            }),
             menuTitle: '`' + 'Copy Title',
             onSelect: () => {
                 bibleItem.copyTitleToClipboard();
             },
         },
         {
+            childBefore: genContextMenuItemIcon('copy', {
+                color: 'var(--bs-secondary-text-emphasis)',
+            }),
             menuTitle: '`' + 'Copy Text',
             onSelect: () => {
                 bibleItem.copyTextToClipboard();
             },
         },
         {
+            childBefore: genContextMenuItemIcon('copy', {
+                color: 'var(--bs-secondary-text-emphasis)',
+            }),
             menuTitle: '`' + 'Copy All',
             onSelect: () => {
                 bibleItem.copyToClipboard();

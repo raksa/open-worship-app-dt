@@ -23,6 +23,7 @@ import {
 import { getLangAsync } from '../lang';
 import { getBibleLocale } from '../helper/bible-helpers/serverBibleHelpers2';
 import { BibleTargetType } from '../bible-list/bibleRenderHelpers';
+import { genContextMenuItemIcon } from '../context-menu/AppContextMenuComp';
 
 export type UpdateEventType = 'update';
 export const RESIZE_SETTING_NAME = 'bible-previewer-render';
@@ -594,7 +595,8 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
         const langData = await getLangAsync(locale);
         return [
             {
-                menuTitle: 'Split Horizontal',
+                childBefore: genContextMenuItemIcon('vr'),
+                menuTitle: '`Split Horizontal',
                 onSelect: () => {
                     this.addBibleItemLeft(bibleItem, bibleItem);
                 },
@@ -611,6 +613,7 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
                 },
             },
             {
+                childBefore: genContextMenuItemIcon('hr'),
                 menuTitle: 'Split Vertical',
                 onSelect: () => {
                     this.addBibleItemBottom(bibleItem, bibleItem);
@@ -631,6 +634,7 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
                 ? langData.extraBibleContextMenuItems(bibleItem, appProvider)
                 : []),
             {
+                childBefore: genContextMenuItemIcon('arrows-fullscreen'),
                 menuTitle: 'Toggle Widget Full View',
                 onSelect: () => {
                     document
