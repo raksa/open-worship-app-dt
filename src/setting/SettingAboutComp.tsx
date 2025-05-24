@@ -1,14 +1,16 @@
 import BibleItem from '../bible-list/BibleItem';
-import {
-    useBibleItemPropsToInputText,
-    useBibleItemRenderText,
-} from '../bible-list/bibleItemHelpers';
+import { toInputText } from '../helper/bible-helpers/serverBibleHelpers2';
+import { useAppStateAsync } from '../helper/debuggerHelpers';
 
 export default function SettingAboutComp() {
     const bookKey = 'PSA';
     const bibleItem = BibleItem.fromData('KJV', bookKey, 150, 6, 6);
-    const text = useBibleItemRenderText(bibleItem);
-    const title = useBibleItemPropsToInputText('KJV', bookKey, 150, 6, 6);
+    const [text] = useAppStateAsync(() => {
+        return bibleItem.toText();
+    }, [bibleItem]);
+    const [title] = useAppStateAsync(() => {
+        return toInputText('KJV', bookKey, 150, 6, 6);
+    });
     const onClick = () => {
         const url = 'https://github.com/OpenWorshipApp/open-worship-app-dt';
         window.open(url, '_blank');
@@ -23,7 +25,7 @@ export default function SettingAboutComp() {
                 }}
             >
                 <div className="card-header bg-transparent border-success">
-                    KJV|{title}
+                    (KJV) {title ?? 'not found'}
                 </div>
                 <div
                     className={
@@ -35,9 +37,8 @@ export default function SettingAboutComp() {
                 </div>
             </div>
             <div className="alert alert-info">
-                <span title="Need translation">(*T)</span> This is an
-                open-source presentation app for worship service. Official
-                Github repo here:{' '}
+                {'`'}This is an open-source presentation app for worship
+                service. Official Github repo here:{' '}
                 <button className="btn btn-success" onClick={onClick}>
                     https://github.com/OpenWorshipApp/open-worship-app-dt
                 </button>

@@ -27,7 +27,7 @@ const PRESENT_TAB_SETTING_NAME = 'presenter-tab';
 export function getIsShowingVaryAppDocumentPreviewer() {
     return getSetting(PRESENT_TAB_SETTING_NAME) === 'd';
 }
-export function getIsShowingFTPreviewer() {
+export function getIsShowingBiblePreviewer() {
     return getSetting(PRESENT_TAB_SETTING_NAME) === 'f';
 }
 

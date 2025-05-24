@@ -3,9 +3,8 @@ import { CSSProperties } from 'react';
 import { DroppedDataType } from '../../helper/DragInf';
 import { getSetting, setSetting } from '../../helper/settingHelpers';
 import { SlideType } from '../../app-document-list/Slide';
-import { genPdfSlide } from '../../app-document-presenter/items/PdfSlideRenderContentComp';
+import { genPdfSlide } from '../../app-document-presenter/items/PdfSlideRenderComp';
 import { genHtmlSlide } from '../../app-document-presenter/items/SlideRendererComp';
-import appProviderScreen from '../appProviderScreen';
 import {
     BasicScreenMessageType,
     ScreenMessageType,
@@ -23,6 +22,8 @@ import {
     VaryAppDocumentItemType,
 } from '../../app-document-list/appDocumentHelpers';
 import PdfSlide, { PdfSlideType } from '../../app-document-list/PdfSlide';
+import appProvider from '../../server/appProvider';
+import { applyAttachBackground } from './screenBackgroundHelpers';
 
 export type ScreenVaryAppDocumentManagerEventType = 'update';
 
@@ -49,7 +50,7 @@ class ScreenVaryAppDocumentManager extends ScreenEventHandler<ScreenVaryAppDocum
     ) {
         super(screenManagerBase);
         this.slideEffectManager = slideEffectManager;
-        if (appProviderScreen.isPagePresenter) {
+        if (appProvider.isPagePresenter) {
             const allSlideList = getAppDocumentListOnScreenSetting();
             this._varyAppDocumentItemData = allSlideList[this.key] ?? null;
         }
@@ -83,6 +84,13 @@ class ScreenVaryAppDocumentManager extends ScreenEventHandler<ScreenVaryAppDocum
     set varyAppDocumentItemData(
         appDocumentItemData: VaryAppDocumentItemScreenDataType | null,
     ) {
+        if (appDocumentItemData !== null && appDocumentItemData.itemJson) {
+            applyAttachBackground(
+                this.screenId,
+                appDocumentItemData.filePath,
+                appDocumentItemData.itemJson.id.toString(),
+            );
+        }
         this._varyAppDocumentItemData = appDocumentItemData;
         unlocking(screenManagerSettingNames.VARY_APP_DOCUMENT, () => {
             const allSlideList = getAppDocumentListOnScreenSetting();
@@ -196,7 +204,7 @@ class ScreenVaryAppDocumentManager extends ScreenEventHandler<ScreenVaryAppDocum
     }
 
     cleanupSlideContent(content: HTMLDivElement) {
-        if (!appProviderScreen.isScreen) {
+        if (!appProvider.isPageScreen) {
             return;
         }
         Array.from(content.children).forEach((child) => {

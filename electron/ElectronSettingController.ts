@@ -36,6 +36,18 @@ export default class ElectronSettingController {
         return path.join(useDataPath, 'setting.json');
     }
 
+    get isWinMaximized() {
+        console.log(settingObject.mainWinBounds);
+        console.log(this.primaryDisplay.bounds);
+
+        return (
+            (settingObject.mainWinBounds?.width ?? 0) >=
+                this.primaryDisplay.bounds.width &&
+            (settingObject.mainWinBounds?.height ?? 0) >=
+                this.primaryDisplay.bounds.height
+        );
+    }
+
     get mainWinBounds() {
         return settingObject.mainWinBounds ?? this.primaryDisplay.bounds;
     }
@@ -74,15 +86,24 @@ export default class ElectronSettingController {
 
     syncMainWindow(win: BrowserWindow) {
         win.setBounds(this.mainWinBounds);
+        if (this.isWinMaximized) {
+            win.maximize();
+        }
         win.on('resize', () => {
             const [width, height] = win.getSize();
             this.mainWinBounds = { ...this.mainWinBounds, width, height };
-            this.save();
+        });
+        win.on('maximize', () => {
+            this.mainWinBounds = {
+                ...this.mainWinBounds,
+                width: this.primaryDisplay.bounds.width,
+                height: this.primaryDisplay.bounds.height,
+            };
+            console.log(this.mainWinBounds);
         });
         win.on('move', () => {
             const [x, y] = win.getPosition();
             this.mainWinBounds = { ...this.mainWinBounds, x, y };
-            this.save();
         });
     }
 

@@ -19,7 +19,7 @@ export default function PlaylistSlideItemComp({
                 AppDocumentListEventListener.selectAppDocumentItem(item);
             }}
         >
-            <SlideRendererHtmlComp slide={item} />
+            <SlideRendererHtmlComp slide={item} width={0} />
         </div>
     );
 }

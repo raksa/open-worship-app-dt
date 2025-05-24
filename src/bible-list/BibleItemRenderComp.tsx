@@ -2,20 +2,75 @@ import Bible from './Bible';
 import BibleItem from './BibleItem';
 import ItemReadErrorComp from '../others/ItemReadErrorComp';
 import { useFileSourceRefreshEvents } from '../helper/dirSourceHelpers';
-import { handleDragStart } from '../helper/dragHelpers';
+import {
+    genRemovingAttachedBackgroundMenu,
+    handleDragStart,
+    onDropHandling,
+    useAttachedBackgroundData,
+} from '../helper/dragHelpers';
 import ItemColorNoteComp from '../others/ItemColorNoteComp';
 import { BibleSelectionMiniComp } from '../bible-lookup/BibleSelectionComp';
-import {
-    LookupBibleItemViewController,
-    useBibleItemViewControllerContext,
-} from '../bible-reader/BibleItemViewController';
-import ScreenFullTextManager from '../_screen/managers/ScreenFullTextManager';
-import {
-    openBibleItemContextMenu,
-    useBibleItemRenderTitle,
-} from './bibleItemHelpers';
+import ScreenBibleManager from '../_screen/managers/ScreenBibleManager';
+import { openBibleItemContextMenu } from './bibleItemHelpers';
 import { useShowBibleLookupContext } from '../others/commonButtons';
 import appProvider from '../server/appProvider';
+import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
+import { useMemo } from 'react';
+import { changeDragEventStyle } from '../helper/helpers';
+import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
+import BibleViewTitleEditorComp from '../bible-reader/BibleViewTitleEditorComp';
+import LookupBibleItemController from '../bible-reader/LookupBibleItemController';
+import { useBibleItemsViewControllerContext } from '../bible-reader/BibleItemsViewController';
+
+function genAttachBackgroundComponent(
+    droppedData: DroppedDataType | null | undefined,
+) {
+    if (droppedData === null || droppedData === undefined) {
+        return null;
+    }
+    let element = null;
+    if (droppedData.type === DragTypeEnum.BACKGROUND_COLOR) {
+        element = (
+            <button
+                className="btn btn-secondary btn-sm"
+                title={droppedData.item}
+            >
+                <i
+                    className="bi bi-filter-circle-fill"
+                    style={{
+                        color: droppedData.item,
+                    }}
+                />
+            </button>
+        );
+    } else if (droppedData.type === DragTypeEnum.BACKGROUND_IMAGE) {
+        element = (
+            <button
+                className="btn btn-secondary btn-sm"
+                title={droppedData.item.src}
+            >
+                <i className="bi bi-image" />
+            </button>
+        );
+    } else if (droppedData.type === DragTypeEnum.BACKGROUND_VIDEO) {
+        element = (
+            <button
+                className="btn btn-secondary btn-sm"
+                title={droppedData.item.src}
+            >
+                <i className="bi bi-file-earmark-play-fill" />
+            </button>
+        );
+    }
+    // TODO: show bg on button click
+    return element;
+}
+
+async function getBible(bibleItem: BibleItem) {
+    return bibleItem.filePath
+        ? await Bible.fromFilePath(bibleItem.filePath)
+        : null;
+}
 
 export default function BibleItemRenderComp({
     index,
@@ -26,42 +81,79 @@ export default function BibleItemRenderComp({
     index: number;
     bibleItem: BibleItem;
     warningMessage?: string;
-    filePath?: string;
+    filePath: string;
 }>) {
+    const viewController = useBibleItemsViewControllerContext();
     const showBibleLookupPopup = useShowBibleLookupContext();
-    const viewController = useBibleItemViewControllerContext();
     useFileSourceRefreshEvents(['select'], filePath);
-    const title = useBibleItemRenderTitle(bibleItem);
     const changeBible = async (newBibleKey: string) => {
-        const bible = bibleItem.filePath
-            ? await Bible.fromFilePath(bibleItem.filePath)
-            : null;
-        if (!bible) {
+        const bible = await getBible(bibleItem);
+        if (bible === null) {
             return;
         }
         bibleItem.bibleKey = newBibleKey;
         bibleItem.save(bible);
     };
-    const handleContextMenuOpening = (event: React.MouseEvent<any>) => {
-        openBibleItemContextMenu(event, bibleItem, index, showBibleLookupPopup);
-    };
-    const handleDoubleClicking = (event: any) => {
+    const attachedBackgroundData = useAttachedBackgroundData(
+        filePath,
+        bibleItem.id.toString(),
+    );
+    const attachedBackgroundElement = useMemo(() => {
+        return genAttachBackgroundComponent(attachedBackgroundData);
+    }, [attachedBackgroundData]);
+    const handleOpening = (event: any) => {
         if (appProvider.isPagePresenter) {
-            ScreenFullTextManager.handleBibleItemSelecting(event, [bibleItem]);
+            ScreenBibleManager.handleBibleItemSelecting(event, bibleItem);
         } else if (appProvider.isPageReader) {
-            const lookupViewController =
-                LookupBibleItemViewController.getInstance();
+            if (viewController instanceof LookupBibleItemController === false) {
+                const lastBibleItem = viewController.straightBibleItems.pop();
+                if (lastBibleItem !== undefined) {
+                    viewController.addBibleItemRight(lastBibleItem, bibleItem);
+                } else {
+                    viewController.addBibleItem(
+                        null,
+                        bibleItem,
+                        false,
+                        false,
+                        false,
+                    );
+                }
+                return;
+            }
             if (event.shiftKey) {
-                lookupViewController.addBibleItemRight(
-                    lookupViewController.selectedBibleItem,
+                viewController.addBibleItemRight(
+                    viewController.selectedBibleItem,
                     bibleItem,
                 );
             } else {
-                lookupViewController.setLookupContentFromBibleItem(bibleItem);
+                viewController.setLookupContentFromBibleItem(bibleItem);
             }
-        } else {
-            viewController.appendBibleItem(bibleItem);
         }
+    };
+    const handleContextMenuOpening = (event: React.MouseEvent<any>) => {
+        const menuItems: ContextMenuItemType[] = [
+            {
+                menuTitle: '`Open',
+                onSelect: (event) => {
+                    handleOpening(event);
+                },
+            },
+        ];
+        if (attachedBackgroundData) {
+            menuItems.push(
+                ...genRemovingAttachedBackgroundMenu(
+                    filePath,
+                    bibleItem.id.toString(),
+                ),
+            );
+        }
+        openBibleItemContextMenu(
+            event,
+            bibleItem,
+            index,
+            showBibleLookupPopup,
+            menuItems,
+        );
     };
 
     if (bibleItem.isError) {
@@ -70,33 +162,65 @@ export default function BibleItemRenderComp({
 
     return (
         <li
-            className="list-group-item item pointer"
-            title={title}
+            className="list-group-item item pointer px-1"
+            title="Double click to view"
             data-index={index + 1}
             draggable
             onDragStart={(event) => {
                 handleDragStart(event, bibleItem);
             }}
-            onDoubleClick={handleDoubleClicking}
+            onDragOver={(event) => {
+                event.preventDefault();
+                changeDragEventStyle(event, 'opacity', '0.5');
+            }}
+            onDragLeave={(event) => {
+                event.preventDefault();
+                changeDragEventStyle(event, 'opacity', '1');
+            }}
+            onDrop={(event) => {
+                onDropHandling(event, {
+                    filePath,
+                    id: bibleItem.id,
+                });
+            }}
+            onDoubleClick={handleOpening}
             onContextMenu={handleContextMenuOpening}
         >
             <div className="d-flex">
                 <ItemColorNoteComp item={bibleItem} />
-                <div className="px-1">
-                    <BibleSelectionMiniComp
-                        bibleKey={bibleItem.bibleKey}
-                        onBibleKeyChange={(_, newValue) => {
-                            changeBible(newValue);
-                        }}
-                        isMinimal
-                    />
-                </div>
-                <span className="app-ellipsis">{title || 'not found'}</span>
-                {warningMessage && (
-                    <span className="float-end" title={warningMessage}>
-                        ⚠️
+                <div className="d-flex flex-fill">
+                    <div className="px-1">
+                        <BibleSelectionMiniComp
+                            bibleKey={bibleItem.bibleKey}
+                            onBibleKeyChange={(_, newValue) => {
+                                changeBible(newValue);
+                            }}
+                            isMinimal
+                        />
+                    </div>
+                    <span
+                        className="app-ellipsis"
+                        data-bible-key={bibleItem.bibleKey}
+                    >
+                        <BibleViewTitleEditorComp
+                            bibleItem={bibleItem}
+                            onTargetChange={async (newBibleTarget) => {
+                                const bible = await getBible(bibleItem);
+                                if (bible === null) {
+                                    return;
+                                }
+                                bibleItem.target = newBibleTarget;
+                                bibleItem.save(bible);
+                            }}
+                        />
                     </span>
-                )}
+                    {warningMessage && (
+                        <span className="float-end" title={warningMessage}>
+                            ⚠️
+                        </span>
+                    )}
+                </div>
+                <div className="float-end">{attachedBackgroundElement}</div>
             </div>
         </li>
     );

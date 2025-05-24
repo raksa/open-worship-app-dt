@@ -1,19 +1,24 @@
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.css';
-import './others/font.scss';
 import './appInit.scss';
 import './others/bootstrap-override.scss';
 import './others/scrollbar.scss';
 
 import { showAppConfirm } from './popup-widget/popupWidgetHelpers';
-import {
+import KeyboardEventListener, {
     PlatformEnum,
     useKeyboardRegistering,
 } from './event/KeyboardEventListener';
 import { getAllLocalBibleInfoList } from './helper/bible-helpers/bibleDownloadHelpers';
 import { handleError } from './helper/errorHelpers';
 import FileSourceMetaManager from './helper/FileSourceMetaManager';
-import { getCurrentLangAsync, getLangAsync, defaultLocale } from './lang';
+import {
+    getCurrentLangAsync,
+    getLangAsync,
+    defaultLocale,
+    getCurrentLocale,
+    getFontFamily,
+} from './lang';
 import appProvider from './server/appProvider';
 import initCrypto from './_owa-crypto';
 import { useHandleFind } from './_find/finderHelpers';
@@ -22,6 +27,12 @@ import { createRoot } from 'react-dom/client';
 import { StrictMode } from 'react';
 import { getSetting, setSetting } from './helper/settingHelpers';
 import { unlocking } from './server/appHelpers';
+import { applyFontFamily } from './others/LanguageWrapper';
+import {
+    APP_FULL_VIEW_CLASSNAME,
+    MutationType,
+    onDomChange,
+} from './helper/helpers';
 
 const ERROR_DATETIME_SETTING_NAME = 'error-datetime-setting';
 const ERROR_DURATION = 1000 * 10; // 10 seconds;
@@ -143,9 +154,36 @@ export function RenderApp({
     );
 }
 
+function handleFullWidgetView(element: Node, type: MutationType) {
+    if (
+        type !== 'attr-modified' ||
+        element instanceof HTMLElement === false ||
+        !element.classList.contains(APP_FULL_VIEW_CLASSNAME)
+    ) {
+        return;
+    }
+    const registeredEvents = KeyboardEventListener.registerEventListener(
+        [KeyboardEventListener.toEventMapperKey({ key: 'Escape' })],
+        (event: KeyboardEvent) => {
+            event.stopPropagation();
+            event.preventDefault();
+            KeyboardEventListener.unregisterEventListener(registeredEvents);
+            element.classList.remove(APP_FULL_VIEW_CLASSNAME);
+        },
+    );
+}
+
 export async function main(children: React.ReactNode) {
     await initApp();
+    onDomChange(applyFontFamily);
+    onDomChange(handleFullWidgetView);
+    const locale = getCurrentLocale();
+    const fontFamily = await getFontFamily(locale);
+    if (fontFamily) {
+        document.body.style.fontFamily = fontFamily;
+    }
     const container = getRootElement<HTMLDivElement>();
     const root = createRoot(container);
+
     root.render(<RenderApp>{children}</RenderApp>);
 }

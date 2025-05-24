@@ -10,6 +10,7 @@ import EditingHistoryManager from '../others/EditingHistoryManager';
 import ItemSourceInf from '../others/ItemSourceInf';
 import { OptionalPromise } from '../others/otherHelpers';
 import { handleError } from '../helper/errorHelpers';
+import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 
 type AppDocumentMetadataType = {
     app: string;
@@ -157,8 +158,8 @@ export default class AppDocument
 
     async duplicateSlide(slide: Slide) {
         const slides = await this.getItems();
-        const index = slides.findIndex((slide) => {
-            return slide.checkIsSame(slide);
+        const index = slides.findIndex((slide1) => {
+            return slide1.checkIsSame(slide);
         });
         if (index === -1) {
             showSimpleToast('Duplicate Slide', 'Unable to find a slide');
@@ -283,8 +284,12 @@ export default class AppDocument
         this.editingHistoryManager.addHistory(jsonString);
     }
 
-    showItemContextMenu(event: any, slide: Slide) {
-        showAppDocumentContextMenu(event, this, slide);
+    showItemContextMenu(
+        event: any,
+        slide: Slide,
+        extraMenuItems: ContextMenuItemType[] = [],
+    ) {
+        showAppDocumentContextMenu(event, this, slide, extraMenuItems);
     }
 
     async showContextMenu(event: any) {

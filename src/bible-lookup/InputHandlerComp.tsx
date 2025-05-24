@@ -1,6 +1,5 @@
 import { createContext, Fragment, use } from 'react';
 
-import { useGetBookKVList } from '../helper/bible-helpers/serverBibleHelpers';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
 import BibleSelectionComp from './BibleSelectionComp';
 import {
@@ -10,13 +9,14 @@ import {
     focusRenderFound,
     setBibleLookupInputFocus,
 } from './selectionHelpers';
-import { useBibleItemPropsToInputText } from '../bible-list/bibleItemHelpers';
-import { LookupBibleItemViewController } from '../bible-reader/BibleItemViewController';
 import { useBibleKeyContext } from '../bible-list/bibleHelpers';
+import { useAppStateAsync } from '../helper/debuggerHelpers';
+import { toInputText } from '../helper/bible-helpers/serverBibleHelpers2';
+import { useLookupBibleItemControllerContext } from '../bible-reader/LookupBibleItemController';
+import { getBookKVList } from '../helper/bible-helpers/bibleInfoHelpers';
 
 export const InputTextContext = createContext<{
     inputText: string;
-    setInputText: (text: string) => void;
 } | null>(null);
 export function useInputTextContext() {
     const inputTextContext = use(InputTextContext);
@@ -37,18 +37,15 @@ export default function InputHandlerComp({
     onBibleKeyChange: (oldBibleKey: string, newBibleKey: string) => void;
 }>) {
     const { inputText } = useInputTextContext();
-    const setInputText =
-        LookupBibleItemViewController.getInstance().setInputText;
+    const viewController = useLookupBibleItemControllerContext();
     const bibleKey = useBibleKeyContext();
-    const books = useGetBookKVList(bibleKey);
-    const bookKey = books === null ? null : books['GEN'];
-    const placeholder = useBibleItemPropsToInputText(
-        bibleKey,
-        bookKey,
-        1,
-        1,
-        2,
-    );
+    const [books] = useAppStateAsync(() => {
+        return getBookKVList(bibleKey);
+    }, [bibleKey]);
+    const bookKey = !books ? null : books['GEN'];
+    const [placeholder] = useAppStateAsync(() => {
+        return toInputText(bibleKey, bookKey, 1, 1, 2);
+    });
     useKeyboardRegistering(
         [{ key: 'Escape' }],
         () => {
@@ -58,11 +55,12 @@ export default function InputHandlerComp({
             }
             const arr = inputText.split(' ').filter((str) => str !== '');
             if (arr.length === 1) {
-                setInputText('');
+                viewController.inputText = '';
                 return;
             }
             arr.pop();
-            setInputText(arr.join(' ') + (arr.length > 0 ? ' ' : ''));
+            const newInputText = arr.join(' ') + (arr.length > 0 ? ' ' : '');
+            viewController.inputText = newInputText;
         },
         [inputText],
     );
@@ -74,11 +72,12 @@ export default function InputHandlerComp({
             />
             <input
                 id={BIBLE_LOOKUP_INPUT_ID}
+                data-bible-key={bibleKey}
                 type="text"
                 className={`form-control ${INPUT_TEXT_CLASS}`}
                 value={inputText}
                 autoFocus
-                placeholder={placeholder}
+                placeholder={placeholder ?? ''}
                 onKeyUp={(event) => {
                     if (['ArrowDown', 'ArrowUp'].includes(event.key)) {
                         event.stopPropagation();
@@ -89,9 +88,29 @@ export default function InputHandlerComp({
                 }}
                 onChange={(event) => {
                     const value = event.target.value;
-                    setInputText(value);
+                    viewController.inputText = value;
                 }}
             />
+            <div className="d-flex justify-content-between h-100">
+                <button
+                    className="btn btn-sm btn-outline-secondary"
+                    title="Previous"
+                    onClick={() => {
+                        viewController.tryJumpingChapter(false);
+                    }}
+                >
+                    <i className="bi bi-caret-left" />
+                </button>
+                <button
+                    className="btn btn-sm btn-outline-secondary"
+                    title="Next"
+                    onClick={() => {
+                        viewController.tryJumpingChapter(true);
+                    }}
+                >
+                    <i className="bi bi-caret-right" />
+                </button>
+            </div>
         </Fragment>
     );
 }

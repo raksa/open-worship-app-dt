@@ -1,44 +1,29 @@
-import InputHandlerComp, { useInputTextContext } from './InputHandlerComp';
-import { genInputText } from '../bible-list/bibleHelpers';
-import { setBibleLookupInputFocus } from './selectionHelpers';
+import InputHandlerComp from './InputHandlerComp';
 import RenderExtraButtonsRightComp from './RenderExtraButtonsRightComp';
-import { getPopupWindowTypeData } from '../app-modal/helpers';
-import { LookupBibleItemViewController } from '../bible-reader/BibleItemViewController';
 import InputHistoryComp from './InputHistoryComp';
 import appProvider from '../server/appProvider';
 import { ModalCloseButton } from '../app-modal/ModalComp';
 import { useShowBibleLookupContext } from '../others/commonButtons';
+import { useLookupBibleItemControllerContext } from '../bible-reader/LookupBibleItemController';
 
 export default function RenderBibleLookupHeaderComp({
     isLookupOnline,
     setIsLookupOnline,
-    setBibleKey,
 }: Readonly<{
-    editorInputText: string;
     isLookupOnline: boolean;
     setIsLookupOnline: (isLookupOnline: boolean) => void;
-    setBibleKey: (bibleKey: string | null) => void;
 }>) {
+    const viewController = useLookupBibleItemControllerContext();
     const hideBibleLookupPopup = useShowBibleLookupContext(false);
-    const { inputText, setInputText } = useInputTextContext();
-    const { data } = getPopupWindowTypeData();
-
-    const viewController = LookupBibleItemViewController.getInstance();
-    const setInputText1 = (newText: string) => {
-        setInputText(newText);
-        setBibleLookupInputFocus();
-    };
-    viewController.setInputText = setInputText1;
 
     const handleBibleKeyChanging = async (
-        oldBibleKey: string,
+        _oldBibleKey: string,
         newBibleKey: string,
     ) => {
-        const newText = await genInputText(oldBibleKey, newBibleKey, inputText);
-        setBibleKey(newBibleKey);
-        setInputText1(newText);
+        viewController.applyTargetOrBibleKey(viewController.selectedBibleItem, {
+            bibleKey: newBibleKey,
+        });
     };
-    const isEditingBibleItem = !!data;
     return (
         <div className="card-header d-flex text-center w-100">
             <div
@@ -61,14 +46,12 @@ export default function RenderBibleLookupHeaderComp({
                     (!appProvider.isPageReader ? ' pe-5' : '')
                 }
             >
-                {isEditingBibleItem ? null : (
-                    <div className="float-start">
-                        <RenderExtraButtonsRightComp
-                            setIsLookupOnline={setIsLookupOnline}
-                            isLookupOnline={isLookupOnline}
-                        />
-                    </div>
-                )}
+                <div className="float-start">
+                    <RenderExtraButtonsRightComp
+                        setIsLookupOnline={setIsLookupOnline}
+                        isLookupOnline={isLookupOnline}
+                    />
+                </div>
             </div>
             {hideBibleLookupPopup === null ? null : (
                 <ModalCloseButton

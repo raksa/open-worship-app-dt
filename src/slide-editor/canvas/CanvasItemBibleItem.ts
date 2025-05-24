@@ -12,7 +12,7 @@ import {
 export type CanvasItemBiblePropsType = CanvasItemTextPropsType & {
     bibleKeys: string[];
     bibleItemTarget: BibleTargetType;
-    bibleRenderedList: {
+    bibleRenderingList: {
         title: string;
         text: string;
     }[];
@@ -48,7 +48,7 @@ export default class CanvasItemBibleItem extends CanvasItemText {
             ...props,
             bibleKeys: [bibleItem.bibleKey],
             bibleItemTarget: bibleItem.toJson().target,
-            bibleRenderedList: [
+            bibleRenderingList: [
                 {
                     title,
                     text,

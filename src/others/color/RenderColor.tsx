@@ -35,7 +35,7 @@ export default function RenderColor({
     isSelected?: boolean;
     onClick?: (event: MouseEvent, color: AppColorType) => void;
 }>) {
-    return (
+    const element = (
         <div
             title={name}
             draggable
@@ -47,7 +47,7 @@ export default function RenderColor({
             }}
             className={
                 'm-1 color-item pointer' +
-                (isSelected ? ' highlight-selected' : '')
+                (isSelected ? ' app-border-white-round' : '')
             }
             style={{
                 width: '20px',
@@ -59,4 +59,8 @@ export default function RenderColor({
             }}
         />
     );
+    if (isSelected) {
+        return <span className="highlight-selected">{element}</span>;
+    }
+    return element;
 }

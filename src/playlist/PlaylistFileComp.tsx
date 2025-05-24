@@ -149,5 +149,11 @@ function PlaylistBibleItem({
     if (bibleItem === null) {
         return null;
     }
-    return <BibleItemRenderComp index={index} bibleItem={bibleItem} />;
+    return (
+        <BibleItemRenderComp
+            index={index}
+            bibleItem={bibleItem}
+            filePath={playlistItem.filePath}
+        />
+    );
 }

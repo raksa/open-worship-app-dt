@@ -3,7 +3,7 @@ import './SlideDragReceiverComp.scss';
 import { CSSProperties, useState } from 'react';
 
 import Slide from '../../app-document-list/Slide';
-import { handleDrop } from '../../helper/dragHelpers';
+import { extractDropData } from '../../helper/dragHelpers';
 import { DragTypeEnum } from '../../helper/DragInf';
 
 export default function SlideDragReceiverComp({
@@ -52,7 +52,7 @@ export default function SlideDragReceiverComp({
                 (event.currentTarget as HTMLDivElement).style.opacity = '0.1';
             }}
             onDrop={async (event) => {
-                const droppedData = await handleDrop(event);
+                const droppedData = await extractDropData(event);
                 if (
                     droppedData === null ||
                     droppedData.type !== DragTypeEnum.SLIDE

@@ -15,6 +15,7 @@ import { tarExtract } from '../../server/appHelpers';
 import { DownloadOptionsType, writeStreamToFile } from './downloadHelpers';
 import { getBibleXMLCacheInfoList } from '../../setting/bible-setting/bibleXMLHelpers';
 import { bibleDataReader } from './BibleDataReader';
+import { LocaleType } from '../../lang';
 
 export const BIBLE_DOWNLOAD_TOAST_TITLE = 'Bible Download';
 
@@ -66,7 +67,7 @@ export async function startDownloadBible({
 }
 
 export type BibleMinimalInfoType = {
-    locale: string;
+    locale: LocaleType;
     title: string;
     key: string;
     version: number;

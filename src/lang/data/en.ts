@@ -1,4 +1,4 @@
-import { LanguageType } from '..';
+import { LanguageDataType } from '..';
 
 const numList = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
@@ -9,11 +9,15 @@ const dictionary = {
     bible: 'Bible',
     about: 'About',
 };
-const en: LanguageType = {
+const lang: LanguageDataType = {
+    langCode: 'en',
+    genCss: () => {
+        return '';
+    },
+    fontFamily: 'Arial',
     numList,
     dictionary,
     name: 'English',
-    locale: 'en',
     flagSVG: `<svg xmlns="http://www.w3.org/2000/svg" id="flag-icons-gb" viewBox="0 0 640 480">
     <path fill="#012169" d="M0 0h640v480H0z"/>
     <path fill="#FFF" d="m75 0 244 181L562 0h78v62L400 241l240 178v61h-80L320 301 81 480H0v-60l239-178L0 64V0h75z"/>
@@ -22,7 +26,7 @@ const en: LanguageType = {
     <path fill="#C8102E" d="M0 193v96h640v-96H0zM273 0v480h96V0h-96z"/>
   </svg>
   `,
-    sanitizeSearchingText: (text) => {
+    sanitizeFindingText: (text) => {
         return text
             .toLowerCase()
             .replace(/[^a-z0-9 ]/g, ' ')
@@ -35,6 +39,12 @@ const en: LanguageType = {
     endWord: (text: string) => {
         return text + ' ';
     },
+    checkShouldNewLine: (_text: string) => {
+        return false;
+    },
+    extraBibleContextMenuItems: (_bibleItem, _appProvider) => {
+        return [];
+    },
 };
 
-export default en;
+export default lang;

@@ -4,6 +4,7 @@ import AppContextMenuComp from './context-menu/AppContextMenuComp';
 import TopProgressBarComp from './progress-bar/TopProgressBarComp';
 import ToastComp from './toast/ToastComp';
 import { main } from './appInitHelpers';
+import { hideAllScreens } from './_screen/screenHelpers';
 
 main(
     <>
@@ -14,3 +15,5 @@ main(
         <HandleAlertComp />
     </>,
 );
+
+hideAllScreens();

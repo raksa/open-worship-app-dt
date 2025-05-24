@@ -3,7 +3,6 @@ import { CSSProperties } from 'react';
 import { DragTypeEnum, DroppedDataType } from '../../helper/DragInf';
 import { getImageDim, getVideoDim } from '../../helper/helpers';
 import { setSetting } from '../../helper/settingHelpers';
-import appProviderScreen from '../appProviderScreen';
 import { genHtmlBackground } from '../ScreenBackgroundComp';
 import {
     BackgroundSrcType,
@@ -18,6 +17,7 @@ import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
 import ScreenManagerBase from './ScreenManagerBase';
 import ScreenEffectManager from './ScreenEffectManager';
+import appProvider from '../../server/appProvider';
 
 export type ScreenBackgroundManagerEventType = 'update';
 
@@ -33,7 +33,7 @@ class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManager
     ) {
         super(screenManagerBase);
         this.backgroundEffectManager = backgroundEffectManager;
-        if (appProviderScreen.isPagePresenter) {
+        if (appProvider.isPagePresenter) {
             const allBackgroundSrcList = getBackgroundSrcListOnScreenSetting();
             this._backgroundSrc = allBackgroundSrcList[this.key] ?? null;
         }
@@ -130,8 +130,24 @@ class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManager
         this.backgroundSrc = backGroundSrc;
     }
 
+    async applyBackgroundSrc(
+        backgroundType: BackgroundType,
+        src: string | null,
+    ) {
+        if (src === null || this.backgroundSrc?.src === src) {
+            this.applyBackgroundSrcWithSyncGroup(null);
+        } else {
+            const backgroundSrc =
+                await ScreenBackgroundManager.initBackgroundSrcDim(
+                    src,
+                    backgroundType,
+                );
+            this.applyBackgroundSrcWithSyncGroup(backgroundSrc);
+        }
+    }
+
     static async handleBackgroundSelecting(
-        event: React.MouseEvent<HTMLElement, MouseEvent>,
+        event: React.MouseEvent,
         backgroundType: BackgroundType,
         src: string | null,
         isForceChoosing = false,
@@ -139,20 +155,7 @@ class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManager
         const screenIds = await this.chooseScreenIds(event, isForceChoosing);
         for (const screenId of screenIds) {
             const screenBackgroundManager = this.getInstance(screenId);
-            if (
-                src === null ||
-                screenBackgroundManager.backgroundSrc?.src === src
-            ) {
-                screenBackgroundManager.applyBackgroundSrcWithSyncGroup(null);
-            } else {
-                const backgroundSrc = await this.initBackgroundSrcDim(
-                    src,
-                    backgroundType,
-                );
-                screenBackgroundManager.applyBackgroundSrcWithSyncGroup(
-                    backgroundSrc,
-                );
-            }
+            screenBackgroundManager.applyBackgroundSrc(backgroundType, src);
         }
         this.fireUpdateEvent();
     }

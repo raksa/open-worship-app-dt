@@ -290,6 +290,10 @@ export default class FileSource
     }
 
     fireDeleteEvent() {
-        FileSource.addFileSourcePropEvent('delete', this.filePath);
+        FileSource.addFileSourcePropEvent(
+            'delete',
+            this.filePath,
+            this.filePath,
+        );
     }
 }

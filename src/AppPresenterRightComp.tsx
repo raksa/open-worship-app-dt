@@ -3,11 +3,11 @@ import { lazy } from 'react';
 import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActorComp from './resize-actor/ResizeActorComp';
 
-const LazyBibleList = lazy(() => {
+const LazyBibleListComp = lazy(() => {
     return import('./bible-list/BibleListComp');
 });
-const LazyMiniScreen = lazy(() => {
-    return import('./_screen/preview/MiniScreen');
+const LazyMiniScreenComp = lazy(() => {
+    return import('./_screen/preview/MiniScreenComp');
 });
 
 export default function AppPresenterRightComp() {
@@ -21,13 +21,13 @@ export default function AppPresenterRightComp() {
             }}
             dataInput={[
                 {
-                    children: LazyBibleList,
+                    children: LazyBibleListComp,
                     key: 'v1',
                     widgetName: 'Bible List',
                     className: 'flex-item',
                 },
                 {
-                    children: LazyMiniScreen,
+                    children: LazyMiniScreenComp,
                     key: 'v2',
                     widgetName: 'Mini Screen',
                     className: 'flex-item',

@@ -12,7 +12,7 @@ import { copyToClipboard } from '../server/appHelpers';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 
-const LazyRenderBibleItems = lazy(() => {
+const LazyRenderBibleItemsComp = lazy(() => {
     return import('./RenderBibleItemsComp');
 });
 
@@ -24,7 +24,7 @@ function genContextMenu(
     }
     return [
         {
-            menuTitle: '(*T) ' + 'Empty',
+            menuTitle: '`' + 'Empty',
             onSelect: () => {
                 showAppConfirm(
                     'Empty Bible List',
@@ -39,7 +39,7 @@ function genContextMenu(
             },
         },
         {
-            menuTitle: '(*T) ' + 'Copy All Items',
+            menuTitle: '`' + 'Copy All Items',
             onSelect: async () => {
                 const promises = bible.items.map((item) => {
                     return item.toTitleText();
@@ -52,7 +52,7 @@ function genContextMenu(
             },
         },
         {
-            menuTitle: '(*T) ' + 'Move All Items To',
+            menuTitle: '`' + 'Move All Items To',
             onSelect: (event: any) => {
                 moveBibleItemTo(event, bible);
             },
@@ -136,7 +136,7 @@ function BiblePreview({ bible }: Readonly<{ bible: Bible }>) {
                 {bible.isOpened && (
                     <div className="accordion-body p-0">
                         <AppSuspenseComp>
-                            <LazyRenderBibleItems bible={bible} />
+                            <LazyRenderBibleItemsComp bible={bible} />
                         </AppSuspenseComp>
                     </div>
                 )}

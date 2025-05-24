@@ -100,4 +100,11 @@ export default class ElectronScreenController {
         }
         return cache.get(key) as ElectronScreenController;
     }
+
+    static closeAll() {
+        cache.forEach((screenController) => {
+            screenController.close();
+            screenController.destroyInstance();
+        });
+    }
 }

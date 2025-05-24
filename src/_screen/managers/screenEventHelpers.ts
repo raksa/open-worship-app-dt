@@ -4,8 +4,8 @@ import { useAppEffect } from '../../helper/debuggerHelpers';
 import ScreenBackgroundManager, {
     ScreenBackgroundManagerEventType,
 } from './ScreenBackgroundManager';
-import { ScreenFTManagerEventType } from '../screenFullTextHelpers';
-import ScreenFullTextManager from './ScreenFullTextManager';
+import { ScreenBibleManagerEventType } from '../screenBibleHelpers';
+import ScreenBibleManager from './ScreenBibleManager';
 import ScreenVaryAppDocumentManager, {
     ScreenVaryAppDocumentManagerEventType,
 } from './ScreenVaryAppDocumentManager';
@@ -66,14 +66,14 @@ export function useScreenVaryAppDocumentManagerEvents(
     );
 }
 
-export function useScreenFullTextManagerEvents(
-    events: ScreenFTManagerEventType[],
-    screenFulTextManager?: ScreenFullTextManager,
+export function useScreenBibleManagerEvents(
+    events: ScreenBibleManagerEventType[],
+    screenFulTextManager?: ScreenBibleManager,
     callback?: (args: any) => void,
 ) {
     useScreenEvents(
         events,
-        ScreenFullTextManager as any,
+        ScreenBibleManager as any,
         screenFulTextManager,
         callback,
     );

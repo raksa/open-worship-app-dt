@@ -62,7 +62,11 @@ function ContextMenuItemComp({
                 `${APP_CONTEXT_MENU_ITEM_CLASS} d-flex w-100 overflow-hidden` +
                 `${item.disabled ? ' disabled' : ''}`
             }
-            title={item.title ?? item.menuTitle}
+            style={item.style ?? {}}
+            title={
+                item.title ??
+                (typeof item.menuTitle === 'string' ? item.menuTitle : '')
+            }
             onClick={(event) => {
                 if (item.disabled) {
                     return;
@@ -72,8 +76,9 @@ function ContextMenuItemComp({
                 }, 0);
             }}
         >
+            {item.childBefore || null}
             <div className="app-ellipsis flex-fill">{item.menuTitle}</div>
-            {item.otherChild || null}
+            {item.childAfter || null}
         </div>
     );
 }
@@ -101,10 +106,8 @@ export default function AppContextMenuComp() {
                 }}
                 className="app-context-menu app-focusable"
             >
-                {data.items.map((item) => {
-                    return (
-                        <ContextMenuItemComp key={item.menuTitle} item={item} />
-                    );
+                {data.items.map((item, i) => {
+                    return <ContextMenuItemComp key={i} item={item} />;
                 })}
             </div>
         </div>
@@ -118,5 +121,21 @@ export function genContextMenuItemShortcutKey(eventMapper: EventMapper) {
                 {toShortcutKey(eventMapper)}
             </span>
         </div>
+    );
+}
+
+export function genContextMenuItemIcon(
+    name: string,
+    style?: React.CSSProperties,
+) {
+    return (
+        <i
+            className={`bi bi-${name}`}
+            style={{
+                color: 'var(--bs-info-text-emphasis)',
+                marginRight: '2px',
+                ...style,
+            }}
+        />
     );
 }
