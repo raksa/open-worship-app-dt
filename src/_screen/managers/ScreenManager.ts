@@ -63,6 +63,17 @@ export default class ScreenManager extends ScreenManagerBase {
         );
     }
 
+    get isLocked() {
+        return super.isLocked;
+    }
+
+    set isLocked(isLocked: boolean) {
+        super.isLocked = isLocked;
+        saveScreenManagersSetting().then(() => {
+            this.fireInstanceEvent();
+        });
+    }
+
     get isSelected() {
         return super.isSelected;
     }

@@ -108,7 +108,7 @@ export default function BibleViewTitleEditorComp({
         onClick: (event: any) => Promise<void>,
     ) => {
         return (
-            <span className="pointer app-caught-hover" onClick={onClick}>
+            <span className="app-caught-hover" onClick={onClick}>
                 {text}
             </span>
         );

@@ -47,7 +47,7 @@ function RenderBodyEditingComp() {
                             }}
                         >
                             <span
-                                className="pointer app-caught-hover"
+                                className="app-caught-hover"
                                 title='Hit "Escape" to force edit'
                                 onClick={() => {
                                     setBibleLookupInputFocus();

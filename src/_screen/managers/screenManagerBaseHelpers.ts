@@ -7,6 +7,7 @@ import { unlocking } from '../../server/appHelpers';
 export type TypeScreenManagerSettingType = {
     screenId: number;
     isSelected: boolean;
+    isLocked: boolean;
     colorNote: string | null;
 };
 
@@ -18,11 +19,7 @@ export function setScreenManagerBaseCache(
     cache.set(screenManagerBase.key, screenManagerBase);
 }
 
-export function getScreenManagersInstanceSetting(): {
-    screenId: number;
-    isSelected: boolean;
-    colorNote: string | null;
-}[] {
+export function getScreenManagersInstanceSetting(): TypeScreenManagerSettingType[] {
     const str = getSetting(screenManagerSettingNames.MANAGERS, '');
     if (isValidJson(str, true)) {
         const json = JSON.parse(str);
@@ -66,6 +63,7 @@ export function saveScreenManagersSetting(deletedScreenId?: number) {
             newInstanceSetting.push({
                 screenId: screenManagerBase.screenId,
                 isSelected: screenManagerBase.isSelected,
+                isLocked: screenManagerBase.isLocked,
                 colorNote,
             });
         }

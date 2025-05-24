@@ -39,6 +39,7 @@ export default class ScreenManagerBase
     width = 1;
     height = 1;
     _isSelected: boolean = false;
+    _isLocked: boolean = false;
     colorNote: string | null = null;
     private _isShowing: boolean;
     noSyncGroupMap: Map<string, boolean>;
@@ -72,6 +73,14 @@ export default class ScreenManagerBase
 
     set isSelected(isSelected: boolean) {
         this._isSelected = isSelected;
+    }
+
+    get isLocked() {
+        return this._isLocked;
+    }
+
+    set isLocked(isLocked: boolean) {
+        this._isLocked = isLocked;
     }
 
     get isShowing() {
