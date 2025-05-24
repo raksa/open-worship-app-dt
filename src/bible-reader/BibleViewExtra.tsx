@@ -6,6 +6,7 @@ import {
     BIBLE_VIEW_TEXT_CLASS,
     fontSizeToHeightStyle,
     useBibleViewFontSizeContext,
+    VERSE_TEXT_CLASS,
 } from '../helper/bibleViewHelpers';
 import ItemColorNoteComp from '../others/ItemColorNoteComp';
 import ColorNoteInf from '../helper/ColorNoteInf';
@@ -186,7 +187,7 @@ function RenderVerseTextComp({
                 </div>
             </div>
             <div
-                className="verse-text"
+                className={VERSE_TEXT_CLASS}
                 data-bible-key={verseInfo.bibleKey}
                 data-kjv-verse-key={verseInfo.kjvBibleVersesKey}
                 data-verse-key={verseInfo.bibleVersesKey}

@@ -1,7 +1,9 @@
 import './BibleViewComp.scss';
 
 import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
-import { useBibleItemsViewControllerContext } from './BibleItemsViewController';
+import BibleItemsViewController, {
+    useBibleItemsViewControllerContext,
+} from './BibleItemsViewController';
 import {
     applyDropped,
     genDraggingClass,
@@ -15,6 +17,53 @@ import RenderBibleLookupBodyComp from '../bible-lookup/RenderBibleLookupBodyComp
 import BibleItem from '../bible-list/BibleItem';
 import { use } from 'react';
 import { EditingResultContext } from './LookupBibleItemController';
+import { useBibleViewFontSizeContext } from '../helper/bibleViewHelpers';
+import {
+    bringDomToNearestView,
+    checkIsVerticalPartialInvisible,
+} from '../helper/helpers';
+
+function handMovedChecking(
+    viewController: BibleItemsViewController,
+    bibleItem: BibleItem,
+    container: HTMLElement,
+    threshold: number,
+) {
+    let kjvVerseKey = null;
+    const currentElements = viewController.getVerseElements<HTMLElement>(
+        bibleItem.id,
+    );
+    for (const currentElement of Array.from(currentElements).reverse()) {
+        if (
+            checkIsVerticalPartialInvisible(
+                container,
+                currentElement,
+                threshold,
+            )
+        ) {
+            kjvVerseKey = currentElement.dataset.kjvVerseKey;
+            break;
+        }
+    }
+    if (kjvVerseKey === null) {
+        return;
+    }
+    const colorNote = viewController.getColorNote(bibleItem);
+    const bibleItems = viewController
+        .getBibleItemsByColorNote(colorNote)
+        .filter((targetBibleItem) => {
+            return bibleItem.id !== targetBibleItem.id;
+        });
+    bibleItems.forEach((targetBibleItem) => {
+        const elements = viewController.getVerseElements<HTMLElement>(
+            targetBibleItem.id,
+            kjvVerseKey,
+        );
+        elements.forEach((element) => {
+            bringDomToNearestView(element);
+        });
+    });
+}
 
 export default function BibleViewComp({
     bibleItem,
@@ -26,6 +75,7 @@ export default function BibleViewComp({
     const viewController = useBibleItemsViewControllerContext();
     const uuid = crypto.randomUUID();
     const editingResult = use(EditingResultContext);
+    const textViewFontSize = useBibleViewFontSizeContext();
     const foundBibleItem = isEditing
         ? (editingResult?.result.bibleItem ?? null)
         : bibleItem;
@@ -75,6 +125,17 @@ export default function BibleViewComp({
                 <ScrollingHandlerComp
                     style={{ bottom: '60px' }}
                     shouldSnowPlayToBottom
+                    movedCheck={{
+                        check: (container: HTMLElement) => {
+                            handMovedChecking(
+                                viewController,
+                                bibleItem,
+                                container,
+                                textViewFontSize,
+                            );
+                        },
+                        threshold: textViewFontSize,
+                    }}
                 />
             </div>
         </div>

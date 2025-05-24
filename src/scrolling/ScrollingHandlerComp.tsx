@@ -3,14 +3,17 @@ import {
     TO_THE_TOP_CLASSNAME,
     applyToTheTop,
     applyPlayToBottom,
+    MoveCheckType,
 } from './scrollingHandlerHelpers';
 
 export default function ScrollingHandlerComp({
     style,
     shouldSnowPlayToBottom = false,
+    movedCheck,
 }: Readonly<{
     style?: React.CSSProperties;
     shouldSnowPlayToBottom?: boolean;
+    movedCheck?: MoveCheckType;
 }>) {
     return (
         <>
@@ -24,7 +27,7 @@ export default function ScrollingHandlerComp({
                     }}
                     ref={(element) => {
                         if (element) {
-                            applyPlayToBottom(element);
+                            applyPlayToBottom(element, movedCheck);
                         }
                     }}
                 />

@@ -80,14 +80,18 @@ function startAnimToBottom(
         speed: number;
         scrollTop: number;
     },
-    onStop: () => void,
+    options: {
+        onMoved: () => void;
+        onStop: () => void;
+        onToTheTop: () => void;
+    },
 ) {
     const shouldStop =
         store.speed <= 0 ||
         parent.scrollTop >= parent.scrollHeight - parent.clientHeight - 5;
 
     if (shouldStop) {
-        onStop();
+        options.onStop();
         return;
     }
     const nexTargetCallback = startAnimToBottom.bind(
@@ -95,7 +99,7 @@ function startAnimToBottom(
         parent,
         element,
         store,
-        onStop,
+        options,
     );
     if (parent.classList.contains('asking-to-top')) {
         (parent as any)._askingToTop = false;
@@ -106,6 +110,7 @@ function startAnimToBottom(
         });
         setTimeout(() => {
             parent.classList.remove('asking-to-top');
+            options.onToTheTop();
             requestAnimationFrame(nexTargetCallback);
         }, 1000);
         return;
@@ -113,7 +118,12 @@ function startAnimToBottom(
 
     store.scrollTop += 0.05 + store.speed;
     store.scrollTop = Math.max(parent.scrollTop, store.scrollTop);
-    parent.scrollTop = store.scrollTop;
+    if (parent.scrollTop !== store.scrollTop) {
+        parent.scrollTop = store.scrollTop;
+        setTimeout(() => {
+            options.onMoved();
+        }, 0);
+    }
     requestAnimationFrame(nexTargetCallback);
 }
 
@@ -129,11 +139,19 @@ function showOnScrollable(parent: HTMLElement, element: HTMLElement) {
     }
 }
 
+export type MoveCheckType = {
+    check: (container: HTMLElement) => void;
+    threshold: number;
+};
+
 const INIT_TITLE =
     'Click to scroll to the bottom, double click to speed up, ' +
     'right click to slow down, Alt + right click to stop';
 const speedOffset = 0.07;
-export function applyPlayToBottom(element: HTMLElement) {
+export function applyPlayToBottom(
+    element: HTMLElement,
+    movedCheck?: MoveCheckType,
+) {
     const parent = element.parentElement;
     if (parent === null) {
         return;
@@ -153,10 +171,25 @@ export function applyPlayToBottom(element: HTMLElement) {
         }
         store.scrollTop = parent.scrollTop;
         element.classList.add('going');
-        startAnimToBottom(parent, element, store, () => {
-            element.classList.remove('going');
-            setSpeed(0);
-            element.title = INIT_TITLE;
+        const movedThreshold = movedCheck?.threshold ?? 0;
+        let scrollTop = parent.scrollTop - movedThreshold;
+        startAnimToBottom(parent, element, store, {
+            onToTheTop: () => {
+                scrollTop = parent.scrollTop;
+            },
+            onMoved: movedThreshold
+                ? () => {
+                      if (parent.scrollTop > scrollTop) {
+                          scrollTop = parent.scrollTop + movedThreshold;
+                          movedCheck?.check(parent);
+                      }
+                  }
+                : () => {},
+            onStop: () => {
+                element.classList.remove('going');
+                setSpeed(0);
+                element.title = INIT_TITLE;
+            },
         });
     };
     element.onclick = (event) => {

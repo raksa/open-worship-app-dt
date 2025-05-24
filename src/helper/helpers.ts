@@ -406,14 +406,16 @@ export function bringDomToBottomView(dom: Element) {
     bringDomToView(dom, 'end');
 }
 
-export function checkIsPartialInvisible(
+export function checkIsVerticalPartialInvisible(
     container: HTMLElement,
     target: HTMLElement,
+    threshold: number = 0,
 ) {
     const containerRect = container.getBoundingClientRect();
     const targetRect = target.getBoundingClientRect();
-    const isPartialInvisible =
-        targetRect.top < containerRect.top - 1 ||
-        targetRect.bottom > containerRect.bottom + 1;
-    return isPartialInvisible;
+    const containerTop = containerRect.top + threshold;
+    const containerBottom = containerRect.bottom - threshold;
+    const targetTop = targetRect.top + threshold;
+    const targetBottom = targetRect.bottom - threshold;
+    return targetTop < containerBottom && targetBottom > containerTop;
 }

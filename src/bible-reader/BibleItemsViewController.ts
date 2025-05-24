@@ -15,7 +15,10 @@ import {
     bringDomToTopView,
     genTimeoutAttempt,
 } from '../helper/helpers';
-import { BIBLE_VIEW_TEXT_CLASS } from '../helper/bibleViewHelpers';
+import {
+    BIBLE_VIEW_TEXT_CLASS,
+    VERSE_TEXT_CLASS,
+} from '../helper/bibleViewHelpers';
 import { getLangAsync } from '../lang';
 import { getBibleLocale } from '../helper/bible-helpers/serverBibleHelpers2';
 import { BibleTargetType } from '../bible-list/bibleRenderHelpers';
@@ -648,22 +651,36 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
         this.nestedBibleItems = [...nestedBibleItems, newBibleItem];
         return newBibleItem;
     }
+    getVerseElements<T>(bibleItemId: number, kjvVerseKey?: string) {
+        const containerDoms = document.querySelectorAll(
+            `.${BIBLE_VIEW_TEXT_CLASS}[data-bible-item-id="${bibleItemId}"]`,
+        );
+        return Array.from(containerDoms).reduce(
+            (elements: T[], containerDom: any) => {
+                const dataString = kjvVerseKey
+                    ? `div[data-kjv-verse-key="${kjvVerseKey}"]`
+                    : `.${VERSE_TEXT_CLASS}`;
+                const newElements = Array.from(
+                    containerDom.querySelectorAll(
+                        `.${BIBLE_VIEW_TEXT_CLASS} ${dataString}`,
+                    ),
+                ) as any as T[];
+                elements.push(...newElements);
+                return elements;
+            },
+            [],
+        );
+    }
     syncBibleVerseSelection(
         bibleItem: BibleItem,
         verseKey: string,
         isToTop: boolean,
     ) {
-        const containerDoms = document.querySelectorAll(
-            `.${BIBLE_VIEW_TEXT_CLASS}[data-bible-item-id="${bibleItem.id}"]`,
-        );
-        Array.from(containerDoms).forEach((containerDom: any) => {
-            const elements = containerDom.querySelectorAll(
-                `.${BIBLE_VIEW_TEXT_CLASS} div[data-kjv-verse-key="${verseKey}"]`,
-            );
-            Array.from(elements).forEach((element: any) => {
+        this.getVerseElements(bibleItem.id, verseKey).forEach(
+            (element: any) => {
                 this.handleVersesSelecting(element, isToTop, true);
-            });
-        });
+            },
+        );
     }
     handleVersesHighlighting(kjvVerseKey: string, isToTop = false) {
         const elements = document.querySelectorAll(
