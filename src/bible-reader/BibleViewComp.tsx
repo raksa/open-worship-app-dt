@@ -116,7 +116,7 @@ export default function BibleViewComp({
             ) : (
                 <RenderHeaderComp bibleItem={bibleItem} />
             )}
-            <div className="card-body">
+            <div className="card-body app-top-hover-visible">
                 {isEditing ? (
                     <RenderBibleLookupBodyComp />
                 ) : (

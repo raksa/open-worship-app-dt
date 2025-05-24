@@ -20,7 +20,10 @@ export default function ScrollingHandlerComp({
             <style>{TO_THE_TOP_STYLE_STRING}</style>
             {shouldSnowPlayToBottom ? (
                 <i
-                    className="play-to-bottom bi bi-chevron-double-down pointer"
+                    className={
+                        'play-to-bottom bi bi-chevron-double-down pointer ' +
+                        'app-low-hover-visible'
+                    }
                     style={{
                         width: '45px',
                         height: '45px',
@@ -33,7 +36,10 @@ export default function ScrollingHandlerComp({
                 />
             ) : null}
             <i
-                className={`${TO_THE_TOP_CLASSNAME} bi bi-arrow-up-circle`}
+                className={
+                    `${TO_THE_TOP_CLASSNAME} bi bi-arrow-up-circle ` +
+                    'app-low-hover-visible'
+                }
                 title="Scroll to the top"
                 style={{
                     width: '45px',
