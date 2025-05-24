@@ -22,6 +22,7 @@ import {
     getVersesCount,
     toLocaleNumBible,
 } from '../helper/bible-helpers/serverBibleHelpers2';
+import RenderActionButtonsComp from '../bible-lookup/RenderActionButtonsComp';
 
 export const BibleViewTitleMaterialContext = createContext<{
     titleElement: React.ReactNode;
@@ -99,6 +100,9 @@ export function RenderHeaderComp({
                     });
                 }}
             />
+            <div className="app-low-hover-display-1">
+                <RenderActionButtonsComp bibleItem={bibleItem} />
+            </div>
             <div className="app-low-hover-display-0">
                 <button
                     className="btn-close"
