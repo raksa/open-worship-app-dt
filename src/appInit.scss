@@ -21,9 +21,13 @@ body {
     user-select: none;
   }
 
+  .app-not-selectable-text {
+    user-select: none !important;
+  }
+
   & .app-selectable-text,
   & .app-selectable-text * {
-    user-select: text !important;
+    user-select: text;
   }
 
   & #app-header {
@@ -200,6 +204,10 @@ body {
     background-color: green;
   }
 
+  .highlight-color {
+    color: $hight-light-color;
+  }
+
   .highlight-selected {
     border: 1px dashed $hight-light-color;
   }
@@ -326,13 +334,21 @@ body {
     color: $hight-light-color;
   }
 
-  .app-top-hover-visible {
-    .app-low-hover-visible {
-      visibility: hidden;
-    }
-    &:hover {
-      .app-low-hover-visible {
-        visibility: visible;
+  @for $i from 0 through 10 {
+    .app-top-hover-motion-#{$i} {
+      .app-low-hover-visible-#{$i} {
+        visibility: hidden;
+      }
+      .app-low-hover-display-#{$i} {
+        display: none;
+      }
+      &:hover {
+        .app-low-hover-visible-#{$i} {
+          visibility: visible;
+        }
+        .app-low-hover-display-#{$i} {
+          display: block;
+        }
       }
     }
   }

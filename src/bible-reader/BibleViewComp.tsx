@@ -82,7 +82,10 @@ export default function BibleViewComp({
     return (
         <div
             id={`uuid-${uuid}`}
-            className="bible-view card flex-fill w-100 h-100"
+            className={
+                'bible-view card flex-fill w-100 h-100 app-top-hover-motion-0' +
+                (isEditing ? ' highlight-selected ' : '')
+            }
             style={{ minWidth: '30%' }}
             onDragOver={(event) => {
                 event.preventDefault();
@@ -116,7 +119,7 @@ export default function BibleViewComp({
             ) : (
                 <RenderHeaderComp bibleItem={bibleItem} />
             )}
-            <div className="card-body app-top-hover-visible">
+            <div className="card-body app-top-hover-motion-1">
                 {isEditing ? (
                     <RenderBibleLookupBodyComp />
                 ) : (

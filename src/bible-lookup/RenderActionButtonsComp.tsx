@@ -31,12 +31,12 @@ const addListEventMapper: KBEventMapper = {
 export default function RenderActionButtonsComp({
     bibleItem,
 }: Readonly<{ bibleItem: BibleItem }>) {
-    const viewController = useLookupBibleItemControllerContext();
     const eventMaps = useMemo(() => {
         return ['s', 'v'].map((key) => {
             return { ...ctrlShiftMetaKeys, key };
         });
     }, []);
+    const viewController = useLookupBibleItemControllerContext();
     useKeyboardRegistering(
         eventMaps,
         (event) => {

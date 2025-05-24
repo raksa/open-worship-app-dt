@@ -11,6 +11,7 @@ import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 import { showBibleOption } from '../bible-lookup/BibleSelectionComp';
 import appProvider from '../server/appProvider';
 import {
+    APP_FULL_VIEW_CLASSNAME,
     bringDomToNearestView,
     bringDomToTopView,
     genTimeoutAttempt,
@@ -445,12 +446,12 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
         };
     }
     seek(
-        bibleItemOrId: BibleItem | number,
+        bibleItem: BibleItem,
         toastTitle: string = 'Seek Item',
         toastMessage: string = 'Unable to seek bible item',
     ) {
         const nestedBibleItems = this.nestedBibleItems;
-        const foundParent = seekParent(nestedBibleItems, bibleItemOrId);
+        const foundParent = seekParent(nestedBibleItems, bibleItem);
         if (foundParent === null) {
             showSimpleToast(toastTitle, toastMessage);
             throw new Error();
@@ -636,7 +637,7 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
                         .querySelector(
                             `#uuid-${uuid} .${BIBLE_VIEW_TEXT_CLASS}`,
                         )
-                        ?.classList.toggle('app-full-view');
+                        ?.classList.toggle(APP_FULL_VIEW_CLASSNAME);
                 },
             },
         ];

@@ -1,7 +1,7 @@
 import { getBibleLocale } from '../helper/bible-helpers/serverBibleHelpers2';
+import { MutationType } from '../helper/helpers';
 import { checkIsValidLocale, getFontFamily, LocaleType } from '../lang';
 
-export type MutationType = 'added' | 'attr-modified';
 export async function applyFontFamily(element: Node, type: MutationType) {
     if (!(element instanceof HTMLElement)) {
         return;

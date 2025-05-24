@@ -5,7 +5,7 @@ import './others/bootstrap-override.scss';
 import './others/scrollbar.scss';
 
 import { showAppConfirm } from './popup-widget/popupWidgetHelpers';
-import {
+import KeyboardEventListener, {
     PlatformEnum,
     useKeyboardRegistering,
 } from './event/KeyboardEventListener';
@@ -27,7 +27,12 @@ import { createRoot } from 'react-dom/client';
 import { StrictMode } from 'react';
 import { getSetting, setSetting } from './helper/settingHelpers';
 import { unlocking } from './server/appHelpers';
-import { applyFontFamily, MutationType } from './others/LanguageWrapper';
+import { applyFontFamily } from './others/LanguageWrapper';
+import {
+    APP_FULL_VIEW_CLASSNAME,
+    MutationType,
+    onDomChange,
+} from './helper/helpers';
 
 const ERROR_DATETIME_SETTING_NAME = 'error-datetime-setting';
 const ERROR_DURATION = 1000 * 10; // 10 seconds;
@@ -149,31 +154,29 @@ export function RenderApp({
     );
 }
 
-function onDomChange(callback: (element: Node, type: MutationType) => void) {
-    const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            if (mutation.type === 'childList') {
-                mutation.addedNodes.forEach((node) => {
-                    callback(node, 'added');
-                });
-            } else if (mutation.type === 'attributes') {
-                callback(mutation.target, 'attr-modified');
-            }
-        });
-    });
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true,
-        attributes: true,
-    });
-    return () => {
-        observer.disconnect();
-    };
+function handleFullWidgetView(element: Node, type: MutationType) {
+    if (
+        type !== 'attr-modified' ||
+        element instanceof HTMLElement === false ||
+        !element.classList.contains(APP_FULL_VIEW_CLASSNAME)
+    ) {
+        return;
+    }
+    const registeredEvents = KeyboardEventListener.registerEventListener(
+        [KeyboardEventListener.toEventMapperKey({ key: 'Escape' })],
+        (event: KeyboardEvent) => {
+            event.stopPropagation();
+            event.preventDefault();
+            KeyboardEventListener.unregisterEventListener(registeredEvents);
+            element.classList.remove(APP_FULL_VIEW_CLASSNAME);
+        },
+    );
 }
 
 export async function main(children: React.ReactNode) {
     await initApp();
     onDomChange(applyFontFamily);
+    onDomChange(handleFullWidgetView);
     const locale = getCurrentLocale();
     const fontFamily = await getFontFamily(locale);
     if (fontFamily) {

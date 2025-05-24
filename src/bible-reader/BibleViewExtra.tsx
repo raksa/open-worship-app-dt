@@ -85,7 +85,7 @@ export function RenderHeaderComp({
     const fontSize = useBibleViewFontSizeContext();
     return (
         <div
-            className="card-header d-flex app-top-hover-visible"
+            className="card-header d-flex app-top-hover-motion-1"
             style={{ ...fontSizeToHeightStyle(fontSize) }}
         >
             <RenderTitleMaterialComp
@@ -99,7 +99,7 @@ export function RenderHeaderComp({
                     });
                 }}
             />
-            <div>
+            <div className="app-low-hover-display-0">
                 <button
                     className="btn-close"
                     onClick={() => {
@@ -232,6 +232,7 @@ function RenderRestVerseNumListComp({
     bibleItem: BibleItem;
     verseCount: number;
 }>) {
+    const fontSize = useBibleViewFontSizeContext();
     const actualFrom = from ?? 1;
     const actualTo = to ?? verseCount;
     const numList = useMemo(() => {
@@ -252,13 +253,16 @@ function RenderRestVerseNumListComp({
         return null;
     }
     return (
-        <>
+        <span className="app-not-selectable-text">
             {from !== undefined ? <br /> : null}
             {numList.map((verse, i) => {
                 return (
                     <div key={verse} className="verse-number">
                         <div
-                            className="verse-number-rest"
+                            className="verse-number-rest app-not-selectable-text"
+                            style={{
+                                fontSize: `${fontSize * 0.7}px`,
+                            }}
                             data-bible-key={bibleItem.bibleKey}
                             title={verse.toString()}
                         >
@@ -268,7 +272,7 @@ function RenderRestVerseNumListComp({
                 );
             })}
             {top !== undefined ? <br /> : null}
-        </>
+        </span>
     );
 }
 

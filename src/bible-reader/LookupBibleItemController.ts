@@ -65,8 +65,11 @@ class EditingBibleItem extends BibleItem {
 
 const editingResultCacher = new CacheManager<EditingResultType>(3);
 class LookupBibleItemController extends BibleItemsViewController {
-    setInputText: (_: string) => OptionalPromise<void> = (_: string) => {};
-    setBibleKey = (_: string) => {};
+    setInputText: (inputText: string) => OptionalPromise<void> = (
+        _: string,
+    ) => {};
+    setBibleKey = (_bibleKey: string) => {};
+    reloadEditingResult = (_inputText: string) => {};
     onLookupAddBibleItem = () => {};
 
     constructor() {
@@ -99,6 +102,13 @@ class LookupBibleItemController extends BibleItemsViewController {
         const bibleItemId = settingId ? parseInt(settingId) : -1;
         return bibleItemId;
     }
+    setSelectedBibleItem(bibleItemId: number) {
+        setSetting(
+            this.toSettingName('-selected-bible-item'),
+            bibleItemId.toString(),
+        );
+        this.reloadEditingResult(this.inputText);
+    }
     get selectedBibleItem() {
         const bibleItemId = this.getSavedBibleId();
         if (bibleItemId !== -1) {
@@ -109,17 +119,11 @@ class LookupBibleItemController extends BibleItemsViewController {
                 return EditingBibleItem.fromJson(bibleItem.toJson());
             }
         }
-        setSetting(
-            this.toSettingName('-selected-bible-item'),
-            this.straightBibleItems[0].id.toString(),
-        );
+        this.selectedBibleItem = this.straightBibleItems[0];
         return this.selectedBibleItem;
     }
     set selectedBibleItem(bibleItem: BibleItem) {
-        setSetting(
-            this.toSettingName('-selected-bible-item'),
-            bibleItem.id.toString(),
-        );
+        this.setSelectedBibleItem(bibleItem.id);
         this.applyTargetOrBibleKey(this.selectedBibleItem, bibleItem);
         this.fireUpdateEvent();
     }
@@ -174,6 +178,13 @@ class LookupBibleItemController extends BibleItemsViewController {
         this.inputText = await bibleItem.toTitle();
     }
 
+    private syncFoundBibleItem(editingResult: EditingResultType) {
+        const bibleItem = editingResult.result.bibleItem;
+        if (bibleItem !== null) {
+            bibleItem.id = this.selectedBibleItem.id;
+        }
+        return { ...editingResult };
+    }
     async getEditingResult(inputText?: string) {
         inputText = inputText ?? this.inputText;
         const cachedKey = `${this.selectedBibleItem.bibleKey}-${inputText}`;
@@ -181,17 +192,14 @@ class LookupBibleItemController extends BibleItemsViewController {
             const cachedEditingResult =
                 await editingResultCacher.get(cachedKey);
             if (cachedEditingResult !== null) {
-                return cachedEditingResult;
+                return this.syncFoundBibleItem(cachedEditingResult);
             }
             const editingResult = await extractBibleTitle(
                 this.selectedBibleItem.bibleKey,
                 inputText,
             );
-            if (editingResult.result.bibleItem !== null) {
-                editingResult.result.bibleItem.id = this.selectedBibleItem.id;
-            }
             await editingResultCacher.set(cachedKey, editingResult);
-            return editingResult;
+            return this.syncFoundBibleItem(editingResult);
         });
     }
 

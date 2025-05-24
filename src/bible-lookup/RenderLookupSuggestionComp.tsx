@@ -21,14 +21,19 @@ export default function RenderLookupSuggestionComp({
     if (editingResult === null) {
         return <div>Loading...</div>;
     }
-    const { bookKey, guessingBook, chapter, guessingChapter, bibleItem } =
-        editingResult.result;
+    const {
+        bookKey,
+        guessingBook,
+        chapter,
+        guessingChapter,
+        bibleItem: foundBibleItem,
+    } = editingResult.result;
 
-    if (bibleItem !== null) {
+    if (foundBibleItem !== null) {
         return (
             <>
-                <RenderVerseOptionsComp bibleItem={bibleItem} />
-                <BibleViewTextComp bibleItem={bibleItem} />
+                <RenderVerseOptionsComp bibleItem={foundBibleItem} />
+                <BibleViewTextComp bibleItem={foundBibleItem} />
             </>
         );
     }

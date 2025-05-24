@@ -60,14 +60,20 @@ export default function RenderBibleLookupComp() {
         }, []);
     const { isValid, bibleKey } = useSelectedBibleKey();
     useAppEffect(() => {
+        viewController.reloadEditingResult = (inputText) => {
+            viewController
+                .getEditingResult(inputText)
+                .then((newEditingResult) => {
+                    setEditingResult(newEditingResult);
+                });
+        };
         viewController.setInputText = async (newInputText: string) => {
-            const newEditingResult =
-                await viewController.getEditingResult(newInputText);
-            setEditingResult({ ...newEditingResult });
             setInputText(newInputText);
+            viewController.reloadEditingResult(newInputText);
         };
         return () => {
             viewController.setInputText = (_: string) => {};
+            viewController.reloadEditingResult = (_: string) => {};
         };
     }, []);
     if (!isValid) {

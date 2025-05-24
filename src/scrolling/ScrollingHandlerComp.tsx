@@ -22,7 +22,7 @@ export default function ScrollingHandlerComp({
                 <i
                     className={
                         'play-to-bottom bi bi-chevron-double-down pointer ' +
-                        'app-low-hover-visible'
+                        'app-low-hover-visible-1'
                     }
                     style={{
                         width: '45px',
@@ -38,7 +38,7 @@ export default function ScrollingHandlerComp({
             <i
                 className={
                     `${TO_THE_TOP_CLASSNAME} bi bi-arrow-up-circle ` +
-                    'app-low-hover-visible'
+                    'app-low-hover-visible-1'
                 }
                 title="Scroll to the top"
                 style={{

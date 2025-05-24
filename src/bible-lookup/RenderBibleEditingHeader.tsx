@@ -20,7 +20,10 @@ export default function RenderBibleEditingHeader() {
     const foundBibleItem = editingResult?.result.bibleItem ?? null;
     return (
         <div
-            className="card-header bg-transparent border-success"
+            className={
+                'card-header bg-transparent border-success ' +
+                'app-top-hover-motion-1'
+            }
             style={fontSizeToHeightStyle(fontSize)}
         >
             <div className="d-flex w-100 h-100">
@@ -34,11 +37,11 @@ export default function RenderBibleEditingHeader() {
                     }}
                 />
                 {foundBibleItem === null ? null : (
-                    <div>
+                    <div className="app-low-hover-display-1">
                         <RenderActionButtonsComp bibleItem={foundBibleItem} />
                     </div>
                 )}
-                <div>
+                <div className="app-low-hover-display-0">
                     {viewController.isAlone ? null : (
                         <button
                             className="btn-close"

@@ -20,7 +20,6 @@ export default function BibleRefRenderFoundItemComp({
         return <div>Loading...</div>;
     }
     if (data === null) {
-        console.log(itemInfo);
         return (
             <div
                 className="w-100 app-border-white-round my-2 p-2 pointer"
