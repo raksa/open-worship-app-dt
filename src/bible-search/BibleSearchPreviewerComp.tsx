@@ -22,14 +22,16 @@ export default function BibleSearchPreviewerComp() {
     );
     return (
         <div className="card w-100 h-100 overflow-hidden d-flex flex-column">
-            <TabRenderComp<TabType>
-                tabs={tabTypeList.map(([type, name]) => {
-                    return [type, name];
-                })}
-                activeTab={tabType}
-                setActiveTab={setTabType}
-                className="card-header"
-            />
+            <div className="card-header">
+                <TabRenderComp<TabType>
+                    tabs={tabTypeList.map(([type, name]) => {
+                        return [type, name];
+                    })}
+                    activeTab={tabType}
+                    setActiveTab={setTabType}
+                    className="card-header"
+                />
+            </div>
             <div className="card-body">
                 {tabTypeList.map(([type, _, target]) => {
                     return genTabBody<TabType>(tabType, [type, target]);

@@ -1,7 +1,7 @@
 import { useGetBibleRef } from './bibleRefsHelpers';
-import RenderFoundItemComp from './RenderFoundItemComp';
+import BibleRefRenderFoundItemComp from './BibleRefRenderFoundItemComp';
 
-export default function RefItemRendererComp({
+export default function BibleRefItemRendererComp({
     bibleKey,
     bookKey,
     chapter,
@@ -28,7 +28,7 @@ export default function RefItemRendererComp({
             {bibleRef.map((items, i) => {
                 return items.map((item, j) => {
                     return (
-                        <RenderFoundItemComp
+                        <BibleRefRenderFoundItemComp
                             key={item.text + i + j}
                             bibleKey={bibleKey}
                             bibleVersesKey={item.text}

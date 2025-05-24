@@ -1,8 +1,8 @@
 import BibleItem from '../bible-list/BibleItem';
 import { useAppStateAsync } from '../helper/debuggerHelpers';
-import RefItemRendererComp from './RefItemRendererComp';
+import BibleRefItemRendererComp from './BibleRefItemRendererComp';
 
-export default function RefRendererComp({
+export default function BibleRefRendererComp({
     bibleItem,
 }: Readonly<{
     bibleItem: BibleItem;
@@ -22,7 +22,7 @@ export default function RefRendererComp({
             </h4>
             {arr.map((verse, i) => {
                 return (
-                    <RefItemRendererComp
+                    <BibleRefItemRendererComp
                         key={verse}
                         bibleKey={bibleItem.bibleKey}
                         bookKey={book}

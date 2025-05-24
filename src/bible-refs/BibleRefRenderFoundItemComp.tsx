@@ -1,10 +1,11 @@
 import { BibleDirectViewTitleComp } from '../bible-reader/BibleViewExtra';
 import { useLookupBibleItemControllerContext } from '../bible-reader/LookupBibleItemController';
 import { handleClicking } from '../bible-search/bibleFindHelpers';
+import { handleDragStart } from '../helper/dragHelpers';
 import { useAppPromise } from '../helper/helpers';
 import { BibleRefType, breakItem } from './bibleRefsHelpers';
 
-export default function RenderFoundItemComp({
+export default function BibleRefRenderFoundItemComp({
     bibleKey,
     bibleVersesKey,
     itemInfo,
@@ -33,6 +34,10 @@ export default function RenderFoundItemComp({
     return (
         <div
             className="w-100 app-border-white-round my-2 p-2 pointer"
+            draggable
+            onDragStart={(event) => {
+                handleDragStart(event, bibleItem);
+            }}
             onClick={(event) => {
                 handleClicking(event, viewController, bibleItem, true);
             }}

@@ -1,5 +1,6 @@
 import { BibleDirectViewTitleComp } from '../bible-reader/BibleViewExtra';
 import { useLookupBibleItemControllerContext } from '../bible-reader/LookupBibleItemController';
+import { handleDragStart } from '../helper/dragHelpers';
 import { useAppPromise } from '../helper/helpers';
 import { useBibleFindController } from './BibleFindController';
 import { breakItem, handleClicking } from './bibleFindHelpers';
@@ -30,6 +31,10 @@ function RenderFoundItemComp({
     return (
         <div
             className="w-100 app-border-white-round my-2 p-2 pointer"
+            draggable
+            onDragStart={(event) => {
+                handleDragStart(event, bibleItem);
+            }}
             title="shift + click to append"
             onClick={(event) => {
                 handleClicking(event, viewController, bibleItem);
