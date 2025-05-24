@@ -20,6 +20,7 @@ import {
     useLookupBibleItemControllerContext,
 } from '../bible-reader/LookupBibleItemController';
 import { useMemo } from 'react';
+import { useBibleItemsViewControllerContext } from '../bible-reader/BibleItemsViewController';
 
 const presenterEventMapper: KeyboardEventMapper = {
     allControlKey: ['Ctrl', 'Shift'],
@@ -39,7 +40,7 @@ export default function RenderActionButtonsComp({
             return { ...ctrlShiftMetaKeys, key };
         });
     }, []);
-    const viewController = useLookupBibleItemControllerContext();
+    const viewController = useBibleItemsViewControllerContext();
     useKeyboardRegistering(
         eventMaps,
         (event) => {

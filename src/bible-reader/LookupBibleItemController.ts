@@ -378,7 +378,7 @@ export function useLookupBibleItemControllerContext() {
     const viewController = useBibleItemsViewControllerContext();
     if (viewController instanceof LookupBibleItemController === false) {
         throw new Error(
-            'useBibleLookupViewControllerContext must be used within a' +
+            'useLookupBibleItemControllerContext must be used within a' +
                 ' BibleItemViewControllerContext',
         );
     }
