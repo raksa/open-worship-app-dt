@@ -12,6 +12,7 @@ import { genShowOnScreensContextMenu } from '../others/FileItemHandlerComp';
 import ScreenBibleManager from '../_screen/managers/ScreenBibleManager';
 import LookupBibleItemController from '../bible-reader/LookupBibleItemController';
 import { genContextMenuItemIcon } from '../context-menu/AppContextMenuComp';
+import { attachBackgroundManager } from '../others/AttachBackgroundManager';
 
 export type BibleItemType = {
     id: number;
@@ -111,6 +112,12 @@ export async function openBibleItemContextMenu(
             onSelect: () => {
                 bible.deleteItemAtIndex(index);
                 bible.save();
+                if (bibleItem.filePath !== undefined) {
+                    attachBackgroundManager.detachBackground(
+                        bibleItem.filePath,
+                        bibleItem.id.toString(),
+                    );
+                }
             },
         },
     ];

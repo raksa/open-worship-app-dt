@@ -6,10 +6,9 @@ export async function applyAttachBackground(
     filePath: string,
     id: string,
 ) {
-    const droppedData = await attachBackgroundManager.getAttachedBackground(
-        filePath,
-        id,
-    );
+    const droppedData =
+        (await attachBackgroundManager.getAttachedBackground(filePath, id)) ??
+        (await attachBackgroundManager.getAttachedBackground(filePath));
     if (droppedData === null) {
         return;
     }

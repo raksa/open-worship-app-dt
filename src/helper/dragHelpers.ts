@@ -68,9 +68,10 @@ async function deserializeDragData({
 
 export async function onDropHandling(
     event: React.DragEvent<HTMLElement>,
-    item: { filePath: string; id: number },
+    item: { filePath: string; id?: number },
 ) {
     event.preventDefault();
+    event.stopPropagation();
     changeDragEventStyle(event, 'opacity', '1');
     const droppedData = await extractDropData(event);
     if (
@@ -84,12 +85,12 @@ export async function onDropHandling(
         await attachBackgroundManager.attachDroppedBackground(
             droppedData,
             item.filePath,
-            item.id.toString(),
+            item.id?.toString(),
         );
     }
 }
 
-export function useAttachedBackgroundData(filePath: string, id: string) {
+export function useAttachedBackgroundData(filePath: string, id?: string) {
     const [droppedData, setDroppedData] = useState<
         DroppedDataType | null | undefined
     >(undefined);
@@ -121,7 +122,7 @@ export function useAttachedBackgroundData(filePath: string, id: string) {
 
 export function genRemovingAttachedBackgroundMenu(
     filePath: string,
-    id: string,
+    id?: string,
 ): ContextMenuItemType[] {
     return [
         {

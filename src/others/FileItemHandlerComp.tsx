@@ -9,7 +9,7 @@ import appProvider from '../server/appProvider';
 import { useFileSourceRefreshEvents } from '../helper/dirSourceHelpers';
 import { showAppConfirm } from '../popup-widget/popupWidgetHelpers';
 import ItemColorNoteComp from './ItemColorNoteComp';
-import { menuTitleRealFile } from '../helper/helpers';
+import { menuTitleRealFile, RECEIVING_DROP_CLASSNAME } from '../helper/helpers';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 const LazyRenderRenamingComp = lazy(() => {
     return import('./RenderRenamingComp');
@@ -153,8 +153,8 @@ export default function FileItemHandlerComp({
     return (
         <li
             className={
-                `list-group-item m-1 ${moreClassName} ` +
-                `${userClassName ?? ''} ${isPointer ? 'pointer' : ''}`
+                `list-group-item m-1 ${moreClassName}` +
+                ` ${userClassName ?? ''} ${isPointer ? 'pointer' : ''}`
             }
             style={{
                 borderRadius: '0.25rem',
@@ -172,18 +172,22 @@ export default function FileItemHandlerComp({
             onDragOver={(event) => {
                 if (onDrop) {
                     event.preventDefault();
-                    event.currentTarget.classList.add('receiving-child');
+                    event.currentTarget.classList.add(RECEIVING_DROP_CLASSNAME);
                 }
             }}
             onDragLeave={(event) => {
                 if (onDrop) {
                     event.preventDefault();
-                    event.currentTarget.classList.remove('receiving-child');
+                    event.currentTarget.classList.remove(
+                        RECEIVING_DROP_CLASSNAME,
+                    );
                 }
             }}
             onDrop={(event) => {
                 if (onDrop) {
-                    event.currentTarget.classList.remove('receiving-child');
+                    event.currentTarget.classList.remove(
+                        RECEIVING_DROP_CLASSNAME,
+                    );
                     onDrop(event);
                 }
             }}

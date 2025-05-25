@@ -7,6 +7,7 @@ import LookupBibleItemController, {
 import { handleError } from '../helper/errorHelpers';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
 import BibleItemsViewController from './BibleItemsViewController';
+import { RECEIVING_DROP_CLASSNAME } from '../helper/helpers';
 
 enum DraggingPosEnum {
     TOP = '-top',
@@ -38,14 +39,14 @@ export function genDraggingClass(event: DragDropEventType) {
     } else if (isBottom) {
         suffix += DraggingPosEnum.BOTTOM;
     }
-    return `receiving-child${suffix}`;
+    return `${RECEIVING_DROP_CLASSNAME}${suffix}`;
 }
 
 export function removeDraggingClass(event: DragDropEventType) {
     const allPos = Object.values(DraggingPosEnum);
     return allPos
         .map((suffix) => {
-            const className = `receiving-child${suffix}`;
+            const className = `${RECEIVING_DROP_CLASSNAME}${suffix}`;
             if (event.currentTarget.classList.contains(className)) {
                 event.currentTarget.classList.remove(className);
                 return suffix;

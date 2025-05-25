@@ -20,6 +20,7 @@ export type AnyObjectType = {
 };
 
 export const APP_FULL_VIEW_CLASSNAME = 'app-full-view';
+export const RECEIVING_DROP_CLASSNAME = 'receiving-data-drop';
 
 export const BIBLE_VERSE_TEXT_TITLE =
     'Click to highlight, double click or ' + 'Alt + click to bring to view';

@@ -1,4 +1,4 @@
-import { lazy, useState } from 'react';
+import React, { lazy, useState } from 'react';
 
 import FileItemHandlerComp from '../others/FileItemHandlerComp';
 import FileSource from '../helper/FileSource';
@@ -11,6 +11,12 @@ import { moveBibleItemTo } from './bibleHelpers';
 import { copyToClipboard } from '../server/appHelpers';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
+import {
+    genRemovingAttachedBackgroundMenu,
+    onDropHandling,
+} from '../helper/dragHelpers';
+import { attachBackgroundManager } from '../others/AttachBackgroundManager';
+import { useAttachedBackgroundElement } from './BibleItemRenderComp';
 
 const LazyRenderBibleItemsComp = lazy(() => {
     return import('./RenderBibleItemsComp');
@@ -18,6 +24,11 @@ const LazyRenderBibleItemsComp = lazy(() => {
 
 function genContextMenu(
     bible: Bible | null | undefined,
+    {
+        isAttachedBackgroundElement,
+    }: Readonly<{
+        isAttachedBackgroundElement: boolean;
+    }>,
 ): ContextMenuItemType[] {
     if (!bible) {
         return [];
@@ -57,6 +68,9 @@ function genContextMenu(
                 moveBibleItemTo(event, bible);
             },
         },
+        ...(isAttachedBackgroundElement
+            ? genRemovingAttachedBackgroundMenu(bible.filePath)
+            : []),
     ];
 }
 
@@ -67,6 +81,7 @@ export default function BibleFileComp({
     index: number;
     filePath: string;
 }>) {
+    const attachedBackgroundElement = useAttachedBackgroundElement(filePath);
     const [data, setData] = useState<Bible | null | undefined>(null);
     useAppEffectAsync(
         async (methodContext) => {
@@ -79,7 +94,12 @@ export default function BibleFileComp({
         { setData },
     );
     const handlerChildRendering = (bible: AppDocumentSourceAbs) => {
-        return <BiblePreview bible={bible as Bible} />;
+        return (
+            <BiblePreview
+                bible={bible as Bible}
+                attachedBackgroundElement={attachedBackgroundElement}
+            />
+        );
     };
     const handleReloading = () => {
         setData(null);
@@ -95,35 +115,53 @@ export default function BibleFileComp({
             renderChild={handlerChildRendering}
             isDisabledColorNote
             userClassName={`p-0 ${data?.isOpened ? 'flex-fill' : ''}`}
-            contextMenuItems={genContextMenu(data)}
+            contextMenuItems={genContextMenu(data, {
+                isAttachedBackgroundElement: !!attachedBackgroundElement,
+            })}
             isSelected={!!data?.isOpened}
+            onDrop={(event) => {
+                onDropHandling(event, {
+                    filePath,
+                });
+            }}
+            onTrashed={() => {
+                attachBackgroundManager.deleteMetaDataFile(filePath);
+            }}
         />
     );
 }
 
-function BiblePreview({ bible }: Readonly<{ bible: Bible }>) {
+function BiblePreview({
+    bible,
+    attachedBackgroundElement,
+}: Readonly<{ bible: Bible; attachedBackgroundElement: React.ReactNode }>) {
     const fileSource = FileSource.getInstance(bible.filePath);
     return (
         <div className="accordion accordion-flush py-1">
             <div
-                className="accordion-header pointer"
+                className="accordion-header pointer d-flex"
                 onClick={() => {
                     bible.setIsOpened(!bible.isOpened);
                 }}
             >
-                <i
-                    className={`bi ${
-                        bible.isOpened ? 'bi-chevron-down' : 'bi-chevron-right'
-                    }`}
-                />
-                <span className="w-100 text-center">
+                <div className="flex-fill">
                     <i
-                        className={`bi bi-book${
-                            bible.isOpened ? '-fill' : ''
-                        } px-1`}
+                        className={`bi ${
+                            bible.isOpened
+                                ? 'bi-chevron-down'
+                                : 'bi-chevron-right'
+                        }`}
                     />
-                    {fileSource.name}
-                </span>
+                    <span className="w-100 text-center">
+                        <i
+                            className={`bi bi-book${
+                                bible.isOpened ? '-fill' : ''
+                            } px-1`}
+                        />
+                        {fileSource.name}
+                    </span>
+                </div>
+                {attachedBackgroundElement}
             </div>
             <div
                 className={`accordion-collapse collapse ${
