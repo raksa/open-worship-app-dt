@@ -132,8 +132,9 @@ export async function renderScreenBibleManager(
     const screenViewData = screenBibleManager.screenViewData;
     if (screenViewData === null) {
         if (div.lastChild !== null) {
-            const targetDiv = div.lastChild as HTMLDivElement;
-            targetDiv.remove();
+            Array.from(div.children).forEach((child) => {
+                child.remove();
+            });
         }
         div.style.pointerEvents = 'none';
         return;
