@@ -84,7 +84,7 @@ export default function BibleViewComp({
             id={`uuid-${uuid}`}
             className={
                 'bible-view card flex-fill w-100 h-100 app-top-hover-motion-0' +
-                (isEditing ? ' highlight-selected ' : '')
+                (isEditing ? ' app-highlight-selected ' : '')
             }
             style={{ minWidth: '30%' }}
             onDragOver={(event) => {

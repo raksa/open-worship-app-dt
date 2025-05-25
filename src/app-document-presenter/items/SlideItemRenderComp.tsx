@@ -114,7 +114,7 @@ export function toClassNameHighlight(
     const presenterCN =
         appProvider.isPageEditor || selectedList.length == 0
             ? ''
-            : 'highlight-selected';
+            : 'app-highlight-selected';
     return {
         selectedList,
         activeCN,

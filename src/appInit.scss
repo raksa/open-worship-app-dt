@@ -35,7 +35,7 @@ body {
     height: $header-height !important;
     overflow: hidden;
 
-    .highlight-border-bottom {
+    .app-highlight-border-bottom {
       border-bottom: 1px solid var(--bs-gray-600);
     }
   }
@@ -208,7 +208,7 @@ body {
     color: $hight-light-color;
   }
 
-  .highlight-selected {
+  .app-highlight-selected {
     border: 1px dashed $hight-light-color;
   }
 

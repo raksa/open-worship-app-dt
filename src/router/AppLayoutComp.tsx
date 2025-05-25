@@ -201,13 +201,13 @@ export default function AppLayoutComp({
                 <TabRenderComp />
                 <div
                     className={
-                        'highlight-border-bottom d-flex' +
+                        'app-highlight-border-bottom d-flex' +
                         ' justify-content-center flex-fill'
                     }
                 >
                     <BibleLookupButtonComp />
                 </div>
-                <div className="highlight-border-bottom">
+                <div className="app-highlight-border-bottom">
                     <SettingButtonComp />
                 </div>
             </div>

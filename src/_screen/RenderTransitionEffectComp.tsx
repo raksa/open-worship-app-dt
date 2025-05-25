@@ -20,7 +20,7 @@ function openContextMenu(event: any, screenEffectManager: ScreenEffectManager) {
                 },
                 childAfter: (
                     <i
-                        className={`${icon} ps-1 ${isSelected ? 'highlight-selected' : ''}`}
+                        className={`${icon} ps-1 ${isSelected ? 'app-highlight-selected' : ''}`}
                     />
                 ),
             };
@@ -46,7 +46,7 @@ export default function RenderTransitionEffectComp({
             }}
         >
             {title}
-            <i className={`${selected[0]} ps-1 'highlight-selected`} />
+            <i className={`${selected[0]} ps-1 'app-highlight-selected`} />
         </button>
     );
 }

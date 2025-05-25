@@ -35,7 +35,7 @@ export default function ScreenPreviewerItemComp({
             screenManager.unregisterEventListener(registeredEvent);
         };
     }, [screenManager]);
-    const selectedCN = screenManager.isSelected ? 'highlight-selected' : '';
+    const selectedCN = screenManager.isSelected ? 'app-highlight-selected' : '';
     const height = Math.ceil(
         width * (screenManagerDim.height / screenManagerDim.width),
     );

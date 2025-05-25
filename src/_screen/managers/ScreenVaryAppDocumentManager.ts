@@ -24,6 +24,7 @@ import {
 import PdfSlide, { PdfSlideType } from '../../app-document-list/PdfSlide';
 import appProvider from '../../server/appProvider';
 import { applyAttachBackground } from './screenBackgroundHelpers';
+import { showSimpleToast } from '../../toast/toastHelpers';
 
 export type ScreenVaryAppDocumentManagerEventType = 'update';
 
@@ -84,6 +85,13 @@ class ScreenVaryAppDocumentManager extends ScreenEventHandler<ScreenVaryAppDocum
     set varyAppDocumentItemData(
         appDocumentItemData: VaryAppDocumentItemScreenDataType | null,
     ) {
+        if (this.screenManagerBase.isLocked) {
+            showSimpleToast(
+                'Screen Manager is locked',
+                'Please unlock the screen manager to change the app document',
+            );
+            return;
+        }
         if (appDocumentItemData !== null && appDocumentItemData.itemJson) {
             applyAttachBackground(
                 this.screenId,

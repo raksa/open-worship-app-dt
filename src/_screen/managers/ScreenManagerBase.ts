@@ -76,7 +76,7 @@ export default class ScreenManagerBase
     }
 
     get isLocked() {
-        return this._isLocked;
+        return appProvider.isPagePresenter && this._isLocked;
     }
 
     set isLocked(isLocked: boolean) {

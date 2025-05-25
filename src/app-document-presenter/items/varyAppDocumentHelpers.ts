@@ -97,7 +97,7 @@ export function handleArrowing(
     event.preventDefault();
     const isLeft = ['ArrowLeft', 'ArrowUp', 'PageUp'].includes(event.key);
     const divSelectedList = document.activeElement.querySelectorAll(
-        `[${DATA_QUERY_KEY}].highlight-selected`,
+        `[${DATA_QUERY_KEY}].app-highlight-selected`,
     );
     const foundList = Array.from(divSelectedList).reduce(
         (

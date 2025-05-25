@@ -60,7 +60,7 @@ export default function RenderColor({
         />
     );
     if (isSelected) {
-        return <span className="highlight-selected">{element}</span>;
+        return <span className="app-highlight-selected">{element}</span>;
     }
     return element;
 }
