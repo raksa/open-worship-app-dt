@@ -4,6 +4,7 @@ import {
     applyToTheTop,
     applyPlayToBottom,
     MoveCheckType,
+    PLAY_TO_BOTTOM_CLASSNAME,
 } from './scrollingHandlerHelpers';
 
 export default function ScrollingHandlerComp({
@@ -21,7 +22,7 @@ export default function ScrollingHandlerComp({
             {shouldSnowPlayToBottom ? (
                 <i
                     className={
-                        'play-to-bottom bi bi-chevron-double-down pointer ' +
+                        `${PLAY_TO_BOTTOM_CLASSNAME} bi bi-chevron-double-down pointer ` +
                         'app-low-hover-visible-1'
                     }
                     style={{

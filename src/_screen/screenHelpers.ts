@@ -17,8 +17,10 @@ import { getValidOnScreen } from './managers/screenManagerBaseHelpers';
 import { VaryAppDocumentItemDataType } from '../app-document-list/appDocumentHelpers';
 import appProvider from '../server/appProvider';
 import {
+    PLAY_TO_BOTTOM_CLASSNAME,
     TO_THE_TOP_CLASSNAME,
     TO_THE_TOP_STYLE_STRING,
+    applyPlayToBottom,
     applyToTheTop,
 } from '../scrolling/scrollingHandlerHelpers';
 
@@ -295,7 +297,7 @@ export function getBibleListOnScreenSetting(): BibleListType {
 
 export function addToTheTop(div: HTMLDivElement) {
     const oldIcon = div.querySelector(`.${TO_THE_TOP_CLASSNAME}`);
-    if (oldIcon) {
+    if (oldIcon !== null) {
         const scrollCallback = (oldIcon as any)._scrollCallback;
         if (scrollCallback !== undefined) {
             div.removeEventListener('scroll', scrollCallback);
@@ -310,6 +312,25 @@ export function addToTheTop(div: HTMLDivElement) {
     target.title = 'Scroll to the top';
     target.src = 'assets/arrow-up-circle.png';
     target.style.position = 'fixed';
+    target.style.bottom = '80px';
     div.appendChild(target);
     applyToTheTop(target);
+}
+
+export function addPlayToBottom(div: HTMLDivElement) {
+    const oldIcon = div.querySelector(`.${PLAY_TO_BOTTOM_CLASSNAME}`);
+    if (oldIcon !== null) {
+        return;
+    }
+    const style = document.createElement('style');
+    style.innerHTML = TO_THE_TOP_STYLE_STRING;
+    div.appendChild(style);
+    const target = document.createElement('img');
+    target.className = PLAY_TO_BOTTOM_CLASSNAME;
+    target.title = 'Play to bottom';
+    target.src = 'assets/chevron-double-down.png';
+    target.style.position = 'fixed';
+    target.style.bottom = '0px';
+    div.appendChild(target);
+    applyPlayToBottom(target);
 }

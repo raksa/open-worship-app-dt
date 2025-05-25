@@ -8,7 +8,11 @@ import bibleScreenHelper from './bibleScreenHelpers';
 import ScreenBibleManager from './managers/ScreenBibleManager';
 import { showAppAlert } from '../popup-widget/popupWidgetHelpers';
 import { getAllLocalBibleInfoList } from '../helper/bible-helpers/bibleDownloadHelpers';
-import { addToTheTop, BibleItemDataType } from './screenHelpers';
+import {
+    addPlayToBottom,
+    addToTheTop,
+    BibleItemDataType,
+} from './screenHelpers';
 import { getDisplayByScreenId } from './managers/screenHelpers';
 import { BibleItemType } from '../bible-list/bibleItemHelpers';
 import { cloneJson } from '../helper/helpers';
@@ -190,6 +194,7 @@ export async function renderScreenBibleManager(
     screenBibleManager.renderScroll(true);
     screenBibleManager.renderSelectedIndex();
     addToTheTop(div);
+    addPlayToBottom(div);
 }
 
 export async function bibleItemToScreenViewData(bibleItems: BibleItem[]) {
