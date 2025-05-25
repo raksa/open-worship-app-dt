@@ -72,6 +72,27 @@ function genShadow(prefix: string, color1: string, color2: string) {
     return htmlString;
 }
 
+function clickListener(event: any) {
+    const target = event.currentTarget as HTMLDivElement;
+    ScreenBibleManager.applyTextStyle({
+        textShadow: target.style.textShadow,
+        color: target.style.color as AppColorType,
+    });
+}
+function checkRendered(container: HTMLDivElement) {
+    const divList =
+        container.querySelectorAll<HTMLDivElement>('.ow-outline-demo');
+    const listenList = Array.from(divList).map((child) => {
+        child.addEventListener('click', clickListener);
+        return { child, listener: clickListener };
+    });
+    return () => {
+        listenList.forEach(({ child, listener }) => {
+            child.removeEventListener('click', listener);
+        });
+    };
+}
+
 export default function TextShadow() {
     const [color] = useStylingColor();
     useAppEffect(() => {
@@ -107,6 +128,11 @@ export default function TextShadow() {
             style={{ maxHeight: '200px', overflowY: 'auto' }}
         >
             <div
+                ref={(element) => {
+                    if (element) {
+                        return checkRendered(element);
+                    }
+                }}
                 className="text-shadow"
                 dangerouslySetInnerHTML={{
                     __html: htmlColorText,
