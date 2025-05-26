@@ -213,9 +213,13 @@ class LookupBibleItemController extends BibleItemsViewController {
                 inputText,
             );
             if (editingResult.result.bibleItem !== null) {
-                editingResult.result.bibleItem = FoundBibleItem.fromJson(
-                    editingResult.result.bibleItem.toJson(),
-                );
+                const newFoundBibleItem = (editingResult.result.bibleItem =
+                    FoundBibleItem.fromJson(
+                        editingResult.result.bibleItem.toJson(),
+                    ));
+                newFoundBibleItem.toTitle().then((title) => {
+                    attemptAddingHistory(newFoundBibleItem.bibleKey, title);
+                });
             }
             await editingResultCacher.set(cachedKey, editingResult);
             return this.syncFoundBibleItem(editingResult);
