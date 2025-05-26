@@ -63,6 +63,12 @@ class EditingBibleItem extends BibleItem {
 }
 
 class FoundBibleItem extends BibleItem {
+    get bibleKey() {
+        return super.bibleKey;
+    }
+    set bibleKey(_bibleKey: string) {
+        throw new Error('Read-only bibleKey');
+    }
     get target() {
         return super.target;
     }
