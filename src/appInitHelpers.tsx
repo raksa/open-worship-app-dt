@@ -5,7 +5,7 @@ import './others/bootstrap-override.scss';
 import './others/scrollbar.scss';
 
 import { showAppConfirm } from './popup-widget/popupWidgetHelpers';
-import KeyboardEventListener, {
+import {
     PlatformEnum,
     useKeyboardRegistering,
 } from './event/KeyboardEventListener';
@@ -29,10 +29,14 @@ import { getSetting, setSetting } from './helper/settingHelpers';
 import { unlocking } from './server/appHelpers';
 import { applyFontFamily } from './others/LanguageWrapper';
 import {
-    APP_FULL_VIEW_CLASSNAME,
-    MutationType,
-    onDomChange,
+    bringDomToCenterView,
+    HIGHLIGHT_SELECTED_CLASSNAME,
 } from './helper/helpers';
+import {
+    handleClassNameAction,
+    handleFullWidgetView,
+    onDomChange,
+} from './helper/domHelpers';
 
 const ERROR_DATETIME_SETTING_NAME = 'error-datetime-setting';
 const ERROR_DURATION = 1000 * 10; // 10 seconds;
@@ -154,29 +158,19 @@ export function RenderApp({
     );
 }
 
-function handleFullWidgetView(element: Node, type: MutationType) {
-    if (
-        type !== 'attr-modified' ||
-        element instanceof HTMLElement === false ||
-        !element.classList.contains(APP_FULL_VIEW_CLASSNAME)
-    ) {
-        return;
-    }
-    const registeredEvents = KeyboardEventListener.registerEventListener(
-        [KeyboardEventListener.toEventMapperKey({ key: 'Escape' })],
-        (event: KeyboardEvent) => {
-            event.stopPropagation();
-            event.preventDefault();
-            KeyboardEventListener.unregisterEventListener(registeredEvents);
-            element.classList.remove(APP_FULL_VIEW_CLASSNAME);
-        },
-    );
-}
-
 export async function main(children: React.ReactNode) {
     await initApp();
     onDomChange(applyFontFamily);
     onDomChange(handleFullWidgetView);
+    onDomChange(
+        handleClassNameAction.bind(
+            null,
+            HIGHLIGHT_SELECTED_CLASSNAME,
+            (target) => {
+                bringDomToCenterView(target as HTMLDivElement);
+            },
+        ),
+    );
     const locale = getCurrentLocale();
     const fontFamily = await getFontFamily(locale);
     if (fontFamily) {

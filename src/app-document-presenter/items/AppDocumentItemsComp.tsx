@@ -58,7 +58,7 @@ function useAppDocumentItems() {
         selectedAppDocument.filePath,
     );
 
-    const arrows: KeyboardType[] = [...allArrows, 'PageUp', 'PageDown'];
+    const arrows: KeyboardType[] = [...allArrows, 'PageUp', 'PageDown', ' '];
     useKeyboardRegistering(
         arrows.map((key) => {
             return { key };

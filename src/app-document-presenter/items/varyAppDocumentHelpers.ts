@@ -4,7 +4,6 @@ import { getScreenManagerBase } from '../../_screen/managers/screenManagerBaseHe
 import { screenManagerFromBase } from '../../_screen/managers/screenManagerHelpers';
 import { VaryAppDocumentItemType } from '../../app-document-list/appDocumentHelpers';
 import { slidePreviewerMethods } from './AppDocumentPreviewerFooterComp';
-import { bringDomToCenterView } from '../../helper/helpers';
 
 export function handleAppDocumentItemSelecting(
     event: any,
@@ -138,7 +137,7 @@ export function handleArrowing(
     }
     event.preventDefault();
     for (let i = 0; i < foundList.length; i++) {
-        const { item, targetDiv, screenId } = foundList[i];
+        const { item, screenId } = foundList[i];
         const screenManager = screenManagerFromBase(
             getScreenManagerBase(screenId),
         );
@@ -152,7 +151,6 @@ export function handleArrowing(
                     item.filePath,
                     item.toJson(),
                 );
-            bringDomToCenterView(targetDiv);
         }, i * 100);
     }
 }

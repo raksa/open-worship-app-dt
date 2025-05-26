@@ -21,6 +21,7 @@ export type AnyObjectType = {
 
 export const APP_FULL_VIEW_CLASSNAME = 'app-full-view';
 export const RECEIVING_DROP_CLASSNAME = 'receiving-data-drop';
+export const HIGHLIGHT_SELECTED_CLASSNAME = 'app-highlight-selected';
 
 export const BIBLE_VERSE_TEXT_TITLE =
     'Click to highlight, double click or ' + 'Alt + click to bring to view';
@@ -423,33 +424,4 @@ export function checkIsVerticalPartialInvisible(
     const targetTop = targetRect.top + threshold;
     const targetBottom = targetRect.bottom - threshold;
     return targetTop < containerBottom && targetBottom > containerTop;
-}
-
-const callBackListeners = new Set<
-    (element: Node, type: MutationType) => void
->();
-const observer = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
-        if (mutation.type === 'childList') {
-            mutation.addedNodes.forEach((node) => {
-                for (const callback of callBackListeners) {
-                    callback(node, 'added');
-                }
-            });
-        } else if (mutation.type === 'attributes') {
-            for (const callback of callBackListeners) {
-                callback(mutation.target, 'attr-modified');
-            }
-        }
-    });
-});
-observer.observe(document.body, {
-    childList: true,
-    subtree: true,
-    attributes: true,
-});
-export function onDomChange(
-    callback: (element: Node, type: MutationType) => void,
-) {
-    callBackListeners.add(callback);
 }
