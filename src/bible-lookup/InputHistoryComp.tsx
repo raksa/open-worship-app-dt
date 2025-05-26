@@ -127,7 +127,6 @@ export default function InputHistoryComp({
                             );
                         }}
                     >
-                        <small className="flex-fill">{historyText}</small>
                         <small
                             title="Remove"
                             style={{ color: 'red' }}
@@ -141,6 +140,7 @@ export default function InputHistoryComp({
                         >
                             <i className="bi bi-x" />
                         </small>
+                        <small className="flex-fill">{historyText}</small>
                     </button>
                 );
             })}
