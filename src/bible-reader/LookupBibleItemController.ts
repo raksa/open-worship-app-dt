@@ -30,7 +30,6 @@ import { createContext } from 'react';
 import CacheManager from '../others/CacheManager';
 import { unlocking } from '../server/appHelpers';
 import { AnyObjectType } from '../helper/helpers';
-import { BibleItemType } from '../bible-list/bibleItemHelpers';
 import { OptionalPromise } from '../others/otherHelpers';
 
 export const closeEventMapper: EventMapper = {
@@ -61,9 +60,14 @@ class EditingBibleItem extends BibleItem {
     set target(_target: BibleTargetType) {
         throw new Error('target is not available');
     }
-    static fromJson(json: BibleItemType) {
-        this.validate(json);
-        return new EditingBibleItem(json.id, json);
+}
+
+class FoundBibleItem extends BibleItem {
+    get target() {
+        return super.target;
+    }
+    set target(_target: BibleTargetType) {
+        throw new Error('Read-only target');
     }
 }
 
@@ -202,6 +206,11 @@ class LookupBibleItemController extends BibleItemsViewController {
                 this.selectedBibleItem.bibleKey,
                 inputText,
             );
+            if (editingResult.result.bibleItem !== null) {
+                editingResult.result.bibleItem = FoundBibleItem.fromJson(
+                    editingResult.result.bibleItem.toJson(),
+                );
+            }
             await editingResultCacher.set(cachedKey, editingResult);
             return this.syncFoundBibleItem(editingResult);
         });
@@ -371,8 +380,9 @@ class LookupBibleItemController extends BibleItemsViewController {
             );
             return;
         }
-        foundBibleItem.target = nextTarget;
-        const title = await foundBibleItem.toTitle();
+        const newFoundBibleItem = foundBibleItem.clone();
+        newFoundBibleItem.target = nextTarget;
+        const title = await newFoundBibleItem.toTitle();
         this.inputText = title;
     }
 }

@@ -69,10 +69,10 @@ export default class BibleItem
     }
     static fromJson(json: BibleItemType, filePath?: string) {
         this.validate(json);
-        return new BibleItem(json.id, json, filePath);
+        return new this(json.id, json, filePath);
     }
     static fromJsonError(json: BibleItemType, filePath?: string) {
-        const item = new BibleItem(
+        const item = new this(
             -1,
             {
                 id: -1,
