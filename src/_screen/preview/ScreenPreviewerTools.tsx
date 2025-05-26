@@ -6,12 +6,14 @@ const LazyCustomStyleComp = lazy(() => {
     return import('./CustomStyleComp');
 });
 
-export default function ScreenPreviewerTools() {
+export default function ScreenPreviewerTools({
+    onClose,
+}: Readonly<{
+    onClose: () => void;
+}>) {
     return (
-        <div>
-            <AppSuspenseComp>
-                <LazyCustomStyleComp />
-            </AppSuspenseComp>
-        </div>
+        <AppSuspenseComp>
+            <LazyCustomStyleComp onClose={onClose} />
+        </AppSuspenseComp>
     );
 }

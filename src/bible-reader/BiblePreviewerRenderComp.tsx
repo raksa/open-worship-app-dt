@@ -72,7 +72,7 @@ export default function BiblePreviewerRenderComp() {
                     <Render />
                 </BibleViewFontSizeContext>
             </div>
-            <div className="auto-hide auto-hide-bottom">
+            <div className="app-auto-hide app-auto-hide-bottom">
                 <div className="d-flex w-100">
                     <div className="flex-fill d-flex">
                         <BibleViewSettingComp

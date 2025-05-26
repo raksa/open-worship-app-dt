@@ -7,7 +7,7 @@ export const defaultRangeSize = {
     max: 20,
     step: 1,
 };
-export default function MiniScreenFooter({
+export default function MiniScreenFooterComp({
     previewSizeScale,
     setPreviewSizeScale,
     isShowingTools,
@@ -19,7 +19,7 @@ export default function MiniScreenFooter({
     isShowingTools: boolean;
 }>) {
     return (
-        <div className="card-footer w-100">
+        <div className="card-footer w-100 app-auto-hide app-auto-hide-bottom">
             <div className="d-flex w-100 h-100">
                 <div className="row">
                     <div className="col-auto">
@@ -30,7 +30,7 @@ export default function MiniScreenFooter({
                             defaultSize={defaultRangeSize}
                         />
                     </div>
-                    <div className="form-check form-switch col-auto">
+                    <div className="form-check form-switch col-auto app-caught-hover">
                         <label
                             className="form-check-label"
                             htmlFor="screen-previewer-showing-tool"

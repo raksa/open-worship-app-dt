@@ -12,41 +12,44 @@ const LazyTextShadowComp = lazy(() => {
     return import('./TextShadow');
 });
 
-export default function CustomStyleComp() {
-    return (
-        <div className="custom-style card pointer app-border-white-round mt-1">
-            <Body />
-        </div>
-    );
-}
-
 const tabTypeList = [
     ['a', 'Appearance', LazyAppearanceComp],
     ['s', 'Shadow', LazyTextShadowComp],
 ] as const;
 type TabType = (typeof tabTypeList)[number][0];
-function Body() {
+export default function CustomStyleComp({
+    onClose,
+}: Readonly<{
+    onClose: () => void;
+}>) {
     const [tabType, setTabType] = useStateSettingString<TabType>(
         'tull-text-screen-custom-style-tab',
         'a',
     );
-
     return (
-        <div className="card-body">
-            <div className="d-flex">
+        <div className="custom-style card app-border-white-round mt-1">
+            <div className="card-header">
                 <TabRenderComp<TabType>
                     tabs={tabTypeList.map(([type, name]) => {
                         return [type, name];
                     })}
                     activeTab={tabType}
                     setActiveTab={setTabType}
-                    className="flex-fill"
                 />
+                <div
+                    className="app-caught-hover"
+                    style={{ position: 'absolute', top: '0', right: '0' }}
+                    onClick={onClose}
+                >
+                    <i className="bi bi-x-lg" style={{ color: 'red' }} />
+                </div>
             </div>
-            <div className="custom-style-body p-2">
-                {tabTypeList.map(([type, _, target]) => {
-                    return genTabBody<TabType>(tabType, [type, target]);
-                })}
+            <div className="card-body">
+                <div className="custom-style-body p-2">
+                    {tabTypeList.map(([type, _, target]) => {
+                        return genTabBody<TabType>(tabType, [type, target]);
+                    })}
+                </div>
             </div>
         </div>
     );
