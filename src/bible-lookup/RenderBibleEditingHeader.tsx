@@ -1,4 +1,4 @@
-import RenderActionButtonsComp from './RenderActionButtonsComp';
+import RenderEditingActionButtonsComp from './RenderEditingActionButtonsComp';
 import { RenderTitleMaterialComp } from '../bible-reader/BibleViewExtra';
 import {
     fontSizeToHeightStyle,
@@ -38,7 +38,9 @@ export default function RenderBibleEditingHeader() {
                 />
                 {foundBibleItem === null ? null : (
                     <div className="app-low-hover-display-1">
-                        <RenderActionButtonsComp bibleItem={foundBibleItem} />
+                        <RenderEditingActionButtonsComp
+                            bibleItem={foundBibleItem}
+                        />
                     </div>
                 )}
                 <div className="app-low-hover-display-0">

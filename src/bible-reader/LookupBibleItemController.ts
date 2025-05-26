@@ -1,7 +1,7 @@
 import BibleItem from '../bible-list/BibleItem';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
-import { genFoundBibleItemContextMenu } from '../bible-lookup/RenderActionButtonsComp';
+import { genFoundBibleItemContextMenu } from '../bible-lookup/RenderEditingActionButtonsComp';
 import { closeCurrentEditingBibleItem } from './readBibleHelpers';
 import { EventMapper } from '../event/KeyboardEventListener';
 import {
