@@ -3,7 +3,7 @@ import { BrowserWindow } from 'electron';
 import { AnyObjectType, channels } from './electronEventListener';
 import { genRoutProps } from './protocolHelpers';
 import { htmlFiles } from './fsServe';
-import { isSecured } from './electronHelpers';
+import { attemptClosing, isSecured } from './electronHelpers';
 
 const routeProps = genRoutProps(htmlFiles.screen);
 const cache = new Map<string, ElectronScreenController>();
@@ -55,9 +55,7 @@ export default class ElectronScreenController {
     }
 
     close() {
-        if (!this.win.isDestroyed()) {
-            this.win.close();
-        }
+        attemptClosing(this.win);
     }
 
     setDisplay(display: Electron.Display) {
@@ -103,7 +101,7 @@ export default class ElectronScreenController {
 
     static closeAll() {
         cache.forEach((screenController) => {
-            screenController.close();
+            attemptClosing(screenController);
             screenController.destroyInstance();
         });
     }

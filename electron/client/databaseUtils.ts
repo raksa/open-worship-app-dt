@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { dirname, join, resolve } from 'node:path';
 import { copyFileSync, existsSync } from 'node:fs';
-
-import { isWindows, isMac, isArm64 } from '../electronHelpers';
+import { isWindows, isMac, isArm64, attemptClosing } from '../electronHelpers';
 
 // https://nodejs.org/docs/latest-v22.x/api/sqlite.html
 
@@ -48,7 +47,7 @@ class SQLiteDatabase {
         return query.all();
     }
     close() {
-        this.database.close();
+        attemptClosing(this.database);
     }
 }
 

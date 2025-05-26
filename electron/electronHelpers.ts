@@ -12,3 +12,13 @@ export const isArm64 = process.arch === 'arm64';
 export function tarExtract(filePath: string, outputDir: string) {
     return (tarX as any)({ file: filePath, cwd: outputDir });
 }
+
+interface ClosableInt {
+    close: () => void;
+}
+
+export function attemptClosing(win?: ClosableInt | null) {
+    try {
+        win?.close();
+    } catch (_error) {}
+}

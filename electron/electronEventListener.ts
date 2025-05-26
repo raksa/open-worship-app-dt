@@ -2,7 +2,7 @@ import electron, { FileFilter, shell } from 'electron';
 import fontList from 'font-list';
 
 import ElectronAppController from './ElectronAppController';
-import { tarExtract } from './electronHelpers';
+import { attemptClosing, tarExtract } from './electronHelpers';
 import ElectronScreenController from './ElectronScreenController';
 import { officeFileToPdf } from './electronOfficeHelpers';
 import { getPagesCount, pdfToImages } from './pdfToImagesHelpers';
@@ -102,7 +102,7 @@ export function initEventScreen(appController: ElectronAppController) {
         if (screenController === null) {
             return;
         }
-        screenController.close();
+        attemptClosing(screenController);
         screenController.destroyInstance();
     });
     ipcMain.on('app:hide-all-screens', () => {
@@ -173,7 +173,7 @@ export function initEventFinder(appController: ElectronAppController) {
     });
 
     ipcMain.on('finder:app:close-finder', () => {
-        appController.finderController.close();
+        attemptClosing(appController.finderController);
     });
 
     const mainWinWebContents = appController.mainWin.webContents;

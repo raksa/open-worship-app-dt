@@ -2,7 +2,7 @@ import { BrowserWindow } from 'electron';
 
 import { genRoutProps } from './protocolHelpers';
 import { htmlFiles } from './fsServe';
-import { isSecured } from './electronHelpers';
+import { attemptClosing, isSecured } from './electronHelpers';
 
 const routeProps = genRoutProps(htmlFiles.finder);
 export default class ElectronFinderController {
@@ -32,7 +32,7 @@ export default class ElectronFinderController {
             this.mainWin = mainWin;
             this.win = this.createFinderWindow(mainWin);
             this.win.on('closed', () => {
-                this.close();
+                attemptClosing(this);
             });
         } else {
             this.win.show();
@@ -40,9 +40,7 @@ export default class ElectronFinderController {
     }
     close() {
         this.mainWin?.webContents.stopFindInPage('clearSelection');
-        if (!this.win?.isDestroyed()) {
-            this.win?.close();
-        }
+        attemptClosing(this.win);
         this.mainWin = null;
         this.win = null;
     }
