@@ -27,7 +27,7 @@ export default function ToolCanvasItemsComp() {
                 return (
                     <div
                         key={canvasItem.id}
-                        className="card pointer align-self-start m-2"
+                        className="card app-caught-hover-pointer align-self-start m-2"
                         style={{
                             maxWidth: '200px',
                             border: isSelected ? '2px dashed green' : undefined,

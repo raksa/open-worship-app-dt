@@ -139,7 +139,7 @@ function BiblePreview({
     return (
         <div className="accordion accordion-flush py-1">
             <div
-                className="accordion-header pointer d-flex"
+                className="accordion-header app- d-flex"
                 onClick={() => {
                     bible.setIsOpened(!bible.isOpened);
                 }}

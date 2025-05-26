@@ -80,7 +80,7 @@ export default function ItemColorNoteComp({
 
     return (
         <span
-            className={`color-note pointer ${colorNote ? 'active' : ''}`}
+            className={`color-note app-caught-hover-pointer ${colorNote ? 'active' : ''}`}
             title={title}
             onClick={handleColorSelecting}
         >

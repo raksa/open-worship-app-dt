@@ -38,7 +38,7 @@ export default function AppearanceComp() {
                 </button>
             </div>
             <input
-                className="float-end pointer"
+                className="float-end app-caught-hover-pointer"
                 type="color"
                 onChange={(event) => {
                     setColor(event.target.value as AppColorType);

@@ -22,8 +22,9 @@ export default function ScrollingHandlerComp({
             {shouldSnowPlayToBottom ? (
                 <i
                     className={
-                        `${PLAY_TO_BOTTOM_CLASSNAME} bi bi-chevron-double-down pointer ` +
-                        'app-low-hover-visible-1'
+                        `${PLAY_TO_BOTTOM_CLASSNAME} bi bi-chevron-double-down` +
+                        ' app-caught-hover-pointer' +
+                        ' app-low-hover-visible-1'
                     }
                     style={{
                         width: '45px',

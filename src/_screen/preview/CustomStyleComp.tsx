@@ -37,7 +37,7 @@ export default function CustomStyleComp({
                     setActiveTab={setTabType}
                 />
                 <div
-                    className="app-caught-hover"
+                    className="app-caught-hover-pointer"
                     style={{ position: 'absolute', top: '0', right: '0' }}
                     onClick={onClose}
                 >

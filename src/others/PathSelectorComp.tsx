@@ -29,7 +29,7 @@ export default function PathSelectorComp({
     return (
         <div className="path-selector w-100">
             <div
-                className="d-flex path-previewer pointer"
+                className="d-flex path-previewer app-caught-hover-pointer"
                 title={(isShowingEditor ? 'Hide' : 'Show') + ' path editor'}
                 onClick={() => {
                     setShowing(!showing);

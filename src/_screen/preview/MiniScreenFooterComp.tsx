@@ -30,7 +30,7 @@ export default function MiniScreenFooterComp({
                             defaultSize={defaultRangeSize}
                         />
                     </div>
-                    <div className="form-check form-switch col-auto app-caught-hover">
+                    <div className="form-check form-switch col-auto app-caught-hover-pointer">
                         <label
                             className="form-check-label"
                             htmlFor="screen-previewer-showing-tool"

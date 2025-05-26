@@ -31,7 +31,7 @@ function NewLineSettingComp() {
                 Should new Line:
             </label>
             <input
-                className="form-check-input pointer"
+                className="form-check-input app-caught-hover-pointer"
                 type="checkbox"
                 id="new-line-setting"
                 checked={shouldNewLine}

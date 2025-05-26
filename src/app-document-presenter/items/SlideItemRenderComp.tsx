@@ -227,7 +227,10 @@ export default function SlideItemRenderComp({
     };
     return (
         <div
-            className={`data-vary-app-document-item card pointer ${activeCN} ${presenterCN}`}
+            className={
+                'data-vary-app-document-item card' +
+                ` app-caught-hover-pointer ${activeCN} ${presenterCN}`
+            }
             ref={setTargetDiv}
             style={{ width: `${width}px` }}
             data-vary-app-document-item-id={item.id}

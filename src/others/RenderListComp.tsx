@@ -40,7 +40,7 @@ export default function RenderListComp({
     if (filePaths === undefined) {
         return (
             <div
-                className="alert alert-warning pointer"
+                className="alert alert-warning app-caught-hover-pointer"
                 onClick={() => {
                     dirSource.fireReloadEvent();
                 }}

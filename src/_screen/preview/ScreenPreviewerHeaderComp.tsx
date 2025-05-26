@@ -3,6 +3,7 @@ import MiniScreenClearControlComp from './MiniScreenClearControlComp';
 import ItemColorNoteComp from '../../others/ItemColorNoteComp';
 import { useScreenManagerBaseContext } from '../managers/screenManagerHooks';
 import { useState } from 'react';
+import ShowingScreenIcon from './ShowingScreenIcon';
 
 export default function ScreenPreviewerHeaderComp() {
     const screenManagerBase = useScreenManagerBaseContext();
@@ -26,6 +27,7 @@ export default function ScreenPreviewerHeaderComp() {
                     <MiniScreenClearControlComp />
                 </div>
                 <div className="flex-fill d-flex justify-content-end ms-2">
+                    <ShowingScreenIcon screenId={screenManagerBase.screenId} />
                     <div className="ms-2">
                         <ItemColorNoteComp item={screenManagerBase} />
                     </div>
@@ -33,7 +35,7 @@ export default function ScreenPreviewerHeaderComp() {
                         <i
                             className={
                                 `bi bi-${isLocked ? 'lock-fill' : 'unlock'}` +
-                                ' app-caught-hover'
+                                ' app-caught-hover-pointer'
                             }
                             style={{ color: isLocked ? 'green' : '' }}
                             onClick={() => {

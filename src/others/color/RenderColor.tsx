@@ -46,7 +46,7 @@ export default function RenderColor({
                 showContextMenu(event, color);
             }}
             className={
-                'm-1 color-item pointer' +
+                'm-1 color-item app-caught-hover-pointer' +
                 (isSelected ? ' app-border-white-round' : '')
             }
             style={{

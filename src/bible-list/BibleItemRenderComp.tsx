@@ -174,7 +174,7 @@ export default function BibleItemRenderComp({
 
     return (
         <li
-            className="list-group-item item pointer px-1"
+            className="list-group-item item app-caught-hover-pointer px-1"
             title="Double click to view"
             data-index={index + 1}
             draggable
