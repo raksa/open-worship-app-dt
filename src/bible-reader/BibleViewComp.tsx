@@ -119,7 +119,12 @@ export default function BibleViewComp({
             ) : (
                 <RenderHeaderComp bibleItem={bibleItem} />
             )}
-            <div className="card-body app-top-hover-motion-1">
+            <div
+                className="card-body app-top-hover-motion-1"
+                style={{
+                    paddingBottom: '60px',
+                }}
+            >
                 {isEditing ? (
                     <RenderBibleLookupBodyComp />
                 ) : (
