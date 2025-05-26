@@ -18,13 +18,13 @@ const LazyRenderRenamingComp = lazy(() => {
 export const genCommonMenu = (filePath: string): ContextMenuItemType[] => {
     return [
         {
-            menuTitle: 'Copy Path to Clipboard',
+            menuElement: 'Copy Path to Clipboard',
             onSelect: () => {
                 copyToClipboard(filePath);
             },
         },
         {
-            menuTitle: menuTitleRealFile,
+            menuElement: menuTitleRealFile,
             onSelect: () => {
                 showExplorer(filePath);
             },
@@ -39,19 +39,19 @@ function genContextMenu(
 ): ContextMenuItemType[] {
     return [
         {
-            menuTitle: 'Duplicate',
+            menuElement: 'Duplicate',
             onSelect: () => {
                 FileSource.getInstance(filePath).duplicate();
             },
         },
         {
-            menuTitle: 'Rename',
+            menuElement: 'Rename',
             onSelect: () => {
                 setIsRenaming(true);
             },
         },
         {
-            menuTitle: 'Reload',
+            menuElement: 'Reload',
             onSelect: () => {
                 reload();
             },
@@ -65,7 +65,7 @@ export function genTrashContextMenu(
 ): ContextMenuItemType[] {
     return [
         {
-            menuTitle: 'Move to Trash',
+            menuElement: 'Move to Trash',
             onSelect: async () => {
                 const fileSource = FileSource.getInstance(filePath);
                 const isOk = await showAppConfirm(
@@ -90,7 +90,7 @@ export function genShowOnScreensContextMenu(
     }
     return [
         {
-            menuTitle: 'Show on Screens',
+            menuElement: 'Show on Screens',
             onSelect: onClick,
         },
     ];

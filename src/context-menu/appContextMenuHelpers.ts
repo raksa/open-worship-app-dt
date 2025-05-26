@@ -13,7 +13,7 @@ import { OptionalPromise } from '../others/otherHelpers';
 export type ContextMenuEventType = MouseEvent;
 export type ContextMenuItemType = {
     id?: string;
-    menuTitle: React.ReactNode | string;
+    menuElement: React.ReactNode | string;
     title?: string;
     onSelect?: (
         event: MouseEvent | KeyboardEvent,

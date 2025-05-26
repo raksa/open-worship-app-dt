@@ -51,11 +51,18 @@ export function showAppContextMenu(
     return { promiseDone: promise, closeMenu };
 }
 
+export const elementDivider = (
+    <hr className="w-100" style={{ padding: 0, margin: 0 }} />
+);
+
 function ContextMenuItemComp({
     item,
 }: Readonly<{
     item: ContextMenuItemType;
 }>) {
+    if (item.menuElement === elementDivider) {
+        return item.menuElement;
+    }
     return (
         <div
             className={
@@ -65,7 +72,7 @@ function ContextMenuItemComp({
             style={item.style ?? {}}
             title={
                 item.title ??
-                (typeof item.menuTitle === 'string' ? item.menuTitle : '')
+                (typeof item.menuElement === 'string' ? item.menuElement : '')
             }
             onClick={(event) => {
                 if (item.disabled) {
@@ -77,7 +84,7 @@ function ContextMenuItemComp({
             }}
         >
             {item.childBefore || null}
-            <div className="app-ellipsis flex-fill">{item.menuTitle}</div>
+            <div className="app-ellipsis flex-fill">{item.menuElement}</div>
             {item.childAfter || null}
         </div>
     );

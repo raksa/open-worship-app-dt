@@ -14,13 +14,13 @@ export default function BoxEditorNormalViewErrorComp() {
                 event.stopPropagation();
                 showAppContextMenu(event, [
                     {
-                        menuTitle: 'Delete',
+                        menuElement: 'Delete',
                         onSelect: () => {
                             canvasController.deleteItem(canvasItem);
                         },
                     },
                     {
-                        menuTitle: 'Copy Error Json',
+                        menuElement: 'Copy Error Json',
                         onSelect: () => {
                             appProvider.browserUtils.copyToClipboard(
                                 JSON.stringify(canvasItem.props),

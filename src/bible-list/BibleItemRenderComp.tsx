@@ -145,7 +145,7 @@ export default function BibleItemRenderComp({
     const handleContextMenuOpening = (event: React.MouseEvent<any>) => {
         const menuItems: ContextMenuItemType[] = [
             {
-                menuTitle: '`Open',
+                menuElement: '`Open',
                 onSelect: (event) => {
                     handleOpening(event, viewController, bibleItem);
                 },

@@ -123,7 +123,7 @@ export async function moveBibleItemTo(
             event,
             targetNames.map((name) => {
                 return {
-                    menuTitle: name,
+                    menuElement: name,
                     onSelect: async () => {
                         const bibleFileSource = FileSource.getInstance(
                             bible.filePath,

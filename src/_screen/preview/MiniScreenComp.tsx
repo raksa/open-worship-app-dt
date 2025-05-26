@@ -31,13 +31,13 @@ import BibleItem from '../../bible-list/BibleItem';
 function openContextMenu(event: any) {
     showAppContextMenu(event, [
         {
-            menuTitle: 'Add New Screen',
+            menuElement: 'Add New Screen',
             onSelect() {
                 genNewScreenManagerBase();
             },
         },
         {
-            menuTitle: 'Refresh Preview',
+            menuElement: 'Refresh Preview',
             onSelect() {
                 getAllScreenManagers().forEach((screenManager) => {
                     screenManager.fireResizeEvent();

@@ -51,7 +51,7 @@ export default function ItemColorNoteComp({
         // unique colors by key
         const items: ContextMenuItemType[] = [
             {
-                menuTitle: 'no color',
+                menuElement: 'no color',
                 disabled: colorNote === null,
                 onSelect: () => {
                     setColorNote1(null);
@@ -59,7 +59,7 @@ export default function ItemColorNoteComp({
             },
             ...colors.map(([name, colorCode]): ContextMenuItemType => {
                 return {
-                    menuTitle: name,
+                    menuElement: name,
                     disabled: colorNote === colorCode,
                     onSelect: () => {
                         setColorNote1(colorCode);

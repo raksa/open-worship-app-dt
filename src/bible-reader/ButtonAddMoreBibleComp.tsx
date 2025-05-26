@@ -13,7 +13,7 @@ export default function ButtonAddMoreBibleComp({
             className="btn btn-info btn-sm"
             disabled={bibleItems.length === 0}
             onClick={(event) => {
-                showBibleOption(event, [], (bibleKey: string) => {
+                showBibleOption(event, (bibleKey: string) => {
                     const newBibleItem = bibleItems[0].clone();
                     newBibleItem.bibleKey = bibleKey;
                     const newBibleItems = [...bibleItems, newBibleItem];

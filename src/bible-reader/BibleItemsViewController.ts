@@ -23,7 +23,10 @@ import {
 import { getLangAsync } from '../lang';
 import { getBibleLocale } from '../helper/bible-helpers/serverBibleHelpers2';
 import { BibleTargetType } from '../bible-list/bibleRenderHelpers';
-import { genContextMenuItemIcon } from '../context-menu/AppContextMenuComp';
+import {
+    elementDivider,
+    genContextMenuItemIcon,
+} from '../context-menu/AppContextMenuComp';
 
 export type UpdateEventType = 'update';
 export const RESIZE_SETTING_NAME = 'bible-previewer-render';
@@ -595,17 +598,20 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
         const langData = await getLangAsync(locale);
         return [
             {
+                menuElement: elementDivider,
+            },
+            {
                 childBefore: genContextMenuItemIcon('vr'),
-                menuTitle: '`Split Horizontal',
+                menuElement: '`Split Horizontal',
                 onSelect: () => {
                     this.addBibleItemLeft(bibleItem, bibleItem);
                 },
                 id: splitHorizontalId,
             },
             {
-                menuTitle: 'Split Horizontal To',
+                menuElement: 'Split Horizontal To',
                 onSelect: (event1: any) => {
-                    showBibleOption(event1, [], (newBibleKey: string) => {
+                    showBibleOption(event1, (newBibleKey: string) => {
                         const newBibleItem = bibleItem.clone();
                         newBibleItem.bibleKey = newBibleKey;
                         this.addBibleItemLeft(bibleItem, newBibleItem);
@@ -614,16 +620,16 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
             },
             {
                 childBefore: genContextMenuItemIcon('hr'),
-                menuTitle: 'Split Vertical',
+                menuElement: 'Split Vertical',
                 onSelect: () => {
                     this.addBibleItemBottom(bibleItem, bibleItem);
                 },
                 id: splitVerticalId,
             },
             {
-                menuTitle: 'Split Vertical To',
+                menuElement: 'Split Vertical To',
                 onSelect: (event2: any) => {
-                    showBibleOption(event2, [], (newBibleKey: string) => {
+                    showBibleOption(event2, (newBibleKey: string) => {
                         const newBibleItem = bibleItem.clone();
                         newBibleItem.bibleKey = newBibleKey;
                         this.addBibleItemBottom(bibleItem, newBibleItem);
@@ -635,7 +641,7 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
                 : []),
             {
                 childBefore: genContextMenuItemIcon('arrows-fullscreen'),
-                menuTitle: 'Toggle Widget Full View',
+                menuElement: 'Toggle Widget Full View',
                 onSelect: () => {
                     document
                         .querySelector(

@@ -20,13 +20,13 @@ function handleDisplayChoosing(
         const bounds = display.bounds;
         const isPrimary = display.id === primaryDisplay.id;
         const isSelected = display.id === displayId;
-        const menuTitle =
+        const menuElement =
             (isSelected ? '*' : '') +
             `${label}(${display.id}): ` +
             `${bounds.width}x${bounds.height}` +
             (isPrimary ? ' (primary)' : '');
         return {
-            menuTitle,
+            menuElement,
             onSelect: () => {
                 screenManagerBase.displayId = display.id;
             },

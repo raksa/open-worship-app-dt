@@ -13,7 +13,7 @@ function openContextMenu(event: any, screenEffectManager: ScreenEffectManager) {
         transitionEffectList.map(([effect, [icon]]) => {
             const isSelected = effect === screenEffectManager.effectType;
             return {
-                menuTitle: effect,
+                menuElement: effect,
                 onSelect: () => {
                     screenEffectManager.effectType =
                         effect as ScreenTransitionEffectType;

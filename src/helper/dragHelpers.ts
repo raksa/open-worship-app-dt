@@ -126,7 +126,7 @@ export function genRemovingAttachedBackgroundMenu(
 ): ContextMenuItemType[] {
     return [
         {
-            menuTitle: 'Remove background',
+            menuElement: 'Remove background',
             onSelect: () => {
                 attachBackgroundManager.detachBackground(filePath, id);
             },

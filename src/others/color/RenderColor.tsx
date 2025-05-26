@@ -8,7 +8,7 @@ import { ContextMenuItemType } from '../../context-menu/appContextMenuHelpers';
 function showContextMenu(event: any, color: AppColorType) {
     const menuItems: ContextMenuItemType[] = [
         {
-            menuTitle: `Copy to '${color}' to clipboard`,
+            menuElement: `Copy to '${color}' to clipboard`,
             onSelect: () => {
                 copyToClipboard(color);
             },

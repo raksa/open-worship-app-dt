@@ -90,14 +90,14 @@ export function showAppDocumentContextMenu(
     });
     const menuItems: ContextMenuItemType[] = [
         {
-            menuTitle: 'Copy',
+            menuElement: 'Copy',
             onSelect: async () => {
                 navigator.clipboard.writeText(slide.clipboardSerialize());
                 showSimpleToast('Copied', 'Slide is copied');
             },
         },
         {
-            menuTitle: 'Duplicate',
+            menuElement: 'Duplicate',
             onSelect: () => {
                 appDocument.duplicateSlide(slide);
             },
@@ -105,7 +105,7 @@ export function showAppDocumentContextMenu(
         ...(appProvider.isPagePresenter
             ? [
                   {
-                      menuTitle: 'Quick Edit',
+                      menuElement: 'Quick Edit',
                       onSelect: () => {
                           if (appProvider.isPageEditor) {
                               AppDocumentListEventListener.selectAppDocumentItem(
@@ -120,7 +120,7 @@ export function showAppDocumentContextMenu(
             : []),
         ...menuItemOnScreens,
         {
-            menuTitle: 'Delete',
+            menuElement: 'Delete',
             onSelect: () => {
                 appDocument.deleteSlide(slide);
             },
@@ -290,7 +290,7 @@ export async function selectSlide(event: any, currentFilePath: string) {
             })
             .map((filePath) => {
                 return {
-                    menuTitle: pathBasename(filePath),
+                    menuElement: pathBasename(filePath),
                     title: filePath,
                     onSelect: () => {
                         const appDocument = AppDocument.getInstance(filePath);

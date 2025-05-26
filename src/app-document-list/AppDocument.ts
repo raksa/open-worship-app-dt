@@ -296,7 +296,7 @@ export default class AppDocument
         const copiedSlides = await AppDocument.getCopiedSlides();
         showAppContextMenu(event, [
             {
-                menuTitle: 'New Slide',
+                menuElement: 'New Slide',
                 onSelect: () => {
                     this.addNewSlide();
                 },
@@ -304,7 +304,7 @@ export default class AppDocument
             ...(copiedSlides.length > 0
                 ? [
                       {
-                          menuTitle: 'Paste',
+                          menuElement: 'Paste',
                           onSelect: () => {
                               for (const copiedSlide of copiedSlides) {
                                   this.addSlide(copiedSlide);

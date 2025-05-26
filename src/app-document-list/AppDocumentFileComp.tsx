@@ -32,13 +32,13 @@ function genContextMenuItems(
     if (PdfAppDocument.checkIsThisType(varyAppDocument)) {
         return [
             {
-                menuTitle: 'Preview PDF',
+                menuElement: 'Preview PDF',
                 onSelect: () => {
                     previewPdf(varyAppDocument.fileSource.src);
                 },
             },
             {
-                menuTitle: 'Refresh PDF Images',
+                menuElement: 'Refresh PDF Images',
                 onSelect: async () => {
                     await removePdfImagesPreview(varyAppDocument.filePath);
                     varyAppDocument.fileSource.fireUpdateEvent();
@@ -48,7 +48,7 @@ function genContextMenuItems(
     }
     return [
         {
-            menuTitle: 'Edit',
+            menuElement: 'Edit',
             onSelect: () => {
                 if (varyAppDocument) {
                     setSelectedSlide(varyAppDocument);

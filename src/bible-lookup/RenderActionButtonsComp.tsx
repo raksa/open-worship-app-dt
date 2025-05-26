@@ -12,6 +12,7 @@ import { getIsKeepingPopup } from './RenderExtraButtonsRightComp';
 import appProvider from '../server/appProvider';
 import { useShowBibleLookupContext } from '../others/commonButtons';
 import {
+    elementDivider,
     genContextMenuItemIcon,
     genContextMenuItemShortcutKey,
 } from '../context-menu/AppContextMenuComp';
@@ -147,8 +148,11 @@ export function genFoundBibleItemContextMenu(
     }
     return [
         {
+            menuElement: elementDivider,
+        },
+        {
             childBefore: genContextMenuItemIcon('floppy'),
-            menuTitle: '`Save bible item',
+            menuElement: '`Save bible item',
             childAfter: isKeyboardShortcut
                 ? genContextMenuItemShortcutKey(addListEventMapper)
                 : undefined,
@@ -162,7 +166,7 @@ export function genFoundBibleItemContextMenu(
         ...(appProvider.isPagePresenter
             ? [
                   {
-                      menuTitle: 'Show bible item',
+                      menuElement: 'Show bible item',
                       onSelect: (event: any) => {
                           ScreenBibleManager.handleBibleItemSelecting(
                               event,
@@ -174,7 +178,7 @@ export function genFoundBibleItemContextMenu(
                       childAfter: isKeyboardShortcut
                           ? genContextMenuItemShortcutKey(presenterEventMapper)
                           : undefined,
-                      menuTitle: 'Save bible item and show on screen',
+                      menuElement: 'Save bible item and show on screen',
                       onSelect: async (event: any) => {
                           addBibleItemAndPresent(event, bibleItem, onDone);
                       },

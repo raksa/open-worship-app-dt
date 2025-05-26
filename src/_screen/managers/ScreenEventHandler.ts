@@ -115,7 +115,7 @@ export default abstract class ScreenEventHandler<
             const menuItems: ContextMenuItemType[] = screenManagerBases.map(
                 (screenManagerBase) => {
                     return {
-                        menuTitle: `Screen id: ${screenManagerBase.screenId}`,
+                        menuElement: `Screen id: ${screenManagerBase.screenId}`,
                         onSelect: () => {
                             resolve([screenManagerBase.screenId]);
                         },

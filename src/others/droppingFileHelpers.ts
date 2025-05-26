@@ -171,7 +171,7 @@ export function genOnContextMenu(
         const menuItems: ContextMenuItemType[] = [...(contextMenu ?? [])];
         if (addItems !== undefined) {
             menuItems.push({
-                menuTitle: 'Add Items',
+                menuElement: 'Add Items',
                 onSelect: addItems,
             });
         }

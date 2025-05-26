@@ -31,7 +31,7 @@ async function selectBookKey(
     }
     showAppContextMenu(event, [
         {
-            menuTitle: 'all books',
+            menuElement: 'all books',
             onSelect: () => {
                 setSelectedBook(null);
             },
@@ -39,7 +39,7 @@ async function selectBookKey(
         ...bookList.map(({ bookKey, book, bookKJV, isAvailable }) => {
             const extraName = book !== bookKJV ? ` (${bookKJV})` : '';
             return {
-                menuTitle: `${book}${extraName}`,
+                menuElement: `${book}${extraName}`,
                 disabled: !isAvailable || selectedBook?.bookKey === bookKey,
                 onSelect: () => {
                     setSelectedBook({ bookKey, book });

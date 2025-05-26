@@ -30,7 +30,7 @@ function chose<T>(
             event,
             keys.map(([key, value1, value2], i) => {
                 return {
-                    menuTitle: value1,
+                    menuElement: value1,
                     title: value2,
                     disabled: i === 0 || (!isAllowAll && key === currentKey),
                     onSelect: () => {

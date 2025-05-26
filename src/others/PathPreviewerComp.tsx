@@ -13,13 +13,13 @@ function cleanPath(path: string) {
 function openContextMenu(dirPath: string, event: any) {
     showAppContextMenu(event, [
         {
-            menuTitle: 'Copy to Clipboard',
+            menuElement: 'Copy to Clipboard',
             onSelect: () => {
                 copyToClipboard(dirPath);
             },
         },
         {
-            menuTitle: menuTitleRealFile,
+            menuElement: menuTitleRealFile,
             onSelect: () => {
                 showExplorer(dirPath);
             },

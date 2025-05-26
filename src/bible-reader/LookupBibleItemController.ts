@@ -5,6 +5,7 @@ import { genFoundBibleItemContextMenu } from '../bible-lookup/RenderActionButton
 import { closeCurrentEditingBibleItem } from './readBibleHelpers';
 import { EventMapper } from '../event/KeyboardEventListener';
 import {
+    elementDivider,
     genContextMenuItemIcon,
     genContextMenuItemShortcutKey,
 } from '../context-menu/AppContextMenuComp';
@@ -295,7 +296,7 @@ class LookupBibleItemController extends BibleItemsViewController {
         const menus2 = await super.genContextMenu(bibleItem, uuid);
         if (!isBibleItemSelected) {
             menus2.push({
-                menuTitle: 'Edit',
+                menuElement: 'Edit',
                 title: 'Double click on header to edit',
                 onSelect: () => {
                     this.editBibleItem(bibleItem);
@@ -325,10 +326,13 @@ class LookupBibleItemController extends BibleItemsViewController {
             ? []
             : [
                   {
+                      menuElement: elementDivider,
+                  },
+                  {
                       childBefore: genContextMenuItemIcon('x-lg', {
                           color: 'var(--bs-danger-text-emphasis)',
                       }),
-                      menuTitle: 'Close',
+                      menuElement: 'Close',
                       childAfter: isBibleItemSelected
                           ? genContextMenuItemShortcutKey(closeEventMapper)
                           : undefined,
