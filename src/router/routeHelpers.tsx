@@ -5,7 +5,7 @@ import { getSelectedVaryAppDocument } from '../app-document-list/appDocumentHelp
 import AppDocument from '../app-document-list/AppDocument';
 
 export type TabOptionType = {
-    title: string;
+    title: React.ReactNode;
     routePath: string;
     preCheck?: () => OptionalPromise<boolean>;
 };
@@ -16,8 +16,17 @@ export enum WindowModEnum {
     reader = 2,
 }
 
+function toTitleExternal(title: string) {
+    return (
+        <span>
+            {title + ' '}
+            <i className="bi bi-box-arrow-up-right" />
+        </span>
+    );
+}
+
 export const editorTab: TabOptionType = {
-    title: 'Editor↗️',
+    title: toTitleExternal('Editor'),
     routePath: appProvider.editorHomePage,
     preCheck: async () => {
         const varyAppDocument = await getSelectedVaryAppDocument();
@@ -32,15 +41,15 @@ export const editorTab: TabOptionType = {
     },
 };
 export const presenterTab: TabOptionType = {
-    title: 'Presenter↗️',
+    title: toTitleExternal('Presenter'),
     routePath: appProvider.presenterHomePage,
 };
 export const readerTab: TabOptionType = {
-    title: 'Reader↗️',
+    title: toTitleExternal('Reader'),
     routePath: appProvider.readerHomePage,
 };
 export const experimentTab: TabOptionType = {
-    title: '(dev)Experiment↗️',
+    title: toTitleExternal('(dev)Experiment'),
     routePath: appProvider.experimentHomePage,
 };
 

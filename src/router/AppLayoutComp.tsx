@@ -13,7 +13,6 @@ import {
     BibleLookupShowingContext,
     SettingButtonComp,
 } from '../others/commonButtons';
-import { tran } from '../lang';
 import appProvider from '../server/appProvider';
 import { MultiContextRender } from '../helper/MultiContextRender';
 import AppPopupWindowsComp from '../app-modal/AppPopupWindowsComp';
@@ -58,14 +57,14 @@ function TabRenderComp() {
     };
     return (
         <ul className="nav nav-tabs">
-            {tabs.map((tab) => {
+            {tabs.map((tab, i) => {
                 return (
-                    <li key={tab.title} className="nav-item">
+                    <li key={i} className="nav-item">
                         <button
                             className="btn btn-link nav-link"
                             onClick={handleClicking.bind(null, tab)}
                         >
-                            {tran(tab.title)}
+                            {tab.title}
                         </button>
                     </li>
                 );
