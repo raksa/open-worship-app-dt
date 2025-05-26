@@ -41,9 +41,10 @@ function RenderBodyEditingComp() {
                         <BibleViewTitleEditingComp
                             bibleItem={foundBibleItem}
                             onTargetChange={async (newBibleTarget) => {
-                                foundBibleItem.target = newBibleTarget;
-                                const title = await foundBibleItem.toTitle();
-                                viewController.inputText = title;
+                                viewController.applyTargetOrBibleKey(
+                                    foundBibleItem,
+                                    { target: newBibleTarget },
+                                );
                             }}
                         >
                             <span
