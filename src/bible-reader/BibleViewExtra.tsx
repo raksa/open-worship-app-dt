@@ -182,7 +182,19 @@ function RenderVerseTextComp({
             index > 0 ? (
                 <br />
             ) : null}
-            <div className="verse-number">
+            <div
+                className="verse-number app-caught-hover-pointer"
+                title={verseInfo.verse.toString()}
+                onClick={() => {
+                    viewController.applyTargetOrBibleKey(bibleItem, {
+                        target: {
+                            ...bibleItem.target,
+                            verseStart: verseInfo.verse,
+                            verseEnd: verseInfo.verse,
+                        },
+                    });
+                }}
+            >
                 <div data-bible-key={verseInfo.bibleKey}>
                     {verseInfo.isNewLine ? (
                         <span className="verse-number-text">&nbsp;&nbsp;</span>
@@ -231,12 +243,14 @@ function RenderRestVerseNumListComp({
     bibleItem,
     verseCount,
     onClick,
+    toTitle,
 }: Readonly<{
     to?: number;
     from?: number;
     bibleItem: BibleItem;
     verseCount: number;
     onClick: (verse: number) => void;
+    toTitle: (verse: number) => string;
 }>) {
     const fontSize = useBibleViewFontSizeContext();
     const actualFrom = from ?? 1;
@@ -266,7 +280,7 @@ function RenderRestVerseNumListComp({
                     <div
                         key={verse}
                         className="verse-number app-caught-hover-pointer"
-                        title={verse.toString()}
+                        title={toTitle(verse)}
                         onClick={() => {
                             onClick(verse);
                         }}
@@ -321,6 +335,9 @@ export function BibleViewTextComp({
                         target: { ...bibleItem.target, verseStart: verse },
                     });
                 }}
+                toTitle={(verse) => {
+                    return `${target.verseStart}-${verse}`;
+                }}
             />
             {verseList.map((verseInfo, i) => {
                 return (
@@ -340,6 +357,9 @@ export function BibleViewTextComp({
                     viewController.applyTargetOrBibleKey(bibleItem, {
                         target: { ...bibleItem.target, verseEnd: verse },
                     });
+                }}
+                toTitle={(verse) => {
+                    return `${target.verseStart}-${verse}`;
                 }}
             />
         </div>
