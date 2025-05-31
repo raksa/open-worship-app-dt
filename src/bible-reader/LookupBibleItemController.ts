@@ -186,7 +186,7 @@ class LookupBibleItemController extends BibleItemsViewController {
         this.syncTargetByColorNote(this.selectedBibleItem);
         extractBibleTitle(this.selectedBibleItem.bibleKey, inputText).then(
             async (editingResult) => {
-                const { bibleKey, inputText: inputText1 } = editingResult;
+                const { bibleKey, oldInputText } = editingResult;
                 if (bibleKey !== this.selectedBibleItem.bibleKey) {
                     await this.setEditingData(
                         editingResult.bibleKey,
@@ -194,8 +194,8 @@ class LookupBibleItemController extends BibleItemsViewController {
                         true,
                     );
                 }
-                if (inputText1 !== this.inputText) {
-                    this.inputText = inputText1;
+                if (oldInputText !== this.inputText) {
+                    this.inputText = oldInputText;
                 }
             },
         );
