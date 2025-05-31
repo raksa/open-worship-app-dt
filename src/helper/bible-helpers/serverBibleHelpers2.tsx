@@ -14,6 +14,7 @@ import BibleItem from '../../bible-list/BibleItem';
 import { getKJVChapterCount } from './serverBibleHelpers';
 import CacheManager from '../../others/CacheManager';
 import { unlocking } from '../../server/appHelpers';
+import { getAllLocalBibleInfoList } from './bibleDownloadHelpers';
 
 export async function toInputText(
     bibleKey: string,
@@ -349,6 +350,44 @@ const regexTitleMap: [
     ],
 ];
 
+async function checkExtractedAndReturn(bibleKey: string, inputText: string) {
+    const allLocalBibleInfoList = await getAllLocalBibleInfoList();
+    if (allLocalBibleInfoList.some((info) => info.key === bibleKey)) {
+        return {
+            bibleKey,
+            inputText,
+        };
+    }
+    return null;
+}
+async function attemptExtractBibleKey(inputText: string) {
+    if (inputText.startsWith('(')) {
+        const allLocalBibleInfoList = await getAllLocalBibleInfoList();
+        // (kjv) 1 John 1:1-2
+        const regex = /^\((.+)\)\s(.+)$/;
+        const matches = regex.exec(inputText);
+        if (matches !== null && matches.length === 3) {
+            const bibleKey = matches[1].trim();
+            if (allLocalBibleInfoList.some((info) => info.key === bibleKey)) {
+                const inputText1 = matches[2].trim();
+                return checkExtractedAndReturn(bibleKey, inputText1);
+            }
+        }
+    }
+    // 1 John 1:1-2 kjv
+    const regex = /^(.+:.+)\s(.+)$/;
+    const matches = regex.exec(inputText);
+    if (matches !== null && matches.length === 3) {
+        const bookChapter = matches[1].trim();
+        const bibleKey = matches[2].trim();
+        const allLocalBibleInfoList = await getAllLocalBibleInfoList();
+        if (allLocalBibleInfoList.some((info) => info.key === bibleKey)) {
+            return checkExtractedAndReturn(bibleKey, bookChapter);
+        }
+    }
+    return null;
+}
+
 export type EditingResultType = {
     result: ExtractedBibleResult;
     bibleKey: string;
@@ -360,6 +399,13 @@ export async function extractBibleTitle(
     inputText: string,
 ): Promise<EditingResultType> {
     const cleanText = inputText.trim().replace(/\s+/g, ' ');
+    const extractedBibleKeyResult = await attemptExtractBibleKey(inputText);
+    if (extractedBibleKeyResult !== null) {
+        return extractBibleTitle(
+            extractedBibleKeyResult.bibleKey,
+            extractedBibleKeyResult.inputText,
+        );
+    }
     if (cleanText === '') {
         return {
             result: genExtractedBible(),

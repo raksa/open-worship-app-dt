@@ -230,11 +230,13 @@ function RenderRestVerseNumListComp({
     from,
     bibleItem,
     verseCount,
+    onClick,
 }: Readonly<{
     to?: number;
     from?: number;
     bibleItem: BibleItem;
     verseCount: number;
+    onClick: (verse: number) => void;
 }>) {
     const fontSize = useBibleViewFontSizeContext();
     const actualFrom = from ?? 1;
@@ -261,14 +263,20 @@ function RenderRestVerseNumListComp({
             {from !== undefined ? <br /> : null}
             {numList.map((verse, i) => {
                 return (
-                    <div key={verse} className="verse-number">
+                    <div
+                        key={verse}
+                        className="verse-number app-caught-hover-pointer"
+                        title={verse.toString()}
+                        onClick={() => {
+                            onClick(verse);
+                        }}
+                    >
                         <div
                             className="verse-number-rest app-not-selectable-text"
                             style={{
                                 fontSize: `${fontSize * 0.7}px`,
                             }}
                             data-bible-key={bibleItem.bibleKey}
-                            title={verse.toString()}
                         >
                             {localeVerseList[i]}
                         </div>
@@ -285,6 +293,7 @@ export function BibleViewTextComp({
 }: Readonly<{ bibleItem: BibleItem }>) {
     const { bibleKey, target } = bibleItem;
     const fontSize = useBibleViewFontSizeContext();
+    const viewController = useBibleItemsViewControllerContext();
     const [verseList] = useAppStateAsync(() => {
         return bibleItem.toVerseTextList();
     }, [bibleItem.bibleKey, bibleItem.target]);
@@ -307,6 +316,11 @@ export function BibleViewTextComp({
                 to={target.verseStart - 1}
                 bibleItem={bibleItem}
                 verseCount={verseCount}
+                onClick={(verse) => {
+                    viewController.applyTargetOrBibleKey(bibleItem, {
+                        target: { ...bibleItem.target, verseStart: verse },
+                    });
+                }}
             />
             {verseList.map((verseInfo, i) => {
                 return (
@@ -322,6 +336,11 @@ export function BibleViewTextComp({
                 from={target.verseEnd + 1}
                 bibleItem={bibleItem}
                 verseCount={verseCount}
+                onClick={(verse) => {
+                    viewController.applyTargetOrBibleKey(bibleItem, {
+                        target: { ...bibleItem.target, verseEnd: verse },
+                    });
+                }}
             />
         </div>
     );

@@ -184,6 +184,21 @@ class LookupBibleItemController extends BibleItemsViewController {
     set inputText(inputText: string) {
         this._setInputText(inputText);
         this.syncTargetByColorNote(this.selectedBibleItem);
+        extractBibleTitle(this.selectedBibleItem.bibleKey, inputText).then(
+            async (editingResult) => {
+                const { bibleKey, inputText: inputText1 } = editingResult;
+                if (bibleKey !== this.selectedBibleItem.bibleKey) {
+                    await this.setEditingData(
+                        editingResult.bibleKey,
+                        null,
+                        true,
+                    );
+                }
+                if (inputText1 !== this.inputText) {
+                    this.inputText = inputText1;
+                }
+            },
+        );
     }
 
     async setLookupContentFromBibleItem(bibleItem: BibleItem) {

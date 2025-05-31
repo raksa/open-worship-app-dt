@@ -6,6 +6,9 @@ import LookupBibleItemController, {
     useLookupBibleItemControllerContext,
 } from '../bible-reader/LookupBibleItemController';
 import { historyStore } from '../bible-reader/BibleItemsViewController';
+import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
+import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
+import { copyToClipboard } from '../server/appHelpers';
 
 const HISTORY_TEXT_LIST_SETTING_NAME = 'history-text-list';
 function useHistoryTextList(maxHistoryCount: number) {
@@ -89,6 +92,41 @@ function handleHistoryRemoving(
     setHistoryTextList(newHistoryTextList);
 }
 
+function handleContextMenuOpening(
+    event: any,
+    {
+        open,
+        copy,
+        remove,
+    }: {
+        open: () => void;
+        copy: () => void;
+        remove: () => void;
+    },
+) {
+    const contextMenuItems: ContextMenuItemType[] = [
+        {
+            menuElement: '`Open',
+            onSelect: () => {
+                open();
+            },
+        },
+        {
+            menuElement: '`Copy',
+            onSelect: () => {
+                copy();
+            },
+        },
+        {
+            menuElement: '`Remove',
+            onSelect: () => {
+                remove();
+            },
+        },
+    ];
+    showAppContextMenu(event, contextMenuItems);
+}
+
 export default function InputHistoryComp({
     maxHistoryCount = 20,
 }: Readonly<{
@@ -119,6 +157,27 @@ export default function InputHistoryComp({
                         }
                         className="btn btn-sm d-flex app-border-white-round"
                         style={{ height: '25px' }}
+                        onContextMenu={(event) => {
+                            handleContextMenuOpening(event, {
+                                open: () => {
+                                    handleDoubleClicking(
+                                        event,
+                                        viewController,
+                                        historyText,
+                                    );
+                                },
+                                copy: () => {
+                                    copyToClipboard(historyText);
+                                },
+                                remove: () => {
+                                    handleHistoryRemoving(
+                                        historyTextList,
+                                        historyText,
+                                        setHistoryTextList,
+                                    );
+                                },
+                            });
+                        }}
                         onDoubleClick={(event) => {
                             handleDoubleClicking(
                                 event,
