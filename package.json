@@ -41,7 +41,6 @@
         ]
     },
     "build": {
-        "extends": null,
         "productName": "Open Worship app",
         "appId": "app.openworship.desktop",
         "nodeGypRebuild": "false",
@@ -51,6 +50,7 @@
         "dist/**/*",
         "package.json"
         ],
+        "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
         "dmg": {
         "contents": [
             {
@@ -77,7 +77,8 @@
             "AppImage",
             "tar.gz"
         ],
-        "category": "Productivity"
+        "category": "Productivity",
+        "artifactName": "${name}_${version}_${arch}.${ext}"
         },
         "mac": {
         "target": [
