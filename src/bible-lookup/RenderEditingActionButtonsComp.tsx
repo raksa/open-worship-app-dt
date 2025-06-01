@@ -42,6 +42,7 @@ export default function RenderEditingActionButtonsComp({
         });
     }, []);
     const viewController = useBibleItemsViewControllerContext();
+    useFoundActionKeyboard(bibleItem);
     useKeyboardRegistering(
         eventMaps,
         (event) => {
