@@ -61,7 +61,7 @@ export function genNewScreenManagerBase() {
         newScreenId++;
     }
     createScreenManager(newScreenId);
-    ScreenManager.fireInstanceEvent();
+    ScreenManagerBase.fireInstanceEvent();
 }
 
 export function getScreenManagersFromSetting() {

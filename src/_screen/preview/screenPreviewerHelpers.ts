@@ -49,11 +49,11 @@ export function openContextMenu(event: any, screenManager: ScreenManager) {
                   {
                       menuElement: 'Solo',
                       onSelect() {
-                          getSelectedScreenManagerBases().forEach(
-                              (screenManager1) => {
-                                  screenManager1.isSelected = false;
-                              },
-                          );
+                          const screenManagerBases =
+                              getSelectedScreenManagerBases();
+                          screenManagerBases.forEach((screenManager1) => {
+                              screenManager1.isSelected = false;
+                          });
                           screenManager.isSelected = true;
                       },
                   },

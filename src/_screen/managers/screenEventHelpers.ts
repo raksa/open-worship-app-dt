@@ -14,7 +14,7 @@ import ScreenAlertManager, { ScreenAlertEventType } from './ScreenAlertManager';
 
 export function useScreenEvents<T extends string>(
     events: T[],
-    Class: EventHandler<T>,
+    StaticHandler: EventHandler<T>,
     eventHandler?: EventHandler<T>,
     callback?: (data: any) => void,
 ) {
@@ -28,15 +28,15 @@ export function useScreenEvents<T extends string>(
         };
         const registeredEvents =
             eventHandler?.registerEventListener(events, update) ||
-            Class.registerEventListener(events, update);
+            StaticHandler.registerEventListener(events, update);
         return () => {
             if (eventHandler !== undefined) {
                 eventHandler.unregisterEventListener(registeredEvents);
             } else {
-                Class.unregisterEventListener(registeredEvents);
+                StaticHandler.unregisterEventListener(registeredEvents);
             }
         };
-    }, [eventHandler, callback]);
+    }, [StaticHandler, eventHandler, callback]);
     return n;
 }
 
