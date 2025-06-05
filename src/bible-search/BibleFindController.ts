@@ -46,7 +46,7 @@ async function loadApiData() {
 async function initDatabase(bibleKey: string, databaseFilePath: string) {
     const databaseUtils = appProvider.databaseUtils;
     const databaseAdmin =
-        databaseUtils.getSQLiteDatabaseInstance(databaseFilePath);
+        await databaseUtils.getSQLiteDatabaseInstance(databaseFilePath);
     databaseAdmin.exec(`
         CREATE TABLE verses(text TEXT, sText TEXT);
         CREATE VIRTUAL TABLE spell USING fts5(text);
@@ -286,7 +286,7 @@ export default class BibleFindController {
             database = await initDatabase(instance.bibleKey, databasePath);
         } else {
             const databaseUtils = appProvider.databaseUtils;
-            database = databaseUtils.getSQLiteDatabaseInstance(databasePath);
+            database = await databaseUtils.getSQLiteDatabaseInstance(databasePath);
         }
         if (database === null) {
             return null;

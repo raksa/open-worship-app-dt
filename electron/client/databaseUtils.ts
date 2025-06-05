@@ -1,36 +1,90 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { dirname, join, resolve } from 'node:path';
 import { copyFileSync, existsSync } from 'node:fs';
-import { isWindows, isMac, isArm64, attemptClosing } from '../electronHelpers';
+import { promises } from 'node:fs';
+import { isWindows, isMac, attemptClosing } from '../electronHelpers';
 
 // https://nodejs.org/docs/latest-v22.x/api/sqlite.html
 
-function getLibFilePath(databasePath: string, libName: string) {
-    const extBasePath = resolve(__dirname, '../../db-exts');
-    let suffix = '';
+async function checkIsSameFiles(fname1, fname2) {
+    const kReadSize = 1024 * 8;
+    let h1, h2;
+    try {
+        h1 = await promises.open(fname1);
+        h2 = await promises.open(fname2);
+        const [stat1, stat2] = await Promise.all([h1.stat(), h2.stat()]);
+        if (stat1.size !== stat2.size) {
+            return false;
+        }
+        const buf1 = Buffer.alloc(kReadSize);
+        const buf2 = Buffer.alloc(kReadSize);
+        let pos = 0;
+        let remainingSize = stat1.size;
+        while (remainingSize > 0) {
+            let readSize = Math.min(kReadSize, remainingSize);
+            let [r1, r2] = await Promise.all([
+                h1.read(buf1, 0, readSize, pos),
+                h2.read(buf2, 0, readSize, pos),
+            ]);
+            if (r1.bytesRead !== readSize || r2.bytesRead !== readSize) {
+                throw new Error('Failed to read desired number of bytes');
+            }
+            if (buf1.compare(buf2, 0, readSize, 0, readSize) !== 0) {
+                return false;
+            }
+            remainingSize -= readSize;
+            pos += readSize;
+        }
+        return true;
+    } finally {
+        if (h1) {
+            await h1.close();
+        }
+        if (h2) {
+            await h2.close();
+        }
+    }
+}
+
+function getFileExt(libName: string) {
     if (isWindows) {
-        suffix = '.dll';
-    } else if (isMac && !isArm64) {
-        suffix = '-int';
+        return 'dll';
     }
-    const fileFullName = `${libName}${suffix}`;
-    const libFilePath = join(extBasePath, fileFullName);
+    if (isMac) {
+        return 'dylib';
+    }
+    return 'so';
+}
+
+async function getLibFilePath(databasePath: string, libName: string) {
+    const extBasePath = resolve(__dirname, '../../db-exts');
+    const sourceFilePath = join(extBasePath, libName);
     const databaseBasePath = dirname(databasePath);
-    const destLibFile = join(databaseBasePath, fileFullName);
-    if (!existsSync(destLibFile)) {
-        copyFileSync(libFilePath, destLibFile);
+    const libFileExt = getFileExt(libName);
+    const destFilePath = join(databaseBasePath, `${libName}.${libFileExt}`);
+    if (
+        !(
+            existsSync(destFilePath) &&
+            (await checkIsSameFiles(sourceFilePath, destFilePath))
+        )
+    ) {
+        copyFileSync(sourceFilePath, destFilePath);
     }
-    return destLibFile;
+    return join(databaseBasePath, libName);
 }
 
 class SQLiteDatabase {
     public database: any;
+    databasePath: string;
     constructor(databasePath: string) {
+        this.databasePath = databasePath;
+    }
+    async initExtension() {
         const { DatabaseSync } = require('node:sqlite');
-        const database = new DatabaseSync(databasePath, {
+        const database = new DatabaseSync(this.databasePath, {
             allowExtension: true,
         });
-        const destLibFile = getLibFilePath(databasePath, 'fts5');
+        const destLibFile = await getLibFilePath(this.databasePath, 'fts5');
         database.loadExtension(destLibFile);
         // const destLibFile = getLibFilePath(databasePath, 'spellfix1');
         // database.loadExtension(destLibFile);
@@ -52,8 +106,10 @@ class SQLiteDatabase {
 }
 
 const databaseUtils = {
-    getSQLiteDatabaseInstance(databaseName: string): SQLiteDatabase {
-        return new SQLiteDatabase(databaseName);
+    async getSQLiteDatabaseInstance(databaseName: string) {
+        const db = new SQLiteDatabase(databaseName);
+        await db.initExtension();
+        return db;
     },
 };
 

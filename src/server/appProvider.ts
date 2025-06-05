@@ -144,7 +144,7 @@ export type AppProviderType = Readonly<
         databaseUtils: {
             getSQLiteDatabaseInstance: (
                 databaseName: string,
-            ) => SQLiteDatabaseType;
+            ) => Promise<SQLiteDatabaseType>;
         };
         presenterHomePage: string;
         readerHomePage: string;

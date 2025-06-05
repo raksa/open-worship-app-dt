@@ -103,7 +103,7 @@
         "concurrently": "^9.1.2",
         "cross-env": "^7.0.3",
         "diff": "^7.0.0",
-        "electron": "^35.0.2",
+        "electron": "^36.4.0",
         "electron-builder": "^25.1.8",
         "eslint": "^9.22.0",
         "monaco-editor": "^0.52.2",

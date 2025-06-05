@@ -1,6 +1,8 @@
 
 SQLite3 version 3.49.1
 
+https://github.com/sqlite/sqlite/releases/tag/version-3.49.1
+
 * https://sqlite.org/howtocompile.html
 * Build extension https://sqlite.org/loadext.html#build
 * Full Text Search https://sqlite.org/fts5.html
@@ -23,15 +25,14 @@ SQLite3 version 3.49.1
 > ./configure && make sqlite3.c
 > gcc -g -fPIC -dynamiclib fts5.c -o fts5.dylib
 > gcc -I. -g -fPIC -dynamiclib ext/misc/spellfix.c -o spellfix1.dylib
-# intel
-> gcc -g -fPIC -dynamiclib fts5.c -o fts5-int.dylib
-> gcc -I. -g -fPIC -dynamiclib ext/misc/spellfix.c -o spellfix1-int.dylib
 ```
 
 
 ### Unix-like
 
 ```bash
+> ./configure && make sqlite3.c
+# 64-bit
 > gcc -g -fPIC -shared fts5.c -o fts5.so
 > gcc -g -fPIC -shared ./ext/misc/spellfix.c -o spellfix1.so
 # 32-bit
