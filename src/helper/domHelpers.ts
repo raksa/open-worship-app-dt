@@ -1,5 +1,9 @@
 import KeyboardEventListener from '../event/KeyboardEventListener';
-import { MutationType, APP_FULL_VIEW_CLASSNAME } from './helpers';
+import {
+    MutationType,
+    APP_FULL_VIEW_CLASSNAME,
+    APP_AUTO_HIDE_CLASSNAME,
+} from './helpers';
 
 const callBackListeners = new Set<
     (element: Node, type: MutationType) => void
@@ -94,4 +98,55 @@ export function addClearInputButton(
     wrapper.style.zIndex = '5';
     wrapper.appendChild(clearButton);
     targetParent.appendChild(wrapper);
+}
+
+export function handleAutoHide(
+    targetDom: HTMLDivElement,
+    isLeftAligned = true,
+) {
+    const parentElement = targetDom.parentElement;
+    if (parentElement === null) {
+        return;
+    }
+    parentElement.querySelectorAll('.auto-hide-button').forEach((el) => {
+        el.remove();
+    });
+    targetDom.classList.add(APP_AUTO_HIDE_CLASSNAME);
+    const clearButton = document.createElement('i');
+    clearButton.className =
+        'auto-hide-button bi bi-three-dots' +
+        ' app-caught-hover-pointer app-round-icon';
+    if (isLeftAligned) {
+        clearButton.style.left = '5px';
+    } else {
+        clearButton.style.right = '5px';
+    }
+    clearButton.style.bottom = '5px';
+    clearButton.style.position = 'absolute';
+    clearButton.title = '`Show';
+    let timeoutId: any = null;
+    const mouseEnterListener = () => {
+        if (timeoutId !== null) {
+            clearTimeout(timeoutId);
+        }
+    };
+    const mouseLeaveListener = () => {
+        if (timeoutId !== null) {
+            clearTimeout(timeoutId);
+        }
+        timeoutId = setTimeout(() => {
+            timeoutId = null;
+            clearButton.style.display = 'block';
+            targetDom.classList.remove('auto-hide-show');
+            targetDom.removeEventListener('mouseleave', mouseLeaveListener);
+            targetDom.removeEventListener('mouseenter', mouseEnterListener);
+        }, 2000);
+    };
+    clearButton.onclick = () => {
+        clearButton.style.display = 'none';
+        targetDom.classList.add('auto-hide-show');
+        targetDom.addEventListener('mouseleave', mouseLeaveListener);
+        targetDom.addEventListener('mouseenter', mouseEnterListener);
+    };
+    parentElement.appendChild(clearButton);
 }

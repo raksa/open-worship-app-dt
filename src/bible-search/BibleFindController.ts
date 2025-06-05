@@ -286,7 +286,8 @@ export default class BibleFindController {
             database = await initDatabase(instance.bibleKey, databasePath);
         } else {
             const databaseUtils = appProvider.databaseUtils;
-            database = await databaseUtils.getSQLiteDatabaseInstance(databasePath);
+            database =
+                await databaseUtils.getSQLiteDatabaseInstance(databasePath);
         }
         if (database === null) {
             return null;

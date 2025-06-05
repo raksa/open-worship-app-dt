@@ -20,6 +20,7 @@ export type AnyObjectType = {
 };
 
 export const APP_FULL_VIEW_CLASSNAME = 'app-full-view';
+export const APP_AUTO_HIDE_CLASSNAME = 'app-auto-hide';
 export const RECEIVING_DROP_CLASSNAME = 'receiving-data-drop';
 export const HIGHLIGHT_SELECTED_CLASSNAME = 'app-highlight-selected';
 

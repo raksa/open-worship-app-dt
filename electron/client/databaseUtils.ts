@@ -21,8 +21,8 @@ async function checkIsSameFiles(fname1, fname2) {
         let pos = 0;
         let remainingSize = stat1.size;
         while (remainingSize > 0) {
-            let readSize = Math.min(kReadSize, remainingSize);
-            let [r1, r2] = await Promise.all([
+            const readSize = Math.min(kReadSize, remainingSize);
+            const [r1, r2] = await Promise.all([
                 h1.read(buf1, 0, readSize, pos),
                 h2.read(buf2, 0, readSize, pos),
             ]);

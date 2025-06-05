@@ -16,9 +16,9 @@ export enum WindowModEnum {
     reader = 2,
 }
 
-function toTitleExternal(title: string) {
+function toTitleExternal(title: string, style?: React.CSSProperties) {
     return (
-        <span>
+        <span style={style}>
             {title + ' '}
             <i className="bi bi-box-arrow-up-right" />
         </span>
@@ -41,11 +41,15 @@ export const editorTab: TabOptionType = {
     },
 };
 export const presenterTab: TabOptionType = {
-    title: toTitleExternal('Presenter'),
+    title: toTitleExternal('Presenter', {
+        color: 'var(--app-color-presenter)',
+    }),
     routePath: appProvider.presenterHomePage,
 };
 export const readerTab: TabOptionType = {
-    title: toTitleExternal('Reader'),
+    title: toTitleExternal('Reader', {
+        color: 'var(--app-color-reader)',
+    }),
     routePath: appProvider.readerHomePage,
 };
 export const experimentTab: TabOptionType = {

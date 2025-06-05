@@ -15,6 +15,7 @@ import FullScreenButtonComp from './FullScreenButtonComp';
 import { fontSizeSettingNames } from '../helper/constants';
 import { handleCtrlWheel } from '../others/AppRangeComp';
 import appProvider from '../server/appProvider';
+import { handleAutoHide } from '../helper/domHelpers';
 
 function NewLineSettingComp() {
     const viewController = useBibleItemsViewControllerContext();
@@ -72,7 +73,14 @@ export default function BiblePreviewerRenderComp() {
                     <Render />
                 </BibleViewFontSizeContext>
             </div>
-            <div className="app-auto-hide app-auto-hide-bottom">
+            <div
+                className={'app-auto-hide-bottom'}
+                ref={(element) => {
+                    if (element !== null) {
+                        handleAutoHide(element);
+                    }
+                }}
+            >
                 <div className="d-flex w-100">
                     <div className="flex-fill d-flex">
                         <BibleViewSettingComp

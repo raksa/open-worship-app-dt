@@ -4,6 +4,7 @@ import { lazy } from 'react';
 
 import { useStateSettingString } from '../../helper/settingHelpers';
 import TabRenderComp, { genTabBody } from '../../others/TabRenderComp';
+import { bringDomToTopView } from '../../helper/helpers';
 
 const LazyAppearanceComp = lazy(() => {
     return import('./AppearanceComp');
@@ -27,7 +28,16 @@ export default function CustomStyleComp({
         'a',
     );
     return (
-        <div className="custom-style card app-border-white-round mt-1">
+        <div
+            className="custom-style card app-border-white-round mt-1"
+            ref={(element) => {
+                if (element) {
+                    setTimeout(() => {
+                        bringDomToTopView(element);
+                    }, 500);
+                }
+            }}
+        >
             <div className="card-header">
                 <TabRenderComp<TabType>
                     tabs={tabTypeList.map(([type, name]) => {
