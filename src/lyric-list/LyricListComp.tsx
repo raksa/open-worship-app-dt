@@ -31,7 +31,7 @@ export default function LyricListComp() {
     }
     return (
         <FileListHandlerComp
-            id="lyric-list"
+            className="lyric-list"
             mimetypeName="lyric"
             defaultFolderName={defaultDataDirNames.LYRIC}
             dirSource={dirSource}

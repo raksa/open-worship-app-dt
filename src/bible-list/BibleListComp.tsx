@@ -28,7 +28,7 @@ export default function BibleListComp() {
         : defaultDataDirNames.BIBLE_PRESENT;
     return (
         <FileListHandlerComp
-            id={`${settingPrefix}bible-list`}
+            className={`${settingPrefix}bible-list`}
             mimetypeName="bible"
             defaultFolderName={defaultDataDirName}
             dirSource={dirSource}

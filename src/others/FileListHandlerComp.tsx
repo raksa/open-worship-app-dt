@@ -55,7 +55,7 @@ export const DirSourceContext = createContext<DirSource | null>(null);
 export type FileListType = FileSource[] | null | undefined;
 
 export default function FileListHandlerComp({
-    id,
+    className,
     mimetypeName,
     dirSource,
     header,
@@ -68,7 +68,7 @@ export default function FileListHandlerComp({
     defaultFolderName,
     fileSelectionOption,
 }: Readonly<{
-    id: string;
+    className: string;
     mimetypeName: MimetypeNameType;
     dirSource: DirSource;
     header?: any;
@@ -79,7 +79,7 @@ export default function FileListHandlerComp({
     checkExtraFile?: (filePath: string) => boolean;
     takeDroppedFile?: (file: DroppedFileType) => boolean;
     userClassName?: string;
-    defaultFolderName: string;
+    defaultFolderName?: string;
     fileSelectionOption?: FileSelectionOptionType;
 }>) {
     const handleNameApplying = async (name: string | null) => {
@@ -108,7 +108,7 @@ export default function FileListHandlerComp({
     return (
         <DirSourceContext value={dirSource}>
             <div
-                className={`${id} card w-100 h-100 ${userClassName ?? ''}`}
+                className={`${className} card w-100 h-100 ${userClassName ?? ''}`}
                 onDragOver={genOnDragOver(dirSource)}
                 onDragLeave={genOnDragLeave()}
                 onDrop={genOnDrop({
@@ -142,11 +142,11 @@ export default function FileListHandlerComp({
                     )}
                 >
                     <PathSelectorComp
-                        prefix={`path-${id}`}
+                        prefix={`path-${className}`}
                         dirSource={dirSource}
                         addItems={handleItemsAdding}
                     />
-                    {!dirSource.dirPath ? (
+                    {!dirSource.dirPath && defaultFolderName ? (
                         <NoDirSelectedComp
                             dirSource={dirSource}
                             defaultFolderName={defaultFolderName}

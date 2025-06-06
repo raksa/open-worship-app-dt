@@ -37,8 +37,8 @@ export default function BackgroundMediaComp({
 }: Readonly<{
     rendChild: RenderChildType;
     dragType: DragTypeEnum;
-    onClick?: (event: any) => void;
-    defaultFolderName: string;
+    onClick?: (event: any, fileSource: FileSource) => void;
+    defaultFolderName?: string;
     dirSourceSettingName: string;
     noDraggable?: boolean;
     isNameOnTop?: boolean;
@@ -66,7 +66,7 @@ export default function BackgroundMediaComp({
     }
     return (
         <FileListHandlerComp
-            id={`app-background-${backgroundType}`}
+            className={`app-background-${backgroundType}`}
             mimetypeName={backgroundType}
             defaultFolderName={defaultFolderName}
             dirSource={dirSource}
@@ -84,10 +84,29 @@ export default function BackgroundMediaComp({
     );
 }
 
+function FileFullNameRenderer({
+    fileFullName,
+}: Readonly<{
+    fileFullName: string;
+}>) {
+    return (
+        <div className="card-footer">
+            <p
+                className="app-ellipsis-left card-text"
+                style={{
+                    fontSize: '14px',
+                }}
+            >
+                {fileFullName}
+            </p>
+        </div>
+    );
+}
+
 function genBody(
     rendChild: RenderChildType,
     dragType: DragTypeEnum,
-    onClick: ((event: any) => void) | undefined,
+    onClick: ((event: any, fileSource: FileSource) => void) | undefined,
     noDraggable: boolean,
     isNameOnTop: boolean,
     filePath: string,
@@ -115,7 +134,7 @@ function genBody(
     };
     return (
         <div
-            key={fileSource.name}
+            key={fileSource.fileFullName}
             className={`${backgroundType}-thumbnail card ${selectedCN}`}
             title={title}
             draggable={!noDraggable}
@@ -134,8 +153,8 @@ function genBody(
                 ]);
             }}
             onClick={(event) => {
-                if (onClick) {
-                    onClick(event);
+                if (onClick !== undefined) {
+                    onClick(event, fileSource);
                 } else {
                     handleSelecting(event);
                 }
@@ -158,25 +177,6 @@ function genBody(
             {isNameOnTop ? null : (
                 <FileFullNameRenderer fileFullName={fileSource.fileFullName} />
             )}
-        </div>
-    );
-}
-
-function FileFullNameRenderer({
-    fileFullName,
-}: Readonly<{
-    fileFullName: string;
-}>) {
-    return (
-        <div className="card-footer">
-            <p
-                className="app-ellipsis-left card-text"
-                style={{
-                    fontSize: '14px',
-                }}
-            >
-                {fileFullName}
-            </p>
         </div>
     );
 }

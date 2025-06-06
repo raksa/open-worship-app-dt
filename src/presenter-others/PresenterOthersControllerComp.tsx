@@ -1,9 +1,15 @@
 import CountDownComp from './CountDownComp';
+import ImagesShowComp from './ImagesShowComp';
 import MarqueeComp from './MarqueeComp';
 
 export default function PresenterOthersControllerComp() {
     return (
-        <div className="w-100 h-100 app-border-white-round">
+        <div
+            className="w-100 h-100 app-border-white-round"
+            style={{
+                overflowY: 'auto',
+            }}
+        >
             <div>
                 <MarqueeComp />
             </div>
@@ -12,7 +18,7 @@ export default function PresenterOthersControllerComp() {
                 <CountDownComp />
             </div>
             <hr />
-            <div>TODO: Image slides show</div>
+            <ImagesShowComp />
             <hr />
             <div>TODO: Video show</div>
             <hr />

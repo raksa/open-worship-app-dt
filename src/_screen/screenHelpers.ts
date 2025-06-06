@@ -40,6 +40,16 @@ export type BibleListType = {
     [key: string]: BibleItemDataType;
 };
 
+export const scaleTypeList = [
+    'fill',
+    'fit',
+    'stretch',
+    'tile',
+    'center',
+    'span',
+] as const;
+export type ImageScaleType = (typeof scaleTypeList)[number];
+
 const _backgroundTypeList = ['color', 'image', 'video', 'sound'] as const;
 export type BackgroundType = (typeof _backgroundTypeList)[number];
 export type BackgroundSrcType = {
@@ -47,6 +57,7 @@ export type BackgroundSrcType = {
     src: string;
     width?: number;
     height?: number;
+    scaleType?: ImageScaleType;
 };
 export type BackgroundSrcListType = {
     [key: string]: BackgroundSrcType;

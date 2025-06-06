@@ -71,7 +71,7 @@ export default function AppDocumentListComp() {
     }
     return (
         <FileListHandlerComp
-            id="app-document-list"
+            className="app-document-list"
             mimetypeName="slide"
             defaultFolderName={defaultDataDirNames.SLIDE}
             dirSource={dirSource}
