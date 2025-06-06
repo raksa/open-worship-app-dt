@@ -11,7 +11,7 @@ import FileSource from '../helper/FileSource';
 import { useStateSettingString } from '../helper/settingHelpers';
 
 function rendChild(
-    scaleType: ImageScaleType,
+    _scaleType: ImageScaleType,
     filePath: string,
     selectedBackgroundSrcList: [string, BackgroundSrcType][],
 ) {
@@ -44,12 +44,18 @@ export default function ImagesShowComp() {
         'images-slide-show-scale-type',
         'stretch',
     );
+    const setScaleType1 = (event: any, value: ImageScaleType) => {
+        setScaleType(value);
+        ScreenBackgroundManager.handleBackgroundSelecting(event, 'image', {
+            src: null,
+            scaleType,
+        });
+    };
     const handleClicking = (event: any, fileSource: FileSource) => {
-        ScreenBackgroundManager.handleBackgroundSelecting(
-            event,
-            'image',
-            fileSource.src,
-        );
+        ScreenBackgroundManager.handleBackgroundSelecting(event, 'image', {
+            src: fileSource.src,
+            scaleType,
+        });
     };
     return (
         <div
@@ -67,7 +73,8 @@ export default function ImagesShowComp() {
                             className="form-select form-select-sm"
                             value={scaleType}
                             onChange={(event) => {
-                                setScaleType(
+                                setScaleType1(
+                                    event,
                                     event.target.value as ImageScaleType,
                                 );
                             }}

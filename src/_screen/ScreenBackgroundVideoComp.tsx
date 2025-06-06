@@ -23,7 +23,7 @@ export default function ScreenBackgroundVideoComp({
             style={{
                 width: `${width}px`,
                 height: `${height}px`,
-                transform: `translate(-${offsetH}px, -${offsetV}px)`,
+                transform: `translate(${offsetH}px, ${offsetV}px)`,
             }}
             autoPlay
             loop

@@ -18,7 +18,7 @@ function RenderColorPickerPerScreenComp({
     const handleColorChanging = async (newColor: AppColorType | null) => {
         const screenBackgroundManager =
             ScreenBackgroundManager.getInstance(screenId);
-        screenBackgroundManager.applyBackgroundSrc('color', newColor);
+        screenBackgroundManager.applyBackgroundSrc('color', { src: newColor });
     };
     return (
         <div className="p-1 m-1 app-border-white-round">
@@ -72,7 +72,7 @@ export default function BackgroundColorsComp() {
                         ScreenBackgroundManager.handleBackgroundSelecting(
                             event,
                             'color',
-                            newColor,
+                            { src: newColor },
                         );
                     }}
                 />

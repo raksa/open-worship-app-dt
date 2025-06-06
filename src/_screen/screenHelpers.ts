@@ -52,6 +52,10 @@ export type ImageScaleType = (typeof scaleTypeList)[number];
 
 const _backgroundTypeList = ['color', 'image', 'video', 'sound'] as const;
 export type BackgroundType = (typeof _backgroundTypeList)[number];
+export type BackgroundDataType = {
+    src: string | null;
+    scaleType?: ImageScaleType;
+};
 export type BackgroundSrcType = {
     type: BackgroundType;
     src: string;
@@ -137,8 +141,9 @@ export function calMediaSizes(
         width?: number;
         height?: number;
     },
+    scaleType?: ImageScaleType,
 ) {
-    if (width === undefined || height === undefined) {
+    if (width === undefined || height === undefined || scaleType === 'fill') {
         return {
             width: parentWidth,
             height: parentHeight,
@@ -146,11 +151,23 @@ export function calMediaSizes(
             offsetV: 0,
         };
     }
+    if (scaleType === 'fit') {
+        const ratio = Math.min(parentWidth / width, parentHeight / height);
+        const newWidth = width * ratio;
+        const newHeight = height * ratio;
+        return {
+            width: newWidth,
+            height: newHeight,
+            offsetH: (parentWidth - newWidth) / 2,
+            offsetV: (parentHeight - newHeight) / 2,
+        };
+    }
+    console.log(scaleType);
     const scale = Math.max(parentWidth / width, parentHeight / height);
     const newWidth = width * scale;
     const newHeight = height * scale;
-    const offsetH = (newWidth - parentWidth) / 2;
-    const offsetV = (newHeight - parentHeight) / 2;
+    const offsetH = (parentWidth - newWidth) / 2;
+    const offsetV = (parentHeight - newHeight) / 2;
     return {
         width: newWidth,
         height: newHeight,

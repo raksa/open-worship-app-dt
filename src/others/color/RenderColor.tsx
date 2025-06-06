@@ -17,7 +17,7 @@ function showContextMenu(event: any, color: AppColorType) {
             ScreenBackgroundManager.handleBackgroundSelecting(
                 event,
                 'color',
-                color,
+                { src: color },
                 true,
             );
         }),

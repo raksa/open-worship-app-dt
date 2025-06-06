@@ -128,7 +128,7 @@ function genBody(
         ScreenBackgroundManager.handleBackgroundSelecting(
             event,
             backgroundType,
-            fileSource.src,
+            { src: fileSource.src },
             isForceChoosing,
         );
     };
