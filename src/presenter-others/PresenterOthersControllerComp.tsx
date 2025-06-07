@@ -1,3 +1,4 @@
+import appProvider from '../server/appProvider';
 import CountDownComp from './CountDownComp';
 import ImagesSlideShowComp from './ImagesSlideShowComp';
 import MarqueeComp from './MarqueeComp';
@@ -16,13 +17,13 @@ export default function PresenterOthersControllerComp() {
             <hr />
             <ImagesSlideShowComp />
             <hr />
-            <div>TODO: Video show</div>
-            <hr />
-            <div>TODO: Sound show</div>
-            <hr />
             <div>TODO: Camera Show</div>
-            <hr />
-            <div>TODO: Javascript Show</div>
+            {appProvider.systemUtils.isDev ? (
+                <>
+                    <hr />
+                    <div>TODO: Javascript Show</div>
+                </>
+            ) : null}
         </div>
     );
 }
