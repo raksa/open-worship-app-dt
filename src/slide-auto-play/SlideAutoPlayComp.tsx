@@ -114,7 +114,10 @@ export default function SlideAutoPlayComp({
         );
     }
     return (
-        <div className="slide-auto-play show d-flex" style={style}>
+        <div
+            className="slide-auto-play show d-flex align-items-center"
+            style={style}
+        >
             <div className="p-2">
                 <i
                     className="bi bi-x-lg app-caught-hover-pointer"
