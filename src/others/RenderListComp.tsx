@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { createContext, use, useState } from 'react';
 
 import { useAppEffect } from '../helper/debuggerHelpers';
 import DirSource from '../helper/DirSource';
@@ -8,6 +8,10 @@ import LoadingComp from './LoadingComp';
 
 const UNKNOWN_COLOR_NOTE = 'unknown';
 
+export const FilePathLoadedContext = createContext<{
+    onLoaded?: (filePaths: string[] | undefined) => void;
+} | null>(null);
+
 export default function RenderListComp({
     dirSource,
     mimetypeName,
@@ -15,8 +19,9 @@ export default function RenderListComp({
 }: Readonly<{
     dirSource: DirSource;
     mimetypeName: MimetypeNameType;
-    bodyHandler: (_: string[]) => any;
+    bodyHandler: (filePaths: string[]) => any;
 }>) {
+    const filePathLoadedCtx = use(FilePathLoadedContext);
     const [filePaths, setFilePaths] = useState<string[] | null | undefined>(
         null,
     );
@@ -31,6 +36,9 @@ export default function RenderListComp({
             await Promise.all(promises);
         }
         setFilePaths(newFilePaths);
+        if (filePathLoadedCtx?.onLoaded !== undefined) {
+            filePathLoadedCtx.onLoaded(newFilePaths);
+        }
     };
     useAppEffect(() => {
         if (filePaths === null) {
@@ -52,28 +60,28 @@ export default function RenderListComp({
     if (filePaths === null) {
         return <LoadingComp />;
     }
-    const fileSourceColorMap: { [key: string]: string[] } = {
+    const filePathColorMap: { [key: string]: string[] } = {
         [UNKNOWN_COLOR_NOTE]: [],
     };
     filePaths.forEach((filePath) => {
         const fileSource = FileSource.getInstance(filePath);
         const colorNote = fileSource.colorNote ?? UNKNOWN_COLOR_NOTE;
-        fileSourceColorMap[colorNote] = fileSourceColorMap[colorNote] ?? [];
-        fileSourceColorMap[colorNote].push(filePath);
+        filePathColorMap[colorNote] = filePathColorMap[colorNote] ?? [];
+        filePathColorMap[colorNote].push(filePath);
     });
-    if (Object.keys(fileSourceColorMap).length === 1) {
+    if (Object.keys(filePathColorMap).length === 1) {
         return bodyHandler(filePaths);
     }
-    const keys = Object.keys(fileSourceColorMap)
+    const colorNotes = Object.keys(filePathColorMap)
         .filter((key) => {
             return key !== UNKNOWN_COLOR_NOTE;
         })
         .sort((a, b) => a.localeCompare(b));
-    keys.push(UNKNOWN_COLOR_NOTE);
+    colorNotes.push(UNKNOWN_COLOR_NOTE);
     return (
         <>
-            {keys.map((colorNote) => {
-                const subFileSources = fileSourceColorMap[colorNote];
+            {colorNotes.map((colorNote) => {
+                const subFilePaths = filePathColorMap[colorNote];
                 return (
                     <div key={colorNote}>
                         <hr
@@ -87,7 +95,7 @@ export default function RenderListComp({
                                       }
                             }
                         />
-                        {bodyHandler(subFileSources)}
+                        {bodyHandler(subFilePaths)}
                     </div>
                 );
             })}

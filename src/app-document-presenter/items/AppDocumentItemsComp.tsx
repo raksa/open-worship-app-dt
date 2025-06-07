@@ -136,7 +136,7 @@ export default function AppDocumentItemsComp() {
                         handleNextItemSelecting({
                             container: element,
                             varyAppDocumentItems,
-                            isLeft: !data.isNext,
+                            isNext: data.isNext,
                         });
                     }}
                 />

@@ -59,6 +59,14 @@ export default class ScreenManagerBase
         return this.screenId.toString();
     }
 
+    static idFromKey(key: string): number {
+        const id = parseInt(key, 10);
+        if (isNaN(id)) {
+            throw new Error(`Invalid screen key: ${key}`);
+        }
+        return id;
+    }
+
     get displayId() {
         return getDisplayIdByScreenId(this.screenId);
     }

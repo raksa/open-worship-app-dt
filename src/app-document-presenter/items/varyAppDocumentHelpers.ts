@@ -51,49 +51,38 @@ export function showVaryAppDocumentItemInViewport(id: number) {
 }
 
 function findNextSlide(
-    isLeft: boolean,
+    isNext: boolean,
     items: VaryAppDocumentItemType[],
     itemId: number,
-    divContainer: HTMLDivElement,
 ) {
     let index = items.findIndex((item) => {
         return item.id === itemId;
     });
     if (index === -1) {
-        return { targetItem: null, targetDiv: null };
+        return null;
     }
-    index += isLeft ? -1 : 1;
+    index += isNext ? 1 : -1;
     index += items.length;
 
-    const targetItem = items[index % items.length] ?? null;
-    return {
-        targetItem,
-        targetDiv:
-            targetItem === null
-                ? null
-                : (divContainer.querySelector(
-                      `[${DATA_QUERY_KEY}="${targetItem.id}"]`,
-                  ) as HTMLDivElement),
-    };
+    return items[index % items.length] ?? null;
 }
 
 export function handleNextItemSelecting({
     container,
     varyAppDocumentItems,
-    isLeft,
+    isNext,
 }: {
     container: HTMLDivElement;
     varyAppDocumentItems: VaryAppDocumentItemType[];
-    isLeft: boolean;
+    isNext: boolean;
 }) {
     const divSelectedList = container.querySelectorAll(
         `[${DATA_QUERY_KEY}].app-highlight-selected`,
     );
     const foundList = Array.from(divSelectedList).reduce(
         (
-            r: {
+            bucket: {
                 item: VaryAppDocumentItemType;
-                targetDiv: HTMLDivElement;
                 screenId: number;
             }[],
             divSelected,
@@ -106,18 +95,17 @@ export function handleNextItemSelecting({
             ).map((element) => {
                 return parseInt(element.getAttribute('data-screen-id') ?? '');
             });
-            const { targetItem, targetDiv } = findNextSlide(
-                isLeft,
+            const targetItem = findNextSlide(
+                isNext,
                 varyAppDocumentItems,
                 itemId,
-                document.activeElement as HTMLDivElement,
             );
-            if (targetItem === null || targetDiv === null) {
-                return r;
+            if (targetItem === null) {
+                return bucket;
             }
-            return r.concat(
+            return bucket.concat(
                 screenIds.map((screenId) => {
-                    return { item: targetItem, targetDiv, screenId };
+                    return { item: targetItem, screenId };
                 }),
             );
         },
@@ -169,8 +157,8 @@ export function handleArrowing(
     event.preventDefault();
     const isLeft = ['ArrowLeft', 'ArrowUp', 'PageUp'].includes(event.key);
     handleNextItemSelecting({
-        container: element as HTMLDivElement,
+        container: element,
         varyAppDocumentItems,
-        isLeft,
+        isNext: !isLeft,
     });
 }
