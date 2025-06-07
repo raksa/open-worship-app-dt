@@ -25,33 +25,38 @@ export default function MarqueeComp() {
         handleMarqueeShowing(event, true);
     };
     return (
-        <div>
-            <div className="form-floating">
-                <textarea
-                    id="marquee-textarea"
-                    className="form-control"
-                    cols={30}
-                    rows={20}
-                    value={text}
-                    onChange={(event) => {
-                        setText(event.target.value);
-                    }}
-                    placeholder="Leave a marquee text here"
-                />
-                <label htmlFor="marquee-textarea">Marquee</label>
-                <button
-                    className="btn btn-secondary"
-                    onClick={handleMarqueeShowing}
-                    onContextMenu={handleContextMenuOpening}
-                >
-                    Show Marquee
-                </button>
+        <div className="card m-2">
+            <div className="card-header">
+                <h4>Message</h4>
             </div>
-            <ScreensRendererComp
-                showingScreenIds={showingScreenIds}
-                buttonTitle="Hide Marquee"
-                handleMarqueeHiding={handleMarqueeHiding}
-            />
+            <div className="card-body">
+                <div className="form-floating">
+                    <textarea
+                        id="marquee-textarea"
+                        className="form-control"
+                        cols={30}
+                        rows={20}
+                        value={text}
+                        onChange={(event) => {
+                            setText(event.target.value);
+                        }}
+                        placeholder="Leave a marquee text here"
+                    />
+                    <label htmlFor="marquee-textarea">Marquee</label>
+                    <button
+                        className="btn btn-secondary"
+                        onClick={handleMarqueeShowing}
+                        onContextMenu={handleContextMenuOpening}
+                    >
+                        Show Marquee
+                    </button>
+                </div>
+                <ScreensRendererComp
+                    showingScreenIds={showingScreenIds}
+                    buttonTitle="Hide Marquee"
+                    handleMarqueeHiding={handleMarqueeHiding}
+                />
+            </div>
         </div>
     );
 }

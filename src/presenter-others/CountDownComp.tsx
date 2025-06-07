@@ -157,14 +157,25 @@ export default function CountDownComp() {
         });
     };
     return (
-        <div>
-            <CountDownOnDatetimeComp />
-            <CountDownTimerComp />
-            <ScreensRendererComp
-                showingScreenIds={showingScreenIds}
-                buttonTitle="Hide Timer"
-                handleMarqueeHiding={handleMarqueeHiding}
-            />
+        <div className="card m-2">
+            <div className="card-header">
+                <h4>Timers</h4>
+            </div>
+            <div className="card-body">
+                <div className="m-1">
+                    <CountDownOnDatetimeComp />
+                </div>
+                <div className="m-1">
+                    <CountDownTimerComp />
+                </div>
+                <div className="m-1">
+                    <ScreensRendererComp
+                        showingScreenIds={showingScreenIds}
+                        buttonTitle="Hide Timer"
+                        handleMarqueeHiding={handleMarqueeHiding}
+                    />
+                </div>
+            </div>
         </div>
     );
 }

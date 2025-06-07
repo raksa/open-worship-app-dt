@@ -1,3 +1,5 @@
+import '../background/BackgroundImagesComp.scss';
+
 import ScreenBackgroundManager from '../_screen/managers/ScreenBackgroundManager';
 import {
     BackgroundSrcType,

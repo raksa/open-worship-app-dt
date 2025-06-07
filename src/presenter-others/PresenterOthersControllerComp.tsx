@@ -10,13 +10,9 @@ export default function PresenterOthersControllerComp() {
                 overflowY: 'auto',
             }}
         >
-            <div>
-                <MarqueeComp />
-            </div>
+            <MarqueeComp />
             <hr />
-            <div>
-                <CountDownComp />
-            </div>
+            <CountDownComp />
             <hr />
             <ImagesShowComp />
             <hr />
