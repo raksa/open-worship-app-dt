@@ -114,58 +114,68 @@ export default class ScreenOtherManager extends ScreenEventHandler<ScreenOtherEv
         isNoSyncGroup = false,
     ) {
         if (
-            !checkIsCountdownDatesEq(
+            this.screenManagerBase.checkIsLockedWithMessage() ||
+            checkIsCountdownDatesEq(
                 countdownData?.dateTime ?? null,
                 this.alertData.countdownData?.dateTime ?? null,
             )
         ) {
-            this.cleanRender(this.divCountdown);
-            this.applyAlertDataWithSyncGroup(
-                {
-                    ...this.alertData,
-                    countdownData,
-                },
-                isNoSyncGroup,
-            );
-            this.renderCountdown();
-            this.saveAlertData();
+            return;
         }
+        this.cleanRender(this.divCountdown);
+        this.applyAlertDataWithSyncGroup(
+            {
+                ...this.alertData,
+                countdownData,
+            },
+            isNoSyncGroup,
+        );
+        this.renderCountdown();
+        this.saveAlertData();
     }
 
     setMarqueeData(
         marqueeData: { text: string } | null,
         isNoSyncGroup = false,
     ) {
-        if (marqueeData?.text !== this.alertData.marqueeData?.text) {
-            this.cleanRender(this.divMarquee);
-            this.applyAlertDataWithSyncGroup(
-                {
-                    ...this.alertData,
-                    marqueeData,
-                },
-                isNoSyncGroup,
-            );
-            this.renderMarquee();
-            this.saveAlertData();
+        if (
+            this.screenManagerBase.checkIsLockedWithMessage() ||
+            marqueeData?.text === this.alertData.marqueeData?.text
+        ) {
+            return;
         }
+        this.cleanRender(this.divMarquee);
+        this.applyAlertDataWithSyncGroup(
+            {
+                ...this.alertData,
+                marqueeData,
+            },
+            isNoSyncGroup,
+        );
+        this.renderMarquee();
+        this.saveAlertData();
     }
 
     setCameraData(
         cameraData: { id: string; extraStyle: React.CSSProperties } | null,
         isNoSyncGroup = false,
     ) {
-        if (cameraData?.id !== this.alertData.cameraData?.id) {
-            this.cleanRender(this.divCamera);
-            this.applyAlertDataWithSyncGroup(
-                {
-                    ...this.alertData,
-                    cameraData,
-                },
-                isNoSyncGroup,
-            );
-            this.renderCamera();
-            this.saveAlertData();
+        if (
+            this.screenManagerBase.checkIsLockedWithMessage() ||
+            cameraData?.id === this.alertData.cameraData?.id
+        ) {
+            return;
         }
+        this.cleanRender(this.divCamera);
+        this.applyAlertDataWithSyncGroup(
+            {
+                ...this.alertData,
+                cameraData,
+            },
+            isNoSyncGroup,
+        );
+        this.renderCamera();
+        this.saveAlertData();
     }
 
     receiveSyncScreen(message: ScreenMessageType) {

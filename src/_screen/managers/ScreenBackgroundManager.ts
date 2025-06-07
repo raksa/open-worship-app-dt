@@ -19,7 +19,6 @@ import ScreenEventHandler from './ScreenEventHandler';
 import ScreenManagerBase from './ScreenManagerBase';
 import ScreenEffectManager from './ScreenEffectManager';
 import appProvider from '../../server/appProvider';
-import { showSimpleToast } from '../../toast/toastHelpers';
 import { StyleAnimType } from '../transitionEffectHelpers';
 
 export type ScreenBackgroundManagerEventType = 'update';
@@ -60,11 +59,7 @@ class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManager
     }
 
     set backgroundSrc(backgroundSrc: BackgroundSrcType | null) {
-        if (this.screenManagerBase.isLocked) {
-            showSimpleToast(
-                'Screen Manager is locked',
-                'Please unlock the screen manager to change the app document',
-            );
+        if (this.screenManagerBase.checkIsLockedWithMessage()) {
             return;
         }
         this._backgroundSrc = backgroundSrc;

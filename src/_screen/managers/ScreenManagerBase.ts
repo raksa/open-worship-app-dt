@@ -21,6 +21,7 @@ import {
     SCREEN_MANAGER_SETTING_NAME,
 } from './screenHelpers';
 import appProvider from '../../server/appProvider';
+import { showSimpleToast } from '../../toast/toastHelpers';
 
 export type ScreenManagerEventType =
     | 'instance'
@@ -93,6 +94,17 @@ export default class ScreenManagerBase
 
     get isShowing() {
         return this._isShowing;
+    }
+
+    checkIsLockedWithMessage() {
+        if (this.isLocked) {
+            showSimpleToast(
+                'Screen Manager is locked',
+                'Please unlock the screen manager to change the app document',
+            );
+            return true;
+        }
+        return false;
     }
 
     updateDim() {

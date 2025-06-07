@@ -4,7 +4,7 @@ import {
 } from '../helper/settingHelpers';
 import ScreenOtherManager from '../_screen/managers/ScreenOtherManager';
 import { useScreenOtherManagerEvents } from '../_screen/managers/screenEventHelpers';
-import { getShowingScreenIds, hideAlert } from './alertHelpers';
+import { getShowingScreenIds, getScreenManagerInstances } from './alertHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
 import OtherRenderHeaderTitleComp from './OtherRenderHeaderTitleComp';
 
@@ -22,7 +22,7 @@ export default function OtherMessageComp() {
         return data.marqueeData !== null;
     });
     const handleMarqueeHiding = (screenId: number) => {
-        hideAlert(screenId, (screenOtherManager) => {
+        getScreenManagerInstances(screenId, (screenOtherManager) => {
             screenOtherManager.setMarqueeData(null);
         });
     };
@@ -34,13 +34,26 @@ export default function OtherMessageComp() {
     };
     return (
         <div className="card m-2">
-            <div className="card-header">
+            <div
+                className={
+                    'card-header d-flex justify-content-between' +
+                    ' align-items-center'
+                }
+            >
                 <OtherRenderHeaderTitleComp
                     isOpened={isOpened}
                     setIsOpened={setIsOpened}
                 >
                     <h4>Message</h4>
                 </OtherRenderHeaderTitleComp>
+                {!isOpened ? (
+                    <ScreensRendererComp
+                        showingScreenIds={showingScreenIds}
+                        buttonTitle="Hide Camera"
+                        handleOtherHiding={handleMarqueeHiding}
+                        isMini={true}
+                    />
+                ) : null}
             </div>
             {isOpened ? (
                 <div className="card-body">
@@ -68,7 +81,7 @@ export default function OtherMessageComp() {
                     <ScreensRendererComp
                         showingScreenIds={showingScreenIds}
                         buttonTitle="Hide Marquee"
-                        handleMarqueeHiding={handleMarqueeHiding}
+                        handleOtherHiding={handleMarqueeHiding}
                     />
                 </div>
             ) : null}

@@ -21,7 +21,7 @@ export function getShowingScreenIds(
     return showingScreenIds;
 }
 
-export function hideAlert(
+export function getScreenManagerInstances(
     screenId: number,
     hidingFunc: (screenOtherManager: ScreenOtherManager) => void,
 ) {

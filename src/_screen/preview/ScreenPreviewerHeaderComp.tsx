@@ -37,7 +37,7 @@ export default function ScreenPreviewerHeaderComp() {
                                 `bi bi-${isLocked ? 'lock-fill' : 'unlock'}` +
                                 ' app-caught-hover-pointer'
                             }
-                            style={{ color: isLocked ? 'green' : '' }}
+                            style={{ color: isLocked ? 'red' : 'green' }}
                             onClick={() => {
                                 setIsLocked1(!isLocked);
                             }}

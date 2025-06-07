@@ -35,7 +35,6 @@ import { getAllScreenManagerBases } from './screenManagerBaseHelpers';
 import appProvider from '../../server/appProvider';
 import { applyAttachBackground } from './screenBackgroundHelpers';
 import { BibleItemType } from '../../bible-list/bibleItemHelpers';
-import { showSimpleToast } from '../../toast/toastHelpers';
 
 let textStyle: AnyObjectType = {};
 class ScreenBibleManager extends ScreenEventHandler<ScreenBibleManagerEventType> {
@@ -94,11 +93,7 @@ class ScreenBibleManager extends ScreenEventHandler<ScreenBibleManagerEventType>
     }
 
     set isLineSync(isLineSync: boolean) {
-        if (this.screenManagerBase.isLocked) {
-            showSimpleToast(
-                'Screen Manager is locked',
-                'Please unlock the screen manager to change the app document',
-            );
+        if (this.screenManagerBase.checkIsLockedWithMessage()) {
             return;
         }
         setSetting(
@@ -285,11 +280,7 @@ class ScreenBibleManager extends ScreenEventHandler<ScreenBibleManagerEventType>
     }
 
     applyFullDataSrcWithSyncGroup(bibleData: BibleItemDataType | null) {
-        if (this.screenManagerBase.isLocked) {
-            showSimpleToast(
-                'Screen Manager is locked',
-                'Please unlock the screen manager to change the app document',
-            );
+        if (this.screenManagerBase.checkIsLockedWithMessage()) {
             return;
         }
         ScreenBibleManager.enableSyncGroup(this.screenId);
@@ -297,11 +288,7 @@ class ScreenBibleManager extends ScreenEventHandler<ScreenBibleManagerEventType>
     }
 
     receiveSyncScreen(message: ScreenMessageType) {
-        if (this.screenManagerBase.isLocked) {
-            showSimpleToast(
-                'Screen Manager is locked',
-                'Please unlock the screen manager to change the app document',
-            );
+        if (this.screenManagerBase.checkIsLockedWithMessage()) {
             return;
         }
         this.screenViewData = message.data;
