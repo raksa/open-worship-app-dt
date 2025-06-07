@@ -1,7 +1,7 @@
 import appProvider from '../server/appProvider';
-import CountDownComp from './CountDownComp';
-import ImagesSlideShowComp from './ImagesSlideShowComp';
-import MarqueeComp from './MarqueeComp';
+import OtherCountDownComp from './OtherCountDownComp';
+import OtherImagesSlideShowComp from './OtherImagesSlideShowComp';
+import OtherMessageComp from './OtherMessageComp';
 
 export default function PresenterOthersControllerComp() {
     return (
@@ -11,11 +11,11 @@ export default function PresenterOthersControllerComp() {
                 overflowY: 'auto',
             }}
         >
-            <MarqueeComp />
+            <OtherMessageComp />
             <hr />
-            <CountDownComp />
+            <OtherCountDownComp />
             <hr />
-            <ImagesSlideShowComp />
+            <OtherImagesSlideShowComp />
             <hr />
             <div>TODO: Camera Show</div>
             {appProvider.systemUtils.isDev ? (

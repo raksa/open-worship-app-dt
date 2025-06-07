@@ -183,7 +183,7 @@ function useAnyItemSelected(filePaths: string[] | undefined) {
     return isAnyItemSelected;
 }
 
-export default function ImagesSlideShowComp() {
+export default function OtherImagesSlideShowComp() {
     const [filePaths, setFilePaths] = useState<string[] | undefined>();
     const isAnyItemSelected = useAnyItemSelected(filePaths);
     const [scaleType, setScaleType] = useStateSettingString<ImageScaleType>(

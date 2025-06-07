@@ -146,7 +146,7 @@ function CountDownTimerComp() {
     );
 }
 
-export default function CountDownComp() {
+export default function OtherCountDownComp() {
     useScreenAlertManagerEvents(['update']);
     const showingScreenIds = getShowingScreenIds((data) => {
         return data.countdownData !== null;

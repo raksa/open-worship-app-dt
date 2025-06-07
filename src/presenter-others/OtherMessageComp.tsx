@@ -4,7 +4,7 @@ import { useScreenAlertManagerEvents } from '../_screen/managers/screenEventHelp
 import { getShowingScreenIds, hideAlert } from './alertHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
 
-export default function MarqueeComp() {
+export default function OtherMessageComp() {
     useScreenAlertManagerEvents(['update']);
     const [text, setText] = useStateSettingString<string>(
         'marquee-setting',
