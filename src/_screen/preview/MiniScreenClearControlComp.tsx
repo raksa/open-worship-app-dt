@@ -40,13 +40,13 @@ function genBtnMaps(screenManager: ScreenManager) {
         screenBackgroundManager,
         screenVaryAppDocumentManager,
         screenBibleManager,
-        screenAlertManager,
+        screenOtherManager,
     } = screenManager;
 
     const isShowingBackground = screenBackgroundManager.isShowing;
     const isShowingFG = screenVaryAppDocumentManager.isShowing;
     const isShowingBible = screenBibleManager.isShowing;
-    const isShowingAlert = screenAlertManager.isShowing;
+    const isShowingAlert = screenOtherManager.isShowing;
     const isShowing =
         isShowingBackground || isShowingFG || isShowingBible || isShowingAlert;
     return [

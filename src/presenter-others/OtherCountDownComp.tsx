@@ -2,10 +2,10 @@ import {
     useStateSettingBoolean,
     useStateSettingString,
 } from '../helper/settingHelpers';
-import ScreenAlertManager from '../_screen/managers/ScreenAlertManager';
+import ScreenOtherManager from '../_screen/managers/ScreenOtherManager';
 import { getShowingScreenIds, hideAlert } from './alertHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
-import { useScreenAlertManagerEvents } from '../_screen/managers/screenEventHelpers';
+import { useScreenOtherManagerEvents } from '../_screen/managers/screenEventHelpers';
 import OtherRenderHeaderTitleComp from './OtherRenderHeaderTitleComp';
 
 function useTiming() {
@@ -34,7 +34,7 @@ function CountDownOnDatetimeComp() {
     const { date, setDate, time, setTime, nowString, todayString } =
         useTiming();
     const handleDateTimeShowing = (event: any, isForceChoosing = false) => {
-        ScreenAlertManager.setCountdown(
+        ScreenOtherManager.setCountdown(
             event,
             new Date(date + ' ' + time),
             isForceChoosing,
@@ -97,7 +97,7 @@ function CountDownTimerComp() {
                 3600 * parseInt(hours) +
                 1,
         );
-        ScreenAlertManager.setCountdown(event, targetDatetime, isForceChoosing);
+        ScreenOtherManager.setCountdown(event, targetDatetime, isForceChoosing);
     };
     const handleContextMenuOpening = (event: any) => {
         handleTimerShowing(event, true);
@@ -155,13 +155,13 @@ export default function OtherCountDownComp() {
         'other-countdown-opened',
         true,
     );
-    useScreenAlertManagerEvents(['update']);
+    useScreenOtherManagerEvents(['update']);
     const showingScreenIds = getShowingScreenIds((data) => {
         return data.countdownData !== null;
     });
     const handleMarqueeHiding = (screenId: number) => {
-        hideAlert(screenId, (screenAlertManager) => {
-            screenAlertManager.setCountdownData(null);
+        hideAlert(screenId, (screenOtherManager) => {
+            screenOtherManager.setCountdownData(null);
         });
     };
     return (

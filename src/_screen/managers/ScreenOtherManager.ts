@@ -6,8 +6,9 @@ import {
     checkIsCountdownDatesEq,
     genHtmlAlertCountdown,
     genHtmlAlertMarquee,
+    getAndShowMedia,
     removeAlert,
-} from '../screenAlertHelpers';
+} from '../screenOtherHelpers';
 import {
     AlertDataType,
     BasicScreenMessageType,
@@ -19,9 +20,9 @@ import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
 import ScreenManagerBase from './ScreenManagerBase';
 
-export type ScreenAlertEventType = 'update';
+export type ScreenOtherEventType = 'update';
 
-export default class ScreenAlertManager extends ScreenEventHandler<ScreenAlertEventType> {
+export default class ScreenOtherManager extends ScreenEventHandler<ScreenOtherEventType> {
     static readonly eventNamePrefix: string = 'screen-alert-m';
     private _div: HTMLDivElement | null = null;
     alertData: AlertDataType;
@@ -30,8 +31,9 @@ export default class ScreenAlertManager extends ScreenEventHandler<ScreenAlertEv
         super(screenManagerBase);
         const allAlertDataList = getAlertDataListOnScreenSetting();
         this.alertData = allAlertDataList[this.key] ?? {
-            marqueeData: null,
             countdownData: null,
+            marqueeData: null,
+            cameraData: null,
         };
     }
 
@@ -42,16 +44,24 @@ export default class ScreenAlertManager extends ScreenEventHandler<ScreenAlertEv
         return this._div.querySelector(`#${divId}`) as HTMLDivElement;
     }
 
-    get isMarqueeShowing() {
-        return this.alertData.marqueeData !== null;
-    }
-
     get isCountdownShowing() {
         return this.alertData.countdownData !== null;
     }
 
+    get isMarqueeShowing() {
+        return this.alertData.marqueeData !== null;
+    }
+
+    get isCameraShowing() {
+        return this.alertData.cameraData !== null;
+    }
+
     get isShowing() {
-        return this.isMarqueeShowing || this.isCountdownShowing;
+        return (
+            this.isCountdownShowing ||
+            this.isMarqueeShowing ||
+            this.isCameraShowing
+        );
     }
 
     get divCountdown() {
@@ -60,6 +70,10 @@ export default class ScreenAlertManager extends ScreenEventHandler<ScreenAlertEv
 
     get divMarquee() {
         return this.getDivChild('marquee');
+    }
+
+    get divCamera() {
+        return this.getDivChild('camera');
     }
 
     set div(div: HTMLDivElement | null) {
@@ -72,7 +86,7 @@ export default class ScreenAlertManager extends ScreenEventHandler<ScreenAlertEv
         isNoSyncGroup = false,
     ) {
         if (!isNoSyncGroup) {
-            ScreenAlertManager.enableSyncGroup(this.screenId);
+            ScreenOtherManager.enableSyncGroup(this.screenId);
         }
         Object.assign(this.alertData, alertData);
     }
@@ -93,24 +107,6 @@ export default class ScreenAlertManager extends ScreenEventHandler<ScreenAlertEv
             type: 'alert',
             data: this.alertData,
         };
-    }
-
-    setMarqueeData(
-        marqueeData: { text: string } | null,
-        isNoSyncGroup = false,
-    ) {
-        if (marqueeData?.text !== this.alertData.marqueeData?.text) {
-            this.cleanRender(this.divMarquee);
-            this.applyAlertDataWithSyncGroup(
-                {
-                    ...this.alertData,
-                    marqueeData,
-                },
-                isNoSyncGroup,
-            );
-            this.renderMarquee();
-            this.saveAlertData();
-        }
     }
 
     setCountdownData(
@@ -136,24 +132,65 @@ export default class ScreenAlertManager extends ScreenEventHandler<ScreenAlertEv
         }
     }
 
+    setMarqueeData(
+        marqueeData: { text: string } | null,
+        isNoSyncGroup = false,
+    ) {
+        if (marqueeData?.text !== this.alertData.marqueeData?.text) {
+            this.cleanRender(this.divMarquee);
+            this.applyAlertDataWithSyncGroup(
+                {
+                    ...this.alertData,
+                    marqueeData,
+                },
+                isNoSyncGroup,
+            );
+            this.renderMarquee();
+            this.saveAlertData();
+        }
+    }
+
+    setCameraData(
+        cameraData: { id: string; extraStyle: React.CSSProperties } | null,
+        isNoSyncGroup = false,
+    ) {
+        if (cameraData?.id !== this.alertData.cameraData?.id) {
+            this.cleanRender(this.divCamera);
+            this.applyAlertDataWithSyncGroup(
+                {
+                    ...this.alertData,
+                    cameraData,
+                },
+                isNoSyncGroup,
+            );
+            this.renderCamera();
+            this.saveAlertData();
+        }
+    }
+
     receiveSyncScreen(message: ScreenMessageType) {
         const data: AlertDataType = message.data;
-        this.setMarqueeData(data.marqueeData, true);
         this.setCountdownData(data.countdownData, true);
+        this.setMarqueeData(data.marqueeData, true);
+        this.setCameraData(data.cameraData, true);
         this.fireUpdateEvent();
     }
 
     fireUpdateEvent() {
         super.fireUpdateEvent();
-        ScreenAlertManager.fireUpdateEvent();
+        ScreenOtherManager.fireUpdateEvent();
     }
 
     static getAlertDataListByType(alertType: AlertType) {
         const alertDataList = getAlertDataListOnScreenSetting();
         return Object.entries(alertDataList).filter(([_, backgroundSrc]) => {
+            if (alertType === 'countdown') {
+                return backgroundSrc.countdownData !== null;
+            }
             if (alertType === 'marquee') {
                 return backgroundSrc.marqueeData !== null;
-            } else {
+            }
+            if (alertType === 'camera') {
                 return backgroundSrc.countdownData !== null;
             }
         });
@@ -161,32 +198,17 @@ export default class ScreenAlertManager extends ScreenEventHandler<ScreenAlertEv
 
     static async setData(
         event: React.MouseEvent<HTMLElement, MouseEvent>,
-        callback: (screenAlertManager: ScreenAlertManager) => void,
+        callback: (screenOtherManager: ScreenOtherManager) => void,
         isForceChoosing: boolean,
     ) {
-        const callbackSave = async (screenAlertManager: ScreenAlertManager) => {
-            callback(screenAlertManager);
-            screenAlertManager.saveAlertData();
+        const callbackSave = async (screenOtherManager: ScreenOtherManager) => {
+            callback(screenOtherManager);
+            screenOtherManager.saveAlertData();
         };
         const screenIds = await this.chooseScreenIds(event, isForceChoosing);
         screenIds.forEach((screenId) => {
             callbackSave(this.getInstance(screenId));
         });
-    }
-
-    static async setMarquee(
-        event: React.MouseEvent<HTMLElement, MouseEvent>,
-        text: string | null,
-        isForceChoosing = false,
-    ) {
-        this.setData(
-            event,
-            (screenAlertManager) => {
-                const marqueeData = text !== null ? { text } : null;
-                screenAlertManager.setMarqueeData(marqueeData);
-            },
-            isForceChoosing,
-        );
     }
 
     static async setCountdown(
@@ -196,42 +218,88 @@ export default class ScreenAlertManager extends ScreenEventHandler<ScreenAlertEv
     ) {
         this.setData(
             event,
-            (screenAlertManager) => {
+            (screenOtherManager) => {
                 const countdownData = dateTime !== null ? { dateTime } : null;
-                screenAlertManager.setCountdownData(countdownData);
+                screenOtherManager.setCountdownData(countdownData);
             },
             isForceChoosing,
         );
     }
 
-    renderMarquee() {
-        if (this.alertData.marqueeData !== null) {
-            const newDiv = genHtmlAlertMarquee(
-                this.alertData.marqueeData,
-                this.screenManagerBase,
-            );
-            this.divMarquee.appendChild(newDiv);
-            newDiv.querySelectorAll('.marquee').forEach((element: any) => {
-                if (element.offsetWidth < element.scrollWidth) {
-                    element.classList.add('moving');
-                }
-            });
-        }
+    static async setMarquee(
+        event: React.MouseEvent<HTMLElement, MouseEvent>,
+        text: string | null,
+        isForceChoosing = false,
+    ) {
+        this.setData(
+            event,
+            (screenOtherManager) => {
+                const marqueeData = text !== null ? { text } : null;
+                screenOtherManager.setMarqueeData(marqueeData);
+            },
+            isForceChoosing,
+        );
+    }
+
+    static async setCamera(
+        event: React.MouseEvent<HTMLElement, MouseEvent>,
+        id: string | null,
+        extraStyle: CSSProperties = {},
+        isForceChoosing = false,
+    ) {
+        this.setData(
+            event,
+            (screenOtherManager) => {
+                const cameraData = id !== null ? { id, extraStyle } : null;
+                screenOtherManager.setCameraData(cameraData);
+            },
+            isForceChoosing,
+        );
     }
 
     renderCountdown() {
-        if (this.alertData.countdownData !== null) {
-            const newDiv = genHtmlAlertCountdown(
-                this.alertData.countdownData,
-                this.screenManagerBase,
-            );
-            this.divCountdown.appendChild(newDiv);
+        if (this.alertData.countdownData === null) {
+            return;
         }
+        const newDiv = genHtmlAlertCountdown(
+            this.alertData.countdownData,
+            this.screenManagerBase,
+        );
+        this.divCountdown.appendChild(newDiv);
+    }
+
+    renderMarquee() {
+        if (this.alertData.marqueeData === null) {
+            return;
+        }
+        const newDiv = genHtmlAlertMarquee(
+            this.alertData.marqueeData,
+            this.screenManagerBase,
+        );
+        this.divMarquee.appendChild(newDiv);
+        newDiv.querySelectorAll('.marquee').forEach((element: any) => {
+            if (element.offsetWidth < element.scrollWidth) {
+                element.classList.add('moving');
+            }
+        });
+    }
+
+    renderCamera() {
+        if (this.alertData.cameraData === null) {
+            return;
+        }
+        const cameraId = this.alertData.cameraData.id;
+        getAndShowMedia({
+            id: cameraId,
+            container: this.divCamera,
+            extraStyle: this.alertData.cameraData.extraStyle,
+        });
     }
 
     renderAll() {
-        this.renderMarquee();
         this.renderCountdown();
+        this.renderMarquee();
+        this.renderCamera();
     }
 
     cleanRender(divContainer: HTMLDivElement) {
@@ -253,8 +321,8 @@ export default class ScreenAlertManager extends ScreenEventHandler<ScreenAlertEv
 
     static receiveSyncScreen(message: ScreenMessageType) {
         const { screenId } = message;
-        const screenAlertManager = this.getInstance(screenId);
-        screenAlertManager.receiveSyncScreen(message);
+        const screenOtherManager = this.getInstance(screenId);
+        screenOtherManager.receiveSyncScreen(message);
     }
 
     render() {
@@ -262,12 +330,13 @@ export default class ScreenAlertManager extends ScreenEventHandler<ScreenAlertEv
     }
 
     clear() {
-        this.setCountdownData(null);
+        this.setCameraData(null);
         this.setMarqueeData(null);
+        this.setCountdownData(null);
         this.saveAlertData();
     }
 
     static getInstance(screenId: number) {
-        return super.getInstanceBase<ScreenAlertManager>(screenId);
+        return super.getInstanceBase<ScreenOtherManager>(screenId);
     }
 }

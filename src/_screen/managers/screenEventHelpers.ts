@@ -10,7 +10,7 @@ import ScreenVaryAppDocumentManager, {
     ScreenVaryAppDocumentManagerEventType,
 } from './ScreenVaryAppDocumentManager';
 import EventHandler from '../../event/EventHandler';
-import ScreenAlertManager, { ScreenAlertEventType } from './ScreenAlertManager';
+import ScreenOtherManager, { ScreenOtherEventType } from './ScreenOtherManager';
 
 export function useScreenEvents<T extends string>(
     events: T[],
@@ -79,15 +79,15 @@ export function useScreenBibleManagerEvents(
     );
 }
 
-export function useScreenAlertManagerEvents(
-    events: ScreenAlertEventType[],
-    screenAlertManager?: ScreenAlertManager,
+export function useScreenOtherManagerEvents(
+    events: ScreenOtherEventType[],
+    screenOtherManager?: ScreenOtherManager,
     callback?: () => void,
 ) {
     useScreenEvents(
         events,
-        ScreenAlertManager as any,
-        screenAlertManager,
+        ScreenOtherManager as any,
+        screenOtherManager,
         callback,
     );
 }

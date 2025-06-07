@@ -1,4 +1,5 @@
 import appProvider from '../server/appProvider';
+import OtherCameraShowComp from './OtherCameraShowComp';
 import OtherCountDownComp from './OtherCountDownComp';
 import OtherImagesSlideShowComp from './OtherImagesSlideShowComp';
 import OtherMessageComp from './OtherMessageComp';
@@ -17,7 +18,7 @@ export default function PresenterOthersControllerComp() {
             <hr />
             <OtherImagesSlideShowComp />
             <hr />
-            <div>TODO: Camera Show</div>
+            <OtherCameraShowComp />
             {appProvider.systemUtils.isDev ? (
                 <>
                     <hr />

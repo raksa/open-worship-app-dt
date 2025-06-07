@@ -2,8 +2,8 @@ import {
     useStateSettingBoolean,
     useStateSettingString,
 } from '../helper/settingHelpers';
-import ScreenAlertManager from '../_screen/managers/ScreenAlertManager';
-import { useScreenAlertManagerEvents } from '../_screen/managers/screenEventHelpers';
+import ScreenOtherManager from '../_screen/managers/ScreenOtherManager';
+import { useScreenOtherManagerEvents } from '../_screen/managers/screenEventHelpers';
 import { getShowingScreenIds, hideAlert } from './alertHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
 import OtherRenderHeaderTitleComp from './OtherRenderHeaderTitleComp';
@@ -13,7 +13,7 @@ export default function OtherMessageComp() {
         'other-message-opened',
         true,
     );
-    useScreenAlertManagerEvents(['update']);
+    useScreenOtherManagerEvents(['update']);
     const [text, setText] = useStateSettingString<string>(
         'marquee-setting',
         '',
@@ -22,12 +22,12 @@ export default function OtherMessageComp() {
         return data.marqueeData !== null;
     });
     const handleMarqueeHiding = (screenId: number) => {
-        hideAlert(screenId, (screenAlertManager) => {
-            screenAlertManager.setMarqueeData(null);
+        hideAlert(screenId, (screenOtherManager) => {
+            screenOtherManager.setMarqueeData(null);
         });
     };
     const handleMarqueeShowing = (event: any, isForceChoosing = false) => {
-        ScreenAlertManager.setMarquee(event, text, isForceChoosing);
+        ScreenOtherManager.setMarquee(event, text, isForceChoosing);
     };
     const handleContextMenuOpening = (event: any) => {
         handleMarqueeShowing(event, true);

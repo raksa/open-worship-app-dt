@@ -51,9 +51,7 @@ export function genHtmlBackground(
     if (child === null) {
         throw new Error('child is null');
     }
-    Object.entries(backgroundSrc.extraStyle ?? {}).forEach(([key, value]) => {
-        child.style[key as any] = value as string;
-    });
+    Object.assign(child.style, backgroundSrc.extraStyle ?? {});
     return child;
 }
 
