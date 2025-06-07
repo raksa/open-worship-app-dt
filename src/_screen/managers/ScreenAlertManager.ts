@@ -83,9 +83,9 @@ export default class ScreenAlertManager extends ScreenEventHandler<ScreenAlertEv
             allAlertDataList[this.key] = this.alertData;
             const string = JSON.stringify(allAlertDataList);
             setSetting(screenManagerSettingNames.ALERT, string);
+            this.fireUpdateEvent();
         });
         this.sendSyncScreen();
-        this.fireUpdateEvent();
     }
 
     toSyncMessage(): BasicScreenMessageType {

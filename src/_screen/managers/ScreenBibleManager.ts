@@ -142,9 +142,9 @@ class ScreenBibleManager extends ScreenEventHandler<ScreenBibleManagerEventType>
             }
             const string = JSON.stringify(allBibleDataList);
             setSetting(screenManagerSettingNames.FULL_TEXT, string);
+            this.fireUpdateEvent();
         });
         this.sendSyncScreen();
-        this.fireUpdateEvent();
     }
 
     getRenderedBibleKeys() {

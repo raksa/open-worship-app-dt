@@ -42,6 +42,8 @@ import { getSetting, setSetting } from '../helper/settingHelpers';
 import PdfSlide, { PdfSlideType } from './PdfSlide';
 import { OptionalPromise } from '../others/otherHelpers';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
+import { useScreenVaryAppDocumentManagerEvents } from '../_screen/managers/screenEventHelpers';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
 export const MIN_THUMBNAIL_SCALE = 1;
 export const THUMBNAIL_SCALE_STEP = 1;
@@ -501,4 +503,26 @@ export function varyAppDocumentFromFilePath(filePath: string) {
         return PdfAppDocument.getInstance(filePath);
     }
     return AppDocument.getInstance(filePath);
+}
+
+export function useAnyItemSelected(
+    varyAppDocumentItems?: VaryAppDocumentItemType[] | null,
+) {
+    const [isAnyItemSelected, setIsAnyItemSelected] = useState(false);
+    const refresh = () => {
+        if (!varyAppDocumentItems || varyAppDocumentItems.length === 0) {
+            return;
+        }
+        const isSelected = varyAppDocumentItems.some((varyAppDocumentItem) => {
+            const dataList = ScreenVaryAppDocumentManager.getDataList(
+                varyAppDocumentItem.filePath,
+                varyAppDocumentItem.id,
+            );
+            return dataList.length > 0;
+        });
+        setIsAnyItemSelected(isSelected);
+    };
+    useScreenVaryAppDocumentManagerEvents(['update'], undefined, refresh);
+    useAppEffect(refresh, [varyAppDocumentItems]);
+    return isAnyItemSelected;
 }

@@ -11,6 +11,7 @@ import BackgroundMediaComp from '../background/BackgroundMediaComp';
 import { DragTypeEnum } from '../helper/DragInf';
 import FileSource from '../helper/FileSource';
 import { useStateSettingString } from '../helper/settingHelpers';
+import SlideAutoPlayComp from '../slide-auto-play/SlideAutoPlayComp';
 
 function rendChild(
     _scaleType: ImageScaleType,
@@ -41,6 +42,46 @@ function rendChild(
     );
 }
 
+function HeaderElements({
+    scaleType,
+    setScaleType,
+}: Readonly<{
+    scaleType: ImageScaleType;
+    setScaleType: (event: any, value: ImageScaleType) => void;
+}>) {
+    return (
+        <>
+            <div className="flex-grow-1">
+                <h4>Images Slide Show</h4>
+            </div>
+            <div className="d-flex">
+                <div>Scale Type:</div>
+                <div>
+                    <select
+                        className="form-select form-select-sm"
+                        value={scaleType}
+                        onChange={(event) => {
+                            setScaleType(
+                                event,
+                                event.target.value as ImageScaleType,
+                            );
+                        }}
+                    >
+                        <option>--</option>
+                        {scaleTypeList.map((scaleType) => {
+                            return (
+                                <option key={scaleType} value={scaleType}>
+                                    {scaleType}
+                                </option>
+                            );
+                        })}
+                    </select>
+                </div>
+            </div>
+        </>
+    );
+}
+
 export default function ImagesShowComp() {
     const [scaleType, setScaleType] = useStateSettingString<ImageScaleType>(
         'images-slide-show-scale-type',
@@ -65,33 +106,10 @@ export default function ImagesShowComp() {
             style={{ maxHeight: '350px' }}
         >
             <div className="card-header d-flex">
-                <div className="flex-grow-1">
-                    <h4>Images Slide Show</h4>
-                </div>
-                <div className="d-flex">
-                    <div>Scale Type:</div>
-                    <div>
-                        <select
-                            className="form-select form-select-sm"
-                            value={scaleType}
-                            onChange={(event) => {
-                                setScaleType1(
-                                    event,
-                                    event.target.value as ImageScaleType,
-                                );
-                            }}
-                        >
-                            <option>--</option>
-                            {scaleTypeList.map((scaleType) => {
-                                return (
-                                    <option key={scaleType} value={scaleType}>
-                                        {scaleType}
-                                    </option>
-                                );
-                            })}
-                        </select>
-                    </div>
-                </div>
+                <HeaderElements
+                    scaleType={scaleType}
+                    setScaleType={setScaleType1}
+                />
             </div>
             <div
                 className="card-body"
@@ -106,6 +124,12 @@ export default function ImagesShowComp() {
                     onClick={handleClicking}
                 />
             </div>
+            <SlideAutoPlayComp
+                prefix="images"
+                onNext={(data) => {
+                    console.log(data);
+                }}
+            />
         </div>
     );
 }

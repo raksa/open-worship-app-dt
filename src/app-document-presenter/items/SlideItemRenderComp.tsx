@@ -101,7 +101,7 @@ export function toClassNameHighlight(
     varyAppDocumentItem: VaryAppDocumentItemType,
     selectedVaryAppDocumentItem?: VaryAppDocumentItemType | null,
 ) {
-    const activeCN =
+    const activeClassname =
         appProvider.isPageEditor &&
         selectedVaryAppDocumentItem &&
         varyAppDocumentItem.checkIsSame(selectedVaryAppDocumentItem)
@@ -117,7 +117,7 @@ export function toClassNameHighlight(
             : 'app-highlight-selected';
     return {
         selectedList,
-        activeCN,
+        activeCN: activeClassname,
         presenterCN,
     };
 }

@@ -109,10 +109,10 @@ class ScreenVaryAppDocumentManager extends ScreenEventHandler<ScreenVaryAppDocum
             }
             const string = JSON.stringify(allSlideList);
             setSetting(screenManagerSettingNames.VARY_APP_DOCUMENT, string);
+            this.fireUpdateEvent();
         });
         this.render();
         this.sendSyncScreen();
-        this.fireUpdateEvent();
     }
 
     toSyncMessage() {

@@ -76,26 +76,17 @@ function findNextSlide(
                   ) as HTMLDivElement),
     };
 }
-export function handleArrowing(
-    event: KeyboardEvent,
-    varyAppDocumentItems: VaryAppDocumentItemType[],
-) {
-    if (!appProvider.presenterHomePage) {
-        return;
-    }
-    const element = document.querySelector(`.${DIV_CLASS_NAME}`);
-    if (element === null) {
-        return;
-    }
-    if (document.activeElement === null) {
-        (element as HTMLDivElement).focus();
-        return;
-    } else if (document.activeElement !== element) {
-        return;
-    }
-    event.preventDefault();
-    const isLeft = ['ArrowLeft', 'ArrowUp', 'PageUp'].includes(event.key);
-    const divSelectedList = document.activeElement.querySelectorAll(
+
+export function handleNextItemSelecting({
+    container,
+    varyAppDocumentItems,
+    isLeft,
+}: {
+    container: HTMLDivElement;
+    varyAppDocumentItems: VaryAppDocumentItemType[];
+    isLeft: boolean;
+}) {
+    const divSelectedList = container.querySelectorAll(
         `[${DATA_QUERY_KEY}].app-highlight-selected`,
     );
     const foundList = Array.from(divSelectedList).reduce(
@@ -135,7 +126,6 @@ export function handleArrowing(
     if (foundList.length === 0) {
         return;
     }
-    event.preventDefault();
     for (let i = 0; i < foundList.length; i++) {
         const { item, screenId } = foundList[i];
         const screenManager = screenManagerFromBase(
@@ -153,4 +143,34 @@ export function handleArrowing(
                 );
         }, i * 100);
     }
+}
+
+export function getContainerDiv(): HTMLDivElement | null {
+    return document.querySelector(`.${DIV_CLASS_NAME}`);
+}
+
+export function handleArrowing(
+    event: KeyboardEvent,
+    varyAppDocumentItems: VaryAppDocumentItemType[],
+) {
+    if (!appProvider.presenterHomePage) {
+        return;
+    }
+    const element = getContainerDiv();
+    if (element === null) {
+        return;
+    }
+    if (document.activeElement === null) {
+        element.focus();
+        return;
+    } else if (document.activeElement !== element) {
+        return;
+    }
+    event.preventDefault();
+    const isLeft = ['ArrowLeft', 'ArrowUp', 'PageUp'].includes(event.key);
+    handleNextItemSelecting({
+        container: element as HTMLDivElement,
+        varyAppDocumentItems,
+        isLeft,
+    });
 }

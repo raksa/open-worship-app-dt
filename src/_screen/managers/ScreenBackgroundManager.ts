@@ -82,7 +82,6 @@ class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManager
             this.fireUpdateEvent();
         });
         this.sendSyncScreen();
-        this.fireUpdateEvent();
     }
 
     toSyncMessage() {

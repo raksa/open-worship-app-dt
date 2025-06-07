@@ -8,7 +8,9 @@ import {
 import { useAppDocumentItemThumbnailSizeScale } from '../../event/VaryAppDocumentEventListener';
 import SlideGhostComp from './SlideGhostComp';
 import {
+    getContainerDiv,
     handleArrowing,
+    handleNextItemSelecting,
     showVaryAppDocumentItemInViewport,
 } from './varyAppDocumentHelpers';
 import VaryAppDocumentItemRenderWrapperComp from './VaryAppDocumentItemRenderWrapperComp';
@@ -21,9 +23,11 @@ import { useFileSourceEvents } from '../../helper/dirSourceHelpers';
 import LoadingComp from '../../others/LoadingComp';
 import {
     DEFAULT_THUMBNAIL_SIZE_FACTOR,
+    useAnyItemSelected,
     useSelectedVaryAppDocumentContext,
     VaryAppDocumentItemType,
 } from '../../app-document-list/appDocumentHelpers';
+import SlideAutoPlayComp from '../../slide-auto-play/SlideAutoPlayComp';
 
 const varyAppDocumentItemsToView: { [key: string]: VaryAppDocumentItemType } =
     {};
@@ -91,6 +95,7 @@ export default function AppDocumentItemsComp() {
     const { varyAppDocumentItems, startLoading } = useAppDocumentItems();
     const appDocumentItemThumbnailSize =
         thumbSizeScale * DEFAULT_THUMBNAIL_SIZE_FACTOR;
+    const isAnyItemSelected = useAnyItemSelected(varyAppDocumentItems);
     if (varyAppDocumentItems === undefined) {
         return <LoadingComp />;
     }
@@ -126,6 +131,25 @@ export default function AppDocumentItemsComp() {
                     />
                 );
             })}
+            {isAnyItemSelected ? (
+                <SlideAutoPlayComp
+                    prefix="vary-app-document"
+                    style={{
+                        bottom: '40px',
+                    }}
+                    onNext={(data) => {
+                        const element = getContainerDiv();
+                        if (element === null) {
+                            return;
+                        }
+                        handleNextItemSelecting({
+                            container: element,
+                            varyAppDocumentItems,
+                            isLeft: !data.isNext,
+                        });
+                    }}
+                />
+            ) : null}
         </div>
     );
 }
