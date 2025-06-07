@@ -10,7 +10,6 @@ import {
     BackgroundType,
     BasicScreenMessageType,
     getBackgroundSrcListOnScreenSetting,
-    ImageScaleType,
     ScreenMessageType,
 } from '../screenHelpers';
 import { handleError } from '../../helper/errorHelpers';
@@ -123,12 +122,10 @@ class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManager
     static async initBackgroundSrcDim(
         src: string,
         backgroundType: BackgroundType,
-        scaleType: ImageScaleType = 'stretch',
     ) {
         const backgroundSrc: BackgroundSrcType = {
             type: backgroundType,
             src,
-            scaleType,
         };
         const [width, height] = await this.extractDim(backgroundSrc);
         if (width !== undefined && height !== undefined) {
@@ -154,9 +151,12 @@ class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManager
                 await ScreenBackgroundManager.initBackgroundSrcDim(
                     data.src,
                     backgroundType,
-                    data.scaleType,
                 );
-            this.applyBackgroundSrcWithSyncGroup(backgroundSrc);
+            this.applyBackgroundSrcWithSyncGroup({
+                ...backgroundSrc,
+                scaleType: data.scaleType,
+                extraStyle: data.extraStyle,
+            });
         }
     }
 

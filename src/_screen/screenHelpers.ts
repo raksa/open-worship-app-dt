@@ -55,6 +55,7 @@ export type BackgroundType = (typeof _backgroundTypeList)[number];
 export type BackgroundDataType = {
     src: string | null;
     scaleType?: ImageScaleType;
+    extraStyle?: React.CSSProperties;
 };
 export type BackgroundSrcType = {
     type: BackgroundType;
@@ -62,6 +63,7 @@ export type BackgroundSrcType = {
     width?: number;
     height?: number;
     scaleType?: ImageScaleType;
+    extraStyle?: React.CSSProperties;
 };
 export type BackgroundSrcListType = {
     [key: string]: BackgroundSrcType;

@@ -22,6 +22,12 @@ import { useAppEffect } from '../helper/debuggerHelpers';
 import { FilePathLoadedContext } from '../others/RenderListComp';
 import ScreenManagerBase from '../_screen/managers/ScreenManagerBase';
 
+const DIR_SOURCE_SETTING_NAME = 'images-slide-show';
+const extraStyle: React.CSSProperties = {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backdropFilter: 'blur(5px)',
+};
+
 function findNextSrc(isNext: boolean, srcList: string[], src: string) {
     let index = srcList.findIndex((src1) => {
         return src1 === src;
@@ -78,6 +84,7 @@ export function handleNextItemSelecting({
             screenBackgroundManager.applyBackgroundSrc('image', {
                 src,
                 scaleType,
+                extraStyle,
             });
         }, i * 100);
     }
@@ -153,8 +160,6 @@ function HeaderElements({
     );
 }
 
-const DIR_SOURCE_SETTING_NAME = 'images-slide-show';
-
 function useAnyItemSelected(filePaths: string[] | undefined) {
     const [isAnyItemSelected, setIsAnyItemSelected] = useState(false);
     const refresh = () => {
@@ -178,7 +183,7 @@ function useAnyItemSelected(filePaths: string[] | undefined) {
     return isAnyItemSelected;
 }
 
-export default function ImagesShowComp() {
+export default function ImagesSlideShowComp() {
     const [filePaths, setFilePaths] = useState<string[] | undefined>();
     const isAnyItemSelected = useAnyItemSelected(filePaths);
     const [scaleType, setScaleType] = useStateSettingString<ImageScaleType>(
@@ -196,6 +201,7 @@ export default function ImagesShowComp() {
         ScreenBackgroundManager.handleBackgroundSelecting(event, 'image', {
             src: fileSource.src,
             scaleType,
+            extraStyle,
         });
     };
     return (

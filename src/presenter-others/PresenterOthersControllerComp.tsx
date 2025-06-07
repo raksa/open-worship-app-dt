@@ -1,5 +1,5 @@
 import CountDownComp from './CountDownComp';
-import ImagesShowComp from './ImagesShowComp';
+import ImagesSlideShowComp from './ImagesSlideShowComp';
 import MarqueeComp from './MarqueeComp';
 
 export default function PresenterOthersControllerComp() {
@@ -14,7 +14,7 @@ export default function PresenterOthersControllerComp() {
             <hr />
             <CountDownComp />
             <hr />
-            <ImagesShowComp />
+            <ImagesSlideShowComp />
             <hr />
             <div>TODO: Video show</div>
             <hr />
