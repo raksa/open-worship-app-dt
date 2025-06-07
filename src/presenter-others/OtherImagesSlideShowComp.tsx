@@ -12,7 +12,10 @@ import { RenderScreenIds } from '../background/BackgroundComp';
 import BackgroundMediaComp from '../background/BackgroundMediaComp';
 import { DragTypeEnum } from '../helper/DragInf';
 import FileSource from '../helper/FileSource';
-import { useStateSettingString } from '../helper/settingHelpers';
+import {
+    useStateSettingBoolean,
+    useStateSettingString,
+} from '../helper/settingHelpers';
 import SlideAutoPlayComp from '../slide-auto-play/SlideAutoPlayComp';
 import { screenManagerFromBase } from '../_screen/managers/screenManagerHelpers';
 import { getScreenManagerBase } from '../_screen/managers/screenManagerBaseHelpers';
@@ -21,6 +24,7 @@ import { useScreenBackgroundManagerEvents } from '../_screen/managers/screenEven
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { FilePathLoadedContext } from '../others/RenderListComp';
 import ScreenManagerBase from '../_screen/managers/ScreenManagerBase';
+import OtherRenderHeaderTitleComp from './OtherRenderHeaderTitleComp';
 
 const DIR_SOURCE_SETTING_NAME = 'images-slide-show';
 const extraStyle: React.CSSProperties = {
@@ -127,36 +131,31 @@ function HeaderElements({
     setScaleType: (event: any, value: ImageScaleType) => void;
 }>) {
     return (
-        <>
-            <div className="flex-grow-1">
-                <h4>Images Slide Show</h4>
-            </div>
-            <div className="d-flex">
-                <div>Scale Type:</div>
-                <button
-                    className="btn btn-sm btn-outline-info mx-1"
-                    style={{
-                        width: '80px',
-                        height: '30px',
-                    }}
-                    onClick={(event: any) => {
-                        showAppContextMenu(
-                            event,
-                            scaleTypeList.map((scaleType) => {
-                                return {
-                                    menuElement: scaleType,
-                                    onSelect: (event1) => {
-                                        setScaleType(event1, scaleType);
-                                    },
-                                };
-                            }),
-                        );
-                    }}
-                >
-                    {scaleType}
-                </button>
-            </div>
-        </>
+        <div className="d-flex">
+            <div>Scale Type:</div>
+            <button
+                className="btn btn-sm btn-outline-info mx-1"
+                style={{
+                    width: '80px',
+                    height: '30px',
+                }}
+                onClick={(event: any) => {
+                    showAppContextMenu(
+                        event,
+                        scaleTypeList.map((scaleType) => {
+                            return {
+                                menuElement: scaleType,
+                                onSelect: (event1) => {
+                                    setScaleType(event1, scaleType);
+                                },
+                            };
+                        }),
+                    );
+                }}
+            >
+                {scaleType}
+            </button>
+        </div>
     );
 }
 
@@ -184,6 +183,10 @@ function useAnyItemSelected(filePaths: string[] | undefined) {
 }
 
 export default function OtherImagesSlideShowComp() {
+    const [isOpened, setIsOpened] = useStateSettingBoolean(
+        'other-image-slide-show-opened',
+        true,
+    );
     const [filePaths, setFilePaths] = useState<string[] | undefined>();
     const isAnyItemSelected = useAnyItemSelected(filePaths);
     const [scaleType, setScaleType] = useStateSettingString<ImageScaleType>(
@@ -210,48 +213,63 @@ export default function OtherImagesSlideShowComp() {
             style={{ maxHeight: '350px' }}
         >
             <div className="card-header d-flex">
+                <div className="flex-grow-1">
+                    <OtherRenderHeaderTitleComp
+                        isOpened={isOpened}
+                        setIsOpened={setIsOpened}
+                    >
+                        <h4>Images Slide Show</h4>
+                    </OtherRenderHeaderTitleComp>
+                </div>
                 <HeaderElements
                     scaleType={scaleType}
                     setScaleType={setScaleType1}
                 />
             </div>
-            <div
-                className="card-body"
-                style={{
-                    overflowY: 'auto',
-                }}
-            >
-                <FilePathLoadedContext
-                    value={{
-                        onLoaded: setFilePaths,
-                    }}
-                >
-                    <BackgroundMediaComp
-                        dragType={DragTypeEnum.BACKGROUND_IMAGE}
-                        rendChild={rendChild.bind(null, scaleType)}
-                        dirSourceSettingName={DIR_SOURCE_SETTING_NAME}
-                        onClick={handleClicking}
-                    />
-                </FilePathLoadedContext>
-            </div>
-            {isAnyItemSelected ? (
-                <SlideAutoPlayComp
-                    prefix="images"
-                    onNext={(data) => {
-                        if (filePaths === undefined || filePaths.length === 0) {
-                            return;
-                        }
-                        handleNextItemSelecting({
-                            srcList: filePaths.map((filePath) => {
-                                const fileSource =
-                                    FileSource.getInstance(filePath);
-                                return fileSource.src;
-                            }),
-                            scaleType: scaleType,
-                            isNext: data.isNext,
-                        });
-                    }}
-                />
+            {isOpened ? (
+                <>
+                    <div
+                        className="card-body"
+                        style={{
+                            overflowY: 'auto',
+                        }}
+                    >
+                        <FilePathLoadedContext
+                            value={{
+                                onLoaded: setFilePaths,
+                            }}
+                        >
+                            <BackgroundMediaComp
+                                dragType={DragTypeEnum.BACKGROUND_IMAGE}
+                                rendChild={rendChild.bind(null, scaleType)}
+                                dirSourceSettingName={DIR_SOURCE_SETTING_NAME}
+                                onClick={handleClicking}
+                            />
+                        </FilePathLoadedContext>
+                    </div>
+                    {isAnyItemSelected ? (
+                        <SlideAutoPlayComp
+                            prefix="images"
+                            onNext={(data) => {
+                                if (
+                                    filePaths === undefined ||
+                                    filePaths.length === 0
+                                ) {
+                                    return;
+                                }
+                                handleNextItemSelecting({
+                                    srcList: filePaths.map((filePath) => {
+                                        const fileSource =
+                                            FileSource.getInstance(filePath);
+                                        return fileSource.src;
+                                    }),
+                                    scaleType: scaleType,
+                                    isNext: data.isNext,
+                                });
+                            }}
+                        />
+                    ) : null}
+                </>
             ) : null}
         </div>
     );

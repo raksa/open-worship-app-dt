@@ -1,8 +1,12 @@
-import { useStateSettingString } from '../helper/settingHelpers';
+import {
+    useStateSettingBoolean,
+    useStateSettingString,
+} from '../helper/settingHelpers';
 import ScreenAlertManager from '../_screen/managers/ScreenAlertManager';
 import { getShowingScreenIds, hideAlert } from './alertHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
 import { useScreenAlertManagerEvents } from '../_screen/managers/screenEventHelpers';
+import OtherRenderHeaderTitleComp from './OtherRenderHeaderTitleComp';
 
 function useTiming() {
     const nowArray = () => {
@@ -147,6 +151,10 @@ function CountDownTimerComp() {
 }
 
 export default function OtherCountDownComp() {
+    const [isOpened, setIsOpened] = useStateSettingBoolean(
+        'other-countdown-opened',
+        true,
+    );
     useScreenAlertManagerEvents(['update']);
     const showingScreenIds = getShowingScreenIds((data) => {
         return data.countdownData !== null;
@@ -159,23 +167,30 @@ export default function OtherCountDownComp() {
     return (
         <div className="card m-2">
             <div className="card-header">
-                <h4>Timers</h4>
+                <OtherRenderHeaderTitleComp
+                    isOpened={isOpened}
+                    setIsOpened={setIsOpened}
+                >
+                    <h4>Timers</h4>
+                </OtherRenderHeaderTitleComp>
             </div>
-            <div className="card-body">
-                <div className="m-1">
-                    <CountDownOnDatetimeComp />
+            {isOpened ? (
+                <div className="card-body">
+                    <div className="m-1">
+                        <CountDownOnDatetimeComp />
+                    </div>
+                    <div className="m-1">
+                        <CountDownTimerComp />
+                    </div>
+                    <div className="m-1">
+                        <ScreensRendererComp
+                            showingScreenIds={showingScreenIds}
+                            buttonTitle="Hide Timer"
+                            handleMarqueeHiding={handleMarqueeHiding}
+                        />
+                    </div>
                 </div>
-                <div className="m-1">
-                    <CountDownTimerComp />
-                </div>
-                <div className="m-1">
-                    <ScreensRendererComp
-                        showingScreenIds={showingScreenIds}
-                        buttonTitle="Hide Timer"
-                        handleMarqueeHiding={handleMarqueeHiding}
-                    />
-                </div>
-            </div>
+            ) : null}
         </div>
     );
 }
