@@ -6,7 +6,6 @@ import {
     useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
 import { useAppDocumentItemThumbnailSizeScale } from '../../event/VaryAppDocumentEventListener';
-import SlideGhostComp from './SlideGhostComp';
 import {
     getContainerDiv,
     handleArrowing,
@@ -120,14 +119,6 @@ export default function AppDocumentItemsComp() {
                         varyAppDocumentItem={varyAppDocumentItem}
                         index={i}
                         setDraggingIndex={setDraggingIndex}
-                    />
-                );
-            })}
-            {Array.from({ length: 2 }, (_, i) => {
-                return (
-                    <SlideGhostComp
-                        key={`${i}`}
-                        width={appDocumentItemThumbnailSize}
                     />
                 );
             })}

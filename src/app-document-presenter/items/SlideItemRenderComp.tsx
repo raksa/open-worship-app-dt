@@ -249,6 +249,7 @@ export default function SlideItemRenderComp({
             onDragStart={(event) => {
                 handleDragStart(event, item);
                 onDragStart(event);
+                event.stopPropagation();
             }}
             onDragEnd={onDragEnd}
             onClick={onClick}
