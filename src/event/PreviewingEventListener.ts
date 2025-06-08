@@ -4,9 +4,11 @@ import AppDocument from '../app-document-list/AppDocument';
 import EventHandler, { ListenerType } from './EventHandler';
 import { VaryAppDocumentType } from '../app-document-list/appDocumentHelpers';
 import { DependencyList } from 'react';
+import BibleItem from '../bible-list/BibleItem';
 
 export type PreviewingType =
     | 'select-lyric'
+    | 'showing-bible-item'
     | 'update-lyric'
     | 'select-app-document'
     | 'update-app-document';
@@ -15,6 +17,9 @@ class PreviewingEventListener extends EventHandler<PreviewingType> {
     static readonly eventNamePrefix: string = 'previewing';
     selectLyric(lyric: Lyric | null) {
         this.addPropEvent('select-lyric', lyric);
+    }
+    showBibleItem(bibleItem: BibleItem) {
+        this.addPropEvent('showing-bible-item', bibleItem);
     }
     updateLyric(lyric: Lyric) {
         this.addPropEvent('update-lyric', lyric);
@@ -36,6 +41,21 @@ export function useLyricSelecting(
     useAppEffect(() => {
         const event = previewingEventListener.registerEventListener(
             ['select-lyric'],
+            listener,
+        );
+        return () => {
+            previewingEventListener.unregisterEventListener(event);
+        };
+    }, deps);
+}
+
+export function useBibleItemShowing(
+    listener: ListenerType<Lyric | null>,
+    deps: DependencyList,
+) {
+    useAppEffect(() => {
+        const event = previewingEventListener.registerEventListener(
+            ['showing-bible-item'],
             listener,
         );
         return () => {

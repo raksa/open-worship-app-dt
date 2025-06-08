@@ -17,6 +17,7 @@ import BibleItemsViewController, {
 } from '../../bible-reader/BibleItemsViewController';
 import { BibleItemDataType } from '../screenHelpers';
 import BibleItem from '../../bible-list/BibleItem';
+import { previewingEventListener } from '../../event/PreviewingEventListener';
 
 function openContextMenu(event: any) {
     showAppContextMenu(event, [
@@ -63,14 +64,14 @@ function viewControllerAndScreenManagers(
                 bibleItemViewController.nestedBibleItems = [];
                 const { target } = bibleData.bibleItemData.bibleItem;
                 bibleData.bibleItemData.renderedList.forEach(({ bibleKey }) => {
-                    bibleItemViewController.appendBibleItem(
-                        BibleItem.fromJson({
-                            id: -1,
-                            bibleKey: bibleKey,
-                            target,
-                            metadata: {},
-                        }),
-                    );
+                    const bibleItem = BibleItem.fromJson({
+                        id: -1,
+                        bibleKey: bibleKey,
+                        target,
+                        metadata: {},
+                    });
+                    bibleItemViewController.appendBibleItem(bibleItem);
+                    previewingEventListener.showBibleItem(bibleItem);
                 });
             }
         };

@@ -3,6 +3,7 @@ import './PresenterComp.scss';
 import { lazy } from 'react';
 
 import {
+    useBibleItemShowing,
     useLyricSelecting,
     useVaryAppDocumentSelecting,
 } from '../event/PreviewingEventListener';
@@ -44,6 +45,7 @@ export default function PresenterComp() {
         'd',
     );
     useLyricSelecting(() => setTabType('l'), []);
+    useBibleItemShowing(() => setTabType('b'), []);
     useVaryAppDocumentSelecting(() => setTabType('d'));
     useAppDocumentItemSelecting(() => setTabType('d'));
     return (
