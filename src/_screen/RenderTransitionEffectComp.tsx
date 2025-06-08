@@ -30,9 +30,11 @@ function openContextMenu(event: any, screenEffectManager: ScreenEffectManager) {
 
 export default function RenderTransitionEffectComp({
     title,
+    domTitle,
     screenEffectManager,
 }: Readonly<{
     title: string;
+    domTitle: string;
     screenEffectManager: ScreenEffectManager;
 }>) {
     useScreenEffectEvents(['update'], screenEffectManager);
@@ -40,6 +42,7 @@ export default function RenderTransitionEffectComp({
     return (
         <button
             type="button"
+            title={domTitle}
             className="btn btn-outline-secondary"
             onClick={(event) => {
                 openContextMenu(event, screenEffectManager);
