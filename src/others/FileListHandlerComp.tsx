@@ -118,10 +118,10 @@ export default function FileListHandlerComp({
                     takeDroppedFile,
                 })}
             >
-                {header && (
+                {header !== undefined ? (
                     <div className="card-header">
                         {header}
-                        {onNewFile && dirSource.dirPath && (
+                        {onNewFile && dirSource.dirPath ? (
                             <button
                                 className={
                                     'btn btn-sm btn-outline-info float-end'
@@ -131,15 +131,21 @@ export default function FileListHandlerComp({
                             >
                                 <i className="bi bi-file-earmark-plus" />
                             </button>
-                        )}
+                        ) : null}
                     </div>
-                )}
+                ) : null}
                 <div
                     className="card-body d-flex flex-column pb-5"
-                    onContextMenu={genOnContextMenu(
+                    onContextMenu={genOnContextMenu({
                         contextMenu,
-                        handleItemsAdding,
-                    )}
+                        addItems: handleItemsAdding,
+                        onStartNewFile:
+                            onNewFile === undefined
+                                ? undefined
+                                : () => {
+                                      setIsCreatingNew(true);
+                                  },
+                    })}
                 >
                     <PathSelectorComp
                         prefix={`path-${className}`}
@@ -153,11 +159,11 @@ export default function FileListHandlerComp({
                         />
                     ) : (
                         <ul className="list-group flex-fill d-flex">
-                            {onNewFile && isCreatingNew && (
+                            {onNewFile !== undefined && isCreatingNew ? (
                                 <LazyAskingNewNameComp
                                     applyName={handleNameApplying}
                                 />
-                            )}
+                            ) : null}
                             <RenderListComp
                                 dirSource={dirSource}
                                 bodyHandler={bodyHandler}

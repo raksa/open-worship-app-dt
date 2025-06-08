@@ -272,7 +272,7 @@ export default class AppDocument
             slides.map((slide) => {
                 return (async () => {
                     const json = slide.toJson();
-                    if (await slide.checkIsWrongDimension(display)) {
+                    if (slide.checkIsWrongDimension(display)) {
                         json.metadata.width = display.bounds.width;
                         json.metadata.height = display.bounds.height;
                     }
@@ -356,7 +356,7 @@ export default class AppDocument
 
     static getInstance(filePath: string) {
         return this._getInstance(filePath, () => {
-            return new AppDocument(filePath);
+            return new this(filePath);
         });
     }
 

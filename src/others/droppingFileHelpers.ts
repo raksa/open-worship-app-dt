@@ -163,16 +163,27 @@ export async function handleFilesSelectionMenuItem(
     await Promise.all(promises);
 }
 
-export function genOnContextMenu(
-    contextMenu?: ContextMenuItemType[],
-    addItems?: () => void,
-) {
+export function genOnContextMenu({
+    contextMenu,
+    addItems,
+    onStartNewFile,
+}: {
+    contextMenu?: ContextMenuItemType[];
+    addItems?: () => void;
+    onStartNewFile?: () => void;
+}) {
     return (event: React.MouseEvent<any>) => {
         const menuItems: ContextMenuItemType[] = [...(contextMenu ?? [])];
         if (addItems !== undefined) {
             menuItems.push({
                 menuElement: 'Add Items',
                 onSelect: addItems,
+            });
+        }
+        if (onStartNewFile !== undefined) {
+            menuItems.push({
+                menuElement: 'Create New File',
+                onSelect: onStartNewFile,
             });
         }
         if (menuItems.length === 0) {

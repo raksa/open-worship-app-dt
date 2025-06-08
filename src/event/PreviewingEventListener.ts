@@ -15,14 +15,14 @@ export type PreviewingType =
 
 class PreviewingEventListener extends EventHandler<PreviewingType> {
     static readonly eventNamePrefix: string = 'previewing';
-    selectLyric(lyric: Lyric | null) {
-        this.addPropEvent('select-lyric', lyric);
-    }
     showBibleItem(bibleItem: BibleItem) {
         this.addPropEvent('showing-bible-item', bibleItem);
     }
     updateLyric(lyric: Lyric) {
         this.addPropEvent('update-lyric', lyric);
+    }
+    showLyric(lyric: Lyric | null) {
+        this.addPropEvent('select-lyric', lyric);
     }
     showVaryAppDocument(varyAppDocument: VaryAppDocumentType | null) {
         this.addPropEvent('select-app-document', varyAppDocument);

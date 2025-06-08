@@ -33,6 +33,12 @@ import {
     setSelectedVaryAppDocument,
     setSelectedEditingSlide,
 } from '../app-document-list/appDocumentHelpers';
+import {
+    getSelectedLyric,
+    SelectedLyricContext,
+    setSelectedLyric,
+} from '../lyric-list/lyricHelpers';
+import Lyric from '../lyric-list/Lyric';
 
 const tabs: TabOptionType[] = [];
 if (!appProvider.isPagePresenter) {
@@ -167,6 +173,41 @@ function useAppDocumentContextValues() {
     };
 }
 
+function useLyricContextValues() {
+    const [lyric, setLyric] = useState<Lyric | null>(null);
+    const setLyric1 = (newLyric: Lyric | null) => {
+        setLyric(newLyric);
+        setSelectedLyric(newLyric);
+    };
+
+    useAppEffectAsync(
+        async (methodContext) => {
+            const lyric = await getSelectedLyric();
+            methodContext.setLyric(lyric);
+        },
+        [],
+        { setLyric },
+    );
+    const lyricContextValue = useMemo(() => {
+        return {
+            selectedLyric: lyric,
+            setSelectedLyric: async (newLyric: Lyric | null) => {
+                setLyric1(newLyric);
+            },
+        };
+    }, [lyric]);
+    useFileSourceEvents(
+        ['delete'],
+        (filePath: string) => {
+            if (lyric?.filePath === filePath) {
+                setLyric1(null);
+            }
+        },
+        [lyric],
+    );
+    return { lyricContextValue };
+}
+
 export default function AppLayoutComp({
     children,
 }: Readonly<{
@@ -175,6 +216,7 @@ export default function AppLayoutComp({
     const [isBibleLookupShowing, setIsBibleLookupShowing] = useState(false);
     const { varyAppDocumentContextValue, editingSlideContextValue } =
         useAppDocumentContextValues();
+    const { lyricContextValue } = useLyricContextValues();
     return (
         <MultiContextRender
             contexts={[
@@ -188,6 +230,10 @@ export default function AppLayoutComp({
                 {
                     context: SelectedVaryAppDocumentContext,
                     value: varyAppDocumentContextValue,
+                },
+                {
+                    context: SelectedLyricContext,
+                    value: lyricContextValue,
                 },
                 {
                     context: SelectedEditingSlideContext,

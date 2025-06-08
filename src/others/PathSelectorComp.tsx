@@ -46,7 +46,7 @@ export default function PathSelectorComp({
             </div>
             {isShowingEditor && (
                 <AppSuspenseComp>
-                    <LazyPathEditorComp dirSource={dirSource} prefix={prefix} />
+                    <LazyPathEditorComp dirSource={dirSource} />
                 </AppSuspenseComp>
             )}
         </div>

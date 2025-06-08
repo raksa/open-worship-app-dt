@@ -314,7 +314,7 @@ export const SelectedVaryAppDocumentContext = createContext<{
 function useContext() {
     const context = use(SelectedVaryAppDocumentContext);
     if (context === null) {
-        throw new Error('useSelectedSlide must be used within a SlideProvider');
+        throw new Error('No SelectedVaryAppDocumentContext found');
     }
     return context;
 }

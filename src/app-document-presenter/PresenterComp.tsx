@@ -25,9 +25,15 @@ const LazyPresenterOthersControllerComp = lazy(() => {
 });
 
 const PRESENT_TAB_SETTING_NAME = 'presenter-tab';
+
 export function getIsShowingVaryAppDocumentPreviewer() {
     return getSetting(PRESENT_TAB_SETTING_NAME) === 'd';
 }
+
+export function getIsShowingLyricPreviewer() {
+    return getSetting(PRESENT_TAB_SETTING_NAME) === 'l';
+}
+
 export function getIsShowingBiblePreviewer() {
     return getSetting(PRESENT_TAB_SETTING_NAME) === 'f';
 }

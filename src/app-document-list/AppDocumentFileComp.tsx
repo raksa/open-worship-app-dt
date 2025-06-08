@@ -99,6 +99,21 @@ export default function AppDocumentFileComp({
     const setSelectedAppDocument = useSelectedAppDocumentSetterContext();
     const [varyAppDocument, setVaryAppDocument] =
         useState<VaryAppDocumentDynamicType>(null);
+    useAppEffect(() => {
+        if (varyAppDocument !== null) {
+            return;
+        }
+        const newVaryAppDocument = varyAppDocumentFromFilePath(filePath);
+        setVaryAppDocument(newVaryAppDocument);
+    }, [varyAppDocument]);
+    useFileSourceEvents(
+        ['update'],
+        () => {
+            setVaryAppDocument(null);
+        },
+        [varyAppDocument],
+        filePath,
+    );
     const handleReloading = () => {
         setVaryAppDocument(null);
     };
@@ -128,21 +143,6 @@ export default function AppDocumentFileComp({
         }
         attachBackgroundManager.deleteMetaDataFile(filePath);
     };
-    useAppEffect(() => {
-        if (varyAppDocument !== null) {
-            return;
-        }
-        const newVaryAppDocument = varyAppDocumentFromFilePath(filePath);
-        setVaryAppDocument(newVaryAppDocument);
-    }, [varyAppDocument]);
-    useFileSourceEvents(
-        ['update'],
-        () => {
-            setVaryAppDocument(null);
-        },
-        [varyAppDocument],
-        filePath,
-    );
     const handleRenaming = async (newFileSource: FileSource) => {
         await EditingHistoryManager.moveFilePath(
             filePath,
@@ -170,8 +170,8 @@ export default function AppDocumentFileComp({
                 setSelectedAppDocument,
             )}
             onTrashed={handleSlideDeleting}
-            isSelected={isSelected}
             renamedCallback={handleRenaming}
+            isSelected={isSelected}
         />
     );
 }

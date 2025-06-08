@@ -1,15 +1,7 @@
 @use '../others/variables.scss' as *;
 
-.lyric-list {
-  .card-header {
-    height: $card-header-height;
-  }
-
+.app-lyric-list {
   .card-body {
     height: calc(100% - $card-header-height);
-
-    .item {
-      cursor: pointer;
-    }
   }
 }
