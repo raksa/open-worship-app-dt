@@ -30,10 +30,11 @@ export default class ScreenOtherManager extends ScreenEventHandler<ScreenOtherEv
     constructor(screenManagerBase: ScreenManagerBase) {
         super(screenManagerBase);
         const allAlertDataList = getAlertDataListOnScreenSetting();
-        this.alertData = allAlertDataList[this.key] ?? {
-            countdownData: null,
-            marqueeData: null,
-            cameraData: null,
+        const alertData = allAlertDataList[this.key] ?? {};
+        this.alertData = {
+            countdownData: alertData['countdownData'] ?? null,
+            marqueeData: alertData['marqueeData'] ?? null,
+            cameraData: alertData['cameraData'] ?? null,
         };
     }
 
