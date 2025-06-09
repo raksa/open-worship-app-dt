@@ -3,12 +3,6 @@
         "type": "Markdown File",
         "title": "Plain text file for Markdown content",
         "mimetypeSignature": "text/markdown",
-        "extensions": [
-            ".md",
-            ".markdown",
-            ".mdown",
-            ".mkd",
-            ".mkdn"
-        ]
+        "extensions": [".md", ".markdown", ".mdown", ".mkd", ".mkdn"]
     }
 ]

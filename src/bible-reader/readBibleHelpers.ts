@@ -1,4 +1,3 @@
-import BibleItem from '../bible-list/BibleItem';
 import LookupBibleItemController, {
     closeEventMapper,
     ctrlShiftMetaKeys,
@@ -6,7 +5,9 @@ import LookupBibleItemController, {
 } from './LookupBibleItemController';
 import { handleError } from '../helper/errorHelpers';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
-import BibleItemsViewController from './BibleItemsViewController';
+import BibleItemsViewController, {
+    ReadIdOnlyBibleItem,
+} from './BibleItemsViewController';
 import { RECEIVING_DROP_CLASSNAME } from '../helper/helpers';
 
 enum DraggingPosEnum {
@@ -59,14 +60,14 @@ export function removeDraggingClass(event: DragDropEventType) {
 export function applyDropped(
     event: DragDropEventType,
     bibleItemViewCtl: BibleItemsViewController,
-    bibleItem: BibleItem,
+    bibleItem: ReadIdOnlyBibleItem,
 ) {
     const allPos = removeDraggingClass(event);
     const data = event.dataTransfer.getData('text');
     try {
         const json = JSON.parse(data);
         if (json.type === 'bibleItem') {
-            const newBibleItem = BibleItem.fromJson(json.data);
+            const newBibleItem = ReadIdOnlyBibleItem.fromJson(json.data);
             for (const pos of allPos) {
                 if (pos === DraggingPosEnum.CENTER.toString()) {
                     bibleItemViewCtl.applyTargetOrBibleKey(
@@ -127,7 +128,7 @@ function changeEditingBibleItem(
         viewController.selectedBibleItem,
         [arrowPosMap[eventKey]],
     );
-    let targetBibleItem: BibleItem | null = null;
+    let targetBibleItem: ReadIdOnlyBibleItem | null = null;
     if (eventKey === 'ArrowUp' || eventKey === 'ArrowDown') {
         if (eventKey === 'ArrowUp') {
             targetBibleItem = neighborBibleItems.top;

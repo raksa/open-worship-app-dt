@@ -1,6 +1,14 @@
 import { app, Menu, shell } from 'electron';
 
 import ElectronAppController from './ElectronAppController';
+import { toShortcutKey } from './electronHelpers';
+
+const findingShortcut = toShortcutKey({
+    wControlKey: ['Ctrl'],
+    lControlKey: ['Ctrl'],
+    mControlKey: ['Meta'],
+    key: 'f',
+});
 
 export function initMenu(appController: ElectronAppController) {
     const isMac = process.platform === 'darwin';
@@ -41,16 +49,13 @@ export function initMenu(appController: ElectronAppController) {
                 { role: 'copy' },
                 { role: 'paste' },
                 {
-                    label: 'find (Ctrl + F)',
+                    label: `find`,
                     click: () => {
-                        appController.mainController.win.webContents.sendInputEvent(
-                            {
-                                type: 'keyDown',
-                                keyCode: 'F',
-                                modifiers: ['control'],
-                            },
+                        appController.finderController.open(
+                            appController.mainWin,
                         );
                     },
+                    accelerator: findingShortcut,
                 },
                 ...(isMac
                     ? [

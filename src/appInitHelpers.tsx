@@ -21,7 +21,6 @@ import {
 } from './lang';
 import appProvider from './server/appProvider';
 import initCrypto from './_owa-crypto';
-import { useHandleFind } from './_find/finderHelpers';
 import { useCheckSelectedDir } from './helper/tourHelpers';
 import { createRoot } from 'react-dom/client';
 import { StrictMode } from 'react';
@@ -150,7 +149,6 @@ export function RenderApp({
 }>) {
     useQuickExitBlock();
     useCheckSelectedDir();
-    useHandleFind();
     return (
         <div id="app" className="dark" data-bs-theme="dark">
             <StrictMode>{children}</StrictMode>

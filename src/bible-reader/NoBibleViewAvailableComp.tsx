@@ -1,7 +1,9 @@
-import BibleItem from '../bible-list/BibleItem';
 import { handleError } from '../helper/errorHelpers';
 import { RECEIVING_DROP_CLASSNAME } from '../helper/helpers';
-import { useBibleItemsViewControllerContext } from './BibleItemsViewController';
+import {
+    ReadIdOnlyBibleItem,
+    useBibleItemsViewControllerContext,
+} from './BibleItemsViewController';
 
 export default function NoBibleViewAvailableComp() {
     const viewController = useBibleItemsViewControllerContext();
@@ -23,7 +25,9 @@ export default function NoBibleViewAvailableComp() {
                 try {
                     const json = JSON.parse(data);
                     if (json.type === 'bibleItem') {
-                        const bibleItem = BibleItem.fromJson(json.data);
+                        const bibleItem = ReadIdOnlyBibleItem.fromJson(
+                            json.data,
+                        );
                         viewController.addBibleItem(
                             null,
                             bibleItem,

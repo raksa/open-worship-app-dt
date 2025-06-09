@@ -1,6 +1,5 @@
 import React, { createContext, use, useMemo } from 'react';
 
-import BibleItem from '../bible-list/BibleItem';
 import { BibleSelectionMiniComp } from '../bible-lookup/BibleSelectionComp';
 import {
     BIBLE_VIEW_TEXT_CLASS,
@@ -10,7 +9,10 @@ import {
 } from '../helper/bibleViewHelpers';
 import ItemColorNoteComp from '../others/ItemColorNoteComp';
 import ColorNoteInf from '../helper/ColorNoteInf';
-import { useBibleItemsViewControllerContext } from './BibleItemsViewController';
+import {
+    ReadIdOnlyBibleItem,
+    useBibleItemsViewControllerContext,
+} from './BibleItemsViewController';
 import { BIBLE_VERSE_TEXT_TITLE } from '../helper/helpers';
 import {
     BibleTargetType,
@@ -43,7 +45,7 @@ export function RenderTitleMaterialComp({
     bibleItem,
     onBibleKeyChange,
 }: Readonly<{
-    bibleItem: BibleItem;
+    bibleItem: ReadIdOnlyBibleItem;
     onBibleKeyChange?: (oldBibleKey: string, newBibleKey: string) => void;
 }>) {
     const viewController = useBibleItemsViewControllerContext();
@@ -81,7 +83,7 @@ export function RenderTitleMaterialComp({
 
 export function RenderHeaderComp({
     bibleItem,
-}: Readonly<{ bibleItem: BibleItem }>) {
+}: Readonly<{ bibleItem: ReadIdOnlyBibleItem }>) {
     const viewController = useBibleItemsViewControllerContext();
     const fontSize = useBibleViewFontSizeContext();
     return (
@@ -117,7 +119,7 @@ export function RenderHeaderComp({
 
 export function BibleDirectViewTitleComp({
     bibleItem,
-}: Readonly<{ bibleItem: BibleItem }>) {
+}: Readonly<{ bibleItem: ReadIdOnlyBibleItem }>) {
     const [title] = useAppStateAsync(() => {
         return bibleItem.toTitle();
     }, [bibleItem.bibleKey, bibleItem.target]);
@@ -150,7 +152,7 @@ export function BibleViewTitleEditingComp({
     onTargetChange,
     children,
 }: Readonly<{
-    bibleItem: BibleItem;
+    bibleItem: ReadIdOnlyBibleItem;
     onTargetChange: (bibleTarget: BibleTargetType) => void;
     children?: React.ReactNode;
 }>) {
@@ -170,7 +172,7 @@ function RenderVerseTextComp({
     verseInfo,
     index,
 }: Readonly<{
-    bibleItem: BibleItem;
+    bibleItem: ReadIdOnlyBibleItem;
     verseInfo: CompiledVerseType;
     index: number;
 }>) {
@@ -247,7 +249,7 @@ function RenderRestVerseNumListComp({
 }: Readonly<{
     to?: number;
     from?: number;
-    bibleItem: BibleItem;
+    bibleItem: ReadIdOnlyBibleItem;
     verseCount: number;
     onClick: (verse: number) => void;
     toTitle: (verse: number) => string;
@@ -304,7 +306,7 @@ function RenderRestVerseNumListComp({
 
 export function BibleViewTextComp({
     bibleItem,
-}: Readonly<{ bibleItem: BibleItem }>) {
+}: Readonly<{ bibleItem: ReadIdOnlyBibleItem }>) {
     const { bibleKey, target } = bibleItem;
     const fontSize = useBibleViewFontSizeContext();
     const viewController = useBibleItemsViewControllerContext();

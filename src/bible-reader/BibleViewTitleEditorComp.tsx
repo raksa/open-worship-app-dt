@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 
-import BibleItem from '../bible-list/BibleItem';
 import { BibleTargetType } from '../bible-list/bibleRenderHelpers';
 import { useAppStateAsync } from '../helper/debuggerHelpers';
 import { showAppContextMenu } from '../context-menu/appContextMenuHelpers';
@@ -17,6 +16,7 @@ import {
     getVersesCount,
     toLocaleNumBible,
 } from '../helper/bible-helpers/serverBibleHelpers2';
+import { ReadIdOnlyBibleItem } from './BibleItemsViewController';
 
 function chose<T>(
     event: any,
@@ -71,7 +71,7 @@ export default function BibleViewTitleEditorComp({
     bibleItem,
     onTargetChange,
 }: Readonly<{
-    bibleItem: BibleItem;
+    bibleItem: ReadIdOnlyBibleItem;
     onTargetChange?: (target: BibleTargetType) => void;
 }>) {
     const [title] = useAppStateAsync(() => {

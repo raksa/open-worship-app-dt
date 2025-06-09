@@ -2,6 +2,7 @@ import './BibleViewComp.scss';
 
 import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
 import BibleItemsViewController, {
+    ReadIdOnlyBibleItem,
     useBibleItemsViewControllerContext,
 } from './BibleItemsViewController';
 import {
@@ -14,7 +15,6 @@ import { genDefaultBibleItemContextMenu } from '../bible-list/bibleItemHelpers';
 import ScrollingHandlerComp from '../scrolling/ScrollingHandlerComp';
 import RenderBibleEditingHeader from '../bible-lookup/RenderBibleEditingHeader';
 import RenderBibleLookupBodyComp from '../bible-lookup/RenderBibleLookupBodyComp';
-import BibleItem from '../bible-list/BibleItem';
 import { use } from 'react';
 import { EditingResultContext } from './LookupBibleItemController';
 import { useBibleViewFontSizeContext } from '../helper/bibleViewHelpers';
@@ -25,7 +25,7 @@ import {
 
 function handMovedChecking(
     viewController: BibleItemsViewController,
-    bibleItem: BibleItem,
+    bibleItem: ReadIdOnlyBibleItem,
     container: HTMLElement,
     threshold: number,
 ) {
@@ -69,7 +69,7 @@ export default function BibleViewComp({
     bibleItem,
     isEditing = false,
 }: Readonly<{
-    bibleItem: BibleItem;
+    bibleItem: ReadIdOnlyBibleItem;
     isEditing?: boolean;
 }>) {
     const viewController = useBibleItemsViewControllerContext();

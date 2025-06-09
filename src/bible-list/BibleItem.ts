@@ -97,7 +97,7 @@ export default class BibleItem
         verseStart: number,
         verseEnd: number,
     ) {
-        return BibleItem.fromJson({
+        return this.fromJson({
             id: -1,
             bibleKey,
             target: {
@@ -137,7 +137,8 @@ export default class BibleItem
         }
     }
     clone(isKeepId = false) {
-        const bibleItem = BibleItem.fromJson(this.toJson());
+        const Class = this.constructor as typeof BibleItem;
+        const bibleItem = Class.fromJson(this.toJson());
         if (!isKeepId) {
             bibleItem.id = -1;
         }
@@ -187,7 +188,7 @@ export default class BibleItem
             const str = getSetting(BIBLE_PRESENT_SETTING_NAME, '');
             if (isValidJson(str, true)) {
                 return JSON.parse(str).map((item: any) => {
-                    return BibleItem.fromJson(item);
+                    return this.fromJson(item);
                 }) as BibleItem[];
             }
         } catch (error) {
@@ -267,7 +268,7 @@ export default class BibleItem
             return null;
         }
         const json = JSON.parse(data);
-        return BibleItem.fromJson(json, json.filePath);
+        return this.fromJson(json, json.filePath);
     }
     static saveFromBibleLookup(
         bible: ItemSourceInfBasic<BibleItem> & DocumentInf,
