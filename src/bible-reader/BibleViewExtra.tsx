@@ -338,7 +338,7 @@ export function BibleViewTextComp({
                     });
                 }}
                 toTitle={(verse) => {
-                    return `${target.verseStart}-${verse}`;
+                    return `${verse}-${target.verseStart}`;
                 }}
             />
             {verseList.map((verseInfo, i) => {
