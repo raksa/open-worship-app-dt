@@ -13,7 +13,7 @@ import {
     ReadIdOnlyBibleItem,
     useBibleItemsViewControllerContext,
 } from './BibleItemsViewController';
-import { BIBLE_VERSE_TEXT_TITLE } from '../helper/helpers';
+import { BIBLE_VERSE_TEXT_TITLE, getSelectedText } from '../helper/helpers';
 import {
     BibleTargetType,
     CompiledVerseType,
@@ -211,6 +211,9 @@ function RenderVerseTextComp({
                 data-verse-key={verseInfo.bibleVersesKey}
                 title={BIBLE_VERSE_TEXT_TITLE}
                 onClick={(event) => {
+                    if (getSelectedText()) {
+                        return;
+                    }
                     viewController.handleVersesSelecting(
                         event.currentTarget,
                         event.altKey,

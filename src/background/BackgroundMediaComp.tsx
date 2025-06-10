@@ -1,4 +1,3 @@
-import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
 import FileListHandlerComp from '../others/FileListHandlerComp';
 import {
     genCommonMenu,
@@ -14,6 +13,7 @@ import { handleDragStart } from '../helper/dragHelpers';
 import { useGenDirSource } from '../helper/dirSourceHelpers';
 import { BackgroundSrcType } from '../_screen/screenHelpers';
 import { getMimetypeExtensions } from '../server/fileHelpers';
+import { showAppContextMenu } from '../context-menu/appContextMenuHelpers';
 
 export type RenderChildType = (
     filePath: string,

@@ -15,10 +15,10 @@ import Bible from './Bible';
 import { showSimpleToast } from '../toast/toastHelpers';
 import DirSource from '../helper/DirSource';
 import FileSource from '../helper/FileSource';
-import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
 import { addExtension } from '../server/fileHelpers';
 import appProvider from '../server/appProvider';
 import { VerseList } from '../helper/bible-helpers/BibleDataReader';
+import { showAppContextMenu } from '../context-menu/appContextMenuHelpers';
 
 export const SelectedBibleKeyContext = createContext<string>('KJV');
 export function useBibleKeyContext() {

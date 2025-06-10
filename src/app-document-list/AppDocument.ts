@@ -1,6 +1,5 @@
 import Slide, { SlideType } from './Slide';
 import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
-import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
 import { showAppDocumentContextMenu } from './appDocumentHelpers';
 import { AnyObjectType, checkIsSameValues, toMaxId } from '../helper/helpers';
 import { MimetypeNameType } from '../server/fileHelpers';
@@ -10,7 +9,10 @@ import EditingHistoryManager from '../others/EditingHistoryManager';
 import ItemSourceInf from '../others/ItemSourceInf';
 import { OptionalPromise } from '../others/otherHelpers';
 import { handleError } from '../helper/errorHelpers';
-import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
+import {
+    ContextMenuItemType,
+    showAppContextMenu,
+} from '../context-menu/appContextMenuHelpers';
 
 type AppDocumentMetadataType = {
     app: string;

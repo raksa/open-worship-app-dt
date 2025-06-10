@@ -1,4 +1,4 @@
-import { showAppContextMenu } from '../../../context-menu/AppContextMenuComp';
+import { showAppContextMenu } from '../../../context-menu/appContextMenuHelpers';
 import appProvider from '../../../server/appProvider';
 import { useCanvasControllerContext } from '../CanvasController';
 import { useCanvasItemContext } from '../CanvasItem';
@@ -22,7 +22,7 @@ export default function BoxEditorNormalViewErrorComp() {
                     {
                         menuElement: 'Copy Error Json',
                         onSelect: () => {
-                            appProvider.browserUtils.copyToClipboard(
+                            appProvider.systemUtils.copyToClipboard(
                                 JSON.stringify(canvasItem.props),
                             );
                         },

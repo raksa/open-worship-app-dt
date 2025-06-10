@@ -6,8 +6,10 @@ import LookupBibleItemController, {
     useLookupBibleItemControllerContext,
 } from '../bible-reader/LookupBibleItemController';
 import { historyStore } from '../bible-reader/BibleItemsViewController';
-import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
-import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
+import {
+    ContextMenuItemType,
+    showAppContextMenu,
+} from '../context-menu/appContextMenuHelpers';
 import { copyToClipboard } from '../server/appHelpers';
 
 const HISTORY_TEXT_LIST_SETTING_NAME = 'history-text-list';

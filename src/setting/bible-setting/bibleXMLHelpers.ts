@@ -8,7 +8,7 @@ import {
     trashFile,
 } from '../../server/appHelpers';
 import { fsDeleteFile, pathJoin } from '../../server/fileHelpers';
-import { allLocalesMap } from '../../lang';
+import { allLocalesMap, LocaleType } from '../../lang';
 import { showAppInput } from '../../popup-widget/popupWidgetHelpers';
 import {
     genBibleBooksMapXMLInput,
@@ -252,7 +252,7 @@ export function handBibleInfoContextMenuOpening(
                             onSelect: () => {
                                 setBibleInfo({
                                     ...bibleInfo,
-                                    locale,
+                                    locale: locale as LocaleType,
                                 });
                             },
                         };

@@ -5,7 +5,7 @@ import { ReactElement, useState } from 'react';
 import KeyboardEventListener, {
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
-import { getWindowDim } from '../helper/helpers';
+import { getWindowDim, genSelectedTextContextMenus } from '../helper/helpers';
 import WindowEventListener from '../event/WindowEventListener';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { OptionalPromise } from '../others/otherHelpers';
@@ -30,6 +30,7 @@ export type OptionsType = {
     style?: React.CSSProperties;
     noKeystroke?: boolean;
     applyOnTab?: boolean;
+    shouldHandleSelectedText?: boolean;
 };
 
 export type PropsType = {
@@ -112,6 +113,9 @@ export function showAppContextMenu(
     options?: OptionsType,
 ): AppContextMenuControlType {
     event.stopPropagation();
+    if (options?.shouldHandleSelectedText) {
+        items = genSelectedTextContextMenus().concat(items);
+    }
     if (!items.length) {
         return {
             promiseDone: Promise.resolve(),

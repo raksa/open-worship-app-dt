@@ -1,9 +1,11 @@
-import { showAppContextMenu } from '../../context-menu/AppContextMenuComp';
 import { copyToClipboard } from '../../server/appHelpers';
 import { AppColorType, serializeForDragging } from './colorHelpers';
 import { genShowOnScreensContextMenu } from '../FileItemHandlerComp';
 import ScreenBackgroundManager from '../../_screen/managers/ScreenBackgroundManager';
-import { ContextMenuItemType } from '../../context-menu/appContextMenuHelpers';
+import {
+    ContextMenuItemType,
+    showAppContextMenu,
+} from '../../context-menu/appContextMenuHelpers';
 
 function showContextMenu(event: any, color: AppColorType) {
     const menuItems: ContextMenuItemType[] = [

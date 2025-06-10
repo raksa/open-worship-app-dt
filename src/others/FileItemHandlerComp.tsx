@@ -1,7 +1,6 @@
 import { lazy, useState } from 'react';
 
 import FileReadErrorComp from './FileReadErrorComp';
-import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
 import { copyToClipboard, showExplorer, trashFile } from '../server/appHelpers';
 import FileSource from '../helper/FileSource';
 import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
@@ -10,7 +9,10 @@ import { useFileSourceRefreshEvents } from '../helper/dirSourceHelpers';
 import { showAppConfirm } from '../popup-widget/popupWidgetHelpers';
 import ItemColorNoteComp from './ItemColorNoteComp';
 import { menuTitleRealFile, RECEIVING_DROP_CLASSNAME } from '../helper/helpers';
-import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
+import {
+    ContextMenuItemType,
+    showAppContextMenu,
+} from '../context-menu/appContextMenuHelpers';
 const LazyRenderRenamingComp = lazy(() => {
     return import('./RenderRenamingComp');
 });

@@ -1,11 +1,13 @@
 import { useMemo, useState } from 'react';
 
-import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
 import colorList from './color-list.json';
 import ColorNoteInf from '../helper/ColorNoteInf';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { freezeObject } from '../helper/helpers';
-import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
+import {
+    ContextMenuItemType,
+    showAppContextMenu,
+} from '../context-menu/appContextMenuHelpers';
 
 freezeObject(colorList);
 

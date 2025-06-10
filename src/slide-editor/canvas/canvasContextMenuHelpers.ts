@@ -3,11 +3,11 @@ import {
     getMimetypeExtensions,
     isSupportedMimetype,
 } from '../../server/fileHelpers';
-import { showAppContextMenu } from '../../context-menu/AppContextMenuComp';
 import CanvasItem from './CanvasItem';
 import CanvasController from './CanvasController';
 import { showSimpleToast } from '../../toast/toastHelpers';
 import Canvas from './Canvas';
+import { showAppContextMenu } from '../../context-menu/appContextMenuHelpers';
 
 function checkClipboardIsImage(clipboardItem: ClipboardItem) {
     return clipboardItem.types.every((type) => {

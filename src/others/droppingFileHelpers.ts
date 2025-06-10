@@ -3,11 +3,13 @@ import {
     isSupportedExt,
     MimetypeNameType,
 } from '../server/fileHelpers';
-import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
 import DirSource from '../helper/DirSource';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { selectFiles } from '../server/appHelpers';
-import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
+import {
+    ContextMenuItemType,
+    showAppContextMenu,
+} from '../context-menu/appContextMenuHelpers';
 import { changeDragEventStyle } from '../helper/helpers';
 
 export function genOnDragOver(dirSource: DirSource) {

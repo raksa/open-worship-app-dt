@@ -19,12 +19,12 @@ import {
 import SlideAutoPlayComp from '../slide-auto-play/SlideAutoPlayComp';
 import { screenManagerFromBase } from '../_screen/managers/screenManagerHelpers';
 import { getScreenManagerBase } from '../_screen/managers/screenManagerBaseHelpers';
-import { showAppContextMenu } from '../context-menu/appContextMenuHelpers';
 import { useScreenBackgroundManagerEvents } from '../_screen/managers/screenEventHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { FilePathLoadedContext } from '../others/RenderListComp';
 import ScreenManagerBase from '../_screen/managers/ScreenManagerBase';
 import OtherRenderHeaderTitleComp from './OtherRenderHeaderTitleComp';
+import { showAppContextMenu } from '../context-menu/appContextMenuHelpers';
 
 const DIR_SOURCE_SETTING_NAME = 'images-slide-show';
 const extraStyle: React.CSSProperties = {

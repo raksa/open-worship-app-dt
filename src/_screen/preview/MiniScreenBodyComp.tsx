@@ -1,6 +1,5 @@
 import ScreenPreviewerItemComp from './ScreenPreviewerItemComp';
 import { DEFAULT_PREVIEW_SIZE } from './MiniScreenFooterComp';
-import { showAppContextMenu } from '../../context-menu/AppContextMenuComp';
 import ScreenPreviewerTools from './ScreenPreviewerTools';
 import {
     genNewScreenManagerBase,
@@ -18,6 +17,7 @@ import BibleItemsViewController, {
 import { BibleItemDataType } from '../screenHelpers';
 import BibleItem from '../../bible-list/BibleItem';
 import { previewingEventListener } from '../../event/PreviewingEventListener';
+import { showAppContextMenu } from '../../context-menu/appContextMenuHelpers';
 
 function openContextMenu(event: any) {
     showAppContextMenu(event, [

@@ -1,4 +1,4 @@
-import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
+import { showAppContextMenu } from '../context-menu/appContextMenuHelpers';
 import ScreenEffectManager from './managers/ScreenEffectManager';
 import {
     ScreenTransitionEffectType,

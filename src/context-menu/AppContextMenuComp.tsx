@@ -1,55 +1,14 @@
 import './AppContextMenuComp.scss';
 
-import KeyboardEventListener, {
-    EventMapper,
-    toShortcutKey,
-} from '../event/KeyboardEventListener';
+import { EventMapper, toShortcutKey } from '../event/KeyboardEventListener';
 import {
     ContextMenuItemType,
-    OptionsType,
     setPositionMenu,
     contextControl,
     useAppContextMenuData,
     APP_CONTEXT_MENU_ITEM_CLASS,
     APP_CONTEXT_MENU_ID,
 } from './appContextMenuHelpers';
-
-export type AppContextMenuControlType = {
-    promiseDone: Promise<void>;
-    closeMenu: () => void;
-};
-
-export function showAppContextMenu(
-    event: MouseEvent,
-    items: ContextMenuItemType[],
-    options?: OptionsType,
-): AppContextMenuControlType {
-    event.stopPropagation();
-    if (!items.length) {
-        return {
-            promiseDone: Promise.resolve(),
-            closeMenu: () => {},
-        };
-    }
-    const closeMenu = () => {
-        contextControl.setDataDelegator?.(null);
-    };
-    const promise = new Promise<void>((resolve) => {
-        contextControl.setDataDelegator?.({ event, items, options });
-        const eventName = KeyboardEventListener.toEventMapperKey({
-            key: 'Escape',
-        });
-        const escEvent = KeyboardEventListener.registerEventListener(
-            [eventName],
-            () => {
-                closeMenu();
-                KeyboardEventListener.unregisterEventListener(escEvent);
-                resolve();
-            },
-        );
-    });
-    return { promiseDone: promise, closeMenu };
-}
 
 export const elementDivider = (
     <hr className="w-100" style={{ padding: 0, margin: 0 }} />

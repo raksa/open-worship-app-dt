@@ -1,6 +1,5 @@
 import './BibleViewComp.scss';
 
-import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
 import BibleItemsViewController, {
     ReadIdOnlyBibleItem,
     useBibleItemsViewControllerContext,
@@ -22,6 +21,7 @@ import {
     bringDomToNearestView,
     checkIsVerticalPartialInvisible,
 } from '../helper/helpers';
+import { showAppContextMenu } from '../context-menu/appContextMenuHelpers';
 
 function handMovedChecking(
     viewController: BibleItemsViewController,
@@ -104,13 +104,21 @@ export default function BibleViewComp({
                 foundBibleItem === null
                     ? undefined
                     : async (event: any) => {
-                          showAppContextMenu(event, [
-                              ...genDefaultBibleItemContextMenu(foundBibleItem),
-                              ...(await viewController.genContextMenu(
-                                  foundBibleItem,
-                                  uuid,
-                              )),
-                          ]);
+                          showAppContextMenu(
+                              event,
+                              [
+                                  ...genDefaultBibleItemContextMenu(
+                                      foundBibleItem,
+                                  ),
+                                  ...(await viewController.genContextMenu(
+                                      foundBibleItem,
+                                      uuid,
+                                  )),
+                              ],
+                              {
+                                  shouldHandleSelectedText: true,
+                              },
+                          );
                       }
             }
         >

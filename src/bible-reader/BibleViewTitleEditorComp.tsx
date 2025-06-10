@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 
 import { BibleTargetType } from '../bible-list/bibleRenderHelpers';
 import { useAppStateAsync } from '../helper/debuggerHelpers';
-import { showAppContextMenu } from '../context-menu/appContextMenuHelpers';
 import {
     getBibleInfo,
     getVerses,
@@ -17,6 +16,7 @@ import {
     toLocaleNumBible,
 } from '../helper/bible-helpers/serverBibleHelpers2';
 import { ReadIdOnlyBibleItem } from './BibleItemsViewController';
+import { showAppContextMenu } from '../context-menu/appContextMenuHelpers';
 
 function chose<T>(
     event: any,
