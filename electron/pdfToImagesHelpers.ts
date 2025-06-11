@@ -24,19 +24,9 @@ type PdfImagePreviewDataType = {
 };
 
 function genImage(filePath: string, outDir: string) {
-    return new Promise<PdfImagePreviewDataType>((resolve) => {
-        const scriptPath = fsResolve(
-            app.getAppPath(),
-            isDev ? 'public' : 'dist',
-            'js',
-            'pdf-to-images.mjs',
-        );
-        const forkedProcess = fork(scriptPath);
-        forkedProcess.on('message', (data: any) => {
-            forkedProcess.kill();
-            resolve(data);
-        });
-        forkedProcess.send({ filePath, outDir });
+    return execute<PdfImagePreviewDataType>('pdf-to-images.mjs', {
+        filePath,
+        outDir,
     });
 }
 
@@ -56,5 +46,44 @@ export function pdfToImages(
         const data = await genImage(filePath, outDir);
         dataMap.set(filePath, data);
         return data;
+    });
+}
+
+export function execute<T>(scriptFullName: string, data: any) {
+    return new Promise<T>((resolve) => {
+        const scriptPath = fsResolve(
+            app.getAppPath(),
+            isDev ? 'public' : 'dist',
+            'js',
+            scriptFullName,
+        );
+        const forkedProcess = fork(scriptPath);
+        forkedProcess.on('message', (data: any) => {
+            forkedProcess.kill();
+            resolve(data);
+        });
+        forkedProcess.send(data);
+    });
+}
+
+const countMap = new Map<string, { date: number; count: number }>();
+export async function getPagesCount(filePath: string) {
+    return unlocking<number | null>(`count-pages-${filePath}`, async () => {
+        let data = countMap.get(filePath);
+        const now = Date.now();
+        const threeSeconds = 1000 * 3;
+        if (!data || now - data.date > threeSeconds) {
+            const count = await execute<number | null>('count-pdf-pages.mjs', {
+                filePath,
+            });
+            if (count !== null) {
+                countMap.set(filePath, { count, date: Date.now() });
+            }
+        }
+        data = countMap.get(filePath);
+        if (data) {
+            return data.count;
+        }
+        return null;
     });
 }

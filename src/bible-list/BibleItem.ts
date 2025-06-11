@@ -18,13 +18,20 @@ export default class BibleItem
 {
     static readonly SELECT_SETTING_NAME = 'bible-item-selected';
     private originalJson: BibleItemType;
-    id: number;
+    _id: number;
     filePath?: string;
     constructor(id: number, json: BibleItemType, filePath?: string) {
         super();
-        this.id = id;
+        this._id = id;
         this.filePath = filePath;
         this.originalJson = cloneJson(json);
+    }
+    get id() {
+        return this._id;
+    }
+    set id(id: number) {
+        this._id = id;
+        this.originalJson.id = id;
     }
     get bibleKey() {
         return this.originalJson.bibleKey;
@@ -44,7 +51,10 @@ export default class BibleItem
     set metadata(metadata: AnyObjectType) {
         this.originalJson.metadata = metadata;
     }
-    checkIsSameId(bibleItem: BibleItem) {
+    checkIsSameId(bibleItem: BibleItem | number) {
+        if (typeof bibleItem === 'number') {
+            return this.id === bibleItem;
+        }
         return this.id === bibleItem.id;
     }
     checkIsTargetIdentical(bibleItem: BibleItem) {
@@ -106,8 +116,8 @@ export default class BibleItem
         return {
             id: this.id,
             bibleKey: this.bibleKey,
-            target: this.target,
-            metadata: this.metadata,
+            target: this.originalJson.target,
+            metadata: this.originalJson.metadata,
         };
     }
     static validate(json: AnyObjectType) {
@@ -154,17 +164,17 @@ export default class BibleItem
         bibleItem: BibleItem,
         presenterBibleItems: BibleItem[],
     ) {
-        let list;
+        let bibleItemList;
         if (presenterBibleItems.length < 2) {
-            list = [bibleItem.clone()];
+            bibleItemList = [bibleItem.clone()];
         } else {
-            list = presenterBibleItems.map((presenterBibleItem) => {
+            bibleItemList = presenterBibleItems.map((presenterBibleItem) => {
                 const newItem = bibleItem.clone();
                 newItem.bibleKey = presenterBibleItem.bibleKey;
                 return newItem;
             });
         }
-        return list.filter((item) => item !== null);
+        return bibleItemList.filter((item) => item !== null);
     }
     static setBiblePresenterSetting(bibleItems: BibleItem[]) {
         const jsonData = bibleItems.map((bibleItem) => {
@@ -214,18 +224,32 @@ export default class BibleItem
         const { title, text } = await this.toTitleText();
         copyToClipboard(`${this.getCopyingBibleKey()} ${title}\n${text}`);
     }
+    async getJumpingChapter(isNext: boolean) {
+        const nextChapter = await bibleRenderHelper.getJumpingChapter(
+            this.bibleKey,
+            this.target,
+            isNext,
+        );
+        return nextChapter;
+    }
     syncData(bibleItem: BibleItem) {
         this.originalJson = bibleItem.originalJson;
     }
     dragSerialize() {
+        const data = this.toJson() as any;
+        data.filePath = this.filePath;
         return {
             type: DragTypeEnum.BIBLE_ITEM,
-            data: this.toJson(),
+            data,
         };
     }
     static dragDeserialize(data: any) {
         try {
-            return this.fromJson(data);
+            const bibleItem = this.fromJson(data);
+            if (data.filePath) {
+                bibleItem.filePath = data.filePath;
+            }
+            return bibleItem;
         } catch (error) {
             handleError(error);
         }

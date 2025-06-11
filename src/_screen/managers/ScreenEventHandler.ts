@@ -18,9 +18,9 @@ export default abstract class ScreenEventHandler<
 > extends EventHandler<T> {
     static readonly eventNamePrefix: string = 'screen-em';
     screenManagerBase: ScreenManagerBase;
-    constructor(screenManagerBase: ScreenManagerBase) {
+    constructor(screenManagerBase?: ScreenManagerBase) {
         super();
-        this.screenManagerBase = screenManagerBase;
+        this.screenManagerBase = screenManagerBase || (new Object() as any);
         cache.set(this.toCacheKey(), this);
     }
 
@@ -35,7 +35,7 @@ export default abstract class ScreenEventHandler<
     }
 
     get key() {
-        return this.screenId.toString();
+        return `${this.screenId}`;
     }
 
     abstract toSyncMessage(): BasicScreenMessageType;

@@ -1,49 +1,81 @@
-import { lazy, useMemo, useState } from 'react';
+import { lazy, useState } from 'react';
 
 import { InputTextContext } from './InputHandlerComp';
-import {
-    SelectedBibleKeyContext,
-    useSelectedBibleKey,
-} from '../bible-list/bibleHelpers';
+import { SelectedBibleKeyContext } from '../bible-list/bibleHelpers';
 import { BibleNotAvailableComp } from './RenderLookupSuggestionComp';
 import BibleLookupBodyPreviewerComp from './BibleLookupBodyPreviewerComp';
-import { LookupBibleItemViewController } from '../bible-reader/BibleItemViewController';
 import ResizeActorComp from '../resize-actor/ResizeActorComp';
 import { MultiContextRender } from '../helper/MultiContextRender';
 import RenderBibleLookupHeaderComp from './RenderBibleLookupHeaderComp';
 import RenderExtraButtonsRightComp from './RenderExtraButtonsRightComp';
 import { useStateSettingBoolean } from '../helper/settingHelpers';
+import { useAppEffect, useAppStateAsync } from '../helper/debuggerHelpers';
+import { getAllLocalBibleInfoList } from '../helper/bible-helpers/bibleDownloadHelpers';
+import {
+    EditingResultContext,
+    useLookupBibleItemControllerContext,
+} from '../bible-reader/LookupBibleItemController';
+import { EditingResultType } from '../helper/bible-helpers/serverBibleHelpers2';
 
-const LazyBibleSearchBodyPreviewer = lazy(() => {
+const LazyBibleSearchBodyPreviewerComp = lazy(() => {
     return import('../bible-search/BibleSearchPreviewerComp');
 });
 
-const LOOKUPING_ONLINE_SETTING_NAME = 'bible-lookup-online';
+const LOOKUP_ONLINE_SETTING_NAME = 'bible-lookup-online';
 
-export default function RenderBibleLookupComp({
-    editorInputText = '',
-}: Readonly<{
-    editorInputText?: string;
-}>) {
+export function useSelectedBibleKey() {
+    const viewController = useLookupBibleItemControllerContext();
+    const [bibleKey, setBibleKey] = useState<string>(
+        viewController.selectedBibleItem.bibleKey,
+    );
+    const [localBibleInfoList] = useAppStateAsync(() => {
+        return getAllLocalBibleInfoList();
+    }, []);
+    useAppEffect(() => {
+        viewController.setBibleKey = (newBibleKey: string) => {
+            setBibleKey(newBibleKey);
+        };
+        return () => {
+            viewController.setBibleKey = (_: string) => {};
+        };
+    }, []);
+    const isValid = (localBibleInfoList ?? []).some((bibleInfo) => {
+        return bibleInfo.key === bibleKey;
+    });
+    return { isValid, bibleKey };
+}
+
+export default function RenderBibleLookupComp() {
     const [isLookupOnline, setIsLookupOnline] = useStateSettingBoolean(
-        LOOKUPING_ONLINE_SETTING_NAME,
+        LOOKUP_ONLINE_SETTING_NAME,
         false,
     );
-    const [inputText, setInputText] = useState<string>(editorInputText);
-    const { isValid, bibleKey, setBibleKey } = useSelectedBibleKey();
-    const viewController = LookupBibleItemViewController.getInstance();
-    if (bibleKey !== null) {
-        viewController.selectedBibleItem.bibleKey = bibleKey;
-    }
-    viewController.setBibleKey = setBibleKey;
-    const inputTextContextValue = useMemo(
-        () => ({
-            inputText,
-            setInputText,
-        }),
-        [inputText, setInputText],
+    const viewController = useLookupBibleItemControllerContext();
+    const [inputText, setInputText] = useState<string>(
+        viewController.inputText,
     );
-
+    const [editingResult, setEditingResult] =
+        useAppStateAsync<EditingResultType>(() => {
+            return viewController.getEditingResult();
+        }, []);
+    const { isValid, bibleKey } = useSelectedBibleKey();
+    useAppEffect(() => {
+        viewController.reloadEditingResult = (inputText) => {
+            viewController
+                .getEditingResult(inputText)
+                .then((newEditingResult) => {
+                    setEditingResult(newEditingResult);
+                });
+        };
+        viewController.setInputText = async (newInputText: string) => {
+            setInputText(newInputText);
+            viewController.reloadEditingResult(newInputText);
+        };
+        return () => {
+            viewController.setInputText = (_: string) => {};
+            viewController.reloadEditingResult = (_: string) => {};
+        };
+    }, []);
     if (!isValid) {
         return (
             <div className="w-100 h-100">
@@ -60,7 +92,11 @@ export default function RenderBibleLookupComp({
             </div>
         );
     }
-    const lookupBody = <BibleLookupBodyPreviewerComp />;
+    const lookupBody = (
+        <EditingResultContext value={editingResult ?? null}>
+            <BibleLookupBodyPreviewerComp />
+        </EditingResultContext>
+    );
     const resizeData = [
         {
             children: {
@@ -72,7 +108,7 @@ export default function RenderBibleLookupComp({
             widgetName: 'Lookup',
         },
         {
-            children: LazyBibleSearchBodyPreviewer,
+            children: LazyBibleSearchBodyPreviewerComp,
             key: 'h1',
             widgetName: 'Bible Online Lookup',
         },
@@ -86,16 +122,16 @@ export default function RenderBibleLookupComp({
                 },
                 {
                     context: InputTextContext,
-                    value: inputTextContextValue,
+                    value: {
+                        inputText,
+                    },
                 },
             ]}
         >
             <div id="bible-lookup-popup" className="shadow card w-100 h-100">
                 <RenderBibleLookupHeaderComp
-                    editorInputText={editorInputText}
                     isLookupOnline={isLookupOnline}
                     setIsLookupOnline={setIsLookupOnline}
-                    setBibleKey={setBibleKey}
                 />
                 <div className={'card-body d-flex w-100 h-100 overflow-hidden'}>
                     {isLookupOnline ? (

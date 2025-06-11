@@ -12,6 +12,12 @@ export default function PresenterOthersControllerComp() {
                 <CountDownComp />
             </div>
             <hr />
+            <div>TODO: Image slides show</div>
+            <hr />
+            <div>TODO: Video show</div>
+            <hr />
+            <div>TODO: Sound show</div>
+            <hr />
             <div>TODO: Camera Show</div>
             <hr />
             <div>TODO: Javascript Show</div>

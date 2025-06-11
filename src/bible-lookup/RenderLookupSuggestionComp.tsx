@@ -1,41 +1,40 @@
 import RenderBookOptionsComp from './RenderBookOptionsComp';
 import RenderChapterOptionsComp from './RenderChapterOptionsComp';
-import { ExtractedBibleResult } from '../helper/bible-helpers/serverBibleHelpers2';
-import RenderBibleDataFoundComp from './RenderBibleDataFoundComp';
-import { BibleItemContext } from '../bible-reader/BibleItemContext';
-import { attemptAddingHistory } from './InputHistoryComp';
 import { BibleSelectionMiniComp } from './BibleSelectionComp';
-import { LookupBibleItemViewController } from '../bible-reader/BibleItemViewController';
 import { RENDER_FOUND_CLASS } from './selectionHelpers';
+import { BibleViewTextComp } from '../bible-reader/BibleViewExtra';
+import {
+    EditingResultContext,
+    useLookupBibleItemControllerContext,
+} from '../bible-reader/LookupBibleItemController';
+import RenderVerseOptionsComp from './RenderVerseOptionsComp';
+import { use } from 'react';
 
 export default function RenderLookupSuggestionComp({
-    bibleResult,
     applyChapterSelection,
-    applyVerseSelection,
     applyBookSelection,
 }: Readonly<{
-    bibleResult: ExtractedBibleResult;
     applyChapterSelection: (newChapter: number) => void;
-    applyVerseSelection: (newVerseStart?: number, newVerseEnd?: number) => void;
     applyBookSelection: (newBookKey: string, newBook: string) => void;
 }>) {
-    const handleVerseChanging = (
-        newVerseStart?: number,
-        newVerseEnd?: number,
-    ) => {
-        applyVerseSelection(newVerseStart, newVerseEnd);
-    };
-    const { bookKey, guessingBook, chapter, guessingChapter, bibleItem } =
-        bibleResult;
+    const editingResult = use(EditingResultContext);
+    if (editingResult === null) {
+        return <div>Loading...</div>;
+    }
+    const {
+        bookKey,
+        guessingBook,
+        chapter,
+        guessingChapter,
+        bibleItem: foundBibleItem,
+    } = editingResult.result;
 
-    if (bibleItem !== null) {
-        bibleItem.toTitle().then((text) => {
-            attemptAddingHistory(bibleItem.bibleKey, text);
-        });
+    if (foundBibleItem !== null) {
         return (
-            <BibleItemContext value={bibleItem}>
-                <RenderBibleDataFoundComp onVerseChange={handleVerseChanging} />
-            </BibleItemContext>
+            <>
+                <RenderVerseOptionsComp bibleItem={foundBibleItem} />
+                <BibleViewTextComp bibleItem={foundBibleItem} />
+            </>
         );
     }
     return (
@@ -74,12 +73,14 @@ export function BibleNotAvailableComp({
 }: Readonly<{
     bibleKey: string;
 }>) {
-    const viewController = LookupBibleItemViewController.getInstance();
+    const viewController = useLookupBibleItemControllerContext();
     const handleBibleKeyChanging = (
         _oldBibleKey: string,
         newBibleKey: string,
     ) => {
-        viewController.setBibleKey(newBibleKey);
+        viewController.applyTargetOrBibleKey(viewController.selectedBibleItem, {
+            bibleKey: newBibleKey,
+        });
     };
 
     return (

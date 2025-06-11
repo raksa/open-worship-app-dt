@@ -2,6 +2,7 @@ import appProvider, { FontListType } from './appProvider';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { OptionalPromise } from '../others/otherHelpers';
 import FileSource from '../helper/FileSource';
+import { AnyObjectType } from '../helper/helpers';
 
 export function getFontListByNodeFont() {
     appProvider.messageUtils.sendData('main:app:get-font-list');
@@ -15,7 +16,10 @@ export function genReturningEventName(eventName: string) {
     return `${eventName}-return-${newDate}`;
 }
 
-export function electronSendAsync<T>(eventName: string, data: any = {}) {
+export function electronSendAsync<T>(
+    eventName: string,
+    data: AnyObjectType = {},
+) {
     return new Promise<T>((resolve, reject) => {
         const replyEventName = genReturningEventName(eventName);
         appProvider.messageUtils.listenOnceForData(

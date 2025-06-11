@@ -18,7 +18,7 @@ function openContextMenu(event: any, screenEffectManager: ScreenEffectManager) {
                     screenEffectManager.effectType =
                         effect as ScreenTransitionEffectType;
                 },
-                otherChild: (
+                childAfter: (
                     <i
                         className={`${icon} ps-1 ${isSelected ? 'highlight-selected' : ''}`}
                     />

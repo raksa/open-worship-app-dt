@@ -39,19 +39,16 @@ function genBtnMaps(screenManager: ScreenManager) {
     const {
         screenBackgroundManager,
         screenVaryAppDocumentManager,
-        screenFullTextManager,
+        screenBibleManager,
         screenAlertManager,
     } = screenManager;
 
     const isShowingBackground = screenBackgroundManager.isShowing;
     const isShowingFG = screenVaryAppDocumentManager.isShowing;
-    const isShowingFullText = screenFullTextManager.isShowing;
+    const isShowingBible = screenBibleManager.isShowing;
     const isShowingAlert = screenAlertManager.isShowing;
     const isShowing =
-        isShowingBackground ||
-        isShowingFG ||
-        isShowingFullText ||
-        isShowingAlert;
+        isShowingBackground || isShowingFG || isShowingBible || isShowingAlert;
     return [
         {
             text: <i className="bi bi-eraser" />,
@@ -84,13 +81,13 @@ function genBtnMaps(screenManager: ScreenManager) {
             },
         },
         {
-            text: 'FT',
-            title: 'Clear full text',
+            text: 'BB',
+            title: 'Clear Bible',
             btnType: 'primary',
-            isEnabled: isShowingFullText,
+            isEnabled: isShowingBible,
             eventMap: { key: 'F9' },
             onClick: () => {
-                screenFullTextManager.clear();
+                screenBibleManager.clear();
             },
         },
     ];

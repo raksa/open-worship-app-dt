@@ -1,16 +1,10 @@
 import { useState } from 'react';
 
-import {
-    checkIsBookAvailable,
-    getBibleInfo,
-    getBookKVList,
-} from './bibleInfoHelpers';
+import { checkIsBookAvailable, getBibleInfo } from './bibleInfoHelpers';
 import bibleJson from './bible.json';
 import { getOnlineBibleInfoList } from './bibleDownloadHelpers';
-import { useAppEffect, useAppEffectAsync } from '../debuggerHelpers';
+import { useAppEffectAsync } from '../debuggerHelpers';
 import { toLocaleNumBible } from './serverBibleHelpers2';
-import { genVerseList } from '../../bible-list/bibleHelpers';
-import BibleItem from '../../bible-list/BibleItem';
 import { freezeObject } from '../helpers';
 
 freezeObject(bibleJson);
@@ -28,7 +22,7 @@ export type BookType = {
     chapterCount: number;
 };
 
-export const toLocaleNum = (n: number, numList: string[]) => {
+export const toLocaleNumQuick = (n: number, numList: string[]) => {
     if (!numList) {
         return n;
     }
@@ -55,11 +49,11 @@ export async function genChapterMatches(
         }),
     );
     const newList = chapterNumStrList.map((chapterNumStr, i) => {
-        return [chapterList[i], chapterNumStr];
+        return [chapterList[i], chapterNumStr, bibleKey];
     });
     const newFilteredList = newList.filter((chapterMatch) => {
         return chapterMatch[0] !== null;
-    }) as [number, string][];
+    }) as [number, string, string][];
     if (guessingChapter === null) {
         return newFilteredList;
     }
@@ -89,7 +83,9 @@ export function useChapterMatch(
     bookKey: string,
     guessingChapter: string | null,
 ) {
-    const [matches, setMatches] = useState<[number, string][] | null>(null);
+    const [matches, setMatches] = useState<[number, string, string][] | null>(
+        null,
+    );
     useAppEffectAsync(
         async (methodContext) => {
             if (!(await checkIsBookAvailable(bibleKey, bookKey))) {
@@ -109,6 +105,7 @@ export function useChapterMatch(
 }
 
 type BookMatchDataType = {
+    bibleKey: string;
     bookKey: string;
     book: string;
     bookKJV: string;
@@ -178,6 +175,7 @@ export async function genBookMatches(
         )
         .map(([bookKey, book]) => {
             return {
+                bibleKey,
                 bookKey,
                 book,
                 bookKJV: kjvKeyValue[bookKey],
@@ -185,46 +183,6 @@ export async function genBookMatches(
             };
         });
     return mappedKeys;
-}
-export function useBookMatch(bibleKey: string, guessingBook: string) {
-    const [matches, setMatches] = useState<BookMatchDataType[] | null>(null);
-    useAppEffect(() => {
-        genBookMatches(bibleKey, guessingBook).then((bookMatches) => {
-            setMatches(bookMatches);
-        });
-    }, [bibleKey, guessingBook]);
-    return matches;
-}
-export function useGenVerseList(bibleItem: BibleItem) {
-    const [verseList, setVerseList] = useState<[number, string][] | null>(null);
-    const { bibleKey, target } = bibleItem;
-    const { bookKey, chapter } = target;
-    useAppEffect(() => {
-        genVerseList({ bibleKey, bookKey, chapter }).then((verseNumList) => {
-            setVerseList(verseNumList);
-        });
-    }, [bibleKey, bookKey, chapter]);
-    return verseList;
-}
-export function useGetBookKVList(bibleKey: string) {
-    const [bookKVList, setBookKVList] = useState<{
-        [key: string]: string;
-    } | null>(null);
-    useAppEffect(() => {
-        getBookKVList(bibleKey).then((list) => {
-            setBookKVList(list);
-        });
-    }, [bibleKey]);
-    return bookKVList;
-}
-export function useGetBibleWithStatus(bibleKey: string) {
-    const [bibleStatus, setBibleStatus] = useState<BibleStatusType | null>(
-        null,
-    );
-    useAppEffect(() => {
-        getBibleInfoWithStatus(bibleKey).then((bs) => setBibleStatus(bs));
-    }, [bibleKey]);
-    return bibleStatus;
 }
 
 export function getKJVKeyValue() {
@@ -265,7 +223,7 @@ async function toChapter(
     return `${book} ${
         info.numList === undefined
             ? chapterNum
-            : await toLocaleNum(chapterNum, info.numList)
+            : toLocaleNumQuick(chapterNum, info.numList)
     }`;
 }
 

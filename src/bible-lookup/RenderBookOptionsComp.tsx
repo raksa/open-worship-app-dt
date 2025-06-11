@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 
-import { useBookMatch } from '../helper/bible-helpers/serverBibleHelpers';
+import { genBookMatches } from '../helper/bible-helpers/serverBibleHelpers';
 import {
     allArrows,
     KeyboardType,
@@ -12,11 +12,13 @@ import {
     userEnteringSelected,
 } from './selectionHelpers';
 import { useBibleKeyContext } from '../bible-list/bibleHelpers';
+import { useAppStateAsync } from '../helper/debuggerHelpers';
 
 const OPTION_CLASS = 'bible-lookup-book-option';
 const OPTION_SELECTED_CLASS = 'active';
 
 function genBookOption({
+    bibleKey,
     onSelect,
     index,
     bookKey,
@@ -24,6 +26,7 @@ function genBookOption({
     bookKJV,
     isAvailable,
 }: {
+    bibleKey: string;
     onSelect: SelectBookType;
     index: number;
     bookKey: string;
@@ -52,7 +55,7 @@ function genBookOption({
                     onSelect(bookKey, book);
                 }}
             >
-                <span>{book}</span>
+                <span data-bible-key={bibleKey}>{book}</span>
                 {book !== bookKJV ? (
                     <>
                         (<small className="text-muted">{bookKJV}</small>)
@@ -71,7 +74,9 @@ function BookOptionsComp({
     guessingBook: string;
 }>) {
     const bibleKey = useBibleKeyContext();
-    const matches = useBookMatch(bibleKey, guessingBook);
+    const [matches] = useAppStateAsync(() => {
+        return genBookMatches(bibleKey, guessingBook);
+    }, [bibleKey, guessingBook]);
     const useKeyEvent = (key: KeyboardType) => {
         useKeyboardRegistering(
             [{ key }],
@@ -88,25 +93,28 @@ function BookOptionsComp({
     allArrows.forEach(useKeyEvent);
     userEnteringSelected(OPTION_CLASS, OPTION_SELECTED_CLASS);
 
-    if (matches === null) {
+    if (!matches) {
         return <div>No book options available</div>;
     }
     return (
         <>
-            {matches.map(({ bookKey, book, bookKJV, isAvailable }, i) => {
-                return (
-                    <Fragment key={bookKey}>
-                        {genBookOption({
-                            bookKey,
-                            book,
-                            bookKJV,
-                            onSelect,
-                            index: i,
-                            isAvailable,
-                        })}
-                    </Fragment>
-                );
-            })}
+            {matches.map(
+                ({ bibleKey, bookKey, book, bookKJV, isAvailable }, i) => {
+                    return (
+                        <Fragment key={bookKey}>
+                            {genBookOption({
+                                bibleKey,
+                                bookKey,
+                                book,
+                                bookKJV,
+                                onSelect,
+                                index: i,
+                                isAvailable,
+                            })}
+                        </Fragment>
+                    );
+                },
+            )}
         </>
     );
 }
@@ -123,7 +131,6 @@ export default function RenderBookOptionsComp({
     if (bookKey !== null) {
         return null;
     }
-
     return (
         <BookOptionsComp
             onSelect={onSelect}

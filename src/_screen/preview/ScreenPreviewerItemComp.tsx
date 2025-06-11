@@ -2,46 +2,12 @@ import './CustomHTMLScreenPreviewer';
 
 import { useState } from 'react';
 
-import ShowHideScreen from './ShowHideScreen';
-import MiniScreenClearControlComp from './MiniScreenClearControlComp';
-import DisplayControl from './DisplayControl';
-import ScreenEffectControlComp from './ScreenEffectControlComp';
-import { handleDrop } from '../../helper/dragHelpers';
+import { extractDropData } from '../../helper/dragHelpers';
 import { openContextMenu } from './screenPreviewerHelpers';
-import ItemColorNoteComp from '../../others/ItemColorNoteComp';
-import {
-    useScreenManagerBaseContext,
-    useScreenManagerContext,
-} from '../managers/screenManagerHooks';
+import { useScreenManagerContext } from '../managers/screenManagerHooks';
 import { useAppEffect } from '../../helper/debuggerHelpers';
-
-function ScreenPreviewerHeaderComp() {
-    const screenManagerBase = useScreenManagerBaseContext();
-    return (
-        <div
-            className="card-header w-100 pb-2"
-            style={{
-                overflowX: 'auto',
-                overflowY: 'hidden',
-                height: '35px',
-            }}
-        >
-            <div className="d-flex w-100 h-100">
-                <div className="d-flex justify-content-start">
-                    <ShowHideScreen />
-                    <MiniScreenClearControlComp />
-                    <div className="ms-2">
-                        <ItemColorNoteComp item={screenManagerBase} />
-                    </div>
-                </div>
-                <div className="flex-fill d-flex justify-content-end ms-2">
-                    <DisplayControl />
-                    <ScreenEffectControlComp />
-                </div>
-            </div>
-        </div>
-    );
-}
+import ScreenPreviewerHeaderComp from './ScreenPreviewerHeaderComp';
+import ScreenPreviewerFooterComp from './ScreenPreviewerFooterComp';
 
 export default function ScreenPreviewerItemComp({
     width,
@@ -96,7 +62,7 @@ export default function ScreenPreviewerItemComp({
             }}
             onDrop={async (event) => {
                 event.currentTarget.classList.remove('receiving-child');
-                const droppedData = await handleDrop(event);
+                const droppedData = await extractDropData(event);
                 if (droppedData === null) {
                     return;
                 }
@@ -109,12 +75,19 @@ export default function ScreenPreviewerItemComp({
                 style={{
                     height: `${height}px`,
                 }}
+                onScroll={(event) => {
+                    // When bible verse text scroll into view, element will be
+                    // scrolled to top. This is a workaround to prevent that.
+                    event.currentTarget.scrollTop = 0;
+                }}
             >
+                {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+                {/* @ts-ignore */}
                 <mini-screen-previewer-custom-html
                     screenId={screenManager.screenId}
                 />
             </div>
-            <div></div>
+            <ScreenPreviewerFooterComp />
         </div>
     );
 }

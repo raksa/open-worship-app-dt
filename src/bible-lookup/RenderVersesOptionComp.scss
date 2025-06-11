@@ -9,6 +9,8 @@
       border-radius: 0;
       font-size: 18px;
       color: var(--bs-white);
+      overflow: hidden;
+      text-overflow: ellipsis;
 
       &::before {
         content: '';

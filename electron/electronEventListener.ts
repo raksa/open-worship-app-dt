@@ -5,7 +5,7 @@ import ElectronAppController from './ElectronAppController';
 import { tarExtract } from './electronHelpers';
 import ElectronScreenController from './ElectronScreenController';
 import { officeFileToPdf } from './electronOfficeHelpers';
-import { pdfToImages } from './pdfToImagesHelpers';
+import { getPagesCount, pdfToImages } from './pdfToImagesHelpers';
 
 const { dialog, ipcMain, app } = electron;
 const cache: { [key: string]: any } = {
@@ -104,6 +104,9 @@ export function initEventScreen(appController: ElectronAppController) {
         }
         screenController.close();
         screenController.destroyInstance();
+    });
+    ipcMain.on('app:hide-all-screens', () => {
+        ElectronScreenController.closeAll();
     });
 
     ipcMain.on(
@@ -302,6 +305,23 @@ export function initEventOther(appController: ElectronAppController) {
             },
         ) => {
             const data = await pdfToImages(filePath, outDir, isForce);
+            appController.mainController.sendData(replyEventName, data);
+        },
+    );
+
+    ipcMain.on(
+        'main:app:pdf-pages-count',
+        async (
+            _event,
+            {
+                replyEventName,
+                filePath,
+            }: {
+                replyEventName: string;
+                filePath: string;
+            },
+        ) => {
+            const data = await getPagesCount(filePath);
             appController.mainController.sendData(replyEventName, data);
         },
     );

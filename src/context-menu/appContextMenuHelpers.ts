@@ -13,20 +13,23 @@ import { OptionalPromise } from '../others/otherHelpers';
 export type ContextMenuEventType = MouseEvent;
 export type ContextMenuItemType = {
     id?: string;
-    menuTitle: string;
+    menuTitle: React.ReactNode | string;
     title?: string;
     onSelect?: (
         event: MouseEvent | KeyboardEvent,
         data?: any,
     ) => OptionalPromise<void>;
     disabled?: boolean;
-    otherChild?: ReactElement;
+    childBefore?: ReactElement;
+    childAfter?: ReactElement;
+    style?: React.CSSProperties;
 };
 export type OptionsType = {
     maxHeigh?: number;
     coord?: { x: number; y: number };
     style?: React.CSSProperties;
     noKeystroke?: boolean;
+    applyOnTab?: boolean;
 };
 
 export type PropsType = {
@@ -62,23 +65,23 @@ export const setPositionMenu = (
         event.stopPropagation();
         const x = options?.coord?.x ?? event.clientX;
         const y = options?.coord?.y ?? event.clientY;
-        const bc = menu.getBoundingClientRect();
-        const wd = getWindowDim();
+        const rect = menu.getBoundingClientRect();
+        const windowDim = getWindowDim();
         let maxWidth;
         let maxHeight;
-        if (x > wd.width / 2 && x + bc.width > wd.width) {
-            menu.style.right = `${wd.width - x}px`;
+        if (x > windowDim.width / 2 && x + rect.width > windowDim.width) {
+            menu.style.right = `${windowDim.width - x}px`;
             maxWidth = x;
         } else {
             menu.style.left = `${x}px`;
-            maxWidth = wd.width - x;
+            maxWidth = windowDim.width - x;
         }
-        if (y > wd.height / 2 && y + bc.height > wd.height) {
-            menu.style.bottom = `${wd.height - y}px`;
+        if (y > windowDim.height / 2 && y + rect.height > windowDim.height) {
+            menu.style.bottom = `${windowDim.height - y}px`;
             maxHeight = y;
         } else {
             menu.style.top = `${y}px`;
-            maxHeight = wd.height - y;
+            maxHeight = windowDim.height - y;
         }
         menu.style.maxWidth = `${Math.min(maxWidth, 210)}px`;
         menu.style.maxHeight = `${maxHeight}px`;
@@ -177,11 +180,32 @@ function appKeyUpDown(isUp: boolean) {
         (tableDiv as any)?.focus();
     }, 100);
 }
-function checkKeyUpDown(event: any, items: ContextMenuItemType[]) {
+function checkKeyUpDown(event: any, data: PropsType) {
+    const apply = (item: ContextMenuItemType) => {
+        stopEvent();
+        contextControl.setDataDelegator?.(null);
+        if (item.disabled) {
+            return;
+        }
+        item.onSelect?.(event);
+    };
     const stopEvent = () => {
         event.preventDefault();
         event.stopPropagation();
     };
+    const { items, options } = data;
+    if (options?.applyOnTab && ['Tab'].includes(event.key)) {
+        const itemData = getDomItems();
+        let index = itemData.index;
+        if (index === -1) {
+            index = 0;
+        }
+        const item = items[index];
+        if (item !== undefined) {
+            apply(item);
+        }
+        return;
+    }
     if (['Enter'].includes(event.key)) {
         const menuContainer = getMenuContainer();
         if (menuContainer !== document.activeElement) {
@@ -189,9 +213,7 @@ function checkKeyUpDown(event: any, items: ContextMenuItemType[]) {
         }
         const { index } = getDomItems();
         if (items[index] !== undefined) {
-            stopEvent();
-            contextControl.setDataDelegator?.(null);
-            items[index].onSelect?.(event);
+            apply(items[index]);
         }
         return;
     }
@@ -289,7 +311,7 @@ export function useAppContextMenuData() {
             if (data === null) {
                 return;
             }
-            checkKeyUpDown(event, data.items);
+            checkKeyUpDown(event, data);
         },
         [data],
     );

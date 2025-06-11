@@ -350,24 +350,28 @@ export async function fsList(dir: string) {
     if (!dir) {
         return [];
     }
-    const list = await _fsReaddir(dir);
+    const foundFileList = await _fsReaddir(dir);
     const fileList = [];
-    for (const file of list) {
+    for (const file of foundFileList) {
         const filePath = pathJoin(dir, file);
-        const fileStat = await _fsStat(filePath);
-        fileList.push({
-            isFile: fileStat.isFile(),
-            isDirectory: fileStat.isDirectory(),
-            name: file,
-            filePath,
-        });
+        try {
+            const fileStat = await _fsStat(filePath);
+            fileList.push({
+                isFile: fileStat.isFile(),
+                isDirectory: fileStat.isDirectory(),
+                name: file,
+                filePath,
+            });
+        } catch (error) {
+            handleError(error);
+        }
     }
     return fileList;
 }
 
 export async function fsListFiles(dirPath: string) {
-    const list = await fsList(dirPath);
-    return list
+    const foundFileList = await fsList(dirPath);
+    return foundFileList
         .filter(({ isFile }) => {
             return isFile;
         })
@@ -377,8 +381,8 @@ export async function fsListFiles(dirPath: string) {
 }
 
 export async function fsListDirectories(dirPath: string) {
-    const list = await fsList(dirPath);
-    return list
+    const foundFileList = await fsList(dirPath);
+    return foundFileList
         .filter(({ isDirectory }) => {
             return isDirectory;
         })

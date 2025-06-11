@@ -30,7 +30,6 @@ export const resizeSettingNames = {
     appPresenterLeft: 'app-presenter-left',
     appPresenterMiddle: 'app-presenter-middle',
     appPresenterRight: 'app-presenter-right',
-    fullText: 'full-text',
     slideEditor: 'slide-editor',
     read: 'read',
 };

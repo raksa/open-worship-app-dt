@@ -61,12 +61,19 @@ export class BasicEventHandler<T extends string> {
         }
     }
 
-    private checkOnEvent(eventName: T, data?: any) {
+    async checkShouldNext(_data: any) {
+        return true;
+    }
+
+    private async checkOnEvent(eventName: T, data?: any) {
         this.guardEventName(eventName);
         const listeners = [
             ...(this.eventListenersMapper.get(eventName) ?? []),
         ].reverse();
         for (const listener of listeners) {
+            if (!(await this.checkShouldNext(data))) {
+                break;
+            }
             listener(data);
             if (data?.defaultPrevented) {
                 break;
@@ -91,17 +98,31 @@ export class BasicEventHandler<T extends string> {
     }
 }
 
-const eventHandler = new BasicEventHandler<any>();
-
 export default class EventHandler<
     T extends string,
 > extends BasicEventHandler<T> {
     static readonly eventNamePrefix: string = 'event';
+    static eventHandler: EventHandler<any> | null = null;
+
+    static async checkShouldNext(_data: any) {
+        return true;
+    }
+
+    private static getEventHandler() {
+        if (this.eventHandler === null) {
+            const eventHandler = new this();
+            eventHandler.checkShouldNext =
+                this.checkShouldNext.bind(eventHandler);
+            this.eventHandler = eventHandler;
+        }
+        return this.eventHandler;
+    }
 
     static registerEventListener<T extends string, F>(
         eventNames: T[],
         listener: ListenerType<F>,
     ): RegisteredEventType<T, F>[] {
+        const eventHandler = this.getEventHandler();
         return eventNames.map((eventName) => {
             eventHandler.addOnEventListener(
                 this.prefixEventName(eventName),
@@ -112,12 +133,14 @@ export default class EventHandler<
     }
 
     static addPropEvent<T extends string>(eventName: T, data?: any) {
+        const eventHandler = this.getEventHandler();
         eventHandler.addPropEvent(this.prefixEventName(eventName), data);
     }
 
     static unregisterEventListener<T extends string, F>(
         regEvents: RegisteredEventType<T, F>[],
     ) {
+        const eventHandler = this.getEventHandler();
         regEvents.forEach(({ eventName, listener }) => {
             eventHandler.removeOnEventListener(
                 this.prefixEventName(eventName),

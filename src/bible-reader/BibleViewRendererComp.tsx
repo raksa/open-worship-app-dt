@@ -1,8 +1,8 @@
 import {
     NestedBibleItemsType,
     RESIZE_SETTING_NAME,
-    useBibleItemViewControllerContext,
-} from './BibleItemViewController';
+    useBibleItemsViewControllerContext,
+} from './BibleItemsViewController';
 import ResizeActorComp from '../resize-actor/ResizeActorComp';
 import NoBibleViewAvailableComp from './NoBibleViewAvailableComp';
 import { FlexSizeType, DataInputType } from '../resize-actor/flexSizeHelpers';
@@ -16,7 +16,7 @@ export default function BibleViewRendererComp({
     classPrefix?: string;
     nestedBibleItems: NestedBibleItemsType;
 }>) {
-    const viewController = useBibleItemViewControllerContext();
+    const viewController = useBibleItemsViewControllerContext();
     if (!(nestedBibleItems instanceof Array)) {
         return viewController.finalRenderer(nestedBibleItems);
     }

@@ -52,7 +52,7 @@ function BodyRendererComp() {
             isSupportedMimetype(fileType, 'video')
         );
     };
-    const handleDragging = (event: any) => {
+    const dragOverHandling = (event: any) => {
         event.preventDefault();
         const items: DataTransferItemList = event.dataTransfer.items;
         if (
@@ -100,7 +100,7 @@ function BodyRendererComp() {
                 height: `${canvas.height}px`,
                 transform: 'translate(-50%, -50%)',
             }}
-            onDragOver={handleDragging}
+            onDragOver={dragOverHandling}
             onDragLeave={(event) => {
                 event.preventDefault();
                 event.currentTarget.style.opacity = '1';
@@ -118,6 +118,9 @@ function BodyRendererComp() {
                     });
             }}
             onMouseUp={(event) => {
+                if (event.target instanceof HTMLTextAreaElement) {
+                    return;
+                }
                 const dataset = (event.target as HTMLDivElement).dataset;
                 if (dataset.mouseDown) {
                     const mouseDown = JSON.parse(dataset.mouseDown);

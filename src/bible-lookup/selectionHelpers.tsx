@@ -2,6 +2,7 @@ import {
     KeyboardType,
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
+import { bringDomToBottomView } from '../helper/helpers';
 
 export const INPUT_TEXT_CLASS = 'bible-lookup-input-text';
 export const RENDER_FOUND_CLASS = 'bible-lookup-render-found';
@@ -25,10 +26,10 @@ function calculateIndexer(optionClass: string, selectedClass: string) {
         return element.classList.contains(selectedClass);
     });
     const cordList = elements.map((element: any) => {
-        const cRect = (element as HTMLDivElement).getBoundingClientRect();
+        const rect = (element as HTMLDivElement).getBoundingClientRect();
         return {
-            x: cRect.x,
-            y: cRect.y,
+            x: rect.x,
+            y: rect.y,
         };
     });
     const indexer = [];
@@ -172,10 +173,7 @@ export function processSelection(
     });
     elements[index].classList.add(selectedClass);
     blurInputText();
-    elements[index].scrollIntoView({
-        block: 'end',
-        behavior: 'smooth',
-    });
+    bringDomToBottomView(elements[index]);
 }
 
 export type SelectBookType = (newBookKey: string, newBook: string) => void;
@@ -225,4 +223,6 @@ export function setBibleLookupInputFocus() {
         return;
     }
     inputElement.focus();
+    const length = inputElement.value.length;
+    inputElement.setSelectionRange(length, length);
 }

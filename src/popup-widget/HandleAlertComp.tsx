@@ -8,13 +8,13 @@ import {
 } from './popupWidgetHelpers';
 import AppSuspenseComp from '../others/AppSuspenseComp';
 
-const LazyConfirmPopup = lazy(() => {
+const LazyConfirmPopupComp = lazy(() => {
     return import('./ConfirmPopupComp');
 });
-const LazyInputPopup = lazy(() => {
+const LazyInputPopupComp = lazy(() => {
     return import('./InputPopupComp');
 });
-const LazyAlertPopup = lazy(() => {
+const LazyAlertPopupComp = lazy(() => {
     return import('./AlertPopupComp');
 });
 
@@ -40,17 +40,17 @@ export default function HandleAlertComp() {
         <>
             {confirmData !== null && (
                 <AppSuspenseComp>
-                    <LazyConfirmPopup data={confirmData} />
+                    <LazyConfirmPopupComp data={confirmData} />
                 </AppSuspenseComp>
             )}
             {inputData !== null && (
                 <AppSuspenseComp>
-                    <LazyInputPopup data={inputData} />
+                    <LazyInputPopupComp data={inputData} />
                 </AppSuspenseComp>
             )}
             {alertData !== null && (
                 <AppSuspenseComp>
-                    <LazyAlertPopup data={alertData} />
+                    <LazyAlertPopupComp data={alertData} />
                 </AppSuspenseComp>
             )}
         </>

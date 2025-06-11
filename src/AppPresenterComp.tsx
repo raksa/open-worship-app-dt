@@ -1,26 +1,56 @@
-import { lazy } from 'react';
+import { lazy, useMemo } from 'react';
 
 import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActorComp from './resize-actor/ResizeActorComp';
-import BibleItemViewController, {
-    BibleItemViewControllerContext,
-} from './bible-reader/BibleItemViewController';
+import BibleItemsViewController, {
+    BibleItemsViewControllerContext,
+} from './bible-reader/BibleItemsViewController';
 import SlideEditHandlerComp from './app-document-presenter/SlideEditHandlerComp';
+import BibleViewComp from './bible-reader/BibleViewComp';
+import BibleItem from './bible-list/BibleItem';
+import {
+    BibleViewTitleEditingComp,
+    BibleViewTitleMaterialContext,
+} from './bible-reader/BibleViewExtra';
 
-const LazyAppPresenterLeft = lazy(() => {
+const LazyAppPresenterLeftComp = lazy(() => {
     return import('./AppPresenterLeftComp');
 });
-const LazyAppPresenterMiddle = lazy(() => {
+const LazyAppPresenterMiddleComp = lazy(() => {
     return import('./AppPresenterMiddleComp');
 });
-const LazyAppPresenterRight = lazy(() => {
+const LazyAppPresenterRightComp = lazy(() => {
     return import('./AppPresenterRightComp');
 });
 
-const viewController = new BibleItemViewController('presenter');
 export default function AppPresenterComp() {
+    const viewController = useMemo(() => {
+        const newViewController = new BibleItemsViewController('presenter');
+        newViewController.finalRenderer = (bibleItem: BibleItem) => {
+            return (
+                <BibleViewTitleMaterialContext
+                    value={{
+                        titleElement: (
+                            <BibleViewTitleEditingComp
+                                bibleItem={bibleItem}
+                                onTargetChange={(newBibleTarget) => {
+                                    newViewController.applyTargetOrBibleKey(
+                                        bibleItem,
+                                        { target: newBibleTarget },
+                                    );
+                                }}
+                            />
+                        ),
+                    }}
+                >
+                    <BibleViewComp bibleItem={bibleItem} />
+                </BibleViewTitleMaterialContext>
+            );
+        };
+        return newViewController;
+    }, []);
     return (
-        <BibleItemViewControllerContext value={viewController}>
+        <BibleItemsViewControllerContext value={viewController}>
             <ResizeActorComp
                 flexSizeName={resizeSettingNames.appPresenter}
                 isHorizontal
@@ -31,23 +61,23 @@ export default function AppPresenterComp() {
                 }}
                 dataInput={[
                     {
-                        children: LazyAppPresenterLeft,
+                        children: LazyAppPresenterLeftComp,
                         key: 'h1',
                         widgetName: 'App Presenter Left',
                     },
                     {
-                        children: LazyAppPresenterMiddle,
+                        children: LazyAppPresenterMiddleComp,
                         key: 'h2',
                         widgetName: 'App Presenter Middle',
                     },
                     {
-                        children: LazyAppPresenterRight,
+                        children: LazyAppPresenterRightComp,
                         key: 'h3',
                         widgetName: 'App Presenter Right',
                     },
                 ]}
             />
             <SlideEditHandlerComp />
-        </BibleItemViewControllerContext>
+        </BibleItemsViewControllerContext>
     );
 }

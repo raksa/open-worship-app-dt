@@ -6,7 +6,7 @@ import { useStateSettingString } from '../helper/settingHelpers';
 import TabRenderComp, { genTabBody } from '../others/TabRenderComp';
 import { QuickOrBackButtonComp } from '../others/commonButtons';
 
-const LazySettingGeneral = lazy(() => {
+const LazySettingGeneralComp = lazy(() => {
     return import('./SettingGeneralComp');
 });
 const LazySettingBibleComp = lazy(() => {
@@ -17,7 +17,7 @@ const LazySettingAboutComp = lazy(() => {
 });
 
 const tabTypeList = [
-    ['g', 'General', LazySettingGeneral],
+    ['g', 'General', LazySettingGeneralComp],
     ['b', 'Bible', LazySettingBibleComp],
     ['a', 'About', LazySettingAboutComp],
 ] as const;

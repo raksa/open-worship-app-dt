@@ -29,14 +29,14 @@ export function BoxEditorNormalBibleRender() {
         handleError(error);
         return <BENViewErrorRender />;
     }
-    const bibleRenderedList = (props as CanvasItemBiblePropsType)
-        .bibleRenderedList;
+    const bibleRenderingList = (props as CanvasItemBiblePropsType)
+        .bibleRenderingList;
     return (
         <div
             className="w-100 h-100"
             style={CanvasItemBibleItem.genStyle(props)}
         >
-            {bibleRenderedList.map((bibleRendered) => {
+            {bibleRenderingList.map((bibleRendered) => {
                 return (
                     <div key={bibleRendered.title}>
                         <div>{bibleRendered.title}</div>

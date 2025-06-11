@@ -8,8 +8,10 @@ import { AppWidgetType } from './WindowEventListener';
 export type KeyboardType =
     | 'ArrowUp'
     | 'ArrowRight'
+    | 'PageUp'
     | 'ArrowDown'
     | 'ArrowLeft'
+    | 'PageDown'
     | 'Enter'
     | 'Tab'
     | 'Escape'
@@ -48,9 +50,24 @@ export function toShortcutKey(eventMapper: EventMapper) {
     return KeyboardEventListener.toShortcutKey(eventMapper);
 }
 
+const keyNameMap: { [key: string]: string } = {
+    Meta: 'Command',
+};
+
 export default class KeyboardEventListener extends EventHandler<string> {
     static readonly eventNamePrefix: string = 'keyboard';
     static readonly _layers: AppWidgetType[] = ['root'];
+
+    static async checkShouldNext(event: KeyboardEvent) {
+        if (event.defaultPrevented) {
+            return false;
+        }
+        return true;
+    }
+    async checkShouldNext(event: KeyboardEvent) {
+        return await KeyboardEventListener.checkShouldNext(event);
+    }
+
     static getLastLayer() {
         return getLastItem(this._layers);
     }
@@ -126,7 +143,10 @@ export default class KeyboardEventListener extends EventHandler<string> {
             allControls.push(...(lControlKey ?? []));
         }
         if (allControls.length > 0) {
-            const sorted = [...allControls].sort((a, b) => {
+            const allControlKeys = allControls.map((key) => {
+                return keyNameMap[key] ?? key;
+            });
+            const sorted = [...allControlKeys].sort((a, b) => {
                 return a.localeCompare(b);
             });
             key = `${sorted.join(' + ')} + ${key}`;

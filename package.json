@@ -3,7 +3,7 @@
     "description": "Fully Open-Source and completely free forever for worship service.",
     "author": "Raksa Eng <eng.raksa@gmail.com> (https://www.linkedin.com/in/raks-eng/)",
     "homepage": "https://github.com/OpenWorshipApp/open-worship-app-dt",
-    "version": "2025.04.11",
+    "version": "2025.05.24",
     "type": "commonjs",
     "main": "./electron-build/electron/index.js",
     "scripts": {
@@ -30,14 +30,14 @@
     },
     "browserslist": {
         "production": [
-        ">0.2%",
-        "not dead",
-        "not op_mini all"
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
         ],
         "development": [
-        "last 1 chrome version",
-        "last 1 firefox version",
-        "last 1 safari version"
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
         ]
     },
     "build": {
@@ -45,56 +45,56 @@
         "appId": "app.openworship.desktop",
         "nodeGypRebuild": "false",
         "files": [
-        "electron-build/**/*",
-        "build/**/*",
-        "dist/**/*",
-        "package.json"
+            "electron-build/**/*",
+            "build/**/*",
+            "dist/**/*",
+            "package.json"
         ],
         "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
         "dmg": {
-        "contents": [
-            {
-            "x": 130,
-            "y": 220
-            },
-            {
-            "x": 410,
-            "y": 220,
-            "type": "link",
-            "path": "/Applications"
-            }
-        ]
+            "contents": [
+                {
+                    "x": 130,
+                    "y": 220
+                },
+                {
+                    "x": 410,
+                    "y": 220,
+                    "type": "link",
+                    "path": "/Applications"
+                }
+            ]
         },
         "win": {
-        "target": [
-            "nsis",
-            "zip"
-        ]
+            "target": [
+                "nsis",
+                "zip"
+            ]
         },
         "linux": {
-        "target": [
-            "deb",
-            "AppImage",
-            "tar.gz"
-        ],
-        "category": "Productivity",
-        "artifactName": "${name}_${version}_${arch}.${ext}"
+            "target": [
+                "deb",
+                "AppImage",
+                "tar.gz"
+            ],
+            "category": "Productivity",
+            "artifactName": "${name}_${version}_${arch}.${ext}"
         },
         "mac": {
-        "target": [
-            "dmg",
-            "zip"
-        ],
-        "category": "public.app-category.productivity"
+            "target": [
+                "dmg",
+                "zip"
+            ],
+            "category": "public.app-category.productivity"
         },
         "directories": {
-        "buildResources": "resources",
-        "output": "release"
+            "buildResources": "resources",
+            "output": "release"
         },
         "nsis": {
-        "allowToChangeInstallationDirectory": true,
-        "oneClick": false,
-        "license": "LICENSE.txt"
+            "allowToChangeInstallationDirectory": true,
+            "oneClick": false,
+            "license": "LICENSE.txt"
         }
     },
     "engines": {
@@ -105,7 +105,6 @@
         "@types/node": "^22.13.10",
         "@types/react": "^19.0.10",
         "@types/react-dom": "^19.0.4",
-        "@types/reveal.js": "^5.0.5",
         "@types/tar": "^6.1.13",
         "@vitejs/plugin-basic-ssl": "^2.0.0",
         "@vitejs/plugin-react-swc": "^3.8.0",
@@ -122,7 +121,6 @@
         "prettier": "^3.5.3",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
-        "reveal.js": "^5.1.0",
         "sass": "^1.85.1",
         "typescript": "^5.8.2",
         "typescript-eslint": "^8.26.1",
@@ -135,4 +133,3 @@
         "tar": "^7.4.3"
     }
 }
-

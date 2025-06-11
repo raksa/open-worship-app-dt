@@ -1,4 +1,4 @@
-import { lazy } from 'react';
+import { lazy, useMemo } from 'react';
 
 import {
     DataInputType,
@@ -6,14 +6,13 @@ import {
     resizeSettingNames,
 } from './resize-actor/flexSizeHelpers';
 import ResizeActorComp from './resize-actor/ResizeActorComp';
-import BibleItemViewController, {
-    BibleItemViewControllerContext,
-} from './bible-reader/BibleItemViewController';
+import LookupBibleItemController from './bible-reader/LookupBibleItemController';
+import { BibleItemsViewControllerContext } from './bible-reader/BibleItemsViewController';
 
-const LazyBibleList = lazy(() => {
+const LazyBibleListComp = lazy(() => {
     return import('./bible-list/BibleListComp');
 });
-const LazyRenderBibleLookup = lazy(() => {
+const LazyRenderBibleLookupComp = lazy(() => {
     return import('./bible-lookup/RenderBibleLookupComp');
 });
 
@@ -23,26 +22,28 @@ const flexSizeDefault: FlexSizeType = {
 };
 const dataInput: DataInputType[] = [
     {
-        children: LazyBibleList,
+        children: LazyBibleListComp,
         key: 'h1',
         widgetName: 'Bible List',
     },
     {
-        children: LazyRenderBibleLookup,
+        children: LazyRenderBibleLookupComp,
         key: 'h2',
         widgetName: 'Bible Previewer',
     },
 ];
-const viewController = new BibleItemViewController('reader');
 export default function AppReaderComp() {
+    const viewController = useMemo(() => {
+        return new LookupBibleItemController();
+    }, []);
     return (
-        <BibleItemViewControllerContext value={viewController}>
+        <BibleItemsViewControllerContext value={viewController}>
             <ResizeActorComp
                 flexSizeName={resizeSettingNames.read}
                 isHorizontal
                 flexSizeDefault={flexSizeDefault}
                 dataInput={dataInput}
             />
-        </BibleItemViewControllerContext>
+        </BibleItemsViewControllerContext>
     );
 }

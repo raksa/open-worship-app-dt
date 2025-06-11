@@ -1,7 +1,7 @@
 import ScreenAlertComp from '../ScreenAlertComp';
 import ScreenBackgroundComp from '../ScreenBackgroundComp';
 import ScreenSlideComp from '../ScreenVaryAppDocumentComp';
-import ScreenFullTextComp from '../ScreenFullTextComp';
+import ScreenBibleComp from '../ScreenBibleComp';
 import { RendStyle } from '../RenderTransitionEffectComp';
 import { getScreenManagerBase } from '../managers/screenManagerBaseHelpers';
 import { screenManagerFromBase } from '../managers/screenManagerHelpers';
@@ -42,7 +42,7 @@ export default function MiniScreenAppComp({
             />
             <ScreenBackgroundComp />
             <ScreenSlideComp />
-            <ScreenFullTextComp />
+            <ScreenBibleComp />
             <ScreenAlertComp />
         </ScreenManagerBaseContext>
     );

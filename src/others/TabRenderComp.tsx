@@ -16,7 +16,13 @@ export default function TabRenderComp<T extends string>({
     className?: string;
 }>) {
     return (
-        <ul className={`nav nav-tabs ${className}`}>
+        <ul
+            className={`nav nav-tabs ${className} d-flex flex-nowrap`}
+            style={{
+                overflowY: 'hidden',
+                overflowX: 'auto',
+            }}
+        >
             {tabs.map(([tab, title, tabClassName]) => {
                 const activeClass = activeTab === tab ? 'active' : '';
                 return (

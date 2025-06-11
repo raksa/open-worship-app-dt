@@ -4,7 +4,7 @@ import { getWindowDim } from '../../helper/helpers';
 import { setSetting } from '../../helper/settingHelpers';
 import ScreenAlertManager from './ScreenAlertManager';
 import ScreenBackgroundManager from './ScreenBackgroundManager';
-import ScreenFullTextManager from './ScreenFullTextManager';
+import ScreenBibleManager from './ScreenBibleManager';
 import {
     getAllShowingScreenIds,
     hideScreen,
@@ -20,7 +20,7 @@ import {
     getDisplayIdByScreenId,
     SCREEN_MANAGER_SETTING_NAME,
 } from './screenHelpers';
-import appProviderScreen from '../appProviderScreen';
+import appProvider from '../../server/appProvider';
 
 export type ScreenManagerEventType =
     | 'instance'
@@ -80,9 +80,7 @@ export default class ScreenManagerBase
 
     updateDim() {
         const display = this.display;
-        const dim = appProviderScreen.isScreen
-            ? getWindowDim()
-            : display.bounds;
+        const dim = appProvider.isPageScreen ? getWindowDim() : display.bounds;
         this.width = dim.width;
         this.height = dim.height;
     }
@@ -95,7 +93,7 @@ export default class ScreenManagerBase
         this.colorNote = color;
         ScreenBackgroundManager.enableSyncGroup(this.screenId);
         ScreenVaryAppDocumentManager.enableSyncGroup(this.screenId);
-        ScreenFullTextManager.enableSyncGroup(this.screenId);
+        ScreenBibleManager.enableSyncGroup(this.screenId);
         ScreenAlertManager.enableSyncGroup(this.screenId);
         this.sendSyncScreen();
     }
