@@ -84,6 +84,9 @@ class ScreenVaryAppDocumentManager extends ScreenEventHandler<ScreenVaryAppDocum
     set varyAppDocumentItemData(
         appDocumentItemData: VaryAppDocumentItemScreenDataType | null,
     ) {
+        if (this.screenManagerBase.checkIsLockedWithMessage()) {
+            return;
+        }
         if (appDocumentItemData !== null && appDocumentItemData.itemJson) {
             applyAttachBackground(
                 this.screenId,
@@ -101,10 +104,10 @@ class ScreenVaryAppDocumentManager extends ScreenEventHandler<ScreenVaryAppDocum
             }
             const string = JSON.stringify(allSlideList);
             setSetting(screenManagerSettingNames.VARY_APP_DOCUMENT, string);
+            this.fireUpdateEvent();
         });
         this.render();
         this.sendSyncScreen();
-        this.fireUpdateEvent();
     }
 
     toSyncMessage() {

@@ -74,7 +74,7 @@ export default function RenderVerseOptionsComp({
                 })}
                 {isFull ? null : (
                     <span
-                        className="p-2 pointer"
+                        className="p-2 app-caught-hover-pointer"
                         title="Full Verse"
                         onClick={() => {
                             viewController.applyTargetOrBibleKey(bibleItem, {

@@ -86,7 +86,7 @@ export default function BackgroundComp() {
         const isSelected = Object.values(backgroundSrcList).some((src) => {
             return src.type === type;
         });
-        return isSelected ? 'nav-highlight-selected' : undefined;
+        return isSelected ? 'app-nav-highlight-selected' : undefined;
     };
     const normalBackgroundChild = tabTypeList.map(([type, _, target]) => {
         return genTabBody<TabType>(tabType, [type, target]);

@@ -55,7 +55,7 @@ export const DirSourceContext = createContext<DirSource | null>(null);
 export type FileListType = FileSource[] | null | undefined;
 
 export default function FileListHandlerComp({
-    id,
+    className,
     mimetypeName,
     dirSource,
     header,
@@ -68,7 +68,7 @@ export default function FileListHandlerComp({
     defaultFolderName,
     fileSelectionOption,
 }: Readonly<{
-    id: string;
+    className: string;
     mimetypeName: MimetypeNameType;
     dirSource: DirSource;
     header?: any;
@@ -79,7 +79,7 @@ export default function FileListHandlerComp({
     checkExtraFile?: (filePath: string) => boolean;
     takeDroppedFile?: (file: DroppedFileType) => boolean;
     userClassName?: string;
-    defaultFolderName: string;
+    defaultFolderName?: string;
     fileSelectionOption?: FileSelectionOptionType;
 }>) {
     const handleNameApplying = async (name: string | null) => {
@@ -108,7 +108,7 @@ export default function FileListHandlerComp({
     return (
         <DirSourceContext value={dirSource}>
             <div
-                className={`${id} card w-100 h-100 ${userClassName ?? ''}`}
+                className={`${className} card w-100 h-100 ${userClassName ?? ''}`}
                 onDragOver={genOnDragOver(dirSource)}
                 onDragLeave={genOnDragLeave()}
                 onDrop={genOnDrop({
@@ -118,10 +118,10 @@ export default function FileListHandlerComp({
                     takeDroppedFile,
                 })}
             >
-                {header && (
+                {header !== undefined ? (
                     <div className="card-header">
                         {header}
-                        {onNewFile && dirSource.dirPath && (
+                        {onNewFile && dirSource.dirPath ? (
                             <button
                                 className={
                                     'btn btn-sm btn-outline-info float-end'
@@ -131,33 +131,39 @@ export default function FileListHandlerComp({
                             >
                                 <i className="bi bi-file-earmark-plus" />
                             </button>
-                        )}
+                        ) : null}
                     </div>
-                )}
+                ) : null}
                 <div
                     className="card-body d-flex flex-column pb-5"
-                    onContextMenu={genOnContextMenu(
+                    onContextMenu={genOnContextMenu({
                         contextMenu,
-                        handleItemsAdding,
-                    )}
+                        addItems: handleItemsAdding,
+                        onStartNewFile:
+                            onNewFile === undefined
+                                ? undefined
+                                : () => {
+                                      setIsCreatingNew(true);
+                                  },
+                    })}
                 >
                     <PathSelectorComp
-                        prefix={`path-${id}`}
+                        prefix={`path-${className}`}
                         dirSource={dirSource}
                         addItems={handleItemsAdding}
                     />
-                    {!dirSource.dirPath ? (
+                    {!dirSource.dirPath && defaultFolderName ? (
                         <NoDirSelectedComp
                             dirSource={dirSource}
                             defaultFolderName={defaultFolderName}
                         />
                     ) : (
                         <ul className="list-group flex-fill d-flex">
-                            {onNewFile && isCreatingNew && (
+                            {onNewFile !== undefined && isCreatingNew ? (
                                 <LazyAskingNewNameComp
                                     applyName={handleNameApplying}
                                 />
-                            )}
+                            ) : null}
                             <RenderListComp
                                 dirSource={dirSource}
                                 bodyHandler={bodyHandler}

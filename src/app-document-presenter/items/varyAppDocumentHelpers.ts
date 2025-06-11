@@ -4,7 +4,6 @@ import { getScreenManagerBase } from '../../_screen/managers/screenManagerBaseHe
 import { screenManagerFromBase } from '../../_screen/managers/screenManagerHelpers';
 import { VaryAppDocumentItemType } from '../../app-document-list/appDocumentHelpers';
 import { slidePreviewerMethods } from './AppDocumentPreviewerFooterComp';
-import { bringDomToCenterView } from '../../helper/helpers';
 
 export function handleAppDocumentItemSelecting(
     event: any,
@@ -52,58 +51,38 @@ export function showVaryAppDocumentItemInViewport(id: number) {
 }
 
 function findNextSlide(
-    isLeft: boolean,
+    isNext: boolean,
     items: VaryAppDocumentItemType[],
     itemId: number,
-    divContainer: HTMLDivElement,
 ) {
     let index = items.findIndex((item) => {
         return item.id === itemId;
     });
     if (index === -1) {
-        return { targetItem: null, targetDiv: null };
+        return null;
     }
-    index += isLeft ? -1 : 1;
+    index += isNext ? 1 : -1;
     index += items.length;
 
-    const targetItem = items[index % items.length] ?? null;
-    return {
-        targetItem,
-        targetDiv:
-            targetItem === null
-                ? null
-                : (divContainer.querySelector(
-                      `[${DATA_QUERY_KEY}="${targetItem.id}"]`,
-                  ) as HTMLDivElement),
-    };
+    return items[index % items.length] ?? null;
 }
-export function handleArrowing(
-    event: KeyboardEvent,
-    varyAppDocumentItems: VaryAppDocumentItemType[],
-) {
-    if (!appProvider.presenterHomePage) {
-        return;
-    }
-    const element = document.querySelector(`.${DIV_CLASS_NAME}`);
-    if (element === null) {
-        return;
-    }
-    if (document.activeElement === null) {
-        (element as HTMLDivElement).focus();
-        return;
-    } else if (document.activeElement !== element) {
-        return;
-    }
-    event.preventDefault();
-    const isLeft = ['ArrowLeft', 'ArrowUp', 'PageUp'].includes(event.key);
-    const divSelectedList = document.activeElement.querySelectorAll(
-        `[${DATA_QUERY_KEY}].highlight-selected`,
+
+export function handleNextItemSelecting({
+    container,
+    varyAppDocumentItems,
+    isNext,
+}: {
+    container: HTMLDivElement;
+    varyAppDocumentItems: VaryAppDocumentItemType[];
+    isNext: boolean;
+}) {
+    const divSelectedList = container.querySelectorAll(
+        `[${DATA_QUERY_KEY}].app-highlight-selected`,
     );
     const foundList = Array.from(divSelectedList).reduce(
         (
-            r: {
+            bucket: {
                 item: VaryAppDocumentItemType;
-                targetDiv: HTMLDivElement;
                 screenId: number;
             }[],
             divSelected,
@@ -116,18 +95,17 @@ export function handleArrowing(
             ).map((element) => {
                 return parseInt(element.getAttribute('data-screen-id') ?? '');
             });
-            const { targetItem, targetDiv } = findNextSlide(
-                isLeft,
+            const targetItem = findNextSlide(
+                isNext,
                 varyAppDocumentItems,
                 itemId,
-                document.activeElement as HTMLDivElement,
             );
-            if (targetItem === null || targetDiv === null) {
-                return r;
+            if (targetItem === null) {
+                return bucket;
             }
-            return r.concat(
+            return bucket.concat(
                 screenIds.map((screenId) => {
-                    return { item: targetItem, targetDiv, screenId };
+                    return { item: targetItem, screenId };
                 }),
             );
         },
@@ -136,9 +114,8 @@ export function handleArrowing(
     if (foundList.length === 0) {
         return;
     }
-    event.preventDefault();
     for (let i = 0; i < foundList.length; i++) {
-        const { item, targetDiv, screenId } = foundList[i];
+        const { item, screenId } = foundList[i];
         const screenManager = screenManagerFromBase(
             getScreenManagerBase(screenId),
         );
@@ -152,7 +129,36 @@ export function handleArrowing(
                     item.filePath,
                     item.toJson(),
                 );
-            bringDomToCenterView(targetDiv);
         }, i * 100);
     }
+}
+
+export function getContainerDiv(): HTMLDivElement | null {
+    return document.querySelector(`.${DIV_CLASS_NAME}`);
+}
+
+export function handleArrowing(
+    event: KeyboardEvent,
+    varyAppDocumentItems: VaryAppDocumentItemType[],
+) {
+    if (!appProvider.presenterHomePage) {
+        return;
+    }
+    const element = getContainerDiv();
+    if (element === null) {
+        return;
+    }
+    if (document.activeElement === null) {
+        element.focus();
+        return;
+    } else if (document.activeElement !== element) {
+        return;
+    }
+    event.preventDefault();
+    const isLeft = ['ArrowLeft', 'ArrowUp', 'PageUp'].includes(event.key);
+    handleNextItemSelecting({
+        container: element,
+        varyAppDocumentItems,
+        isNext: !isLeft,
+    });
 }

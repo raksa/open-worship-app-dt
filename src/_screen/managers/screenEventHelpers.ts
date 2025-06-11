@@ -10,11 +10,11 @@ import ScreenVaryAppDocumentManager, {
     ScreenVaryAppDocumentManagerEventType,
 } from './ScreenVaryAppDocumentManager';
 import EventHandler from '../../event/EventHandler';
-import ScreenAlertManager, { ScreenAlertEventType } from './ScreenAlertManager';
+import ScreenOtherManager, { ScreenOtherEventType } from './ScreenOtherManager';
 
 export function useScreenEvents<T extends string>(
     events: T[],
-    Class: EventHandler<T>,
+    StaticHandler: EventHandler<T>,
     eventHandler?: EventHandler<T>,
     callback?: (data: any) => void,
 ) {
@@ -28,15 +28,15 @@ export function useScreenEvents<T extends string>(
         };
         const registeredEvents =
             eventHandler?.registerEventListener(events, update) ||
-            Class.registerEventListener(events, update);
+            StaticHandler.registerEventListener(events, update);
         return () => {
             if (eventHandler !== undefined) {
                 eventHandler.unregisterEventListener(registeredEvents);
             } else {
-                Class.unregisterEventListener(registeredEvents);
+                StaticHandler.unregisterEventListener(registeredEvents);
             }
         };
-    }, [eventHandler, callback]);
+    }, [StaticHandler, eventHandler, callback]);
     return n;
 }
 
@@ -79,15 +79,15 @@ export function useScreenBibleManagerEvents(
     );
 }
 
-export function useScreenAlertManagerEvents(
-    events: ScreenAlertEventType[],
-    screenAlertManager?: ScreenAlertManager,
+export function useScreenOtherManagerEvents(
+    events: ScreenOtherEventType[],
+    screenOtherManager?: ScreenOtherManager,
     callback?: () => void,
 ) {
     useScreenEvents(
         events,
-        ScreenAlertManager as any,
-        screenAlertManager,
+        ScreenOtherManager as any,
+        screenOtherManager,
         callback,
     );
 }

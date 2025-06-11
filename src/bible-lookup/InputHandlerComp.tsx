@@ -14,6 +14,7 @@ import { useAppStateAsync } from '../helper/debuggerHelpers';
 import { toInputText } from '../helper/bible-helpers/serverBibleHelpers2';
 import { useLookupBibleItemControllerContext } from '../bible-reader/LookupBibleItemController';
 import { getBookKVList } from '../helper/bible-helpers/bibleInfoHelpers';
+import { addClearInputButton } from '../helper/domHelpers';
 
 export const InputTextContext = createContext<{
     inputText: string;
@@ -72,6 +73,13 @@ export default function InputHandlerComp({
             />
             <input
                 id={BIBLE_LOOKUP_INPUT_ID}
+                ref={(element) => {
+                    if (element) {
+                        addClearInputButton(element, () => {
+                            viewController.inputText = '';
+                        });
+                    }
+                }}
                 data-bible-key={bibleKey}
                 type="text"
                 className={`form-control ${INPUT_TEXT_CLASS}`}

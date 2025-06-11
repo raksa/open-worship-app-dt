@@ -1,4 +1,4 @@
-import { showAppContextMenu } from '../../../context-menu/AppContextMenuComp';
+import { showAppContextMenu } from '../../../context-menu/appContextMenuHelpers';
 import appProvider from '../../../server/appProvider';
 import { useCanvasControllerContext } from '../CanvasController';
 import { useCanvasItemContext } from '../CanvasItem';
@@ -14,15 +14,15 @@ export default function BoxEditorNormalViewErrorComp() {
                 event.stopPropagation();
                 showAppContextMenu(event, [
                     {
-                        menuTitle: 'Delete',
+                        menuElement: 'Delete',
                         onSelect: () => {
                             canvasController.deleteItem(canvasItem);
                         },
                     },
                     {
-                        menuTitle: 'Copy Error Json',
+                        menuElement: 'Copy Error Json',
                         onSelect: () => {
-                            appProvider.browserUtils.copyToClipboard(
+                            appProvider.systemUtils.copyToClipboard(
                                 JSON.stringify(canvasItem.props),
                             );
                         },

@@ -1,7 +1,7 @@
+import { showAppContextMenu } from '../context-menu/appContextMenuHelpers';
 import { menuTitleRealFile } from '../helper/helpers';
 import { copyToClipboard, showExplorer } from '../server/appHelpers';
 import { pathBasename } from '../server/fileHelpers';
-import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
 
 // TODO: check direction rtl error with /*
 function cleanPath(path: string) {
@@ -13,13 +13,13 @@ function cleanPath(path: string) {
 function openContextMenu(dirPath: string, event: any) {
     showAppContextMenu(event, [
         {
-            menuTitle: 'Copy to Clipboard',
+            menuElement: 'Copy to Clipboard',
             onSelect: () => {
                 copyToClipboard(dirPath);
             },
         },
         {
-            menuTitle: menuTitleRealFile,
+            menuElement: menuTitleRealFile,
             onSelect: () => {
                 showExplorer(dirPath);
             },

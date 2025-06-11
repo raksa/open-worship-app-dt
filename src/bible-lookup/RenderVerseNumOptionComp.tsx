@@ -30,7 +30,7 @@ export default function RenderVerseNumOptionComp({
     select += ` ${ended ? 'selected-end' : ''}`;
     return (
         <div
-            className={`item alert pointer text-center ${select}`}
+            className={`item alert app-caught-hover-pointer text-center ${select}`}
             title={
                 `${verseNum}` !== verseNumText ? `Verse ${verseNum}` : undefined
             }

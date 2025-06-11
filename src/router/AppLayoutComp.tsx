@@ -13,7 +13,6 @@ import {
     BibleLookupShowingContext,
     SettingButtonComp,
 } from '../others/commonButtons';
-import { tran } from '../lang';
 import appProvider from '../server/appProvider';
 import { MultiContextRender } from '../helper/MultiContextRender';
 import AppPopupWindowsComp from '../app-modal/AppPopupWindowsComp';
@@ -34,6 +33,12 @@ import {
     setSelectedVaryAppDocument,
     setSelectedEditingSlide,
 } from '../app-document-list/appDocumentHelpers';
+import {
+    getSelectedLyric,
+    SelectedLyricContext,
+    setSelectedLyric,
+} from '../lyric-list/lyricHelpers';
+import Lyric from '../lyric-list/Lyric';
 
 const tabs: TabOptionType[] = [];
 if (!appProvider.isPagePresenter) {
@@ -58,14 +63,14 @@ function TabRenderComp() {
     };
     return (
         <ul className="nav nav-tabs">
-            {tabs.map((tab) => {
+            {tabs.map((tab, i) => {
                 return (
-                    <li key={tab.title} className="nav-item">
+                    <li key={i} className="nav-item">
                         <button
                             className="btn btn-link nav-link"
                             onClick={handleClicking.bind(null, tab)}
                         >
-                            {tran(tab.title)}
+                            {tab.title}
                         </button>
                     </li>
                 );
@@ -168,6 +173,41 @@ function useAppDocumentContextValues() {
     };
 }
 
+function useLyricContextValues() {
+    const [lyric, setLyric] = useState<Lyric | null>(null);
+    const setLyric1 = (newLyric: Lyric | null) => {
+        setLyric(newLyric);
+        setSelectedLyric(newLyric);
+    };
+
+    useAppEffectAsync(
+        async (methodContext) => {
+            const lyric = await getSelectedLyric();
+            methodContext.setLyric(lyric);
+        },
+        [],
+        { setLyric },
+    );
+    const lyricContextValue = useMemo(() => {
+        return {
+            selectedLyric: lyric,
+            setSelectedLyric: async (newLyric: Lyric | null) => {
+                setLyric1(newLyric);
+            },
+        };
+    }, [lyric]);
+    useFileSourceEvents(
+        ['delete'],
+        (filePath: string) => {
+            if (lyric?.filePath === filePath) {
+                setLyric1(null);
+            }
+        },
+        [lyric],
+    );
+    return { lyricContextValue };
+}
+
 export default function AppLayoutComp({
     children,
 }: Readonly<{
@@ -176,6 +216,7 @@ export default function AppLayoutComp({
     const [isBibleLookupShowing, setIsBibleLookupShowing] = useState(false);
     const { varyAppDocumentContextValue, editingSlideContextValue } =
         useAppDocumentContextValues();
+    const { lyricContextValue } = useLyricContextValues();
     return (
         <MultiContextRender
             contexts={[
@@ -191,6 +232,10 @@ export default function AppLayoutComp({
                     value: varyAppDocumentContextValue,
                 },
                 {
+                    context: SelectedLyricContext,
+                    value: lyricContextValue,
+                },
+                {
                     context: SelectedEditingSlideContext,
                     value: editingSlideContextValue,
                 },
@@ -201,13 +246,13 @@ export default function AppLayoutComp({
                 <TabRenderComp />
                 <div
                     className={
-                        'highlight-border-bottom d-flex' +
+                        'app-highlight-border-bottom d-flex' +
                         ' justify-content-center flex-fill'
                     }
                 >
                     <BibleLookupButtonComp />
                 </div>
-                <div className="highlight-border-bottom">
+                <div className="app-highlight-border-bottom">
                     <SettingButtonComp />
                 </div>
             </div>

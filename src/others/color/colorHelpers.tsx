@@ -4,6 +4,19 @@ import { handleDragStart } from '../../helper/dragHelpers';
 export const BLACK_COLOR = '#000000';
 export type AppColorType = `#${string}`;
 
+export function toHexColorString(color: string): string {
+    // rgb(255, 255, 255) => #ffffff
+    const regex = /(\d+),\s*(\d+),\s*(\d+)/;
+    const rgb = regex.exec(color);
+    if (rgb !== null) {
+        const r = parseInt(rgb[1]).toString(16).padStart(2, '0');
+        const g = parseInt(rgb[2]).toString(16).padStart(2, '0');
+        const b = parseInt(rgb[3]).toString(16).padStart(2, '0');
+        return `#${r}${g}${b}`;
+    }
+    return color;
+}
+
 export const colorToTransparent = (color: AppColorType): number => {
     const hexStr = `${color[7]}${color[8]}`;
     return parseInt(hexStr, 16) || 255;

@@ -1,14 +1,16 @@
-import { showAppContextMenu } from '../../context-menu/AppContextMenuComp';
 import { copyToClipboard } from '../../server/appHelpers';
 import { AppColorType, serializeForDragging } from './colorHelpers';
 import { genShowOnScreensContextMenu } from '../FileItemHandlerComp';
 import ScreenBackgroundManager from '../../_screen/managers/ScreenBackgroundManager';
-import { ContextMenuItemType } from '../../context-menu/appContextMenuHelpers';
+import {
+    ContextMenuItemType,
+    showAppContextMenu,
+} from '../../context-menu/appContextMenuHelpers';
 
 function showContextMenu(event: any, color: AppColorType) {
     const menuItems: ContextMenuItemType[] = [
         {
-            menuTitle: `Copy to '${color}' to clipboard`,
+            menuElement: `Copy to '${color}' to clipboard`,
             onSelect: () => {
                 copyToClipboard(color);
             },
@@ -17,7 +19,7 @@ function showContextMenu(event: any, color: AppColorType) {
             ScreenBackgroundManager.handleBackgroundSelecting(
                 event,
                 'color',
-                color,
+                { src: color },
                 true,
             );
         }),
@@ -46,7 +48,7 @@ export default function RenderColor({
                 showContextMenu(event, color);
             }}
             className={
-                'm-1 color-item pointer' +
+                'm-1 color-item app-caught-hover-pointer' +
                 (isSelected ? ' app-border-white-round' : '')
             }
             style={{
@@ -60,7 +62,7 @@ export default function RenderColor({
         />
     );
     if (isSelected) {
-        return <span className="highlight-selected">{element}</span>;
+        return <span className="app-highlight-selected">{element}</span>;
     }
     return element;
 }

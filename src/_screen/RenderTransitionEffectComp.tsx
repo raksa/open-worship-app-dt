@@ -1,4 +1,4 @@
-import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
+import { showAppContextMenu } from '../context-menu/appContextMenuHelpers';
 import ScreenEffectManager from './managers/ScreenEffectManager';
 import {
     ScreenTransitionEffectType,
@@ -13,14 +13,14 @@ function openContextMenu(event: any, screenEffectManager: ScreenEffectManager) {
         transitionEffectList.map(([effect, [icon]]) => {
             const isSelected = effect === screenEffectManager.effectType;
             return {
-                menuTitle: effect,
+                menuElement: effect,
                 onSelect: () => {
                     screenEffectManager.effectType =
                         effect as ScreenTransitionEffectType;
                 },
                 childAfter: (
                     <i
-                        className={`${icon} ps-1 ${isSelected ? 'highlight-selected' : ''}`}
+                        className={`${icon} ps-1 ${isSelected ? 'app-highlight-selected' : ''}`}
                     />
                 ),
             };
@@ -30,9 +30,11 @@ function openContextMenu(event: any, screenEffectManager: ScreenEffectManager) {
 
 export default function RenderTransitionEffectComp({
     title,
+    domTitle,
     screenEffectManager,
 }: Readonly<{
     title: string;
+    domTitle: string;
     screenEffectManager: ScreenEffectManager;
 }>) {
     useScreenEffectEvents(['update'], screenEffectManager);
@@ -40,13 +42,14 @@ export default function RenderTransitionEffectComp({
     return (
         <button
             type="button"
+            title={domTitle}
             className="btn btn-outline-secondary"
             onClick={(event) => {
                 openContextMenu(event, screenEffectManager);
             }}
         >
             {title}
-            <i className={`${selected[0]} ps-1 'highlight-selected`} />
+            <i className={`${selected[0]} ps-1 'app-highlight-selected`} />
         </button>
     );
 }

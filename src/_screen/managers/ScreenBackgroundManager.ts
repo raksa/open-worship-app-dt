@@ -5,6 +5,7 @@ import { getImageDim, getVideoDim } from '../../helper/helpers';
 import { setSetting } from '../../helper/settingHelpers';
 import { genHtmlBackground } from '../ScreenBackgroundComp';
 import {
+    BackgroundDataType,
     BackgroundSrcType,
     BackgroundType,
     BasicScreenMessageType,
@@ -18,6 +19,7 @@ import ScreenEventHandler from './ScreenEventHandler';
 import ScreenManagerBase from './ScreenManagerBase';
 import ScreenEffectManager from './ScreenEffectManager';
 import appProvider from '../../server/appProvider';
+import { StyleAnimType } from '../transitionEffectHelpers';
 
 export type ScreenBackgroundManagerEventType = 'update';
 
@@ -57,6 +59,9 @@ class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManager
     }
 
     set backgroundSrc(backgroundSrc: BackgroundSrcType | null) {
+        if (this.screenManagerBase.checkIsLockedWithMessage()) {
+            return;
+        }
         this._backgroundSrc = backgroundSrc;
         this.render();
         unlocking(screenManagerSettingNames.BACKGROUND, () => {
@@ -68,9 +73,9 @@ class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManager
             }
             const str = JSON.stringify(allBackgroundSrcList);
             setSetting(screenManagerSettingNames.BACKGROUND, str);
+            this.fireUpdateEvent();
         });
         this.sendSyncScreen();
-        this.fireUpdateEvent();
     }
 
     toSyncMessage() {
@@ -132,32 +137,35 @@ class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManager
 
     async applyBackgroundSrc(
         backgroundType: BackgroundType,
-        src: string | null,
+        data: BackgroundDataType,
     ) {
-        if (src === null || this.backgroundSrc?.src === src) {
+        if (data.src === null || this.backgroundSrc?.src === data.src) {
             this.applyBackgroundSrcWithSyncGroup(null);
         } else {
             const backgroundSrc =
                 await ScreenBackgroundManager.initBackgroundSrcDim(
-                    src,
+                    data.src,
                     backgroundType,
                 );
-            this.applyBackgroundSrcWithSyncGroup(backgroundSrc);
+            this.applyBackgroundSrcWithSyncGroup({
+                ...backgroundSrc,
+                scaleType: data.scaleType,
+                extraStyle: data.extraStyle,
+            });
         }
     }
 
     static async handleBackgroundSelecting(
         event: React.MouseEvent,
         backgroundType: BackgroundType,
-        src: string | null,
+        data: BackgroundDataType,
         isForceChoosing = false,
     ) {
         const screenIds = await this.chooseScreenIds(event, isForceChoosing);
         for (const screenId of screenIds) {
             const screenBackgroundManager = this.getInstance(screenId);
-            screenBackgroundManager.applyBackgroundSrc(backgroundType, src);
+            screenBackgroundManager.applyBackgroundSrc(backgroundType, data);
         }
-        this.fireUpdateEvent();
     }
 
     static async extractDim(
@@ -179,25 +187,32 @@ class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManager
         return [undefined, undefined];
     }
 
+    removeOldElements(aminData: StyleAnimType, elements: HTMLDivElement[]) {
+        for (const element of elements) {
+            aminData.animOut(element).then(() => {
+                element.remove();
+            });
+        }
+    }
+
     render() {
         if (this.div === null) {
             return;
         }
         const aminData = this.backgroundEffectManager.styleAnim;
         if (this.backgroundSrc !== null) {
-            const newDiv = genHtmlBackground(this.backgroundSrc, this.screenId);
-            const childList = Array.from(this.div.children);
+            const newDiv = genHtmlBackground(this.screenId, this.backgroundSrc);
+            const childList = Array.from(this.div.children).filter(
+                (element) => {
+                    return element instanceof HTMLDivElement;
+                },
+            );
             this.div.appendChild(newDiv);
-            aminData.animIn(newDiv).then(() => {
-                childList.forEach((child) => {
-                    child.remove();
-                });
-            });
+            aminData.animIn(newDiv);
+            this.removeOldElements(aminData, childList);
         } else if (this.div.lastChild !== null) {
             const targetDiv = this.div.lastChild as HTMLDivElement;
-            aminData.animOut(targetDiv).then(() => {
-                targetDiv.remove();
-            });
+            this.removeOldElements(aminData, [targetDiv]);
         }
     }
 

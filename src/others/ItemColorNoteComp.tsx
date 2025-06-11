@@ -1,11 +1,13 @@
 import { useMemo, useState } from 'react';
 
-import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
 import colorList from './color-list.json';
 import ColorNoteInf from '../helper/ColorNoteInf';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { freezeObject } from '../helper/helpers';
-import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
+import {
+    ContextMenuItemType,
+    showAppContextMenu,
+} from '../context-menu/appContextMenuHelpers';
 
 freezeObject(colorList);
 
@@ -51,7 +53,7 @@ export default function ItemColorNoteComp({
         // unique colors by key
         const items: ContextMenuItemType[] = [
             {
-                menuTitle: 'no color',
+                menuElement: 'no color',
                 disabled: colorNote === null,
                 onSelect: () => {
                     setColorNote1(null);
@@ -59,7 +61,7 @@ export default function ItemColorNoteComp({
             },
             ...colors.map(([name, colorCode]): ContextMenuItemType => {
                 return {
-                    menuTitle: name,
+                    menuElement: name,
                     disabled: colorNote === colorCode,
                     onSelect: () => {
                         setColorNote1(colorCode);
@@ -80,7 +82,7 @@ export default function ItemColorNoteComp({
 
     return (
         <span
-            className={`color-note pointer ${colorNote ? 'active' : ''}`}
+            className={`color-note app-caught-hover-pointer ${colorNote ? 'active' : ''}`}
             title={title}
             onClick={handleColorSelecting}
         >

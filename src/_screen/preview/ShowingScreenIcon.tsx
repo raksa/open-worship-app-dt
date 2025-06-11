@@ -25,7 +25,7 @@ export default function ShowingScreenIcon({
     const color = genColorFromScreenId(screenId);
     return (
         <span
-            className="d-flex"
+            className="d-flex px-1"
             title={`Screen: ${screenId}`}
             data-screen-id={screenId}
         >

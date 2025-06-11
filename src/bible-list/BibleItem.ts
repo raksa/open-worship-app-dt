@@ -69,10 +69,10 @@ export default class BibleItem
     }
     static fromJson(json: BibleItemType, filePath?: string) {
         this.validate(json);
-        return new BibleItem(json.id, json, filePath);
+        return new this(json.id, json, filePath);
     }
     static fromJsonError(json: BibleItemType, filePath?: string) {
-        const item = new BibleItem(
+        const item = new this(
             -1,
             {
                 id: -1,
@@ -97,7 +97,7 @@ export default class BibleItem
         verseStart: number,
         verseEnd: number,
     ) {
-        return BibleItem.fromJson({
+        return this.fromJson({
             id: -1,
             bibleKey,
             target: {
@@ -137,11 +137,11 @@ export default class BibleItem
         }
     }
     clone(isKeepId = false) {
-        const bibleItem = BibleItem.fromJson(this.toJson());
+        const Class = this.constructor as typeof BibleItem;
         if (!isKeepId) {
-            bibleItem.id = -1;
+            return Class.fromJson({ ...this.toJson(), id: -1 }, this.filePath);
         }
-        return bibleItem;
+        return Class.fromJson(this.toJson(), this.filePath);
     }
     async save(bible: ItemSourceInfBasic<BibleItem> & DocumentInf) {
         if (this.filePath === null) {
@@ -187,7 +187,7 @@ export default class BibleItem
             const str = getSetting(BIBLE_PRESENT_SETTING_NAME, '');
             if (isValidJson(str, true)) {
                 return JSON.parse(str).map((item: any) => {
-                    return BibleItem.fromJson(item);
+                    return this.fromJson(item);
                 }) as BibleItem[];
             }
         } catch (error) {
@@ -267,7 +267,7 @@ export default class BibleItem
             return null;
         }
         const json = JSON.parse(data);
-        return BibleItem.fromJson(json, json.filePath);
+        return this.fromJson(json, json.filePath);
     }
     static saveFromBibleLookup(
         bible: ItemSourceInfBasic<BibleItem> & DocumentInf,

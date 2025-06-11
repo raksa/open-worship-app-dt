@@ -8,7 +8,7 @@ export default function ScreenPreviewerFooterComp() {
             style={{
                 overflowX: 'auto',
                 overflowY: 'hidden',
-                height: '35px',
+                height: '25px',
                 padding: '1px',
             }}
         >

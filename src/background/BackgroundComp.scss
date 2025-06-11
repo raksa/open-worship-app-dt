@@ -1,7 +1,7 @@
 @use '../others/variables.scss' as *;
 
 .background {
-  .nav-highlight-selected {
+  .app-nav-highlight-selected {
     .btn::after {
       content: '*';
       color: $hight-light-color;

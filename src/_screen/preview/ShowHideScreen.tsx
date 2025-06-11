@@ -6,7 +6,6 @@ import {
     useScreenManagerBaseContext,
     useScreenManagerEvents,
 } from '../managers/screenManagerHooks';
-import ShowingScreenIcon from './ShowingScreenIcon';
 
 const showingScreenEventMap = { key: 'F5' };
 export default function ShowHideScreen() {
@@ -22,17 +21,29 @@ export default function ShowHideScreen() {
     useScreenManagerEvents(['visible'], screenManagerBase);
     return (
         <div
-            className={`d-flex show-hide pointer ${isShowing ? 'showing' : ''}`}
+            className={
+                'd-flex show-hide app-caught-hover-pointer px-2' +
+                ` ${isShowing ? 'showing' : ''}`
+            }
             title={
                 'Toggle showing screen ' +
                 `[${toShortcutKey(showingScreenEventMap)}]`
             }
+            style={{
+                opacity: isShowing ? 1 : 0.4,
+                borderRadius: '5px',
+                border: isShowing ? '1px solid var(--bs-gray-600)' : '',
+            }}
             onClick={() => {
                 screenManagerBase.isShowing = !isShowing;
             }}
         >
-            <ShowingScreenIcon screenId={screenManagerBase.screenId} />
-            <i className="app-showing-indicator bi bi-file-slides-fill" />
+            <i
+                className={
+                    'app-showing-indicator bi' +
+                    ` bi-file-slides${isShowing ? '-fill' : ''}`
+                }
+            />
         </div>
     );
 }

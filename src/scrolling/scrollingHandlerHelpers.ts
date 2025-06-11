@@ -1,6 +1,7 @@
 export const TO_THE_TOP_CLASSNAME = 'app-to-the-top';
+export const PLAY_TO_BOTTOM_CLASSNAME = 'play-to-bottom';
 export const TO_THE_TOP_STYLE_STRING = `
-.play-to-bottom {
+.${PLAY_TO_BOTTOM_CLASSNAME} {
     padding: 0;
     margin: 0;
     font-size: 30px;
@@ -10,11 +11,12 @@ export const TO_THE_TOP_STYLE_STRING = `
     bottom: 30px;
     opacity: 0.1;
     transition: opacity 0.3s ease-in-out;
+    cursor: pointer;
 }
-.play-to-bottom.going {
+.${PLAY_TO_BOTTOM_CLASSNAME}.going {
     opacity: 0.4;
 }
-.play-to-bottom:hover {
+.${PLAY_TO_BOTTOM_CLASSNAME}:hover {
     opacity: 1;
 }
 .${TO_THE_TOP_CLASSNAME} {
@@ -60,7 +62,9 @@ export function applyToTheTop(element: HTMLElement) {
     parent.addEventListener('scroll', scrollCallback);
     element.onclick = () => {
         if (
-            parent.querySelector('.play-to-bottom')?.classList.contains('going')
+            parent
+                .querySelector('.' + PLAY_TO_BOTTOM_CLASSNAME)
+                ?.classList.contains('going')
         ) {
             parent.classList.add('asking-to-top');
         } else {

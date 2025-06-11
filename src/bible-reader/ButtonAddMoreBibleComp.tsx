@@ -1,20 +1,22 @@
-import BibleItem from '../bible-list/BibleItem';
 import { showBibleOption } from '../bible-lookup/BibleSelectionComp';
+import { ReadIdOnlyBibleItem } from './BibleItemsViewController';
 
 export default function ButtonAddMoreBibleComp({
     bibleItems,
     applyPresents,
 }: Readonly<{
-    bibleItems: BibleItem[];
-    applyPresents: (bibleItem: BibleItem[]) => void;
+    bibleItems: ReadIdOnlyBibleItem[];
+    applyPresents: (bibleItem: ReadIdOnlyBibleItem[]) => void;
 }>) {
     return (
         <button
             className="btn btn-info btn-sm"
             disabled={bibleItems.length === 0}
             onClick={(event) => {
-                showBibleOption(event, [], (bibleKey: string) => {
-                    const newBibleItem = bibleItems[0].clone();
+                showBibleOption(event, (bibleKey: string) => {
+                    const newBibleItem = ReadIdOnlyBibleItem.fromJson(
+                        bibleItems[0].toJson(),
+                    );
                     newBibleItem.bibleKey = bibleKey;
                     const newBibleItems = [...bibleItems, newBibleItem];
                     applyPresents(newBibleItems);

@@ -60,4 +60,8 @@ export default abstract class AppDocumentSourceAbs {
         }
         return cache.get(filePath) as any as T;
     }
+
+    static getInstance(_filePath: string) {
+        throw new Error('getInstance must be implemented in derived class');
+    }
 }

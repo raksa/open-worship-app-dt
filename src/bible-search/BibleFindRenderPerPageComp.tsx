@@ -30,7 +30,7 @@ function RenderFoundItemComp({
     const { newItem, bibleItem } = data;
     return (
         <div
-            className="w-100 app-border-white-round my-2 p-2 pointer"
+            className="w-100 app-border-white-round my-2 p-2 app-caught-hover-pointer"
             draggable
             onDragStart={(event) => {
                 handleDragStart(event, bibleItem);

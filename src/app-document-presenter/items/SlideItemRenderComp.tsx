@@ -101,7 +101,7 @@ export function toClassNameHighlight(
     varyAppDocumentItem: VaryAppDocumentItemType,
     selectedVaryAppDocumentItem?: VaryAppDocumentItemType | null,
 ) {
-    const activeCN =
+    const activeClassname =
         appProvider.isPageEditor &&
         selectedVaryAppDocumentItem &&
         varyAppDocumentItem.checkIsSame(selectedVaryAppDocumentItem)
@@ -114,10 +114,10 @@ export function toClassNameHighlight(
     const presenterCN =
         appProvider.isPageEditor || selectedList.length == 0
             ? ''
-            : 'highlight-selected';
+            : 'app-highlight-selected';
     return {
         selectedList,
-        activeCN,
+        activeCN: activeClassname,
         presenterCN,
     };
 }
@@ -227,7 +227,10 @@ export default function SlideItemRenderComp({
     };
     return (
         <div
-            className={`data-vary-app-document-item card pointer ${activeCN} ${presenterCN}`}
+            className={
+                'data-vary-app-document-item card' +
+                ` app-caught-hover-pointer ${activeCN} ${presenterCN}`
+            }
             ref={setTargetDiv}
             style={{ width: `${width}px` }}
             data-vary-app-document-item-id={item.id}
@@ -246,6 +249,7 @@ export default function SlideItemRenderComp({
             onDragStart={(event) => {
                 handleDragStart(event, item);
                 onDragStart(event);
+                event.stopPropagation();
             }}
             onDragEnd={onDragEnd}
             onClick={onClick}

@@ -69,6 +69,15 @@
       }
     }
   }
+
+  .card-footer {
+    button {
+      padding: 1px !important;
+      font-size: 12px;
+      margin: 1px;
+      height: 20px;
+    }
+  }
 }
 
 @keyframes fade-out {

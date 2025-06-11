@@ -144,10 +144,13 @@ export default class Bible extends AppDocumentSourceAbs implements DocumentInf {
     }
 
     addBibleItem(bibleItem: BibleItem) {
-        bibleItem.filePath = this.filePath;
-        bibleItem.id = this.maxItemId + 1;
+        const newBibleItem = BibleItem.fromJson(
+            bibleItem.toJson(),
+            this.filePath,
+        );
+        newBibleItem.id = this.maxItemId + 1;
         const bibleItems = this.items;
-        bibleItems.push(bibleItem);
+        bibleItems.push(newBibleItem);
         this.items = bibleItems;
     }
 

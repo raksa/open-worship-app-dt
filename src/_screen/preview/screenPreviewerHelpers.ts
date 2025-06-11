@@ -35,7 +35,7 @@ export function openContextMenu(event: any, screenManager: ScreenManager) {
     const extraMenuItems: ContextMenuItemType[] = isShowingBible
         ? [
               {
-                  menuTitle: `${isLineSync ? 'Unset' : 'Set'} Line Sync`,
+                  menuElement: `${isLineSync ? 'Unset' : 'Set'} Line Sync`,
                   onSelect() {
                       screenBibleManager.isLineSync = !isLineSync;
                   },
@@ -47,13 +47,13 @@ export function openContextMenu(event: any, screenManager: ScreenManager) {
             ? []
             : [
                   {
-                      menuTitle: 'Solo',
+                      menuElement: 'Solo',
                       onSelect() {
-                          getSelectedScreenManagerBases().forEach(
-                              (screenManager1) => {
-                                  screenManager1.isSelected = false;
-                              },
-                          );
+                          const screenManagerBases =
+                              getSelectedScreenManagerBases();
+                          screenManagerBases.forEach((screenManager1) => {
+                              screenManager1.isSelected = false;
+                          });
                           screenManager.isSelected = true;
                       },
                   },
@@ -62,7 +62,7 @@ export function openContextMenu(event: any, screenManager: ScreenManager) {
             ? []
             : [
                   {
-                      menuTitle: screenManager.isSelected
+                      menuElement: screenManager.isSelected
                           ? 'Deselect'
                           : 'Select',
                       onSelect() {
@@ -70,7 +70,7 @@ export function openContextMenu(event: any, screenManager: ScreenManager) {
                       },
                   },
                   {
-                      menuTitle: 'Delete',
+                      menuElement: 'Delete',
                       onSelect: () => {
                           screenManager.delete();
                       },
@@ -78,7 +78,7 @@ export function openContextMenu(event: any, screenManager: ScreenManager) {
               ]),
         ...extraMenuItems,
         {
-            menuTitle: 'Refresh Preview',
+            menuElement: 'Refresh Preview',
             onSelect() {
                 getAllScreenManagers().forEach((screenManager) => {
                     screenManager.fireResizeEvent();

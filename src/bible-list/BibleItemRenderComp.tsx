@@ -20,7 +20,9 @@ import { changeDragEventStyle } from '../helper/helpers';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 import BibleViewTitleEditorComp from '../bible-reader/BibleViewTitleEditorComp';
 import LookupBibleItemController from '../bible-reader/LookupBibleItemController';
-import { useBibleItemsViewControllerContext } from '../bible-reader/BibleItemsViewController';
+import BibleItemsViewController, {
+    useBibleItemsViewControllerContext,
+} from '../bible-reader/BibleItemsViewController';
 
 function genAttachBackgroundComponent(
     droppedData: DroppedDataType | null | undefined,
@@ -72,6 +74,47 @@ async function getBible(bibleItem: BibleItem) {
         : null;
 }
 
+export function useAttachedBackgroundElement(filePath: string, id?: string) {
+    const attachedBackgroundData = useAttachedBackgroundData(filePath, id);
+    return useMemo(() => {
+        return genAttachBackgroundComponent(attachedBackgroundData);
+    }, [attachedBackgroundData]);
+}
+
+function handleOpening(
+    event: any,
+    viewController: BibleItemsViewController | LookupBibleItemController,
+    bibleItem: BibleItem,
+) {
+    if (appProvider.isPagePresenter) {
+        ScreenBibleManager.handleBibleItemSelecting(event, bibleItem);
+    } else if (appProvider.isPageReader) {
+        if (viewController instanceof LookupBibleItemController === false) {
+            const lastBibleItem = viewController.straightBibleItems.pop();
+            if (lastBibleItem !== undefined) {
+                viewController.addBibleItemRight(lastBibleItem, bibleItem);
+            } else {
+                viewController.addBibleItem(
+                    null,
+                    bibleItem,
+                    false,
+                    false,
+                    false,
+                );
+            }
+            return;
+        }
+        if (event.shiftKey) {
+            viewController.addBibleItemRight(
+                viewController.selectedBibleItem,
+                bibleItem,
+            );
+        } else {
+            viewController.setLookupContentFromBibleItem(bibleItem);
+        }
+    }
+}
+
 export default function BibleItemRenderComp({
     index,
     bibleItem,
@@ -94,52 +137,21 @@ export default function BibleItemRenderComp({
         bibleItem.bibleKey = newBibleKey;
         bibleItem.save(bible);
     };
-    const attachedBackgroundData = useAttachedBackgroundData(
+    const attachedBackgroundElement = useAttachedBackgroundElement(
         filePath,
         bibleItem.id.toString(),
     );
-    const attachedBackgroundElement = useMemo(() => {
-        return genAttachBackgroundComponent(attachedBackgroundData);
-    }, [attachedBackgroundData]);
-    const handleOpening = (event: any) => {
-        if (appProvider.isPagePresenter) {
-            ScreenBibleManager.handleBibleItemSelecting(event, bibleItem);
-        } else if (appProvider.isPageReader) {
-            if (viewController instanceof LookupBibleItemController === false) {
-                const lastBibleItem = viewController.straightBibleItems.pop();
-                if (lastBibleItem !== undefined) {
-                    viewController.addBibleItemRight(lastBibleItem, bibleItem);
-                } else {
-                    viewController.addBibleItem(
-                        null,
-                        bibleItem,
-                        false,
-                        false,
-                        false,
-                    );
-                }
-                return;
-            }
-            if (event.shiftKey) {
-                viewController.addBibleItemRight(
-                    viewController.selectedBibleItem,
-                    bibleItem,
-                );
-            } else {
-                viewController.setLookupContentFromBibleItem(bibleItem);
-            }
-        }
-    };
+
     const handleContextMenuOpening = (event: React.MouseEvent<any>) => {
         const menuItems: ContextMenuItemType[] = [
             {
-                menuTitle: '`Open',
+                menuElement: '`Open',
                 onSelect: (event) => {
-                    handleOpening(event);
+                    handleOpening(event, viewController, bibleItem);
                 },
             },
         ];
-        if (attachedBackgroundData) {
+        if (attachedBackgroundElement) {
             menuItems.push(
                 ...genRemovingAttachedBackgroundMenu(
                     filePath,
@@ -162,7 +174,7 @@ export default function BibleItemRenderComp({
 
     return (
         <li
-            className="list-group-item item pointer px-1"
+            className="list-group-item item app-caught-hover-pointer px-1"
             title="Double click to view"
             data-index={index + 1}
             draggable
@@ -183,7 +195,9 @@ export default function BibleItemRenderComp({
                     id: bibleItem.id,
                 });
             }}
-            onDoubleClick={handleOpening}
+            onDoubleClick={(event) => {
+                handleOpening(event, viewController, bibleItem);
+            }}
             onContextMenu={handleContextMenuOpening}
         >
             <div className="d-flex">

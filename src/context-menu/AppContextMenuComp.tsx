@@ -1,12 +1,8 @@
 import './AppContextMenuComp.scss';
 
-import KeyboardEventListener, {
-    EventMapper,
-    toShortcutKey,
-} from '../event/KeyboardEventListener';
+import { EventMapper, toShortcutKey } from '../event/KeyboardEventListener';
 import {
     ContextMenuItemType,
-    OptionsType,
     setPositionMenu,
     contextControl,
     useAppContextMenuData,
@@ -14,48 +10,18 @@ import {
     APP_CONTEXT_MENU_ID,
 } from './appContextMenuHelpers';
 
-export type AppContextMenuControlType = {
-    promiseDone: Promise<void>;
-    closeMenu: () => void;
-};
-
-export function showAppContextMenu(
-    event: MouseEvent,
-    items: ContextMenuItemType[],
-    options?: OptionsType,
-): AppContextMenuControlType {
-    event.stopPropagation();
-    if (!items.length) {
-        return {
-            promiseDone: Promise.resolve(),
-            closeMenu: () => {},
-        };
-    }
-    const closeMenu = () => {
-        contextControl.setDataDelegator?.(null);
-    };
-    const promise = new Promise<void>((resolve) => {
-        contextControl.setDataDelegator?.({ event, items, options });
-        const eventName = KeyboardEventListener.toEventMapperKey({
-            key: 'Escape',
-        });
-        const escEvent = KeyboardEventListener.registerEventListener(
-            [eventName],
-            () => {
-                closeMenu();
-                KeyboardEventListener.unregisterEventListener(escEvent);
-                resolve();
-            },
-        );
-    });
-    return { promiseDone: promise, closeMenu };
-}
+export const elementDivider = (
+    <hr className="w-100" style={{ padding: 0, margin: 0 }} />
+);
 
 function ContextMenuItemComp({
     item,
 }: Readonly<{
     item: ContextMenuItemType;
 }>) {
+    if (item.menuElement === elementDivider) {
+        return item.menuElement;
+    }
     return (
         <div
             className={
@@ -65,7 +31,7 @@ function ContextMenuItemComp({
             style={item.style ?? {}}
             title={
                 item.title ??
-                (typeof item.menuTitle === 'string' ? item.menuTitle : '')
+                (typeof item.menuElement === 'string' ? item.menuElement : '')
             }
             onClick={(event) => {
                 if (item.disabled) {
@@ -77,7 +43,7 @@ function ContextMenuItemComp({
             }}
         >
             {item.childBefore || null}
-            <div className="app-ellipsis flex-fill">{item.menuTitle}</div>
+            <div className="app-ellipsis flex-fill">{item.menuElement}</div>
             {item.childAfter || null}
         </div>
     );

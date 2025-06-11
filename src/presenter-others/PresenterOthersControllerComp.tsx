@@ -1,26 +1,30 @@
-import CountDownComp from './CountDownComp';
-import MarqueeComp from './MarqueeComp';
+import appProvider from '../server/appProvider';
+import OtherCameraShowComp from './OtherCameraShowComp';
+import OtherCountDownComp from './OtherCountDownComp';
+import OtherImagesSlideShowComp from './OtherImagesSlideShowComp';
+import OtherMessageComp from './OtherMessageComp';
 
 export default function PresenterOthersControllerComp() {
     return (
-        <div className="w-100 h-100 app-border-white-round">
-            <div>
-                <MarqueeComp />
-            </div>
+        <div
+            className="w-100 h-100 app-border-white-round"
+            style={{
+                overflowY: 'auto',
+            }}
+        >
+            <OtherMessageComp />
             <hr />
-            <div>
-                <CountDownComp />
-            </div>
+            <OtherCountDownComp />
             <hr />
-            <div>TODO: Image slides show</div>
+            <OtherImagesSlideShowComp />
             <hr />
-            <div>TODO: Video show</div>
-            <hr />
-            <div>TODO: Sound show</div>
-            <hr />
-            <div>TODO: Camera Show</div>
-            <hr />
-            <div>TODO: Javascript Show</div>
+            <OtherCameraShowComp />
+            {appProvider.systemUtils.isDev ? (
+                <>
+                    <hr />
+                    <div>TODO: Javascript Show</div>
+                </>
+            ) : null}
         </div>
     );
 }

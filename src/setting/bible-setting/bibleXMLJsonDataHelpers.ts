@@ -1,5 +1,5 @@
 import kjvBibleInfo from '../../helper/bible-helpers/bible.json';
-import { DEFAULT_LOCALE, getLangCode } from '../../lang';
+import { DEFAULT_LOCALE, getLangCode, LocaleType } from '../../lang';
 import {
     showAppConfirm,
     showAppInput,
@@ -99,7 +99,7 @@ export type BibleJsonInfoType = {
     title: string;
     key: string;
     version: number;
-    locale: string;
+    locale: LocaleType;
     legalNote: string;
     publisher: string;
     copyRights: string;

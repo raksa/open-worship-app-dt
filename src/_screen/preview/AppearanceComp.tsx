@@ -1,31 +1,15 @@
 import { useState } from 'react';
 
 import { AppColorType } from '../../others/color/colorHelpers';
-import { useScreenBibleManagerEvents } from '../managers/screenEventHelpers';
 import ScreenBibleManager from '../managers/ScreenBibleManager';
 import ScreenVaryAppDocumentManager from '../managers/ScreenVaryAppDocumentManager';
 import AppRangeComp from '../../others/AppRangeComp';
 import { getAllScreenManagers } from '../managers/screenManagerHelpers';
+import { useStylingColor, useStylingFontSize } from './stylingHelpers';
 
 export default function AppearanceComp() {
-    const [color, setColor] = useState(ScreenBibleManager.textStyleTextColor);
-    const [fontSize, setFontSize] = useState(
-        ScreenBibleManager.textStyleTextFontSize,
-    );
-    useScreenBibleManagerEvents(['text-style'], undefined, () => {
-        setColor(ScreenBibleManager.textStyleTextColor);
-        setFontSize(ScreenBibleManager.textStyleTextFontSize);
-    });
-    const setColorToStyle = (newColor: AppColorType) => {
-        ScreenBibleManager.applyTextStyle({
-            color: newColor,
-        });
-    };
-    const setFontSizeToStyle = (newFontSize: number) => {
-        ScreenBibleManager.applyTextStyle({
-            fontSize: newFontSize,
-        });
-    };
+    const [color, setColor] = useStylingColor();
+    const [fontSize, setFontSize] = useStylingFontSize();
     return (
         <div>
             <span className="p-">
@@ -38,7 +22,7 @@ export default function AppearanceComp() {
                     className="btn btn-sm btn-info"
                     type="button"
                     onClick={() => {
-                        setFontSizeToStyle(fontSize - 1);
+                        setFontSize(fontSize - 1);
                     }}
                 >
                     {'<'}
@@ -47,17 +31,17 @@ export default function AppearanceComp() {
                     className="btn btn-sm btn-info"
                     type="button"
                     onClick={() => {
-                        setFontSizeToStyle(fontSize + 1);
+                        setFontSize(fontSize + 1);
                     }}
                 >
                     {'>'}
                 </button>
             </div>
             <input
-                className="float-end"
+                className="float-end app-caught-hover-pointer"
                 type="color"
                 onChange={(event) => {
-                    setColorToStyle(event.target.value as AppColorType);
+                    setColor(event.target.value as AppColorType);
                 }}
                 value={color}
             />
@@ -65,7 +49,7 @@ export default function AppearanceComp() {
                 <AppRangeComp
                     value={fontSize}
                     title="Font Size"
-                    setValue={setFontSizeToStyle}
+                    setValue={setFontSize}
                     defaultSize={{
                         size: fontSize,
                         min: 1,

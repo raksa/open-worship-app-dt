@@ -17,8 +17,10 @@ import { getValidOnScreen } from './managers/screenManagerBaseHelpers';
 import { VaryAppDocumentItemDataType } from '../app-document-list/appDocumentHelpers';
 import appProvider from '../server/appProvider';
 import {
+    PLAY_TO_BOTTOM_CLASSNAME,
     TO_THE_TOP_CLASSNAME,
     TO_THE_TOP_STYLE_STRING,
+    applyPlayToBottom,
     applyToTheTop,
 } from '../scrolling/scrollingHandlerHelpers';
 
@@ -38,13 +40,30 @@ export type BibleListType = {
     [key: string]: BibleItemDataType;
 };
 
+export const scaleTypeList = [
+    'fill',
+    'fit',
+    'stretch',
+    'tile',
+    'center',
+    'span',
+] as const;
+export type ImageScaleType = (typeof scaleTypeList)[number];
+
 const _backgroundTypeList = ['color', 'image', 'video', 'sound'] as const;
 export type BackgroundType = (typeof _backgroundTypeList)[number];
+export type BackgroundDataType = {
+    src: string | null;
+    scaleType?: ImageScaleType;
+    extraStyle?: React.CSSProperties;
+};
 export type BackgroundSrcType = {
     type: BackgroundType;
     src: string;
     width?: number;
     height?: number;
+    scaleType?: ImageScaleType;
+    extraStyle?: React.CSSProperties;
 };
 export type BackgroundSrcListType = {
     [key: string]: BackgroundSrcType;
@@ -56,6 +75,10 @@ export type AlertDataType = {
     } | null;
     countdownData: {
         dateTime: Date;
+    } | null;
+    cameraData: {
+        id: string;
+        extraStyle: React.CSSProperties;
     } | null;
 };
 export type AlertSrcListType = {
@@ -124,8 +147,9 @@ export function calMediaSizes(
         width?: number;
         height?: number;
     },
+    scaleType?: ImageScaleType,
 ) {
-    if (width === undefined || height === undefined) {
+    if (width === undefined || height === undefined || scaleType === 'fill') {
         return {
             width: parentWidth,
             height: parentHeight,
@@ -133,11 +157,23 @@ export function calMediaSizes(
             offsetV: 0,
         };
     }
+    if (scaleType === 'fit') {
+        const ratio = Math.min(parentWidth / width, parentHeight / height);
+        const newWidth = width * ratio;
+        const newHeight = height * ratio;
+        return {
+            width: newWidth,
+            height: newHeight,
+            offsetH: (parentWidth - newWidth) / 2,
+            offsetV: (parentHeight - newHeight) / 2,
+        };
+    }
+    console.log(scaleType);
     const scale = Math.max(parentWidth / width, parentHeight / height);
     const newWidth = width * scale;
     const newHeight = height * scale;
-    const offsetH = (newWidth - parentWidth) / 2;
-    const offsetV = (newHeight - parentHeight) / 2;
+    const offsetH = (parentWidth - newWidth) / 2;
+    const offsetV = (parentHeight - newHeight) / 2;
     return {
         width: newWidth,
         height: newHeight,
@@ -295,7 +331,7 @@ export function getBibleListOnScreenSetting(): BibleListType {
 
 export function addToTheTop(div: HTMLDivElement) {
     const oldIcon = div.querySelector(`.${TO_THE_TOP_CLASSNAME}`);
-    if (oldIcon) {
+    if (oldIcon !== null) {
         const scrollCallback = (oldIcon as any)._scrollCallback;
         if (scrollCallback !== undefined) {
             div.removeEventListener('scroll', scrollCallback);
@@ -310,6 +346,25 @@ export function addToTheTop(div: HTMLDivElement) {
     target.title = 'Scroll to the top';
     target.src = 'assets/arrow-up-circle.png';
     target.style.position = 'fixed';
+    target.style.bottom = '80px';
     div.appendChild(target);
     applyToTheTop(target);
+}
+
+export function addPlayToBottom(div: HTMLDivElement) {
+    const oldIcon = div.querySelector(`.${PLAY_TO_BOTTOM_CLASSNAME}`);
+    if (oldIcon !== null) {
+        return;
+    }
+    const style = document.createElement('style');
+    style.innerHTML = TO_THE_TOP_STYLE_STRING;
+    div.appendChild(style);
+    const target = document.createElement('img');
+    target.className = PLAY_TO_BOTTOM_CLASSNAME;
+    target.title = 'Play to bottom';
+    target.src = 'assets/chevron-double-down.png';
+    target.style.position = 'fixed';
+    target.style.bottom = '0px';
+    div.appendChild(target);
+    applyPlayToBottom(target);
 }

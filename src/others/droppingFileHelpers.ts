@@ -3,11 +3,13 @@ import {
     isSupportedExt,
     MimetypeNameType,
 } from '../server/fileHelpers';
-import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
 import DirSource from '../helper/DirSource';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { selectFiles } from '../server/appHelpers';
-import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
+import {
+    ContextMenuItemType,
+    showAppContextMenu,
+} from '../context-menu/appContextMenuHelpers';
 import { changeDragEventStyle } from '../helper/helpers';
 
 export function genOnDragOver(dirSource: DirSource) {
@@ -163,16 +165,27 @@ export async function handleFilesSelectionMenuItem(
     await Promise.all(promises);
 }
 
-export function genOnContextMenu(
-    contextMenu?: ContextMenuItemType[],
-    addItems?: () => void,
-) {
+export function genOnContextMenu({
+    contextMenu,
+    addItems,
+    onStartNewFile,
+}: {
+    contextMenu?: ContextMenuItemType[];
+    addItems?: () => void;
+    onStartNewFile?: () => void;
+}) {
     return (event: React.MouseEvent<any>) => {
         const menuItems: ContextMenuItemType[] = [...(contextMenu ?? [])];
         if (addItems !== undefined) {
             menuItems.push({
-                menuTitle: 'Add Items',
+                menuElement: 'Add Items',
                 onSelect: addItems,
+            });
+        }
+        if (onStartNewFile !== undefined) {
+            menuItems.push({
+                menuElement: 'Create New File',
+                onSelect: onStartNewFile,
             });
         }
         if (menuItems.length === 0) {

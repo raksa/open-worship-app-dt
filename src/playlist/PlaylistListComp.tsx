@@ -31,7 +31,7 @@ export default function PlaylistListComp() {
     }
     return (
         <FileListHandlerComp
-            id="playlist-list"
+            className="playlist-list"
             mimetypeName="playlist"
             defaultFolderName={defaultDataDirNames.PLAYLIST}
             dirSource={dirSource}

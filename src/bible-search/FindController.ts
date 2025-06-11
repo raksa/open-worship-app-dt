@@ -34,7 +34,7 @@ async function loadApiData() {
 async function initDatabase(bibleKey: string, databaseFilePath: string) {
     const databaseUtils = appProvider.databaseUtils;
     const databaseAdmin =
-        databaseUtils.getSQLiteDatabaseInstance(databaseFilePath);
+        await databaseUtils.getSQLiteDatabaseInstance(databaseFilePath);
     databaseAdmin.exec('CREATE TABLE verses(text TEXT, sText TEXT);');
     const jsonData = await getBibleXMLDataFromKey(bibleKey);
     if (jsonData === null) {
@@ -195,7 +195,8 @@ export default class FindController {
             database = await initDatabase(instance.bibleKey, databasePath);
         } else {
             const databaseUtils = appProvider.databaseUtils;
-            database = databaseUtils.getSQLiteDatabaseInstance(databasePath);
+            database =
+                await databaseUtils.getSQLiteDatabaseInstance(databasePath);
         }
         if (database === null) {
             return null;

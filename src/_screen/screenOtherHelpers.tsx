@@ -3,12 +3,13 @@ import CountdownController from './managers/CountdownController';
 import { getHTMLChild } from '../helper/helpers';
 import ScreenManagerBase from './managers/ScreenManagerBase';
 
-const _alertTypeList = ['marquee', 'countdown', 'toast'] as const;
+const _alertTypeList = ['countdown', 'marquee', 'camera', 'toast'] as const;
 export type AlertType = (typeof _alertTypeList)[number];
 
 const classNameMapper = {
-    marquee: 'marquee-actor',
     countdown: 'countdown-actor',
+    marquee: 'marquee-actor',
+    camera: 'camera-actor',
     toast: 'toast-actor',
 };
 
@@ -173,4 +174,48 @@ export function checkIsCountdownDatesEq(
         return `${dateStr} ${timeStr}`;
     };
     return toString(date1) === toString(date2);
+}
+
+export function getAndShowMedia({
+    id,
+    width,
+    extraStyle,
+    container,
+}: {
+    container: HTMLElement;
+    width?: number;
+    extraStyle?: React.CSSProperties;
+    id: string;
+}) {
+    const constraints = {
+        audio: false,
+        video: { width },
+        id,
+    };
+
+    navigator.mediaDevices
+        .getUserMedia(constraints)
+        .then((mediaStream) => {
+            const video = document.createElement('video');
+            video.srcObject = mediaStream;
+            video.onloadedmetadata = () => {
+                video.play();
+            };
+            if (width !== undefined) {
+                video.style.width = `${width}px`;
+            }
+            Object.assign(video.style, extraStyle ?? {});
+            container.innerHTML = '';
+            container.appendChild(video);
+            return () => {
+                const tracks = mediaStream.getVideoTracks();
+                tracks.forEach((track) => {
+                    track.stop();
+                });
+            };
+        })
+        .catch((err) => {
+            // always check for errors at the end.
+            console.error(`${err.name}: ${err.message}`);
+        });
 }
