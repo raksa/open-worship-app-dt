@@ -30,7 +30,7 @@ export default function RenderExtraButtonsRightComp({
             {appProvider.isPagePresenter ? (
                 <div className="btn-group form-check form-switch">
                     <input
-                        className="form-check-input pointer"
+                        className="form-check-input app-caught-hover-pointer"
                         title="Keep window open when add bible item"
                         type="checkbox"
                         role="switch"

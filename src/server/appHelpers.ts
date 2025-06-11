@@ -66,7 +66,7 @@ export function tarExtract(filePath: string, outputDir: string) {
 }
 
 export function copyToClipboard(str: string) {
-    appProvider.browserUtils.copyToClipboard(str);
+    appProvider.systemUtils.copyToClipboard(str);
     showSimpleToast('Copy', 'Text has been copied to clip');
     return true;
 }

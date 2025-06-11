@@ -1,6 +1,5 @@
 import Slide, { SlideType } from './Slide';
 import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
-import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
 import { showAppDocumentContextMenu } from './appDocumentHelpers';
 import { AnyObjectType, checkIsSameValues, toMaxId } from '../helper/helpers';
 import { MimetypeNameType } from '../server/fileHelpers';
@@ -10,7 +9,10 @@ import EditingHistoryManager from '../others/EditingHistoryManager';
 import ItemSourceInf from '../others/ItemSourceInf';
 import { OptionalPromise } from '../others/otherHelpers';
 import { handleError } from '../helper/errorHelpers';
-import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
+import {
+    ContextMenuItemType,
+    showAppContextMenu,
+} from '../context-menu/appContextMenuHelpers';
 
 type AppDocumentMetadataType = {
     app: string;
@@ -272,7 +274,7 @@ export default class AppDocument
             slides.map((slide) => {
                 return (async () => {
                     const json = slide.toJson();
-                    if (await slide.checkIsWrongDimension(display)) {
+                    if (slide.checkIsWrongDimension(display)) {
                         json.metadata.width = display.bounds.width;
                         json.metadata.height = display.bounds.height;
                     }
@@ -296,7 +298,7 @@ export default class AppDocument
         const copiedSlides = await AppDocument.getCopiedSlides();
         showAppContextMenu(event, [
             {
-                menuTitle: 'New Slide',
+                menuElement: 'New Slide',
                 onSelect: () => {
                     this.addNewSlide();
                 },
@@ -304,7 +306,7 @@ export default class AppDocument
             ...(copiedSlides.length > 0
                 ? [
                       {
-                          menuTitle: 'Paste',
+                          menuElement: 'Paste',
                           onSelect: () => {
                               for (const copiedSlide of copiedSlides) {
                                   this.addSlide(copiedSlide);
@@ -356,7 +358,7 @@ export default class AppDocument
 
     static getInstance(filePath: string) {
         return this._getInstance(filePath, () => {
-            return new AppDocument(filePath);
+            return new this(filePath);
         });
     }
 

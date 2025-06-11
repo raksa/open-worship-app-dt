@@ -7,11 +7,16 @@ import { BibleItemRenderingType } from './bibleScreenComps';
 import bibleScreenHelper from './bibleScreenHelpers';
 import ScreenBibleManager from './managers/ScreenBibleManager';
 import { showAppAlert } from '../popup-widget/popupWidgetHelpers';
-import { getAllLocalBibleInfoList } from '../helper/bible-helpers/bibleDownloadHelpers';
-import { addToTheTop, BibleItemDataType } from './screenHelpers';
+import {
+    addPlayToBottom,
+    addToTheTop,
+    BibleItemDataType,
+} from './screenHelpers';
 import { getDisplayByScreenId } from './managers/screenHelpers';
 import { BibleItemType } from '../bible-list/bibleItemHelpers';
 import { cloneJson } from '../helper/helpers';
+import { elementDivider } from '../context-menu/AppContextMenuComp';
+import { genContextMenuBibleKeys } from '../bible-lookup/BibleSelectionComp';
 
 export type ScreenBibleManagerEventType = 'update' | 'text-style';
 
@@ -56,68 +61,67 @@ async function onBibleSelect(
 ) {
     const bibleRenderingList = bibleItemData.bibleItemData
         ?.renderedList as BibleItemRenderingType[];
-    const bibleItemingList = bibleRenderingList.map(({ bibleKey }) => {
+    const excludeBibleKeys = bibleRenderingList.map(({ bibleKey }) => {
         return bibleKey;
     });
-    const localBibleInfoList = await getAllLocalBibleInfoList();
-    if (localBibleInfoList === null) {
-        showAppAlert(
-            'Unable to get bible info list',
-            'We were sorry, but we are unable to get bible list at the moment' +
-                ' please try again later',
-        );
+    const handleBibleKeySelection = async (event1: any, bibleKey: string) => {
+        if (event1.shiftKey) {
+            excludeBibleKeys.push(bibleKey);
+        } else {
+            excludeBibleKeys[index] = bibleKey;
+        }
+        applyBibleItems(screenBibleManager, bibleItemData, excludeBibleKeys);
+    };
+    const bibleKeyMenuItems = await genContextMenuBibleKeys(
+        handleBibleKeySelection,
+        excludeBibleKeys,
+    );
+    if (bibleKeyMenuItems === null) {
         return;
     }
-    const bibleListFiltered = localBibleInfoList.filter((bibleInfo) => {
-        return !bibleItemingList.includes(bibleInfo.key);
-    });
-
     const menuItems: ContextMenuItemType[] = [
         ...(bibleRenderingList.length > 1
             ? [
                   {
-                      menuTitle:
-                          'Remove(' + bibleRenderingList[index].bibleKey + ')',
+                      childBefore: (
+                          <i className="bi bi-x-lg" style={{ color: 'red' }} />
+                      ),
+                      title: 'Remove',
+                      menuElement: (
+                          <span style={{ color: 'red' }}>
+                              {bibleRenderingList[index].bibleKey}
+                          </span>
+                      ),
                       onSelect: async () => {
-                          bibleItemingList.splice(index, 1);
+                          excludeBibleKeys.splice(index, 1);
                           applyBibleItems(
                               screenBibleManager,
                               bibleItemData,
-                              bibleItemingList,
+                              excludeBibleKeys,
                           );
                       },
-                      childAfter: (
-                          <i className="bi bi-x-lg" style={{ color: 'red' }} />
-                      ),
                   },
-              ]
-            : []),
-        ...(bibleListFiltered.length > 0
-            ? [
                   {
-                      menuTitle: 'Shift Click to Add',
-                      disabled: true,
+                      menuElement: elementDivider,
                   },
               ]
             : []),
-        ...bibleListFiltered.map((bibleInfo) => {
-            const bibleKey = bibleInfo.key;
-            return {
-                menuTitle: bibleKey,
-                onSelect: async (event1: any) => {
-                    if (event1.shiftKey) {
-                        bibleItemingList.push(bibleKey);
-                    } else {
-                        bibleItemingList[index] = bibleKey;
-                    }
-                    applyBibleItems(
-                        screenBibleManager,
-                        bibleItemData,
-                        bibleItemingList,
-                    );
-                },
-            };
-        }),
+        {
+            childBefore: (
+                <i
+                    className="bi bi-lightbulb"
+                    style={{
+                        color: 'var(--bs-info-text-emphasis)',
+                    }}
+                />
+            ),
+            menuElement: <span>`Shift Click to Add</span>,
+            disabled: true,
+        },
+        {
+            menuElement: elementDivider,
+        },
+        ...bibleKeyMenuItems,
     ];
     showAppContextMenu(event, menuItems);
 }
@@ -132,8 +136,9 @@ export async function renderScreenBibleManager(
     const screenViewData = screenBibleManager.screenViewData;
     if (screenViewData === null) {
         if (div.lastChild !== null) {
-            const targetDiv = div.lastChild as HTMLDivElement;
-            targetDiv.remove();
+            Array.from(div.children).forEach((child) => {
+                child.remove();
+            });
         }
         div.style.pointerEvents = 'none';
         return;
@@ -189,6 +194,7 @@ export async function renderScreenBibleManager(
     screenBibleManager.renderScroll(true);
     screenBibleManager.renderSelectedIndex();
     addToTheTop(div);
+    addPlayToBottom(div);
 }
 
 export async function bibleItemToScreenViewData(bibleItems: BibleItem[]) {

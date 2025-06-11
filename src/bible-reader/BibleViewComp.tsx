@@ -1,7 +1,7 @@
 import './BibleViewComp.scss';
 
-import { showAppContextMenu } from '../context-menu/AppContextMenuComp';
 import BibleItemsViewController, {
+    ReadIdOnlyBibleItem,
     useBibleItemsViewControllerContext,
 } from './BibleItemsViewController';
 import {
@@ -14,7 +14,6 @@ import { genDefaultBibleItemContextMenu } from '../bible-list/bibleItemHelpers';
 import ScrollingHandlerComp from '../scrolling/ScrollingHandlerComp';
 import RenderBibleEditingHeader from '../bible-lookup/RenderBibleEditingHeader';
 import RenderBibleLookupBodyComp from '../bible-lookup/RenderBibleLookupBodyComp';
-import BibleItem from '../bible-list/BibleItem';
 import { use } from 'react';
 import { EditingResultContext } from './LookupBibleItemController';
 import { useBibleViewFontSizeContext } from '../helper/bibleViewHelpers';
@@ -22,10 +21,11 @@ import {
     bringDomToNearestView,
     checkIsVerticalPartialInvisible,
 } from '../helper/helpers';
+import { showAppContextMenu } from '../context-menu/appContextMenuHelpers';
 
 function handMovedChecking(
     viewController: BibleItemsViewController,
-    bibleItem: BibleItem,
+    bibleItem: ReadIdOnlyBibleItem,
     container: HTMLElement,
     threshold: number,
 ) {
@@ -69,7 +69,7 @@ export default function BibleViewComp({
     bibleItem,
     isEditing = false,
 }: Readonly<{
-    bibleItem: BibleItem;
+    bibleItem: ReadIdOnlyBibleItem;
     isEditing?: boolean;
 }>) {
     const viewController = useBibleItemsViewControllerContext();
@@ -84,7 +84,7 @@ export default function BibleViewComp({
             id={`uuid-${uuid}`}
             className={
                 'bible-view card flex-fill w-100 h-100 app-top-hover-motion-0' +
-                (isEditing ? ' highlight-selected ' : '')
+                (isEditing ? ' app-highlight-selected ' : '')
             }
             style={{ minWidth: '30%' }}
             onDragOver={(event) => {
@@ -104,13 +104,21 @@ export default function BibleViewComp({
                 foundBibleItem === null
                     ? undefined
                     : async (event: any) => {
-                          showAppContextMenu(event, [
-                              ...genDefaultBibleItemContextMenu(foundBibleItem),
-                              ...(await viewController.genContextMenu(
-                                  foundBibleItem,
-                                  uuid,
-                              )),
-                          ]);
+                          showAppContextMenu(
+                              event,
+                              [
+                                  ...genDefaultBibleItemContextMenu(
+                                      foundBibleItem,
+                                  ),
+                                  ...(await viewController.genContextMenu(
+                                      foundBibleItem,
+                                      uuid,
+                                  )),
+                              ],
+                              {
+                                  shouldHandleSelectedText: true,
+                              },
+                          );
                       }
             }
         >
@@ -119,7 +127,12 @@ export default function BibleViewComp({
             ) : (
                 <RenderHeaderComp bibleItem={bibleItem} />
             )}
-            <div className="card-body app-top-hover-motion-1">
+            <div
+                className="card-body app-top-hover-motion-1"
+                style={{
+                    paddingBottom: '60px',
+                }}
+            >
                 {isEditing ? (
                     <RenderBibleLookupBodyComp />
                 ) : (

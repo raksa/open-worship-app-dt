@@ -3,6 +3,7 @@ import './PresenterComp.scss';
 import { lazy } from 'react';
 
 import {
+    useBibleItemShowing,
     useLyricSelecting,
     useVaryAppDocumentSelecting,
 } from '../event/PreviewingEventListener';
@@ -24,9 +25,15 @@ const LazyPresenterOthersControllerComp = lazy(() => {
 });
 
 const PRESENT_TAB_SETTING_NAME = 'presenter-tab';
+
 export function getIsShowingVaryAppDocumentPreviewer() {
     return getSetting(PRESENT_TAB_SETTING_NAME) === 'd';
 }
+
+export function getIsShowingLyricPreviewer() {
+    return getSetting(PRESENT_TAB_SETTING_NAME) === 'l';
+}
+
 export function getIsShowingBiblePreviewer() {
     return getSetting(PRESENT_TAB_SETTING_NAME) === 'f';
 }
@@ -44,6 +51,7 @@ export default function PresenterComp() {
         'd',
     );
     useLyricSelecting(() => setTabType('l'), []);
+    useBibleItemShowing(() => setTabType('b'), []);
     useVaryAppDocumentSelecting(() => setTabType('d'));
     useAppDocumentItemSelecting(() => setTabType('d'));
     return (

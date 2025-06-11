@@ -42,6 +42,8 @@ import { getSetting, setSetting } from '../helper/settingHelpers';
 import PdfSlide, { PdfSlideType } from './PdfSlide';
 import { OptionalPromise } from '../others/otherHelpers';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
+import { useScreenVaryAppDocumentManagerEvents } from '../_screen/managers/screenEventHelpers';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
 export const MIN_THUMBNAIL_SCALE = 1;
 export const THUMBNAIL_SCALE_STEP = 1;
@@ -90,14 +92,14 @@ export function showAppDocumentContextMenu(
     });
     const menuItems: ContextMenuItemType[] = [
         {
-            menuTitle: 'Copy',
+            menuElement: 'Copy',
             onSelect: async () => {
                 navigator.clipboard.writeText(slide.clipboardSerialize());
                 showSimpleToast('Copied', 'Slide is copied');
             },
         },
         {
-            menuTitle: 'Duplicate',
+            menuElement: 'Duplicate',
             onSelect: () => {
                 appDocument.duplicateSlide(slide);
             },
@@ -105,7 +107,7 @@ export function showAppDocumentContextMenu(
         ...(appProvider.isPagePresenter
             ? [
                   {
-                      menuTitle: 'Quick Edit',
+                      menuElement: 'Quick Edit',
                       onSelect: () => {
                           if (appProvider.isPageEditor) {
                               AppDocumentListEventListener.selectAppDocumentItem(
@@ -120,7 +122,7 @@ export function showAppDocumentContextMenu(
             : []),
         ...menuItemOnScreens,
         {
-            menuTitle: 'Delete',
+            menuElement: 'Delete',
             onSelect: () => {
                 appDocument.deleteSlide(slide);
             },
@@ -290,7 +292,7 @@ export async function selectSlide(event: any, currentFilePath: string) {
             })
             .map((filePath) => {
                 return {
-                    menuTitle: pathBasename(filePath),
+                    menuElement: pathBasename(filePath),
                     title: filePath,
                     onSelect: () => {
                         const appDocument = AppDocument.getInstance(filePath);
@@ -312,7 +314,7 @@ export const SelectedVaryAppDocumentContext = createContext<{
 function useContext() {
     const context = use(SelectedVaryAppDocumentContext);
     if (context === null) {
-        throw new Error('useSelectedSlide must be used within a SlideProvider');
+        throw new Error('No SelectedVaryAppDocumentContext found');
     }
     return context;
 }
@@ -501,4 +503,26 @@ export function varyAppDocumentFromFilePath(filePath: string) {
         return PdfAppDocument.getInstance(filePath);
     }
     return AppDocument.getInstance(filePath);
+}
+
+export function useAnyItemSelected(
+    varyAppDocumentItems?: VaryAppDocumentItemType[] | null,
+) {
+    const [isAnyItemSelected, setIsAnyItemSelected] = useState(false);
+    const refresh = () => {
+        if (!varyAppDocumentItems || varyAppDocumentItems.length === 0) {
+            return;
+        }
+        const isSelected = varyAppDocumentItems.some((varyAppDocumentItem) => {
+            const dataList = ScreenVaryAppDocumentManager.getDataList(
+                varyAppDocumentItem.filePath,
+                varyAppDocumentItem.id,
+            );
+            return dataList.length > 0;
+        });
+        setIsAnyItemSelected(isSelected);
+    };
+    useScreenVaryAppDocumentManagerEvents(['update'], undefined, refresh);
+    useAppEffect(refresh, [varyAppDocumentItems]);
+    return isAnyItemSelected;
 }

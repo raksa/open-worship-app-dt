@@ -1,96 +1,110 @@
 import { VAlignmentType, HAlignmentType } from '../canvasHelpers';
 
+type AlignmentDataType = {
+    verticalAlignment?: VAlignmentType;
+    horizontalAlignment?: HAlignmentType;
+};
+
+function RendElementComp({
+    iconClassname,
+    dataKey,
+    value,
+    data = {},
+    onData,
+}: Readonly<{
+    iconClassname: string;
+    dataKey: string;
+    value: string;
+    data?: { [key: string]: string };
+    onData: (data: { [key: string]: string }) => void;
+}>) {
+    const isOld = data[dataKey] === value;
+    return (
+        <button
+            className={`btn btn-${isOld ? '' : 'outline-'}info`}
+            disabled={isOld}
+            onClick={() => {
+                onData({ [dataKey]: value });
+            }}
+        >
+            <i className={'bi ' + iconClassname} />
+        </button>
+    );
+}
+
+function genElements({
+    elements,
+    dataKey,
+    data,
+    onData,
+}: Readonly<{
+    elements: [string, string][];
+    dataKey: string;
+    data: AlignmentDataType;
+    onData: (data: AlignmentDataType) => void;
+}>) {
+    return elements.map(([iconClassname, value]) => {
+        return (
+            <RendElementComp
+                key={iconClassname}
+                iconClassname={iconClassname}
+                dataKey={dataKey}
+                value={value}
+                data={data}
+                onData={onData}
+            />
+        );
+    });
+}
+
 export default function SlideEditorToolAlignComp({
     onData,
+    data,
     isText,
 }: Readonly<{
-    onData: (data: {
-        verticalAlignment?: VAlignmentType;
-        horizontalAlignment?: HAlignmentType;
-    }) => void;
+    data?: AlignmentDataType;
+    onData: (data: AlignmentDataType) => void;
     isText?: boolean;
 }>) {
     return (
         <div className="d-flex">
             <div className="app-border-white-round">
-                <button
-                    className="btn btn-info"
-                    onClick={() => {
-                        onData({ verticalAlignment: 'start' });
-                    }}
-                >
-                    <i className="bi bi-align-top" />
-                </button>
-                <button
-                    className="btn btn-info"
-                    onClick={() => {
-                        onData({ verticalAlignment: 'center' });
-                    }}
-                >
-                    <i className="bi bi-align-middle" />
-                </button>
-                <button
-                    className="btn btn-info"
-                    onClick={() => {
-                        onData({ verticalAlignment: 'end' });
-                    }}
-                >
-                    <i className="bi bi-align-bottom" />
-                </button>
+                {genElements({
+                    elements: [
+                        ['bi-align-top', 'start'],
+                        ['bi-align-middle', 'center'],
+                        ['bi-align-bottom', 'end'],
+                    ],
+                    dataKey: 'verticalAlignment',
+                    data: data ?? {},
+                    onData,
+                })}
             </div>
             {isText ? (
                 <div className="app-border-white-round">
-                    <button
-                        className="btn btn-info"
-                        onClick={() => {
-                            onData({ horizontalAlignment: 'left' });
-                        }}
-                    >
-                        <i className="bi bi-text-left" />
-                    </button>
-                    <button
-                        className="btn btn-info"
-                        onClick={() => {
-                            onData({ horizontalAlignment: 'center' });
-                        }}
-                    >
-                        <i className="bi bi-text-center" />
-                    </button>
-                    <button
-                        className="btn btn-info"
-                        onClick={() => {
-                            onData({ horizontalAlignment: 'right' });
-                        }}
-                    >
-                        <i className="bi bi-text-right" />
-                    </button>
+                    {genElements({
+                        elements: [
+                            ['bi-text-left', 'left'],
+                            ['bi-text-center', 'center'],
+                            ['bi-text-right', 'right'],
+                        ],
+                        dataKey: 'horizontalAlignment',
+                        data: data ?? {},
+                        onData,
+                    })}
                 </div>
             ) : (
                 <div className="app-border-white-round">
-                    <button
-                        className="btn btn-info"
-                        onClick={() => {
-                            onData({ horizontalAlignment: 'left' });
-                        }}
-                    >
-                        <i className="bi bi-align-start" />
-                    </button>
-                    <button
-                        className="btn btn-info"
-                        onClick={() => {
-                            onData({ horizontalAlignment: 'center' });
-                        }}
-                    >
-                        <i className="bi bi-align-center" />
-                    </button>
-                    <button
-                        className="btn btn-info"
-                        onClick={() => {
-                            onData({ horizontalAlignment: 'right' });
-                        }}
-                    >
-                        <i className="bi bi-align-end" />
-                    </button>
+                    {genElements({
+                        elements: [
+                            ['bi-align-start', 'left'],
+                            ['bi-align-center', 'center'],
+                            ['bi-align-end', 'right'],
+                        ],
+                        dataKey: 'horizontalAlignment',
+                        data: data ?? {},
+                        onData,
+                    })}
                 </div>
             )}
         </div>

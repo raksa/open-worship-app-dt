@@ -35,6 +35,7 @@ export function initNewScreenManager(screenId: number) {
     });
     if (instanceSetting) {
         screenManager._isSelected = instanceSetting.isSelected;
+        screenManager._isLocked = instanceSetting.isLocked;
         screenManager.colorNote = instanceSetting.colorNote;
     }
     return screenManager;
@@ -60,7 +61,7 @@ export function genNewScreenManagerBase() {
         newScreenId++;
     }
     createScreenManager(newScreenId);
-    ScreenManager.fireInstanceEvent();
+    ScreenManagerBase.fireInstanceEvent();
 }
 
 export function getScreenManagersFromSetting() {

@@ -38,27 +38,31 @@ export default class AttachBackgroundManager {
         return data;
     }
 
+    toKey(id?: string) {
+        return id ?? 'self';
+    }
+
     public async getAttachedBackground(
         filePath: string,
-        id: string,
+        id?: string,
     ): Promise<DroppedDataType | null> {
         const data = await this.getAttachedBackgrounds(filePath);
-        return data[id] ?? null;
+        return data[this.toKey(id)] ?? null;
     }
 
     public async attachDroppedBackground(
         droppedData: DroppedDataType,
         filePath: string,
-        id: string,
+        id?: string,
     ) {
         const data = await this.getAttachedBackgrounds(filePath);
-        data[id] = droppedData;
+        data[this.toKey(id)] = droppedData;
         await AttachBackgroundManager.saveData(filePath, data);
     }
 
-    public async detachBackground(filePath: string, id: string) {
+    public async detachBackground(filePath: string, id?: string) {
         const data = await this.getAttachedBackgrounds(filePath);
-        delete data[id];
+        delete data[this.toKey(id)];
         await AttachBackgroundManager.saveData(filePath, data);
     }
 

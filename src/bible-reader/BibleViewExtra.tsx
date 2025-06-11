@@ -1,6 +1,5 @@
 import React, { createContext, use, useMemo } from 'react';
 
-import BibleItem from '../bible-list/BibleItem';
 import { BibleSelectionMiniComp } from '../bible-lookup/BibleSelectionComp';
 import {
     BIBLE_VIEW_TEXT_CLASS,
@@ -10,8 +9,11 @@ import {
 } from '../helper/bibleViewHelpers';
 import ItemColorNoteComp from '../others/ItemColorNoteComp';
 import ColorNoteInf from '../helper/ColorNoteInf';
-import { useBibleItemsViewControllerContext } from './BibleItemsViewController';
-import { BIBLE_VERSE_TEXT_TITLE } from '../helper/helpers';
+import {
+    ReadIdOnlyBibleItem,
+    useBibleItemsViewControllerContext,
+} from './BibleItemsViewController';
+import { BIBLE_VERSE_TEXT_TITLE, getSelectedText } from '../helper/helpers';
 import {
     BibleTargetType,
     CompiledVerseType,
@@ -43,7 +45,7 @@ export function RenderTitleMaterialComp({
     bibleItem,
     onBibleKeyChange,
 }: Readonly<{
-    bibleItem: BibleItem;
+    bibleItem: ReadIdOnlyBibleItem;
     onBibleKeyChange?: (oldBibleKey: string, newBibleKey: string) => void;
 }>) {
     const viewController = useBibleItemsViewControllerContext();
@@ -81,7 +83,7 @@ export function RenderTitleMaterialComp({
 
 export function RenderHeaderComp({
     bibleItem,
-}: Readonly<{ bibleItem: BibleItem }>) {
+}: Readonly<{ bibleItem: ReadIdOnlyBibleItem }>) {
     const viewController = useBibleItemsViewControllerContext();
     const fontSize = useBibleViewFontSizeContext();
     return (
@@ -117,7 +119,7 @@ export function RenderHeaderComp({
 
 export function BibleDirectViewTitleComp({
     bibleItem,
-}: Readonly<{ bibleItem: BibleItem }>) {
+}: Readonly<{ bibleItem: ReadIdOnlyBibleItem }>) {
     const [title] = useAppStateAsync(() => {
         return bibleItem.toTitle();
     }, [bibleItem.bibleKey, bibleItem.target]);
@@ -150,7 +152,7 @@ export function BibleViewTitleEditingComp({
     onTargetChange,
     children,
 }: Readonly<{
-    bibleItem: BibleItem;
+    bibleItem: ReadIdOnlyBibleItem;
     onTargetChange: (bibleTarget: BibleTargetType) => void;
     children?: React.ReactNode;
 }>) {
@@ -170,7 +172,7 @@ function RenderVerseTextComp({
     verseInfo,
     index,
 }: Readonly<{
-    bibleItem: BibleItem;
+    bibleItem: ReadIdOnlyBibleItem;
     verseInfo: CompiledVerseType;
     index: number;
 }>) {
@@ -182,7 +184,19 @@ function RenderVerseTextComp({
             index > 0 ? (
                 <br />
             ) : null}
-            <div className="verse-number">
+            <div
+                className="verse-number app-caught-hover-pointer"
+                title={verseInfo.verse.toString()}
+                onClick={() => {
+                    viewController.applyTargetOrBibleKey(bibleItem, {
+                        target: {
+                            ...bibleItem.target,
+                            verseStart: verseInfo.verse,
+                            verseEnd: verseInfo.verse,
+                        },
+                    });
+                }}
+            >
                 <div data-bible-key={verseInfo.bibleKey}>
                     {verseInfo.isNewLine ? (
                         <span className="verse-number-text">&nbsp;&nbsp;</span>
@@ -197,6 +211,9 @@ function RenderVerseTextComp({
                 data-verse-key={verseInfo.bibleVersesKey}
                 title={BIBLE_VERSE_TEXT_TITLE}
                 onClick={(event) => {
+                    if (getSelectedText()) {
+                        return;
+                    }
                     viewController.handleVersesSelecting(
                         event.currentTarget,
                         event.altKey,
@@ -230,11 +247,15 @@ function RenderRestVerseNumListComp({
     from,
     bibleItem,
     verseCount,
+    onClick,
+    toTitle,
 }: Readonly<{
     to?: number;
     from?: number;
-    bibleItem: BibleItem;
+    bibleItem: ReadIdOnlyBibleItem;
     verseCount: number;
+    onClick: (verse: number) => void;
+    toTitle: (verse: number) => string;
 }>) {
     const fontSize = useBibleViewFontSizeContext();
     const actualFrom = from ?? 1;
@@ -261,14 +282,20 @@ function RenderRestVerseNumListComp({
             {from !== undefined ? <br /> : null}
             {numList.map((verse, i) => {
                 return (
-                    <div key={verse} className="verse-number">
+                    <div
+                        key={verse}
+                        className="verse-number app-caught-hover-pointer"
+                        title={toTitle(verse)}
+                        onClick={() => {
+                            onClick(verse);
+                        }}
+                    >
                         <div
                             className="verse-number-rest app-not-selectable-text"
                             style={{
                                 fontSize: `${fontSize * 0.7}px`,
                             }}
                             data-bible-key={bibleItem.bibleKey}
-                            title={verse.toString()}
                         >
                             {localeVerseList[i]}
                         </div>
@@ -282,9 +309,10 @@ function RenderRestVerseNumListComp({
 
 export function BibleViewTextComp({
     bibleItem,
-}: Readonly<{ bibleItem: BibleItem }>) {
+}: Readonly<{ bibleItem: ReadIdOnlyBibleItem }>) {
     const { bibleKey, target } = bibleItem;
     const fontSize = useBibleViewFontSizeContext();
+    const viewController = useBibleItemsViewControllerContext();
     const [verseList] = useAppStateAsync(() => {
         return bibleItem.toVerseTextList();
     }, [bibleItem.bibleKey, bibleItem.target]);
@@ -307,6 +335,14 @@ export function BibleViewTextComp({
                 to={target.verseStart - 1}
                 bibleItem={bibleItem}
                 verseCount={verseCount}
+                onClick={(verse) => {
+                    viewController.applyTargetOrBibleKey(bibleItem, {
+                        target: { ...bibleItem.target, verseStart: verse },
+                    });
+                }}
+                toTitle={(verse) => {
+                    return `${verse}-${target.verseStart}`;
+                }}
             />
             {verseList.map((verseInfo, i) => {
                 return (
@@ -322,6 +358,14 @@ export function BibleViewTextComp({
                 from={target.verseEnd + 1}
                 bibleItem={bibleItem}
                 verseCount={verseCount}
+                onClick={(verse) => {
+                    viewController.applyTargetOrBibleKey(bibleItem, {
+                        target: { ...bibleItem.target, verseEnd: verse },
+                    });
+                }}
+                toTitle={(verse) => {
+                    return `${target.verseStart}-${verse}`;
+                }}
             />
         </div>
     );

@@ -2,7 +2,7 @@ import EventHandler from '../../event/EventHandler';
 import { DroppedDataType } from '../../helper/DragInf';
 import { getWindowDim } from '../../helper/helpers';
 import { setSetting } from '../../helper/settingHelpers';
-import ScreenAlertManager from './ScreenAlertManager';
+import ScreenOtherManager from './ScreenOtherManager';
 import ScreenBackgroundManager from './ScreenBackgroundManager';
 import ScreenBibleManager from './ScreenBibleManager';
 import {
@@ -21,6 +21,7 @@ import {
     SCREEN_MANAGER_SETTING_NAME,
 } from './screenHelpers';
 import appProvider from '../../server/appProvider';
+import { showSimpleToast } from '../../toast/toastHelpers';
 
 export type ScreenManagerEventType =
     | 'instance'
@@ -39,6 +40,7 @@ export default class ScreenManagerBase
     width = 1;
     height = 1;
     _isSelected: boolean = false;
+    _isLocked: boolean = false;
     colorNote: string | null = null;
     private _isShowing: boolean;
     noSyncGroupMap: Map<string, boolean>;
@@ -58,6 +60,14 @@ export default class ScreenManagerBase
         return this.screenId.toString();
     }
 
+    static idFromKey(key: string): number {
+        const id = parseInt(key, 10);
+        if (isNaN(id)) {
+            throw new Error(`Invalid screen key: ${key}`);
+        }
+        return id;
+    }
+
     get displayId() {
         return getDisplayIdByScreenId(this.screenId);
     }
@@ -74,8 +84,27 @@ export default class ScreenManagerBase
         this._isSelected = isSelected;
     }
 
+    get isLocked() {
+        return appProvider.isPagePresenter && this._isLocked;
+    }
+
+    set isLocked(isLocked: boolean) {
+        this._isLocked = isLocked;
+    }
+
     get isShowing() {
         return this._isShowing;
+    }
+
+    checkIsLockedWithMessage() {
+        if (this.isLocked) {
+            showSimpleToast(
+                'Screen Manager is locked',
+                'Please unlock the screen manager to change the app document',
+            );
+            return true;
+        }
+        return false;
     }
 
     updateDim() {
@@ -94,7 +123,7 @@ export default class ScreenManagerBase
         ScreenBackgroundManager.enableSyncGroup(this.screenId);
         ScreenVaryAppDocumentManager.enableSyncGroup(this.screenId);
         ScreenBibleManager.enableSyncGroup(this.screenId);
-        ScreenAlertManager.enableSyncGroup(this.screenId);
+        ScreenOtherManager.enableSyncGroup(this.screenId);
         this.sendSyncScreen();
     }
 

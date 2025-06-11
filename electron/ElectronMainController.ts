@@ -3,7 +3,7 @@ import { BrowserWindow, Menu, MenuItem, shell } from 'electron';
 import { channels, ScreenMessageType } from './electronEventListener';
 import { genRoutProps } from './protocolHelpers';
 import ElectronSettingController from './ElectronSettingController';
-import { isSecured } from './electronHelpers';
+import { attemptClosing, isSecured } from './electronHelpers';
 
 let instance: ElectronMainController | null = null;
 export default class ElectronMainController {
@@ -63,7 +63,7 @@ export default class ElectronMainController {
     }
 
     close() {
-        this.win.close();
+        attemptClosing(this.win);
         process.exit(0);
     }
 

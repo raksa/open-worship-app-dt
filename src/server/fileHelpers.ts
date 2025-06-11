@@ -7,6 +7,7 @@ import { handleError } from '../helper/errorHelpers';
 
 import mimeBibleList from './mime/bible-types.json';
 import mimeLyricList from './mime/lyric-types.json';
+import mimeMarkdownList from './mime/markdown-types.json';
 import mimeSlideList from './mime/slide-types.json';
 import mimeImageList from './mime/image-types.json';
 import mimePlaylistList from './mime/playlist-types.json';
@@ -21,6 +22,7 @@ import { cloneJson, freezeObject } from '../helper/helpers';
 
 freezeObject(mimeBibleList);
 freezeObject(mimeLyricList);
+freezeObject(mimeMarkdownList);
 freezeObject(mimeSlideList);
 freezeObject(mimeImageList);
 freezeObject(mimePlaylistList);
@@ -55,6 +57,7 @@ const appExtensions = _mimeTypes.reduce((acc: string[], cur) => {
 const mimeTypesMapper = {
     bible: mimeBibleList,
     lyric: mimeLyricList,
+    markdown: mimeMarkdownList,
     slide: mimeSlideList,
     pdf: [mimetypePdf],
     image: mimeImageList,
@@ -128,6 +131,7 @@ export const mimetypeNameTypeList = [
     'pdf',
     'playlist',
     'lyric',
+    'markdown',
     'bible',
     'other',
 ] as const;

@@ -23,12 +23,15 @@ import {
 import { getLangAsync } from '../lang';
 import { getBibleLocale } from '../helper/bible-helpers/serverBibleHelpers2';
 import { BibleTargetType } from '../bible-list/bibleRenderHelpers';
-import { genContextMenuItemIcon } from '../context-menu/AppContextMenuComp';
+import {
+    elementDivider,
+    genContextMenuItemIcon,
+} from '../context-menu/AppContextMenuComp';
 
 export type UpdateEventType = 'update';
 export const RESIZE_SETTING_NAME = 'bible-previewer-render';
 
-export type NestedBibleItemsType = BibleItem | NestedBibleItemsType[];
+export type NestedBibleItemsType = ReadIdOnlyBibleItem | NestedBibleItemsType[];
 export type NestedObjectsType = BibleItemType | NestedObjectsType[];
 
 export const splitHorizontalId = 'split-horizontal';
@@ -63,7 +66,18 @@ export function attemptAddingHistory(
     });
 }
 
-function toStraightItems(nestedBibleItems: NestedBibleItemsType): BibleItem[] {
+export class ReadIdOnlyBibleItem extends BibleItem {
+    get id() {
+        return super.id;
+    }
+    set id(_id: number) {
+        throw new Error('ReadOnlyBibleItem: id cannot be set');
+    }
+}
+
+function toStraightItems(
+    nestedBibleItems: NestedBibleItemsType,
+): ReadIdOnlyBibleItem[] {
     const traverse = (items: any): any => {
         if (items instanceof Array) {
             return items.flatMap((item) => {
@@ -72,7 +86,7 @@ function toStraightItems(nestedBibleItems: NestedBibleItemsType): BibleItem[] {
         }
         return [items];
     };
-    const allBibleItems: BibleItem[] = traverse(nestedBibleItems);
+    const allBibleItems: ReadIdOnlyBibleItem[] = traverse(nestedBibleItems);
     return allBibleItems;
 }
 
@@ -84,7 +98,7 @@ function deepSanitizeNestedItems(nestedBibleItems: NestedBibleItemsType): {
     if (nestedBibleItems instanceof Array) {
         if (
             nestedBibleItems.length === 1 &&
-            nestedBibleItems[0] instanceof BibleItem
+            nestedBibleItems[0] instanceof ReadIdOnlyBibleItem
         ) {
             return {
                 nestedBibleItems: nestedBibleItems[0],
@@ -119,7 +133,7 @@ export function sanitizeNestedItems(nestedBibleItems: NestedBibleItemsType) {
         }
         break;
     }
-    if (nestedBibleItems instanceof BibleItem) {
+    if (nestedBibleItems instanceof ReadIdOnlyBibleItem) {
         nestedBibleItems = [nestedBibleItems];
     }
     return [...nestedBibleItems];
@@ -202,7 +216,7 @@ function getFirstBibleItemAtIndex(
     index: number,
     isOrientation: boolean,
     isGoBack: boolean,
-): BibleItem | null {
+): ReadIdOnlyBibleItem | null {
     if (nestedBibleItems instanceof Array) {
         if (index < 0) {
             index = nestedBibleItems.length - 1;
@@ -210,7 +224,7 @@ function getFirstBibleItemAtIndex(
             index = 0;
         }
         const target = nestedBibleItems[index];
-        if (target instanceof BibleItem) {
+        if (target instanceof ReadIdOnlyBibleItem) {
             return target;
         } else {
             return getFirstBibleItemAtIndex(
@@ -278,8 +292,8 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
         }
         return '';
     }
-    bibleItemFromJson(json: any): BibleItem {
-        return BibleItem.fromJson(json);
+    bibleItemFromJson(json: any): ReadIdOnlyBibleItem {
+        return ReadIdOnlyBibleItem.fromJson(json);
     }
     parseNestedBibleItem(json: any): NestedBibleItemsType {
         if (json instanceof Array) {
@@ -300,7 +314,7 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
                     }),
                 ).size
             ) {
-                throw new Error('Duplicate BibleItem ID found');
+                throw new Error('Duplicate ReadOnlyBibleItem ID found');
             }
             return nestedBibleItems;
         }
@@ -335,10 +349,10 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
     get isAlone() {
         return this.straightBibleItems.length < 2;
     }
-    getColorNote(bibleItem: BibleItem) {
+    getColorNote(bibleItem: ReadIdOnlyBibleItem) {
         return this.colorNoteMap[bibleItem.id] ?? '';
     }
-    _setColorNote(bibleItem: BibleItem, color: string | null) {
+    _setColorNote(bibleItem: ReadIdOnlyBibleItem, color: string | null) {
         const colorNoteMap = this.colorNoteMap;
         if (!color) {
             delete colorNoteMap[bibleItem.id];
@@ -355,7 +369,7 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
         }
         this.colorNoteMap = colorNoteMap;
     }
-    setColorNote(bibleItem: BibleItem, color: string | null) {
+    setColorNote(bibleItem: ReadIdOnlyBibleItem, color: string | null) {
         this._setColorNote(bibleItem, color);
         this.syncTargetByColorNote(bibleItem);
     }
@@ -372,7 +386,7 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
         return `${BIBLE_ITEMS_PREVIEW_SETTING}${this._settingNameSuffix}${suffixSettingName}`;
     }
 
-    finalRenderer(_bibleItem: BibleItem): ReactNode {
+    finalRenderer(_bibleItem: ReadIdOnlyBibleItem): ReactNode {
         throw new Error(
             'Method not implemented. You need to implement finalRenderer method',
         );
@@ -386,19 +400,19 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
         this.addPropEvent('update');
     }
     getNeighborBibleItems(
-        bibleItem: BibleItem,
+        bibleItem: ReadIdOnlyBibleItem,
         positions: MovingPositionType[],
     ): {
-        left: BibleItem | null;
-        right: BibleItem | null;
-        top: BibleItem | null;
-        bottom: BibleItem | null;
+        left: ReadIdOnlyBibleItem | null;
+        right: ReadIdOnlyBibleItem | null;
+        top: ReadIdOnlyBibleItem | null;
+        bottom: ReadIdOnlyBibleItem | null;
     } {
         const seekNeighbor = (
             nestedBibleItems: NestedBibleItemsType,
             targetNestedBibleItem: NestedBibleItemsType,
             position: MovingPositionType,
-        ): BibleItem | null => {
+        ): ReadIdOnlyBibleItem | null => {
             if (!positions.includes(position)) {
                 return null;
             }
@@ -447,7 +461,7 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
         };
     }
     seek(
-        bibleItem: BibleItem,
+        bibleItem: ReadIdOnlyBibleItem,
         toastTitle: string = 'Seek Item',
         toastMessage: string = 'Unable to seek bible item',
     ) {
@@ -471,7 +485,7 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
         };
     }
     applyTargetOrBibleKey(
-        bibleItem: BibleItem,
+        bibleItem: ReadIdOnlyBibleItem,
         { target, bibleKey }: { target?: BibleTargetType; bibleKey?: string },
         isSkipColorSync = false,
     ) {
@@ -482,7 +496,9 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
                     'Change Item',
                     'Unable to change bible item',
                 );
-            const actualBibleItem = parentNestedBibleItems[index] as BibleItem;
+            const actualBibleItem = parentNestedBibleItems[
+                index
+            ] as ReadIdOnlyBibleItem;
             if (bibleKey !== undefined) {
                 bibleItem.bibleKey = bibleKey;
                 actualBibleItem.bibleKey = bibleKey;
@@ -500,7 +516,7 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
         }
     }
 
-    deleteBibleItem(bibleItem: BibleItem) {
+    deleteBibleItem(bibleItem: ReadIdOnlyBibleItem) {
         try {
             const { nestedBibleItems, parentNestedBibleItems, index } =
                 this.seek(
@@ -516,16 +532,18 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
     }
 
     addBibleItem(
-        bibleItem: BibleItem | null,
-        newBibleItem: BibleItem,
+        bibleItem: ReadIdOnlyBibleItem | null,
+        newBibleItem: ReadIdOnlyBibleItem,
         isHorizontal: boolean,
         isBefore: boolean,
         isNoColorNote: boolean,
     ) {
         const sourceColor =
             bibleItem === null ? null : this.getColorNote(bibleItem);
-        newBibleItem = newBibleItem.clone();
-        newBibleItem.id = this.genBibleItemUniqueId();
+        newBibleItem = ReadIdOnlyBibleItem.fromJson({
+            ...newBibleItem.toJson(),
+            id: this.genBibleItemUniqueId(),
+        });
         if (bibleItem === null) {
             this.nestedBibleItems = [newBibleItem];
             return;
@@ -560,53 +578,58 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
         }
     }
     addBibleItemLeft(
-        bibleItem: BibleItem,
-        newBibleItem: BibleItem,
+        bibleItem: ReadIdOnlyBibleItem,
+        newBibleItem: ReadIdOnlyBibleItem,
         isNoColorNote = false,
     ) {
         this.addBibleItem(bibleItem, newBibleItem, true, true, isNoColorNote);
     }
     addBibleItemRight(
-        bibleItem: BibleItem,
-        newBibleItem: BibleItem,
+        bibleItem: ReadIdOnlyBibleItem,
+        newBibleItem: ReadIdOnlyBibleItem,
         isNoColorNote = false,
     ) {
         this.addBibleItem(bibleItem, newBibleItem, true, false, isNoColorNote);
     }
     addBibleItemTop(
-        bibleItem: BibleItem,
-        newBibleItem: BibleItem,
+        bibleItem: ReadIdOnlyBibleItem,
+        newBibleItem: ReadIdOnlyBibleItem,
         isNoColorNote = false,
     ) {
         this.addBibleItem(bibleItem, newBibleItem, false, true, isNoColorNote);
     }
     addBibleItemBottom(
-        bibleItem: BibleItem,
-        newBibleItem: BibleItem,
+        bibleItem: ReadIdOnlyBibleItem,
+        newBibleItem: ReadIdOnlyBibleItem,
         isNoColorNote = false,
     ) {
         this.addBibleItem(bibleItem, newBibleItem, false, false, isNoColorNote);
     }
     async genContextMenu(
-        bibleItem: BibleItem,
+        bibleItem: ReadIdOnlyBibleItem,
         uuid: string,
     ): Promise<ContextMenuItemType[]> {
         const locale = await getBibleLocale(bibleItem.bibleKey);
         const langData = await getLangAsync(locale);
         return [
             {
+                menuElement: elementDivider,
+            },
+            {
                 childBefore: genContextMenuItemIcon('vr'),
-                menuTitle: '`Split Horizontal',
+                menuElement: '`Split Horizontal',
                 onSelect: () => {
                     this.addBibleItemLeft(bibleItem, bibleItem);
                 },
                 id: splitHorizontalId,
             },
             {
-                menuTitle: 'Split Horizontal To',
+                menuElement: 'Split Horizontal To',
                 onSelect: (event1: any) => {
-                    showBibleOption(event1, [], (newBibleKey: string) => {
-                        const newBibleItem = bibleItem.clone();
+                    showBibleOption(event1, (newBibleKey: string) => {
+                        const newBibleItem = ReadIdOnlyBibleItem.fromJson(
+                            bibleItem.toJson(),
+                        );
                         newBibleItem.bibleKey = newBibleKey;
                         this.addBibleItemLeft(bibleItem, newBibleItem);
                     });
@@ -614,17 +637,19 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
             },
             {
                 childBefore: genContextMenuItemIcon('hr'),
-                menuTitle: 'Split Vertical',
+                menuElement: 'Split Vertical',
                 onSelect: () => {
                     this.addBibleItemBottom(bibleItem, bibleItem);
                 },
                 id: splitVerticalId,
             },
             {
-                menuTitle: 'Split Vertical To',
+                menuElement: 'Split Vertical To',
                 onSelect: (event2: any) => {
-                    showBibleOption(event2, [], (newBibleKey: string) => {
-                        const newBibleItem = bibleItem.clone();
+                    showBibleOption(event2, (newBibleKey: string) => {
+                        const newBibleItem = ReadIdOnlyBibleItem.fromJson(
+                            bibleItem.toJson(),
+                        );
                         newBibleItem.bibleKey = newBibleKey;
                         this.addBibleItemBottom(bibleItem, newBibleItem);
                     });
@@ -635,7 +660,7 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
                 : []),
             {
                 childBefore: genContextMenuItemIcon('arrows-fullscreen'),
-                menuTitle: 'Toggle Widget Full View',
+                menuElement: 'Toggle Widget Full View',
                 onSelect: () => {
                     document
                         .querySelector(
@@ -646,9 +671,11 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
             },
         ];
     }
-    appendBibleItem(bibleItem: BibleItem) {
-        const newBibleItem = bibleItem.clone();
-        newBibleItem.id = this.genBibleItemUniqueId();
+    appendBibleItem(bibleItem: ReadIdOnlyBibleItem) {
+        const newBibleItem = ReadIdOnlyBibleItem.fromJson({
+            ...bibleItem.toJson(),
+            id: this.genBibleItemUniqueId(),
+        });
         let nestedBibleItems = this.nestedBibleItems;
         if (!(nestedBibleItems instanceof Array)) {
             nestedBibleItems = [nestedBibleItems];
@@ -677,7 +704,7 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
         );
     }
     syncBibleVerseSelection(
-        bibleItem: BibleItem,
+        bibleItem: ReadIdOnlyBibleItem,
         verseKey: string,
         isToTop: boolean,
     ) {
@@ -699,7 +726,7 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
         targetDom: HTMLDivElement,
         isToTop: boolean,
         isForceSelect = false,
-        bibleItem?: BibleItem,
+        bibleItem?: ReadIdOnlyBibleItem,
     ) {
         const classList = targetDom.classList;
         if (!isForceSelect && classList.contains('selected')) {
@@ -739,7 +766,7 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
             }
         });
     }
-    protected syncTargetByColorNote(bibleItem: BibleItem) {
+    protected syncTargetByColorNote(bibleItem: ReadIdOnlyBibleItem) {
         const colorNote = this.getColorNote(bibleItem);
         const targetBibleItems = this.getBibleItemsByColorNote(colorNote);
         for (const targetBibleItem of targetBibleItems) {

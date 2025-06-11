@@ -228,7 +228,7 @@ const lang: LanguageDataType = {
     extraBibleContextMenuItems: (bibleItem, appProvider) => {
         return [
             {
-                menuTitle: '📖Open Khmer Study Bible',
+                menuElement: '📖Open Khmer Study Bible',
                 onSelect: () => {
                     const url = 'https://sb1954sb.openworship.app';
                     const bookKey = bibleItem.target.bookKey;

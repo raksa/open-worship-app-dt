@@ -41,13 +41,14 @@ function RenderBodyEditingComp() {
                         <BibleViewTitleEditingComp
                             bibleItem={foundBibleItem}
                             onTargetChange={async (newBibleTarget) => {
-                                foundBibleItem.target = newBibleTarget;
-                                const title = await foundBibleItem.toTitle();
-                                viewController.inputText = title;
+                                viewController.applyTargetOrBibleKey(
+                                    foundBibleItem,
+                                    { target: newBibleTarget },
+                                );
                             }}
                         >
                             <span
-                                className="pointer app-caught-hover"
+                                className="app-caught-hover-pointer"
                                 title='Hit "Escape" to force edit'
                                 onClick={() => {
                                     setBibleLookupInputFocus();
@@ -85,7 +86,7 @@ function RenderBodyComp({
                         <span
                             className={
                                 'pointer app-low-hover-visible-1 ' +
-                                'app-caught-hover'
+                                'app-caught-hover-pointer'
                             }
                             title='Hit "Escape" to force edit'
                             onClick={() => {

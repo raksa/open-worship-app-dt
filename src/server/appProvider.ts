@@ -49,6 +49,7 @@ export type PathUtilsType = {
 };
 
 export type SystemUtilsType = {
+    copyToClipboard: (str: string) => void;
     isDev: boolean;
     isWindows: boolean;
     is64System: boolean;
@@ -127,7 +128,6 @@ export type AppProviderType = Readonly<
             decrypt: (text: string, key: string) => string;
         };
         browserUtils: {
-            copyToClipboard: (str: string) => void;
             pathToFileURL: (filePath: string) => string;
             openExternalURL: (url: string) => void;
         };
@@ -144,7 +144,7 @@ export type AppProviderType = Readonly<
         databaseUtils: {
             getSQLiteDatabaseInstance: (
                 databaseName: string,
-            ) => SQLiteDatabaseType;
+            ) => Promise<SQLiteDatabaseType>;
         };
         presenterHomePage: string;
         readerHomePage: string;

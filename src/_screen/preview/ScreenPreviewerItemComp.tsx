@@ -8,6 +8,7 @@ import { useScreenManagerContext } from '../managers/screenManagerHooks';
 import { useAppEffect } from '../../helper/debuggerHelpers';
 import ScreenPreviewerHeaderComp from './ScreenPreviewerHeaderComp';
 import ScreenPreviewerFooterComp from './ScreenPreviewerFooterComp';
+import { RECEIVING_DROP_CLASSNAME } from '../../helper/helpers';
 
 export default function ScreenPreviewerItemComp({
     width,
@@ -34,7 +35,7 @@ export default function ScreenPreviewerItemComp({
             screenManager.unregisterEventListener(registeredEvent);
         };
     }, [screenManager]);
-    const selectedCN = screenManager.isSelected ? 'highlight-selected' : '';
+    const selectedCN = screenManager.isSelected ? 'app-highlight-selected' : '';
     const height = Math.ceil(
         width * (screenManagerDim.height / screenManagerDim.width),
     );
@@ -54,14 +55,14 @@ export default function ScreenPreviewerItemComp({
             }}
             onDragOver={(event) => {
                 event.preventDefault();
-                event.currentTarget.classList.add('receiving-child');
+                event.currentTarget.classList.add(RECEIVING_DROP_CLASSNAME);
             }}
             onDragLeave={(event) => {
                 event.preventDefault();
-                event.currentTarget.classList.remove('receiving-child');
+                event.currentTarget.classList.remove(RECEIVING_DROP_CLASSNAME);
             }}
             onDrop={async (event) => {
-                event.currentTarget.classList.remove('receiving-child');
+                event.currentTarget.classList.remove(RECEIVING_DROP_CLASSNAME);
                 const droppedData = await extractDropData(event);
                 if (droppedData === null) {
                     return;

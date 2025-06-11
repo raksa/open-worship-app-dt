@@ -37,9 +37,6 @@ export default class ElectronSettingController {
     }
 
     get isWinMaximized() {
-        console.log(settingObject.mainWinBounds);
-        console.log(this.primaryDisplay.bounds);
-
         return (
             (settingObject.mainWinBounds?.width ?? 0) >=
                 this.primaryDisplay.bounds.width &&
@@ -99,7 +96,6 @@ export default class ElectronSettingController {
                 width: this.primaryDisplay.bounds.width,
                 height: this.primaryDisplay.bounds.height,
             };
-            console.log(this.mainWinBounds);
         });
         win.on('move', () => {
             const [x, y] = win.getPosition();

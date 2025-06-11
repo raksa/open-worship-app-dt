@@ -87,4 +87,10 @@ export default class Lyric
     clone() {
         return Lyric.fromJson(this.filePath, this.toJson());
     }
+
+    static getInstance(filePath: string) {
+        return this._getInstance(filePath, () => {
+            return new this(filePath);
+        });
+    }
 }

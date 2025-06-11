@@ -76,7 +76,7 @@ function PlaylistPreview({
 }>) {
     const fileSource = FileSource.getInstance(playlist.filePath);
     return (
-        <div className="card pointer mt-1 ps-2">
+        <div className="card app-caught-hover-pointer mt-1 ps-2">
             <div
                 className="card-header"
                 onClick={() => {

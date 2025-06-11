@@ -16,6 +16,7 @@ export default function ScreenBackgroundImageComp({
             parentHeight: screenManager.height,
         },
         backgroundSrc,
+        backgroundSrc.scaleType,
     );
     return (
         <img
@@ -24,7 +25,7 @@ export default function ScreenBackgroundImageComp({
             style={{
                 width: `${width}px`,
                 height: `${height}px`,
-                transform: `translate(-${offsetH}px, -${offsetV}px)`,
+                transform: `translate(${offsetH}px, ${offsetV}px)`,
             }}
         />
     );

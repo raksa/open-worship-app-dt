@@ -123,7 +123,8 @@ export default function RenderResizeActorItemComp({
                     title={`Enable ${widgetName}`}
                     className={
                         `${ACTIVE_HIDDEN_WIDGET_CLASS} ` +
-                        `${HIDDEN_WIDGET_CLASS} pointer bar-type-${type}`
+                        `${HIDDEN_WIDGET_CLASS} app-caught-hover-pointer` +
+                        ` bar-type-${type}`
                     }
                     style={{
                         color: 'green',

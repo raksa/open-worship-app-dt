@@ -1,8 +1,12 @@
-import { useStateSettingString } from '../helper/settingHelpers';
-import ScreenAlertManager from '../_screen/managers/ScreenAlertManager';
-import { getShowingScreenIds, hideAlert } from './alertHelpers';
+import {
+    useStateSettingBoolean,
+    useStateSettingString,
+} from '../helper/settingHelpers';
+import ScreenOtherManager from '../_screen/managers/ScreenOtherManager';
+import { getShowingScreenIds, getScreenManagerInstances } from './alertHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
-import { useScreenAlertManagerEvents } from '../_screen/managers/screenEventHelpers';
+import { useScreenOtherManagerEvents } from '../_screen/managers/screenEventHelpers';
+import OtherRenderHeaderTitleComp from './OtherRenderHeaderTitleComp';
 
 function useTiming() {
     const nowArray = () => {
@@ -30,7 +34,7 @@ function CountDownOnDatetimeComp() {
     const { date, setDate, time, setTime, nowString, todayString } =
         useTiming();
     const handleDateTimeShowing = (event: any, isForceChoosing = false) => {
-        ScreenAlertManager.setCountdown(
+        ScreenOtherManager.setCountdown(
             event,
             new Date(date + ' ' + time),
             isForceChoosing,
@@ -93,7 +97,7 @@ function CountDownTimerComp() {
                 3600 * parseInt(hours) +
                 1,
         );
-        ScreenAlertManager.setCountdown(event, targetDatetime, isForceChoosing);
+        ScreenOtherManager.setCountdown(event, targetDatetime, isForceChoosing);
     };
     const handleContextMenuOpening = (event: any) => {
         handleTimerShowing(event, true);
@@ -146,25 +150,60 @@ function CountDownTimerComp() {
     );
 }
 
-export default function CountDownComp() {
-    useScreenAlertManagerEvents(['update']);
+export default function OtherCountDownComp() {
+    const [isOpened, setIsOpened] = useStateSettingBoolean(
+        'other-countdown-opened',
+        true,
+    );
+    useScreenOtherManagerEvents(['update']);
     const showingScreenIds = getShowingScreenIds((data) => {
         return data.countdownData !== null;
     });
-    const handleMarqueeHiding = (screenId: number) => {
-        hideAlert(screenId, (screenAlertManager) => {
-            screenAlertManager.setCountdownData(null);
+    const handleCountdownHiding = (screenId: number) => {
+        getScreenManagerInstances(screenId, (screenOtherManager) => {
+            screenOtherManager.setCountdownData(null);
         });
     };
     return (
-        <div>
-            <CountDownOnDatetimeComp />
-            <CountDownTimerComp />
-            <ScreensRendererComp
-                showingScreenIds={showingScreenIds}
-                buttonTitle="Hide Timer"
-                handleMarqueeHiding={handleMarqueeHiding}
-            />
+        <div className="card m-2">
+            <div
+                className={
+                    'card-header d-flex justify-content-between' +
+                    ' align-items-center'
+                }
+            >
+                <OtherRenderHeaderTitleComp
+                    isOpened={isOpened}
+                    setIsOpened={setIsOpened}
+                >
+                    <h4>Timers</h4>
+                </OtherRenderHeaderTitleComp>
+                {!isOpened ? (
+                    <ScreensRendererComp
+                        showingScreenIds={showingScreenIds}
+                        buttonTitle="Hide Camera"
+                        handleOtherHiding={handleCountdownHiding}
+                        isMini={true}
+                    />
+                ) : null}
+            </div>
+            {isOpened ? (
+                <div className="card-body">
+                    <div className="m-1">
+                        <CountDownOnDatetimeComp />
+                    </div>
+                    <div className="m-1">
+                        <CountDownTimerComp />
+                    </div>
+                    <div className="m-1">
+                        <ScreensRendererComp
+                            showingScreenIds={showingScreenIds}
+                            buttonTitle="Hide Timer"
+                            handleOtherHiding={handleCountdownHiding}
+                        />
+                    </div>
+                </div>
+            ) : null}
         </div>
     );
 }

@@ -93,6 +93,9 @@ class ScreenBibleManager extends ScreenEventHandler<ScreenBibleManagerEventType>
     }
 
     set isLineSync(isLineSync: boolean) {
+        if (this.screenManagerBase.checkIsLockedWithMessage()) {
+            return;
+        }
         setSetting(
             `${SCREEN_BIBLE_SETTING_PREFIX}-line-sync-${this.screenId}`,
             `${isLineSync}`,
@@ -134,9 +137,9 @@ class ScreenBibleManager extends ScreenEventHandler<ScreenBibleManagerEventType>
             }
             const string = JSON.stringify(allBibleDataList);
             setSetting(screenManagerSettingNames.FULL_TEXT, string);
+            this.fireUpdateEvent();
         });
         this.sendSyncScreen();
-        this.fireUpdateEvent();
     }
 
     getRenderedBibleKeys() {
@@ -277,11 +280,17 @@ class ScreenBibleManager extends ScreenEventHandler<ScreenBibleManagerEventType>
     }
 
     applyFullDataSrcWithSyncGroup(bibleData: BibleItemDataType | null) {
+        if (this.screenManagerBase.checkIsLockedWithMessage()) {
+            return;
+        }
         ScreenBibleManager.enableSyncGroup(this.screenId);
         this.screenViewData = bibleData;
     }
 
     receiveSyncScreen(message: ScreenMessageType) {
+        if (this.screenManagerBase.checkIsLockedWithMessage()) {
+            return;
+        }
         this.screenViewData = message.data;
     }
 

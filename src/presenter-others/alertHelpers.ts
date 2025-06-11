@@ -1,4 +1,4 @@
-import ScreenAlertManager from '../_screen/managers/ScreenAlertManager';
+import ScreenOtherManager from '../_screen/managers/ScreenOtherManager';
 import {
     AlertDataType,
     getAlertDataListOnScreenSetting,
@@ -21,9 +21,9 @@ export function getShowingScreenIds(
     return showingScreenIds;
 }
 
-export function hideAlert(
+export function getScreenManagerInstances(
     screenId: number,
-    hidingFunc: (screenAlertManager: ScreenAlertManager) => void,
+    hidingFunc: (screenOtherManager: ScreenOtherManager) => void,
 ) {
     const screenManager = screenManagerFromBase(
         getScreenManagerBaseByKey(screenId.toString()),
@@ -32,6 +32,6 @@ export function hideAlert(
         showSimpleToast('ScreenManager not found', 'error');
         return;
     }
-    const { screenAlertManager } = screenManager;
-    hidingFunc(screenAlertManager);
+    const { screenOtherManager } = screenManager;
+    hidingFunc(screenOtherManager);
 }

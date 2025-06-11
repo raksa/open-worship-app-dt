@@ -21,65 +21,68 @@ import {
     convertOfficeFile,
     supportOfficeFileExtensions,
 } from './appDocumentHelpers';
+import DirSource from '../helper/DirSource';
+
+function handleExtraFileChecking(filePath: string) {
+    const fileSource = FileSource.getInstance(filePath);
+    if (checkIsPdf(fileSource.extension)) {
+        return true;
+    }
+    return false;
+}
+
+function handleFileTaking(
+    dirSource: DirSource,
+    file: DroppedFileType | string,
+) {
+    if (dirSource === null) {
+        return false;
+    }
+    const fileFullName = getFileFullName(file);
+    const ext = getFileExtension(fileFullName).toLocaleLowerCase();
+    if (supportOfficeFileExtensions.includes(ext)) {
+        convertOfficeFile(file, dirSource);
+        return true;
+    }
+    return false;
+}
+
+function handleBodyRendering(filePaths: string[]) {
+    return filePaths.map((filePath, i) => {
+        return (
+            <AppDocumentFileComp key={filePath} index={i} filePath={filePath} />
+        );
+    });
+}
+
+async function newFileHandling(dirPath: string, name: string) {
+    return !(await AppDocument.create(dirPath, name));
+}
 
 export default function AppDocumentListComp() {
     const dirSource = useGenDirSource(dirSourceSettingNames.SLIDE);
-    if (dirSource !== null) {
-        dirSource.checkExtraFile = (fileFullName: string) => {
-            if (checkIsPdf(getFileExtension(fileFullName))) {
-                return {
-                    fileFullName: fileFullName,
-                    appMimetype: mimetypePdf,
-                };
-            }
-            return null;
-        };
-    }
-    const handleExtraFileChecking = (filePath: string) => {
-        const fileSource = FileSource.getInstance(filePath);
-        if (checkIsPdf(fileSource.extension)) {
-            return true;
-        }
-        return false;
-    };
-    const handleFileTaking = (file: DroppedFileType | string) => {
-        if (dirSource === null) {
-            return false;
-        }
-        const fileFullName = getFileFullName(file);
-        const ext = getFileExtension(fileFullName).toLocaleLowerCase();
-        if (supportOfficeFileExtensions.includes(ext)) {
-            convertOfficeFile(file, dirSource);
-            return true;
-        }
-        return false;
-    };
-    const handleBodyRendering = (filePaths: string[]) => {
-        return filePaths.map((filePath, i) => {
-            const fileSource = FileSource.getInstance(filePath);
-            return (
-                <AppDocumentFileComp
-                    key={fileSource.fileFullName}
-                    index={i}
-                    filePath={filePath}
-                />
-            );
-        });
-    };
     if (dirSource === null) {
         return null;
     }
+    dirSource.checkExtraFile = (fileFullName: string) => {
+        if (checkIsPdf(getFileExtension(fileFullName))) {
+            return {
+                fileFullName: fileFullName,
+                appMimetype: mimetypePdf,
+            };
+        }
+        return null;
+    };
+
     return (
         <FileListHandlerComp
-            id="app-document-list"
+            className="app-document-list"
             mimetypeName="slide"
             defaultFolderName={defaultDataDirNames.SLIDE}
             dirSource={dirSource}
             checkExtraFile={handleExtraFileChecking}
-            takeDroppedFile={handleFileTaking}
-            onNewFile={async (dirPath: string, name: string) => {
-                return !(await AppDocument.create(dirPath, name));
-            }}
+            takeDroppedFile={handleFileTaking.bind(null, dirSource)}
+            onNewFile={newFileHandling}
             header={<span>Documents</span>}
             bodyHandler={handleBodyRendering}
             fileSelectionOption={{
@@ -94,7 +97,7 @@ export default function AppDocumentListComp() {
                         }),
                     ]),
                 ),
-                takeSelectedFile: handleFileTaking,
+                takeSelectedFile: handleFileTaking.bind(null, dirSource),
             }}
         />
     );

@@ -15,25 +15,25 @@ $dragging-color: greenyellow;
     overflow-y: auto;
   }
 
-  .receiving-child {
-    border: 1px solid $dragging-color-full;
+  .receiving-data-drop {
+    border: 1px solid $dragging-color-full !important;
     box-sizing: content-box;
   }
 
-  .receiving-child-left {
-    border-left: 1px dashed $dragging-color;
+  .receiving-data-drop-left {
+    border-left: 1px dashed $dragging-color !important;
   }
 
-  .receiving-child-right {
-    border-right: 1px dashed $dragging-color;
+  .receiving-data-drop-right {
+    border-right: 1px dashed $dragging-color !important;
   }
 
-  .receiving-child-top {
-    border-top: 1px dashed $dragging-color;
+  .receiving-data-drop-top {
+    border-top: 1px dashed $dragging-color !important;
   }
 
-  .receiving-child-bottom {
-    border-bottom: 1px dotted $dragging-color;
+  .receiving-data-drop-bottom {
+    border-bottom: 1px dotted $dragging-color !important;
   }
 
   .list-group-item {

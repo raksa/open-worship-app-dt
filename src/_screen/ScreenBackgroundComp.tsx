@@ -36,8 +36,8 @@ export default function ScreenBackgroundComp() {
 }
 
 export function genHtmlBackground(
-    backgroundSrc: BackgroundSrcType,
     screenId: number,
+    backgroundSrc: BackgroundSrcType,
 ) {
     const screenManagerBase = getScreenManagerBase(screenId);
     const htmlStr = ReactDOMServer.renderToStaticMarkup(
@@ -51,6 +51,7 @@ export function genHtmlBackground(
     if (child === null) {
         throw new Error('child is null');
     }
+    Object.assign(child.style, backgroundSrc.extraStyle ?? {});
     return child;
 }
 

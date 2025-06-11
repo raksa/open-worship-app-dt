@@ -7,7 +7,6 @@ export default function PathEditorComp({
     dirSource,
 }: Readonly<{
     dirSource: DirSource;
-    prefix: string;
 }>) {
     const [text, setText] = useState(dirSource.dirPath);
     const handleNewTextSetting = (newText: string) => {

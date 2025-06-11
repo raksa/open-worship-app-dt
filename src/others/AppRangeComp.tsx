@@ -91,25 +91,16 @@ export default function AppRangeComp({
                     setLocalValue1(localValue - defaultSize.step);
                 }}
             >
-                -
+                <i className="bi bi-zoom-out" />
             </div>
             <input
                 id={id}
                 type="range"
-                className="form-range"
+                className="form-range px-1"
                 min={defaultSize.min}
                 max={defaultSize.max}
                 step={defaultSize.step}
                 value={localValue}
-                onWheel={(event) => {
-                    setLocalValue1(
-                        wheelToRangeValue({
-                            defaultSize,
-                            isUp: event.deltaY > 0,
-                            currentScale: localValue,
-                        }),
-                    );
-                }}
                 onChange={(event) => {
                     setLocalValue1(parseInt(event.target.value));
                 }}
@@ -120,7 +111,7 @@ export default function AppRangeComp({
                     setLocalValue1(localValue + defaultSize.step);
                 }}
             >
-                +
+                <i className="bi bi-zoom-in" />
             </div>
             {isShowValue ? (
                 <label

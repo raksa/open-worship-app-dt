@@ -26,8 +26,9 @@ function RenderButtonComp({
     return (
         <button
             type="button"
-            className={`btn btn-${isEnabled ? '' : 'outline-'}${btnType}`}
+            className={`btn btn-sm btn-${isEnabled ? '' : 'outline-'}${btnType}`}
             title={`${title} [${toShortcutKey(eventMap)}]`}
+            style={{ height: '20px' }}
             onClick={onClickCallback}
         >
             {text}
@@ -40,19 +41,19 @@ function genBtnMaps(screenManager: ScreenManager) {
         screenBackgroundManager,
         screenVaryAppDocumentManager,
         screenBibleManager,
-        screenAlertManager,
+        screenOtherManager,
     } = screenManager;
 
     const isShowingBackground = screenBackgroundManager.isShowing;
     const isShowingFG = screenVaryAppDocumentManager.isShowing;
     const isShowingBible = screenBibleManager.isShowing;
-    const isShowingAlert = screenAlertManager.isShowing;
+    const isShowingAlert = screenOtherManager.isShowing;
     const isShowing =
         isShowingBackground || isShowingFG || isShowingBible || isShowingAlert;
     return [
         {
             text: <i className="bi bi-eraser" />,
-            title: 'Clear all',
+            title: '`Clear all',
             btnType: 'danger',
             isEnabled: isShowing,
             eventMap: { key: 'F6' },
@@ -62,7 +63,7 @@ function genBtnMaps(screenManager: ScreenManager) {
         },
         {
             text: 'BG',
-            title: 'Clear background',
+            title: '`Clear background',
             btnType: 'secondary',
             isEnabled: isShowingBackground,
             eventMap: { key: 'F7' },
@@ -72,7 +73,7 @@ function genBtnMaps(screenManager: ScreenManager) {
         },
         {
             text: 'FG',
-            title: 'Clear foreground',
+            title: '`Clear foreground',
             btnType: 'info',
             isEnabled: isShowingFG,
             eventMap: { key: 'F8' },
@@ -82,7 +83,7 @@ function genBtnMaps(screenManager: ScreenManager) {
         },
         {
             text: 'BB',
-            title: 'Clear Bible',
+            title: '`Clear Bible',
             btnType: 'primary',
             isEnabled: isShowingBible,
             eventMap: { key: 'F9' },

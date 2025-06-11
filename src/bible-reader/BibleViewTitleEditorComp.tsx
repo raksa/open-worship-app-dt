@@ -1,9 +1,7 @@
 import React, { useMemo } from 'react';
 
-import BibleItem from '../bible-list/BibleItem';
 import { BibleTargetType } from '../bible-list/bibleRenderHelpers';
 import { useAppStateAsync } from '../helper/debuggerHelpers';
-import { showAppContextMenu } from '../context-menu/appContextMenuHelpers';
 import {
     getBibleInfo,
     getVerses,
@@ -17,6 +15,8 @@ import {
     getVersesCount,
     toLocaleNumBible,
 } from '../helper/bible-helpers/serverBibleHelpers2';
+import { ReadIdOnlyBibleItem } from './BibleItemsViewController';
+import { showAppContextMenu } from '../context-menu/appContextMenuHelpers';
 
 function chose<T>(
     event: any,
@@ -30,7 +30,7 @@ function chose<T>(
             event,
             keys.map(([key, value1, value2], i) => {
                 return {
-                    menuTitle: value1,
+                    menuElement: value1,
                     title: value2,
                     disabled: i === 0 || (!isAllowAll && key === currentKey),
                     onSelect: () => {
@@ -71,7 +71,7 @@ export default function BibleViewTitleEditorComp({
     bibleItem,
     onTargetChange,
 }: Readonly<{
-    bibleItem: BibleItem;
+    bibleItem: ReadIdOnlyBibleItem;
     onTargetChange?: (target: BibleTargetType) => void;
 }>) {
     const [title] = useAppStateAsync(() => {
@@ -108,7 +108,14 @@ export default function BibleViewTitleEditorComp({
         onClick: (event: any) => Promise<void>,
     ) => {
         return (
-            <span className="pointer app-caught-hover" onClick={onClick}>
+            <span
+                className="app-caught-hover-pointer"
+                onContextMenu={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    onClick(event);
+                }}
+            >
                 {text}
             </span>
         );

@@ -6,11 +6,13 @@ export default function ScreenEffectControlComp() {
     return (
         <>
             <RenderTransitionEffectComp
-                title="VAD:"
+                title="Slide:"
+                domTitle="Slide transition"
                 screenEffectManager={screenManager.varyAppDocumentEffectManager}
             />
             <RenderTransitionEffectComp
                 title="BG:"
+                domTitle="Background transition"
                 screenEffectManager={screenManager.backgroundEffectManager}
             />
         </>

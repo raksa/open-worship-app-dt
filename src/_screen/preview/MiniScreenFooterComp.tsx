@@ -1,3 +1,4 @@
+import { handleAutoHide } from '../../helper/domHelpers';
 import AppRangeComp from '../../others/AppRangeComp';
 
 export const DEFAULT_PREVIEW_SIZE = 50;
@@ -7,7 +8,7 @@ export const defaultRangeSize = {
     max: 20,
     step: 1,
 };
-export default function MiniScreenFooter({
+export default function MiniScreenFooterComp({
     previewSizeScale,
     setPreviewSizeScale,
     isShowingTools,
@@ -19,7 +20,14 @@ export default function MiniScreenFooter({
     isShowingTools: boolean;
 }>) {
     return (
-        <div className="card-footer w-100">
+        <div
+            className={'card-footer w-100 app-auto-hide-bottom'}
+            ref={(element) => {
+                if (element !== null) {
+                    handleAutoHide(element, false);
+                }
+            }}
+        >
             <div className="d-flex w-100 h-100">
                 <div className="row">
                     <div className="col-auto">
@@ -30,7 +38,7 @@ export default function MiniScreenFooter({
                             defaultSize={defaultRangeSize}
                         />
                     </div>
-                    <div className="form-check form-switch col-auto">
+                    <div className="form-check form-switch col-auto app-caught-hover-pointer">
                         <label
                             className="form-check-label"
                             htmlFor="screen-previewer-showing-tool"
