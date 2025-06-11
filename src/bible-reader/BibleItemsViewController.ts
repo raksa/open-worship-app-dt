@@ -672,8 +672,10 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
         ];
     }
     appendBibleItem(bibleItem: ReadIdOnlyBibleItem) {
-        const newBibleItem = ReadIdOnlyBibleItem.fromJson(bibleItem.toJson());
-        newBibleItem.id = this.genBibleItemUniqueId();
+        const newBibleItem = ReadIdOnlyBibleItem.fromJson({
+            ...bibleItem.toJson(),
+            id: this.genBibleItemUniqueId(),
+        });
         let nestedBibleItems = this.nestedBibleItems;
         if (!(nestedBibleItems instanceof Array)) {
             nestedBibleItems = [nestedBibleItems];

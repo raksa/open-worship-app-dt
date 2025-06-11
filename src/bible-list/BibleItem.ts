@@ -138,11 +138,10 @@ export default class BibleItem
     }
     clone(isKeepId = false) {
         const Class = this.constructor as typeof BibleItem;
-        const bibleItem = Class.fromJson(this.toJson());
         if (!isKeepId) {
-            bibleItem.id = -1;
+            return Class.fromJson({ ...this.toJson(), id: -1 }, this.filePath);
         }
-        return bibleItem;
+        return Class.fromJson(this.toJson(), this.filePath);
     }
     async save(bible: ItemSourceInfBasic<BibleItem> & DocumentInf) {
         if (this.filePath === null) {
