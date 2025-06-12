@@ -111,7 +111,10 @@ export default class ScreenOtherManager extends ScreenEventHandler<ScreenOtherEv
     }
 
     setCountdownData(
-        countdownData: { dateTime: Date } | null,
+        countdownData: {
+            dateTime: Date;
+            extraStyle: React.CSSProperties;
+        } | null,
         isNoSyncGroup = false,
     ) {
         if (
@@ -225,12 +228,14 @@ export default class ScreenOtherManager extends ScreenEventHandler<ScreenOtherEv
     static async setCountdown(
         event: React.MouseEvent<HTMLElement, MouseEvent>,
         dateTime: Date | null,
+        extraStyle: CSSProperties = {},
         isForceChoosing = false,
     ) {
         this.setData(
             event,
             (screenOtherManager) => {
-                const countdownData = dateTime !== null ? { dateTime } : null;
+                const countdownData =
+                    dateTime !== null ? { dateTime, extraStyle } : null;
                 screenOtherManager.setCountdownData(countdownData);
             },
             isForceChoosing,
@@ -269,17 +274,16 @@ export default class ScreenOtherManager extends ScreenEventHandler<ScreenOtherEv
     }
 
     renderCountdown() {
+        this.cleanRender(this.divCountdown);
         if (this.alertData.countdownData === null) {
             return;
         }
-        const newDiv = genHtmlAlertCountdown(
-            this.alertData.countdownData,
-            this.screenManagerBase,
-        );
+        const newDiv = genHtmlAlertCountdown(this.alertData.countdownData);
         this.divCountdown.appendChild(newDiv);
     }
 
     renderMarquee() {
+        this.cleanRender(this.divMarquee);
         if (this.alertData.marqueeData === null) {
             return;
         }
@@ -296,6 +300,7 @@ export default class ScreenOtherManager extends ScreenEventHandler<ScreenOtherEv
     }
 
     renderCamera() {
+        this.cleanRender(this.divCamera);
         if (this.alertData.cameraData === null) {
             return;
         }

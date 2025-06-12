@@ -75,6 +75,7 @@ export type AlertDataType = {
     } | null;
     countdownData: {
         dateTime: Date;
+        extraStyle: React.CSSProperties;
     } | null;
     cameraData: {
         id: string;
