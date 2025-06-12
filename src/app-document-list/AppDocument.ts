@@ -385,10 +385,6 @@ export default class AppDocument
         }
     }
 
-    toJson(): AnyObjectType {
-        throw new Error('Method not implemented.');
-    }
-
     async save() {
         return await this.editingHistoryManager.save((dataText) => {
             const jsonData = AppDocument.fromDataText(dataText);

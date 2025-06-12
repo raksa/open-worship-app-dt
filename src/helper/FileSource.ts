@@ -14,7 +14,6 @@ import {
     getFileName,
 } from '../server/fileHelpers';
 import { AnyObjectType, isValidJson } from './helpers';
-import AppDocumentSourceAbs from './DocumentSourceAbs';
 import { pathToFileURL } from '../server/helpers';
 import EventHandler from '../event/EventHandler';
 import appProvider from '../server/appProvider';
@@ -158,11 +157,6 @@ export default class FileSource
             showSimpleToast('Saving File', error.message);
         }
         return false;
-    }
-
-    async saveDataFromItem(item: AppDocumentSourceAbs) {
-        const content = JSON.stringify(item.toJson());
-        return this.saveFileData(content);
     }
 
     static getInstanceNoCache(filePath: string, fileFullName?: string) {

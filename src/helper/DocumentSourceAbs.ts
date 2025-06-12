@@ -13,8 +13,6 @@ export default abstract class AppDocumentSourceAbs {
         this.filePath = filePath;
     }
 
-    abstract toJson(): AnyObjectType;
-
     get fileSource() {
         return FileSource.getInstance(this.filePath);
     }
