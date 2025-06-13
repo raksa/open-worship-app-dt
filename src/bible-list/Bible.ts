@@ -246,7 +246,7 @@ export default class Bible extends AppDocumentSourceAbs implements DocumentInf {
     async save() {
         const jsonData = this.toJson();
         const jsonString = JSON.stringify(jsonData);
-        return await this.fileSource.saveFileData(jsonString);
+        return await this.fileSource.writeFileData(jsonString);
     }
 
     static async fromFilePath(filePath: string) {

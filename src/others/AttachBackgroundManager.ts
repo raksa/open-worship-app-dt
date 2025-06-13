@@ -16,7 +16,7 @@ export default class AttachBackgroundManager {
     static async saveData(filePath: string, data: AttachBackgroundType) {
         const metaDataFilePath =
             AttachBackgroundManager.genMetaDataFilePath(filePath);
-        await FileSource.getInstance(metaDataFilePath).saveFileData(
+        await FileSource.getInstance(metaDataFilePath).writeFileData(
             JSON.stringify(data),
         );
         FileSource.getInstance(metaDataFilePath).fireUpdateEvent();

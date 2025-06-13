@@ -219,7 +219,7 @@ export async function getBibleXMLCacheInfoList() {
 export async function saveXMLText(bibleKey: string, xmlText: string) {
     const filePath = await bibleKeyToFilePath(bibleKey);
     const fileSource = FileSource.getInstance(filePath);
-    return await fileSource.saveFileData(xmlText);
+    return await fileSource.writeFileData(xmlText);
 }
 
 export function handBibleKeyContextMenuOpening(bibleKey: string, event: any) {

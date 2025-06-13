@@ -140,7 +140,7 @@ export class FileLineHandler {
         if (originalContent === false) {
             return false;
         }
-        return await FileSource.saveFileData(filePath, originalContent);
+        return await FileSource.writeFileData(filePath, originalContent);
     }
 
     async changeCurrent(fileFullPath: string) {
@@ -175,7 +175,7 @@ export class FileLineHandler {
                 lastContent,
                 currentContent,
             );
-            return await FileSource.saveFileData(lastFilePath, patchedText);
+            return await FileSource.writeFileData(lastFilePath, patchedText);
         });
     }
 
@@ -189,7 +189,7 @@ export class FileLineHandler {
                 const currentFileIndex = this.toFileIndex(currentFilePath);
                 await this.clearNextHistories(currentFileIndex);
                 currentFilePath = this.toFileFullPath(currentFileIndex + 1);
-                const isSuccess = await FileSource.saveFileData(
+                const isSuccess = await FileSource.writeFileData(
                     currentFilePath,
                     dataText,
                 );
@@ -356,7 +356,7 @@ export default class EditingHistoryManager {
             return false;
         }
         const isSuccess =
-            await this.fileLineHandler.fileSource.saveFileData(lastHistory);
+            await this.fileLineHandler.fileSource.writeFileData(lastHistory);
         if (!isSuccess) {
             return false;
         }

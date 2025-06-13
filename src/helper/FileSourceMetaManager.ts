@@ -92,7 +92,7 @@ export default class FileSourceMetaManager {
         }
         json.metadata = json.metadata ?? {};
         json.metadata.colorNote = color;
-        return fileSource.saveFileData(JSON.stringify(json));
+        return fileSource.writeFileData(JSON.stringify(json));
     }
     static unsetColorNote(filePath: string, isSetting = false) {
         if (isSetting) {
