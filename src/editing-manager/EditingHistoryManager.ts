@@ -1,7 +1,4 @@
-import { useState } from 'react';
-
 import { handleError } from '../helper/errorHelpers';
-import { useAppEffect } from '../helper/debuggerHelpers';
 import {
     fsCheckDirExist,
     fsCheckFileExist,
@@ -15,9 +12,8 @@ import {
     pathJoin,
 } from '../server/fileHelpers';
 import { unlocking } from '../server/appHelpers';
-import GarbageCollectableCacher from './GarbageCollectableCacher';
+import GarbageCollectableCacher from '../others/GarbageCollectableCacher';
 import FileSource from '../helper/FileSource';
-import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { parsePatch, reversePatch, applyPatch, createPatch } from 'diff';
 
 const CURRENT_FILE_SIGN = '-head';
@@ -390,26 +386,4 @@ export default class EditingHistoryManager {
     static genFolderPath(filePath: string) {
         return `${filePath}.histories`;
     }
-}
-
-export function useEditingHistoryStatus(filePath: string) {
-    const [status, setStatus] = useState({
-        canUndo: false,
-        canRedo: false,
-        canSave: false,
-    });
-    const update = async () => {
-        const editingHistoryManager = new EditingHistoryManager(filePath);
-        const canUndo = await editingHistoryManager.checkCanUndo();
-        const canRedo = await editingHistoryManager.checkCanRedo();
-        const historyText = await editingHistoryManager.getCurrentHistory();
-        const text = await editingHistoryManager.getOriginalData();
-        const canSave = historyText !== null && historyText !== text;
-        setStatus({ canUndo, canRedo, canSave });
-    };
-    useFileSourceEvents(['update'], update, [], filePath);
-    useAppEffect(() => {
-        update();
-    }, [filePath]);
-    return status;
 }

@@ -1,4 +1,4 @@
-import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
+import { AppDocumentSourceAbs } from '../helper/AppEditableDocumentSourceAbs';
 import { MimetypeNameType } from '../server/fileHelpers';
 import ItemSourceInf from '../others/ItemSourceInf';
 import { genPdfImagesPreview } from '../helper/pdfHelpers';

@@ -4,7 +4,7 @@ import {
 } from '../server/fileHelpers';
 import FileSource from '../helper/FileSource';
 import { AnyObjectType, cloneJson, toMaxId } from '../helper/helpers';
-import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
+import { AppDocumentSourceAbs } from '../helper/AppEditableDocumentSourceAbs';
 import { getSetting } from '../helper/settingHelpers';
 import BibleItem from './BibleItem';
 import { showSimpleToast } from '../toast/toastHelpers';

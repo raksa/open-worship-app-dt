@@ -4,7 +4,7 @@ import FileItemHandlerComp from '../others/FileItemHandlerComp';
 import FileSource from '../helper/FileSource';
 import Bible from './Bible';
 import AppSuspenseComp from '../others/AppSuspenseComp';
-import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
+import { AppDocumentSourceAbs } from '../helper/AppEditableDocumentSourceAbs';
 import { showAppConfirm } from '../popup-widget/popupWidgetHelpers';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { moveBibleItemTo } from './bibleHelpers';

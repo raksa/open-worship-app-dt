@@ -3,7 +3,7 @@ import { lazy, useState } from 'react';
 import FileReadErrorComp from './FileReadErrorComp';
 import { copyToClipboard, showExplorer, trashFile } from '../server/appHelpers';
 import FileSource from '../helper/FileSource';
-import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
+import { AppDocumentSourceAbs } from '../helper/AppEditableDocumentSourceAbs';
 import appProvider from '../server/appProvider';
 import { useFileSourceRefreshEvents } from '../helper/dirSourceHelpers';
 import { showAppConfirm } from '../popup-widget/popupWidgetHelpers';

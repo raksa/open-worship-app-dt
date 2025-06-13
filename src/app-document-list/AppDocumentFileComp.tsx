@@ -11,9 +11,7 @@ import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 import { editorTab, goToPath } from '../router/routeHelpers';
 import { previewPdf } from '../server/appHelpers';
 import { removePdfImagesPreview } from '../helper/pdfHelpers';
-import EditingHistoryManager, {
-    useEditingHistoryStatus,
-} from '../others/EditingHistoryManager';
+import EditingHistoryManager from '../editing-manager/EditingHistoryManager';
 import {
     VaryAppDocumentDynamicType,
     varyAppDocumentFromFilePath,
@@ -22,8 +20,9 @@ import {
     VaryAppDocumentType,
 } from './appDocumentHelpers';
 import PdfAppDocument from './PdfAppDocument';
-import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
+import { AppDocumentSourceAbs } from '../helper/AppEditableDocumentSourceAbs';
 import { attachBackgroundManager } from '../others/AttachBackgroundManager';
+import { useEditingHistoryStatus } from '../editing-manager/editingHelpers';
 
 function genContextMenuItems(
     varyAppDocument: VaryAppDocumentDynamicType,

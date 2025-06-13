@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useAppEffect } from './debuggerHelpers';
 import { handleError } from './errorHelpers';
 import FileSource from './FileSource';
-import AppDocumentSourceAbs from './DocumentSourceAbs';
+import { AppDocumentSourceAbs } from './AppEditableDocumentSourceAbs';
 import { trace } from './loggerHelpers';
 import appProvider from '../server/appProvider';
 import {

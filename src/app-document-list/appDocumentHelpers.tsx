@@ -369,18 +369,22 @@ export function useSlideWrongDimension(
     display: DisplayType,
 ) {
     const [wrong, setWrong] = useState<WrongDimensionType | null>(null);
+    const checkWrongDimension = async () => {
+        if (!AppDocument.checkIsThisType(varyAppDocument)) {
+            return;
+        }
+        const wrong = await varyAppDocument.getIsWrongDimension(display);
+        setWrong(wrong);
+    };
     useFileSourceEvents(
         ['update'],
-        async () => {
-            if (!AppDocument.checkIsThisType(varyAppDocument)) {
-                return;
-            }
-            const wrong = await varyAppDocument.getIsWrongDimension(display);
-            setWrong(wrong);
-        },
+        checkWrongDimension,
         [varyAppDocument, display],
         varyAppDocument.filePath,
     );
+    useAppEffect(() => {
+        checkWrongDimension();
+    }, [varyAppDocument, display]);
     return wrong;
 }
 

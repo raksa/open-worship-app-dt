@@ -1,5 +1,5 @@
 import { AnyObjectType, cloneJson, isValidJson } from '../helper/helpers';
-import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
+import { AppDocumentSourceAbs } from '../helper/AppEditableDocumentSourceAbs';
 import PlaylistItem, { PlaylistItemType } from './PlaylistItem';
 import { showSimpleToast } from '../toast/toastHelpers';
 

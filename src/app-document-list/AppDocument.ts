@@ -1,11 +1,11 @@
 import Slide, { SlideType } from './Slide';
-import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
+import AppDocumentSourceAbs from '../helper/AppEditableDocumentSourceAbs';
 import { showAppDocumentContextMenu } from './appDocumentHelpers';
 import { AnyObjectType, checkIsSameValues, toMaxId } from '../helper/helpers';
 import { MimetypeNameType } from '../server/fileHelpers';
 import { DisplayType } from '../_screen/screenHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
-import EditingHistoryManager from '../others/EditingHistoryManager';
+import EditingHistoryManager from '../editing-manager/EditingHistoryManager';
 import ItemSourceInf from '../others/ItemSourceInf';
 import { OptionalPromise } from '../others/otherHelpers';
 import { handleError } from '../helper/errorHelpers';
@@ -270,7 +270,7 @@ export default class AppDocument
 
     async fixSlideDimension(display: DisplayType) {
         const slides = await this.getItems();
-        const newSlidesJson = await Promise.all(
+        const newSlides = await Promise.all(
             slides.map((slide) => {
                 return (async () => {
                     const json = slide.toJson();
@@ -278,12 +278,11 @@ export default class AppDocument
                         json.metadata.width = display.bounds.width;
                         json.metadata.height = display.bounds.height;
                     }
-                    return json;
+                    return Slide.fromJson(json, this.filePath);
                 })();
             }),
         );
-        const jsonString = AppDocument.toJsonString(newSlidesJson);
-        this.editingHistoryManager.addHistory(jsonString);
+        await this.setItems(newSlides);
     }
 
     showItemContextMenu(
@@ -328,7 +327,7 @@ export default class AppDocument
     }
 
     static async create(dir: string, name: string) {
-        return super.create(dir, name, [Slide.defaultSlideData(0)]);
+        return super.create(dir, name, { items: [Slide.defaultSlideData(0)] });
     }
 
     static async getCopiedSlides() {

@@ -229,7 +229,8 @@ export default function SlideItemRenderComp({
         <div
             className={
                 'data-vary-app-document-item card' +
-                ` app-caught-hover-pointer ${activeCN} ${presenterCN}`
+                ` app-caught-hover-pointer ${activeCN} ${presenterCN}` +
+                ' overflow-hidden'
             }
             ref={setTargetDiv}
             style={{ width: `${width}px` }}

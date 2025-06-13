@@ -9,7 +9,7 @@ import {
 import { getUserWritablePath } from '../server/appHelpers';
 import EditingHistoryManager, {
     useEditingHistoryStatus,
-} from '../others/EditingHistoryManager';
+} from '../editing-manager/EditingHistoryManager';
 import { useCallback, useMemo, useState } from 'react';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
