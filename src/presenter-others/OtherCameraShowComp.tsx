@@ -59,6 +59,7 @@ function RenderCameraInfoComp({
                     'card-body w-100 p-0 overflow-hidden' +
                     ' app-caught-hover-pointer'
                 }
+                // TODO: implement drag and drop
                 onClick={handleCameraShowing}
                 onContextMenu={handleContextMenuOpening}
                 ref={containerRef}
