@@ -1,5 +1,7 @@
 import Slide, { SlideType } from './Slide';
-import AppDocumentSourceAbs from '../helper/AppEditableDocumentSourceAbs';
+import AppDocumentSourceAbs, {
+    AppDocumentMetadataType,
+} from '../helper/AppEditableDocumentSourceAbs';
 import { showAppDocumentContextMenu } from './appDocumentHelpers';
 import { AnyObjectType, checkIsSameValues, toMaxId } from '../helper/helpers';
 import { MimetypeNameType } from '../server/fileHelpers';
@@ -8,21 +10,14 @@ import { showSimpleToast } from '../toast/toastHelpers';
 import EditingHistoryManager from '../editing-manager/EditingHistoryManager';
 import ItemSourceInf from '../others/ItemSourceInf';
 import { OptionalPromise } from '../others/otherHelpers';
-import { handleError } from '../helper/errorHelpers';
 import {
     ContextMenuItemType,
     showAppContextMenu,
 } from '../context-menu/appContextMenuHelpers';
 
-type AppDocumentMetadataType = {
-    app: string;
-    fileVersion: number;
-    initDate: string;
-    lastEditDate?: string;
-};
 export type AppDocumentType = {
-    items: SlideType[];
     metadata: AppDocumentMetadataType;
+    items: SlideType[];
 };
 
 export type WrongDimensionType = {
@@ -37,79 +32,12 @@ export type WrongDimensionType = {
 };
 
 export default class AppDocument
-    extends AppDocumentSourceAbs
+    extends AppDocumentSourceAbs<AppDocumentType>
     implements ItemSourceInf<Slide>
 {
     static readonly mimetypeName: MimetypeNameType = 'slide';
 
-    constructor(filePath: string) {
-        super(filePath);
-    }
-
-    setItemById(_id: number, _slide: Slide): OptionalPromise<void> {
-        throw new Error('Method not implemented.');
-    }
-
-    get editingHistoryManager() {
-        return EditingHistoryManager.getInstance(this.filePath);
-    }
-
-    static fromDataText(dataText: string) {
-        try {
-            const jsonData = JSON.parse(dataText);
-            this.validate(jsonData);
-            return jsonData as AppDocumentType;
-        } catch (error) {
-            handleError(error);
-        }
-        return null;
-    }
-
-    async getJsonData(isOriginal = false): Promise<AppDocumentType | null> {
-        const jsonText = isOriginal
-            ? await this.editingHistoryManager.getOriginalData()
-            : await this.editingHistoryManager.getCurrentHistory();
-        if (jsonText === null) {
-            return null;
-        }
-        const jsonData = AppDocument.fromDataText(jsonText);
-        if (jsonData === null) {
-            return null;
-        }
-        return jsonData;
-    }
-
-    async setJsonData(jsonData: AppDocumentType) {
-        const jsonString = AppDocument.toJsonString(jsonData);
-        this.editingHistoryManager.addHistory(jsonString);
-    }
-
-    async getMetadata() {
-        const jsonData = await this.getJsonData();
-        return jsonData?.metadata ?? {};
-    }
-
-    async setMetadata(metadata: AppDocumentMetadataType) {
-        const jsonData = await this.getJsonData();
-        if (jsonData === null) {
-            return;
-        }
-        jsonData.metadata = metadata;
-        await this.setJsonData(jsonData);
-    }
-
-    async checkSlideIsChanged(
-        index: number,
-        slide: Slide,
-        jsonItems: SlideType[],
-    ) {
-        const originalSlide = jsonItems[index];
-        slide.isChanged =
-            originalSlide === undefined ||
-            !checkIsSameValues(slide.toJson(), originalSlide);
-    }
-
-    async getItems() {
+    async getSlides() {
         let jsonData = await this.getJsonData();
         if (jsonData === null) {
             return [];
@@ -131,19 +59,65 @@ export default class AppDocument
         return slides;
     }
 
-    async setItems(newItems: Slide[]) {
+    async setSlides(newSlides: Slide[]) {
         const jsonData = await this.getJsonData();
         if (jsonData === null) {
             return;
         }
-        jsonData.items = newItems.map((item) => {
-            return item.toJson();
+        jsonData.items = newSlides.map((slide) => {
+            return slide.toJson();
         });
         await this.setJsonData(jsonData);
     }
 
-    async getMaxItemId() {
-        const slides = await this.getItems();
+    async updateSlide(slide: Slide) {
+        const slides = await this.getSlides();
+        const index = slides.findIndex((slide1) => {
+            return slide1.id === slide.id;
+        });
+        if (index === -1) {
+            showSimpleToast('Set Slide', 'Unable to find a slide');
+            return;
+        }
+        slides[index] = slide;
+        await this.setSlides(slides);
+    }
+
+    async getSlideByIndex(index: number) {
+        const slides = await this.getSlides();
+        return slides[index] ?? null;
+    }
+
+    async getSlideById(id: number) {
+        const slides = await this.getSlides();
+        return (
+            slides.find((slide) => {
+                return slide.id === id;
+            }) ?? null
+        );
+    }
+
+    setSlideById(_id: number, _slide: Slide): OptionalPromise<void> {
+        throw new Error('Method not implemented.');
+    }
+
+    get editingHistoryManager() {
+        return EditingHistoryManager.getInstance(this.filePath);
+    }
+
+    async checkSlideIsChanged(
+        index: number,
+        slide: Slide,
+        jsonItems: SlideType[],
+    ) {
+        const originalSlide = jsonItems[index];
+        slide.isChanged =
+            originalSlide === undefined ||
+            !checkIsSameValues(slide.toJson(), originalSlide);
+    }
+
+    async getMaxSlideId() {
+        const slides = await this.getSlides();
         if (slides.length) {
             const ids = slides.map((slide) => {
                 return slide.id;
@@ -153,13 +127,8 @@ export default class AppDocument
         return 0;
     }
 
-    async getItemByIndex(index: number) {
-        const slides = await this.getItems();
-        return slides[index] ?? null;
-    }
-
     async duplicateSlide(slide: Slide) {
-        const slides = await this.getItems();
+        const slides = await this.getSlides();
         const index = slides.findIndex((slide1) => {
             return slide1.checkIsSame(slide);
         });
@@ -169,15 +138,15 @@ export default class AppDocument
         }
         const newSlide = slide.clone();
         if (newSlide !== null) {
-            const maxSlideId = await this.getMaxItemId();
+            const maxSlideId = await this.getMaxSlideId();
             newSlide.id = maxSlideId + 1;
             slides.splice(index + 1, 0, newSlide);
-            await this.setItems(slides);
+            await this.setSlides(slides);
         }
     }
 
     async moveSlide(id: number, toIndex: number, isLeft: boolean) {
-        const slides = await this.getItems();
+        const slides = await this.getSlides();
         const fromIndex: number = slides.findIndex((slide) => {
             return slide.id === id;
         });
@@ -186,21 +155,21 @@ export default class AppDocument
         }
         const target = slides.splice(fromIndex, 1)[0];
         slides.splice(toIndex, 0, target);
-        await this.setItems(slides);
+        await this.setSlides(slides);
         this.fileSource.fireUpdateEvent(slides);
     }
 
     async addSlide(slide: Slide) {
-        const slides = await this.getItems();
-        const maxSlideId = await this.getMaxItemId();
+        const slides = await this.getSlides();
+        const maxSlideId = await this.getMaxSlideId();
         slide.id = maxSlideId + 1;
         slide.filePath = this.filePath;
         slides.push(slide);
-        await this.setItems(slides);
+        await this.setSlides(slides);
     }
 
     async addNewSlide() {
-        const maxSlideId = await this.getMaxItemId();
+        const maxSlideId = await this.getMaxSlideId();
         const slide = Slide.defaultSlideData(maxSlideId + 1);
         const { width, height } = Slide.getDefaultDim();
         const json = {
@@ -216,11 +185,11 @@ export default class AppDocument
     }
 
     async deleteSlide(slide: Slide) {
-        const slides = await this.getItems();
+        const slides = await this.getSlides();
         const newSlides = slides.filter((newSlide) => {
             return newSlide.id !== slide.id;
         });
-        await this.setItems(newSlides);
+        await this.setSlides(newSlides);
     }
 
     static toWrongDimensionString({ slide, display }: WrongDimensionType) {
@@ -231,7 +200,7 @@ export default class AppDocument
     }
 
     async getIsWrongDimension(display: DisplayType) {
-        const slides = await this.getItems();
+        const slides = await this.getSlides();
         const foundSlide = slides.find((slide) => {
             return slide.checkIsWrongDimension(display);
         });
@@ -248,28 +217,19 @@ export default class AppDocument
     }
 
     static validate(json: AnyObjectType): void {
-        if (
-            typeof json.items !== 'object' ||
-            !Array.isArray(json.items) ||
-            typeof json.metadata !== 'object' ||
-            typeof json.metadata.app !== 'string' ||
-            typeof json.metadata.fileVersion !== 'number' ||
-            typeof json.metadata.initDate !== 'string' ||
-            (json.metadata.lastEditDate !== undefined &&
-                typeof json.metadata.lastEditDate !== 'string')
-        ) {
+        super.validate(json);
+        if (typeof json.items !== 'object' || !Array.isArray(json.items)) {
             throw new Error(
                 `Invalid app document data json:${JSON.stringify(json)}`,
             );
         }
-        json.items = json.items ?? [];
         for (const item of json.items) {
             Slide.validate(item);
         }
     }
 
     async fixSlideDimension(display: DisplayType) {
-        const slides = await this.getItems();
+        const slides = await this.getSlides();
         const newSlides = await Promise.all(
             slides.map((slide) => {
                 return (async () => {
@@ -282,10 +242,10 @@ export default class AppDocument
                 })();
             }),
         );
-        await this.setItems(newSlides);
+        await this.setSlides(newSlides);
     }
 
-    showItemContextMenu(
+    showSlideContextMenu(
         event: any,
         slide: Slide,
         extraMenuItems: ContextMenuItemType[] = [],
@@ -317,15 +277,6 @@ export default class AppDocument
         ]);
     }
 
-    async getItemById(id: number) {
-        const slides = await this.getItems();
-        return (
-            slides.find((slide) => {
-                return slide.id === id;
-            }) ?? null
-        );
-    }
-
     static async create(dir: string, name: string) {
         return super.create(dir, name, { items: [Slide.defaultSlideData(0)] });
     }
@@ -351,47 +302,9 @@ export default class AppDocument
         return copiedSlides;
     }
 
-    static toJsonString(jsonData: AnyObjectType) {
-        return JSON.stringify(jsonData, null, 2);
-    }
-
     static getInstance(filePath: string) {
         return this._getInstance(filePath, () => {
             return new this(filePath);
-        });
-    }
-
-    static checkIsThisType(varyAppDocument: any) {
-        return varyAppDocument instanceof this;
-    }
-
-    async setSlide(slide: Slide) {
-        const slides = await this.getItems();
-        const index = slides.findIndex((item) => {
-            return item.id === slide.id;
-        });
-        if (index === -1) {
-            showSimpleToast('Set Slide', 'Unable to find a slide');
-            return;
-        }
-        slides[index] = slide;
-        await this.setItems(slides);
-    }
-
-    checkIsSame(varyAppDocument: any) {
-        if (AppDocument.checkIsThisType(varyAppDocument)) {
-            return this.filePath === varyAppDocument.filePath;
-        }
-    }
-
-    async save() {
-        return await this.editingHistoryManager.save((dataText) => {
-            const jsonData = AppDocument.fromDataText(dataText);
-            if (jsonData === null) {
-                return null;
-            }
-            jsonData.metadata.lastEditDate = new Date().toISOString();
-            return AppDocument.toJsonString(jsonData);
         });
     }
 }

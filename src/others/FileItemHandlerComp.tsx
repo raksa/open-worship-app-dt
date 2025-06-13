@@ -63,7 +63,7 @@ function genContextMenu(
 
 export function genTrashContextMenu(
     filePath: string,
-    onTrashed?: () => void,
+    onTrashed: () => void,
 ): ContextMenuItemType[] {
     return [
         {
@@ -77,7 +77,7 @@ export function genTrashContextMenu(
                 );
                 if (isOk) {
                     await trashFile(filePath);
-                    onTrashed?.();
+                    onTrashed();
                 }
             },
         },
@@ -109,7 +109,7 @@ export default function FileItemHandlerComp({
     onClick,
     renderChild,
     isPointer,
-    onTrashed,
+    preDelete,
     isDisabledColorNote,
     userClassName,
     isSelected,
@@ -125,7 +125,7 @@ export default function FileItemHandlerComp({
     onClick?: () => void;
     renderChild: (data: AppDocumentSourceAbs) => any;
     isPointer?: boolean;
-    onTrashed?: () => void;
+    preDelete?: () => void;
     isDisabledColorNote?: boolean;
     userClassName?: string;
     isSelected: boolean;
@@ -138,7 +138,11 @@ export default function FileItemHandlerComp({
         onClick?.();
     };
     const selfContextMenu = genContextMenu(filePath, setIsRenaming, reload);
-    selfContextMenu.push(...genTrashContextMenu(filePath, onTrashed));
+    const preDelete1 = () => {
+        data?.preDelete();
+        preDelete?.();
+    };
+    selfContextMenu.push(...genTrashContextMenu(filePath, preDelete1));
 
     const handleContextMenuOpening = (event: any) => {
         showAppContextMenu(event, selfContextMenu);

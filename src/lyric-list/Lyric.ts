@@ -1,9 +1,8 @@
 import { MimetypeNameType } from '../server/fileHelpers';
 import { AnyObjectType } from '../helper/helpers';
-import AppDocumentSourceAbs from '../helper/AppEditableDocumentSourceAbs';
-import { OptionalPromise } from '../others/otherHelpers';
-import EditingHistoryManager from '../editing-manager/EditingHistoryManager';
-import FileSource from '../helper/FileSource';
+import AppDocumentSourceAbs, {
+    AppDocumentMetadataType,
+} from '../helper/AppEditableDocumentSourceAbs';
 
 const DEFAULT_CONTENT = `
 <!-- title:start -->
@@ -23,43 +22,33 @@ const DEFAULT_CONTENT = `
 <!-- outro:end -->
 `;
 
-export default class Lyric extends AppDocumentSourceAbs {
+type LyricType = {
+    metadata: AppDocumentMetadataType;
+    content: string;
+};
+
+export default class Lyric extends AppDocumentSourceAbs<LyricType> {
     static readonly mimetypeName: MimetypeNameType = 'lyric';
 
-    constructor(filePath: string) {
-        super(filePath);
-    }
-
-    get editingHistoryManager() {
-        return EditingHistoryManager.getInstance(this.filePath);
-    }
-
-    getMetadata(): OptionalPromise<AnyObjectType> {
-        throw new Error('Method not implemented.');
-    }
-    setMetadata(_metaData: AnyObjectType): OptionalPromise<void> {
-        throw new Error('Method not implemented.');
+    static validate(json: AnyObjectType): void {
+        super.validate(json);
+        if (typeof json.content !== 'string') {
+            throw new Error(`Invalid lyric data json:${JSON.stringify(json)}`);
+        }
     }
 
     async getContent() {
-        const fileSource = FileSource.getInstance(this.filePath);
-        const value = await fileSource.readFileData();
-        if (value === null) {
-            return null;
-        }
-        const data = JSON.parse(value);
-        return data.content ?? '';
+        const jsonData = await this.getJsonData();
+        return jsonData?.content ?? '';
     }
 
     async setContent(content: string) {
-        const fileSource = FileSource.getInstance(this.filePath);
-        const value = await fileSource.readFileData();
-        if (value === null) {
-            return null;
+        const jsonData = await this.getJsonData();
+        if (jsonData === null) {
+            return;
         }
-        const data = JSON.parse(value);
-        data.content = content;
-        return await fileSource.saveFileData(JSON.stringify(data));
+        jsonData.content = content;
+        await this.setJsonData(jsonData);
     }
 
     static async create(dir: string, name: string) {

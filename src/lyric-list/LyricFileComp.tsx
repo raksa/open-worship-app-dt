@@ -12,14 +12,16 @@ import {
     useSelectedLyricSetterContext,
 } from './lyricHelpers';
 import { getIsShowingLyricPreviewer } from '../app-document-presenter/PresenterComp';
+import { useEditingHistoryStatus } from '../editing-manager/editingHelpers';
 
 function LyricFilePreview({ lyric }: Readonly<{ lyric: Lyric }>) {
     const fileSource = FileSource.getInstance(lyric.filePath);
+    const { canSave } = useEditingHistoryStatus(lyric.filePath);
     return (
         <>
             <i className="bi bi-music-note" />
             {fileSource.name}
-            <span style={{ color: 'red' }}>*</span>
+            {canSave && <span style={{ color: 'red' }}>*</span>}
         </>
     );
 }
@@ -58,11 +60,10 @@ export default function LyricFileComp({
         if (!lyric) {
             return;
         }
-        if (selectedContext && !getIsShowingLyricPreviewer()) {
-            previewingEventListener.showLyric(lyric);
-            return;
-        }
         setSelectedLyric(lyric);
+        if (!getIsShowingLyricPreviewer()) {
+            previewingEventListener.showLyric(lyric);
+        }
     };
     const handleChildRendering = (lyric: AppDocumentSourceAbs) => {
         return <LyricFilePreview lyric={lyric as Lyric} />;

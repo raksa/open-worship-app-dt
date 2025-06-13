@@ -18,7 +18,7 @@ const LazyBiblePreviewerRenderComp = lazy(() => {
     return import('../bible-reader/BiblePreviewerRenderComp');
 });
 const LazyLyricPreviewerComp = lazy(() => {
-    return import('../advance-presenter/LyricPreviewerComp');
+    return import('../lyric-list/LyricPreviewerComp');
 });
 const LazyPresenterOthersControllerComp = lazy(() => {
     return import('../presenter-others/PresenterOthersControllerComp');

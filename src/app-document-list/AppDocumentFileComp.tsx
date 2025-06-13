@@ -21,7 +21,6 @@ import {
 } from './appDocumentHelpers';
 import PdfAppDocument from './PdfAppDocument';
 import { AppDocumentSourceAbs } from '../helper/AppEditableDocumentSourceAbs';
-import { attachBackgroundManager } from '../others/AttachBackgroundManager';
 import { useEditingHistoryStatus } from '../editing-manager/editingHelpers';
 
 function genContextMenuItems(
@@ -60,7 +59,7 @@ function genContextMenuItems(
 
 function SlideFilePreviewNormalComp({
     slide,
-}: Readonly<{ slide: AppDocument }>) {
+}: Readonly<{ slide: AppDocumentSourceAbs }>) {
     const fileSource = FileSource.getInstance(slide.filePath);
     const { canSave } = useEditingHistoryStatus(slide.filePath);
     return (
@@ -120,11 +119,10 @@ export default function AppDocumentFileComp({
         if (!varyAppDocument) {
             return;
         }
-        if (selectedContext && !getIsShowingVaryAppDocumentPreviewer()) {
-            previewingEventListener.showVaryAppDocument(varyAppDocument);
-            return;
-        }
         setSelectedAppDocument(varyAppDocument);
+        if (!getIsShowingVaryAppDocumentPreviewer()) {
+            previewingEventListener.showVaryAppDocument(varyAppDocument);
+        }
     };
     const handleChildRendering = (varyAppDocument: AppDocumentSourceAbs) => {
         if (AppDocument.checkIsThisType(varyAppDocument)) {
@@ -134,13 +132,6 @@ export default function AppDocumentFileComp({
             return <SlideFilePreviewPdfComp pdfSlide={varyAppDocument} />;
         }
         return null;
-    };
-    const handleSlideDeleting = () => {
-        EditingHistoryManager.getInstance(filePath).discard();
-        if (PdfAppDocument.checkIsThisType(varyAppDocument)) {
-            removePdfImagesPreview(filePath);
-        }
-        attachBackgroundManager.deleteMetaDataFile(filePath);
     };
     const handleRenaming = async (newFileSource: FileSource) => {
         await EditingHistoryManager.moveFilePath(
@@ -168,7 +159,6 @@ export default function AppDocumentFileComp({
                 varyAppDocument,
                 setSelectedAppDocument,
             )}
-            onTrashed={handleSlideDeleting}
             renamedCallback={handleRenaming}
             isSelected={isSelected}
         />

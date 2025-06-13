@@ -52,7 +52,7 @@ function MenuIsModifying({
     caDiscard,
     canSave,
 }: Readonly<{
-    editableDocument: AppEditableDocumentSourceAbs;
+    editableDocument: AppEditableDocumentSourceAbs<any>;
     caDiscard: boolean;
     canSave: boolean;
 }>) {
@@ -98,7 +98,7 @@ export function FileEditingMenuComp({
     editableDocument,
 }: Readonly<{
     extraChildren?: React.ReactNode | null;
-    editableDocument: AppEditableDocumentSourceAbs;
+    editableDocument: AppEditableDocumentSourceAbs<any>;
 }>) {
     const { canUndo, canRedo, canSave } = useEditingHistoryStatus(
         editableDocument.filePath,

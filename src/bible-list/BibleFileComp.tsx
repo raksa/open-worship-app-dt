@@ -15,7 +15,6 @@ import {
     genRemovingAttachedBackgroundMenu,
     onDropHandling,
 } from '../helper/dragHelpers';
-import { attachBackgroundManager } from '../others/AttachBackgroundManager';
 import { useAttachedBackgroundElement } from './BibleItemRenderComp';
 
 const LazyRenderBibleItemsComp = lazy(() => {
@@ -123,9 +122,6 @@ export default function BibleFileComp({
                 onDropHandling(event, {
                     filePath,
                 });
-            }}
-            onTrashed={() => {
-                attachBackgroundManager.deleteMetaDataFile(filePath);
             }}
         />
     );

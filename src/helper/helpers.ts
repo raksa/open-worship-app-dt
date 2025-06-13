@@ -133,16 +133,7 @@ export function getWindowDim() {
         document.body.clientHeight;
     return { width, height };
 }
-export function validateAppMeta(meta: any) {
-    try {
-        if (meta.fileVersion === 1 && meta.app === 'OpenWorship') {
-            return true;
-        }
-    } catch (error) {
-        handleError(error);
-    }
-    return false;
-}
+
 export function useReadFileToData<T extends AppDocumentSourceAbs>(
     filePath: string | null,
 ) {

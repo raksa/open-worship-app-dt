@@ -52,7 +52,7 @@ export default function VaryAppDocumentItemRenderWrapperComp({
         event: any,
         extraMenuItems: ContextMenuItemType[],
     ) => {
-        selectedAppDocument.showItemContextMenu(
+        selectedAppDocument.showSlideContextMenu(
             event,
             varyAppDocumentItem as any,
             extraMenuItems,

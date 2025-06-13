@@ -36,14 +36,14 @@ function useAppDocumentItems() {
     const [varyAppDocumentItems, setVaryAppDocumentItems] = useAppStateAsync<
         VaryAppDocumentItemType[]
     >(() => {
-        return selectedAppDocument.getItems();
+        return selectedAppDocument.getSlides();
     }, [selectedAppDocument]);
 
     useAppEffectAsync(
         async (context) => {
             if (varyAppDocumentItems === undefined) {
                 const newVaryAppDocumentItems =
-                    await selectedAppDocument.getItems();
+                    await selectedAppDocument.getSlides();
                 context.setVaryAppDocumentItems(newVaryAppDocumentItems);
             }
         },
