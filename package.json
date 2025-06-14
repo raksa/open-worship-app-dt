@@ -102,6 +102,7 @@
     },
     "devDependencies": {
         "@types/diff": "^7.0.1",
+        "@types/markdown-it": "^14.1.2",
         "@types/node": "^22.13.10",
         "@types/react": "^19.0.10",
         "@types/react-dom": "^19.0.4",
@@ -116,6 +117,8 @@
         "electron": "^36.4.0",
         "electron-builder": "^25.1.8",
         "eslint": "^9.22.0",
+        "markdown-it": "^14.1.0",
+        "markdown-it-music": "^2.0.5",
         "monaco-editor": "^0.52.2",
         "nodemon": "^3.1.9",
         "prettier": "^3.5.3",

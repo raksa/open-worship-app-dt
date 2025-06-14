@@ -80,6 +80,9 @@ export async function initApp() {
 
     window.onunhandledrejection = (promiseError) => {
         const reason = promiseError.reason;
+        if (reason.name === 'Canceled') {
+            return;
+        }
         handleError(reason);
         if (isDomException(reason)) {
             return;
