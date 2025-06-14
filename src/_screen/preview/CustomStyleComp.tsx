@@ -17,13 +17,13 @@ const tabTypeList = [
     ['a', 'Appearance', LazyAppearanceComp],
     ['s', 'Shadow', LazyTextShadowComp],
 ] as const;
-type TabType = (typeof tabTypeList)[number][0];
+type TabKeyType = (typeof tabTypeList)[number][0];
 export default function CustomStyleComp({
     onClose,
 }: Readonly<{
     onClose: () => void;
 }>) {
-    const [tabType, setTabType] = useStateSettingString<TabType>(
+    const [tabKey, setTabKey] = useStateSettingString<TabKeyType>(
         'tull-text-screen-custom-style-tab',
         'a',
     );
@@ -39,12 +39,15 @@ export default function CustomStyleComp({
             }}
         >
             <div className="card-header">
-                <TabRenderComp<TabType>
-                    tabs={tabTypeList.map(([type, name]) => {
-                        return [type, name];
+                <TabRenderComp<TabKeyType>
+                    tabs={tabTypeList.map(([key, name]) => {
+                        return {
+                            key,
+                            title: name,
+                        };
                     })}
-                    activeTab={tabType}
-                    setActiveTab={setTabType}
+                    activeTab={tabKey}
+                    setActiveTab={setTabKey}
                 />
                 <div
                     className="app-caught-hover-pointer"
@@ -57,7 +60,7 @@ export default function CustomStyleComp({
             <div className="card-body">
                 <div className="custom-style-body p-2">
                     {tabTypeList.map(([type, _, target]) => {
-                        return genTabBody<TabType>(tabType, [type, target]);
+                        return genTabBody<TabKeyType>(tabKey, [type, target]);
                     })}
                 </div>
             </div>

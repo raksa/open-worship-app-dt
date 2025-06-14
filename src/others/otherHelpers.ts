@@ -3,7 +3,7 @@ import { useAppStateAsync } from '../helper/debuggerHelpers';
 
 export type OptionalPromise<T> = T | Promise<T>;
 
-export function useIsOnScreen(
+export function useFileSourceIsOnScreen(
     filePaths: string[],
     checkIsOnScreen: (filePaths: string[]) => Promise<boolean>,
     onUpdate?: (isOnScreen: boolean) => void,

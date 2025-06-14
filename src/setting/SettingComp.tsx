@@ -21,9 +21,9 @@ const tabTypeList = [
     ['b', 'Bible', LazySettingBibleComp],
     ['a', 'About', LazySettingAboutComp],
 ] as const;
-type TabType = (typeof tabTypeList)[number][0];
+type TabKeyType = (typeof tabTypeList)[number][0];
 export default function SettingComp() {
-    const [tabType, setTabType] = useStateSettingString<TabType>(
+    const [tabKey, setTabKey] = useStateSettingString<TabKeyType>(
         'popup-setting-tab',
         'b',
     );
@@ -34,12 +34,15 @@ export default function SettingComp() {
         >
             <div className="card-body d-flex flex-column">
                 <div className="setting-header d-flex">
-                    <TabRenderComp<TabType>
-                        tabs={tabTypeList.map(([type, name]) => {
-                            return [type, name];
+                    <TabRenderComp<TabKeyType>
+                        tabs={tabTypeList.map(([key, name]) => {
+                            return {
+                                key,
+                                title: name,
+                            };
                         })}
-                        activeTab={tabType}
-                        setActiveTab={setTabType}
+                        activeTab={tabKey}
+                        setActiveTab={setTabKey}
                     />
                 </div>
                 <div className="setting-body flex-fill">
@@ -50,7 +53,10 @@ export default function SettingComp() {
                         }}
                     >
                         {tabTypeList.map(([type, _, target]) => {
-                            return genTabBody<TabType>(tabType, [type, target]);
+                            return genTabBody<TabKeyType>(tabKey, [
+                                type,
+                                target,
+                            ]);
                         })}
                     </div>
                 </div>

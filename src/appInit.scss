@@ -347,11 +347,6 @@ body {
     }
   }
 
-  .highlight-star::after {
-    content: '*';
-    color: $hight-light-color;
-  }
-
   @for $i from 0 through 10 {
     .app-top-hover-motion-#{$i} {
       .app-low-hover-visible-#{$i} {

@@ -42,14 +42,14 @@ export function initMenu(appController: ElectronAppController) {
         {
             label: 'Edit',
             submenu: [
-                { role: 'undo' },
-                { role: 'redo' },
-                { type: 'separator' },
-                { role: 'cut' },
-                { role: 'copy' },
-                { role: 'paste' },
+                // { role: 'undo' },
+                // { role: 'redo' },
+                // { type: 'separator' },
+                // { role: 'cut' },
+                // { role: 'copy' },
+                // { role: 'paste' },
                 {
-                    label: `find`,
+                    label: `Find`,
                     click: () => {
                         appController.finderController.open(
                             appController.mainWin,
@@ -59,9 +59,9 @@ export function initMenu(appController: ElectronAppController) {
                 },
                 ...(isMac
                     ? [
-                          { role: 'pasteAndMatchStyle' },
-                          { role: 'delete' },
-                          { role: 'selectAll' },
+                          //   { role: 'pasteAndMatchStyle' },
+                          //   { role: 'delete' },
+                          //   { role: 'selectAll' },
                           { type: 'separator' },
                           {
                               label: 'Speech',

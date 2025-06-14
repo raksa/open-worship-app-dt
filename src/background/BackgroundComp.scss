@@ -1,13 +1,6 @@
 @use '../others/variables.scss' as *;
 
 .background {
-  .app-nav-highlight-selected {
-    .btn::before {
-      content: '*';
-      color: greenyellow;
-    }
-  }
-
   & > .background-header {
     height: $header-height;
   }

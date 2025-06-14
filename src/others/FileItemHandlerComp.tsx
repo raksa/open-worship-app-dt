@@ -13,7 +13,7 @@ import {
     ContextMenuItemType,
     showAppContextMenu,
 } from '../context-menu/appContextMenuHelpers';
-import { useIsOnScreen } from './otherHelpers';
+import { useFileSourceIsOnScreen } from './otherHelpers';
 const LazyRenderRenamingComp = lazy(() => {
     return import('./RenderRenamingComp');
 });
@@ -134,12 +134,15 @@ export default function FileItemHandlerComp({
     renamedCallback?: (newFileSource: FileSource) => void;
     checkIsOnScreen?: (filePath: string) => Promise<boolean>;
 }>) {
-    const isOnScreen = useIsOnScreen([filePath], async (filePaths) => {
-        if (checkIsOnScreen === undefined) {
-            return false;
-        }
-        return await checkIsOnScreen(filePaths[0]);
-    });
+    const isOnScreen = useFileSourceIsOnScreen(
+        [filePath],
+        async (filePaths) => {
+            if (checkIsOnScreen === undefined) {
+                return false;
+            }
+            return await checkIsOnScreen(filePaths[0]);
+        },
+    );
     const [isRenaming, setIsRenaming] = useState(false);
     useFileSourceRefreshEvents(['select']);
     const applyClick = () => {

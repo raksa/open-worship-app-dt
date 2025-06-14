@@ -5,7 +5,7 @@ import DirSource from '../helper/DirSource';
 import FileSource from '../helper/FileSource';
 import { MimetypeNameType } from '../server/fileHelpers';
 import LoadingComp from './LoadingComp';
-import { useIsOnScreen } from './otherHelpers';
+import { useFileSourceIsOnScreen } from './otherHelpers';
 
 const UNKNOWN_COLOR_NOTE = 'unknown';
 
@@ -30,7 +30,7 @@ export default function RenderListComp({
     const [filePaths, setFilePaths] = useState<string[] | null | undefined>(
         null,
     );
-    useIsOnScreen(
+    useFileSourceIsOnScreen(
         filePaths ?? [],
         async (filePaths) => {
             if (checkIsOnScreen === undefined) {
