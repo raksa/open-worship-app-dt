@@ -26,6 +26,11 @@ function LyricFilePreview({ lyric }: Readonly<{ lyric: Lyric }>) {
     );
 }
 
+async function checkIsOnScreen(_filePath: string) {
+    //  TODO: implement this function
+    return false;
+}
+
 export default function LyricFileComp({
     index,
     filePath,
@@ -78,6 +83,7 @@ export default function LyricFileComp({
             onClick={handleClicking}
             renderChild={handleChildRendering}
             isSelected={isSelected}
+            checkIsOnScreen={checkIsOnScreen}
         />
     );
 }

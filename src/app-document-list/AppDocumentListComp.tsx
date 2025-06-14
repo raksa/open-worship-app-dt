@@ -18,8 +18,10 @@ import {
 import { DroppedFileType } from '../others/droppingFileHelpers';
 import {
     checkIsPdf,
+    checkIsVaryAppDocumentOnScreen,
     convertOfficeFile,
     supportOfficeFileExtensions,
+    varyAppDocumentFromFilePath,
 } from './appDocumentHelpers';
 import DirSource from '../helper/DirSource';
 
@@ -59,6 +61,18 @@ async function newFileHandling(dirPath: string, name: string) {
     return !(await AppDocument.create(dirPath, name));
 }
 
+async function checkIsOnScreen(filePaths: string[]) {
+    for (const filePath of filePaths) {
+        const varyAppDocument = varyAppDocumentFromFilePath(filePath);
+        const isOnScreen =
+            await checkIsVaryAppDocumentOnScreen(varyAppDocument);
+        if (isOnScreen) {
+            return true;
+        }
+    }
+    return false;
+}
+
 export default function AppDocumentListComp() {
     const dirSource = useGenDirSource(dirSourceSettingNames.SLIDE);
     if (dirSource === null) {
@@ -85,6 +99,7 @@ export default function AppDocumentListComp() {
             onNewFile={newFileHandling}
             header={<span>Documents</span>}
             bodyHandler={handleBodyRendering}
+            checkIsOnScreen={checkIsOnScreen}
             fileSelectionOption={{
                 windowTitle: 'Select slide files',
                 dirPath: dirSource.dirPath,

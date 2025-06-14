@@ -13,6 +13,7 @@ import {
     ContextMenuItemType,
     showAppContextMenu,
 } from '../context-menu/appContextMenuHelpers';
+import { useIsOnScreen } from './otherHelpers';
 const LazyRenderRenamingComp = lazy(() => {
     return import('./RenderRenamingComp');
 });
@@ -114,6 +115,7 @@ export default function FileItemHandlerComp({
     userClassName,
     isSelected,
     renamedCallback,
+    checkIsOnScreen,
 }: Readonly<{
     data: AppDocumentSourceAbs | null | undefined;
     reload: () => void;
@@ -130,7 +132,14 @@ export default function FileItemHandlerComp({
     userClassName?: string;
     isSelected: boolean;
     renamedCallback?: (newFileSource: FileSource) => void;
+    checkIsOnScreen?: (filePath: string) => Promise<boolean>;
 }>) {
+    const isOnScreen = useIsOnScreen([filePath], async (filePaths) => {
+        if (checkIsOnScreen === undefined) {
+            return false;
+        }
+        return await checkIsOnScreen(filePaths[0]);
+    });
     const [isRenaming, setIsRenaming] = useState(false);
     useFileSourceRefreshEvents(['select']);
     const applyClick = () => {
@@ -206,7 +215,13 @@ export default function FileItemHandlerComp({
                 />
             ) : (
                 <>
-                    {renderChild(data)}
+                    <div
+                        className={
+                            'd-flex ' + (isOnScreen ? 'app-on-screen' : '')
+                        }
+                    >
+                        {renderChild(data)}
+                    </div>
                     {!isDisabledColorNote && (
                         <div className="color-note-container">
                             <ItemColorNoteComp item={fileSource} />

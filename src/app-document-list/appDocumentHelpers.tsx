@@ -530,3 +530,26 @@ export function useAnyItemSelected(
     useAppEffect(refresh, [varyAppDocumentItems]);
     return isAnyItemSelected;
 }
+
+export function checkIsAppDocumentItemOnScreen(
+    varyAppDocumentItem: VaryAppDocumentItemType,
+) {
+    const data = ScreenVaryAppDocumentManager.getDataList(
+        varyAppDocumentItem.filePath,
+        varyAppDocumentItem.id,
+    );
+    return data.length > 0;
+}
+
+export async function checkIsVaryAppDocumentOnScreen(
+    varyAppDocument: VaryAppDocumentType,
+) {
+    const slides = await varyAppDocument.getSlides();
+    for (const slide of slides) {
+        const isOnScreen = checkIsAppDocumentItemOnScreen(slide);
+        if (isOnScreen) {
+            return true;
+        }
+    }
+    return false;
+}

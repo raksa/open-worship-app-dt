@@ -33,6 +33,11 @@ function handleExtraFileChecking(filePath: string) {
     return false;
 }
 
+async function checkIsOnScreen(_filePaths: string[]) {
+    //  TODO: implement this function
+    return false;
+}
+
 export default function LyricListComp() {
     const dirSource = useGenDirSource(dirSourceSettingNames.LYRIC);
     if (dirSource === null) {
@@ -58,6 +63,7 @@ export default function LyricListComp() {
             onNewFile={newFileHandling}
             header={<span>Lyrics</span>}
             bodyHandler={handleBodyRendering}
+            checkIsOnScreen={checkIsOnScreen}
             fileSelectionOption={{
                 windowTitle: 'Select lyric files',
                 dirPath: dirSource.dirPath,

@@ -2,9 +2,9 @@
 
 .background {
   .app-nav-highlight-selected {
-    .btn::after {
+    .btn::before {
       content: '*';
-      color: $hight-light-color;
+      color: greenyellow;
     }
   }
 

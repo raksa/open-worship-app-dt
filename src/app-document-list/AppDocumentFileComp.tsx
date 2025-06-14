@@ -18,6 +18,7 @@ import {
     useSelectedAppDocumentSetterContext,
     SelectedVaryAppDocumentContext,
     VaryAppDocumentType,
+    checkIsVaryAppDocumentOnScreen,
 } from './appDocumentHelpers';
 import PdfAppDocument from './PdfAppDocument';
 import { AppDocumentSourceAbs } from '../helper/AppEditableDocumentSourceAbs';
@@ -81,6 +82,12 @@ function SlideFilePreviewPdfComp({
             {fileSource.name}
         </div>
     );
+}
+
+async function checkIsOnScreen(filePath: string) {
+    const varyAppDocument = varyAppDocumentFromFilePath(filePath);
+    const isOnScreen = await checkIsVaryAppDocumentOnScreen(varyAppDocument);
+    return isOnScreen;
 }
 
 export default function AppDocumentFileComp({
@@ -161,6 +168,7 @@ export default function AppDocumentFileComp({
             )}
             renamedCallback={handleRenaming}
             isSelected={isSelected}
+            checkIsOnScreen={checkIsOnScreen}
         />
     );
 }

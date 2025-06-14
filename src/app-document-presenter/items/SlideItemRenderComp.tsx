@@ -1,7 +1,6 @@
 import './VaryAppDocumentItem.scss';
 
 import Slide from '../../app-document-list/Slide';
-import ScreenVaryAppDocumentManager from '../../_screen/managers/ScreenVaryAppDocumentManager';
 import { useScreenVaryAppDocumentManagerEvents } from '../../_screen/managers/screenEventHelpers';
 import {
     genRemovingAttachedBackgroundMenu,
@@ -11,12 +10,16 @@ import {
 } from '../../helper/dragHelpers';
 import ShowingScreenIcon from '../../_screen/preview/ShowingScreenIcon';
 import appProvider from '../../server/appProvider';
-import { VaryAppDocumentItemType } from '../../app-document-list/appDocumentHelpers';
+import {
+    checkIsAppDocumentItemOnScreen,
+    VaryAppDocumentItemType,
+} from '../../app-document-list/appDocumentHelpers';
 import { changeDragEventStyle } from '../../helper/helpers';
 import { DragTypeEnum, DroppedDataType } from '../../helper/DragInf';
 import { ContextMenuItemType } from '../../context-menu/appContextMenuHelpers';
 import { useMemo, useState } from 'react';
 import { useAppEffect } from '../../helper/debuggerHelpers';
+import ScreenVaryAppDocumentManager from '../../_screen/managers/ScreenVaryAppDocumentManager';
 
 function RenderScreenInfoComp({
     varyAppDocumentItem,
@@ -107,18 +110,16 @@ export function toClassNameHighlight(
         varyAppDocumentItem.checkIsSame(selectedVaryAppDocumentItem)
             ? 'active'
             : '';
-    const selectedList = ScreenVaryAppDocumentManager.getDataList(
-        varyAppDocumentItem.filePath,
-        varyAppDocumentItem.id,
-    );
-    const presenterCN =
-        appProvider.isPageEditor || selectedList.length == 0
-            ? ''
-            : 'app-highlight-selected';
+    const isOnScreen = checkIsAppDocumentItemOnScreen(varyAppDocumentItem);
+    const presenterClassname =
+        appProvider.isPageEditor || !isOnScreen ? '' : 'app-highlight-selected';
     return {
-        selectedList,
+        selectedList: ScreenVaryAppDocumentManager.getDataList(
+            varyAppDocumentItem.filePath,
+            varyAppDocumentItem.id,
+        ),
         activeCN: activeClassname,
-        presenterCN,
+        presenterCN: presenterClassname,
     };
 }
 
