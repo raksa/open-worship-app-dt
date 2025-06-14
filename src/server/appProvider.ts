@@ -56,6 +56,7 @@ export type SystemUtilsType = {
     isMac: boolean;
     isArm64: boolean;
     isLinux: boolean;
+    generateMD5: (input: string) => string;
 };
 
 export type AppInfoType = {

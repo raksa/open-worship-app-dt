@@ -366,9 +366,7 @@ export async function fsList(dir: string) {
                 name: file,
                 filePath,
             });
-        } catch (error) {
-            handleError(error);
-        }
+        } catch (_error) {}
     }
     return fileList;
 }
