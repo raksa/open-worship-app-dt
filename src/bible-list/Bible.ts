@@ -1,4 +1,5 @@
 import {
+    createNewFileDetail,
     fsListFilesWithMimetype,
     MimetypeNameType,
 } from '../server/fileHelpers';
@@ -13,12 +14,16 @@ import { dirSourceSettingNames } from '../helper/constants';
 import appProvider from '../server/appProvider';
 import DocumentInf from '../others/DocumentInf';
 import { handleError } from '../helper/errorHelpers';
+import { ItemSourceInfBasic } from '../others/ItemSourceInf';
 
 export type BibleType = {
     items: BibleItemType[];
     metadata: AnyObjectType;
 };
-export default class Bible extends AppDocumentSourceAbs implements DocumentInf {
+export default class Bible
+    extends AppDocumentSourceAbs
+    implements DocumentInf, ItemSourceInfBasic<BibleItem>
+{
     static readonly mimetypeName: MimetypeNameType = 'bible';
     static readonly DEFAULT_FILE_NAME = 'Default';
     private readonly originalJson: BibleType;
@@ -136,11 +141,13 @@ export default class Bible extends AppDocumentSourceAbs implements DocumentInf {
     }
 
     deleteItem(bibleItem: BibleItem) {
-        const bibleItems = this.items;
-        const index = bibleItems.indexOf(bibleItem);
-        if (index !== -1) {
-            this.deleteItemAtIndex(index);
+        const index = this.items.findIndex((bibleItem1) => {
+            return bibleItem1.id === bibleItem.id;
+        });
+        if (index === -1) {
+            return;
         }
+        this.deleteItemAtIndex(index);
     }
 
     addBibleItem(bibleItem: BibleItem) {
@@ -163,7 +170,40 @@ export default class Bible extends AppDocumentSourceAbs implements DocumentInf {
         this.items = bibleItems;
     }
 
-    async moveItemFrom(filePath: string, index?: number) {
+    getItemIndex(bibleItem: BibleItem) {
+        return this.items.findIndex((item) => {
+            return item.id === bibleItem.id;
+        });
+    }
+
+    moveItemToIndex(bibleItem: BibleItem, toIndex: number) {
+        const bibleItems = this.items;
+        if (toIndex < 0 || toIndex >= bibleItems.length) {
+            return;
+        }
+        const fromIndex = this.getItemIndex(bibleItem);
+        if (fromIndex === -1) {
+            return;
+        }
+        const [item] = bibleItems.splice(fromIndex, 1);
+        bibleItems.splice(toIndex, 0, item);
+        this.items = bibleItems;
+    }
+
+    async saveBibleItem(bibleItem: BibleItem) {
+        this.addBibleItem(bibleItem);
+        await this.save();
+    }
+
+    async deleteBibleItem(bibleItem: BibleItem) {
+        this.deleteItem(bibleItem);
+        await this.save();
+    }
+
+    async moveItemFrom(filePath: string, bibleItem?: BibleItem) {
+        if (filePath === this.filePath) {
+            return;
+        }
         try {
             const fromBible = await Bible.fromFilePath(filePath);
             if (!fromBible) {
@@ -172,6 +212,12 @@ export default class Bible extends AppDocumentSourceAbs implements DocumentInf {
             }
             const backupBibleItems = fromBible.items;
             let targetBibleItems: BibleItem[] = backupBibleItems;
+            const index =
+                bibleItem !== undefined
+                    ? fromBible.items.findIndex((item) => {
+                          return item.id === bibleItem.id;
+                      })
+                    : undefined;
             if (index !== undefined) {
                 if (!backupBibleItems[index]) {
                     showSimpleToast(
@@ -182,13 +228,10 @@ export default class Bible extends AppDocumentSourceAbs implements DocumentInf {
                 }
                 targetBibleItems = [backupBibleItems[index]];
             }
-            this.items = this.items.concat(targetBibleItems);
-            await this.save();
-
-            fromBible.items = backupBibleItems.filter((item) => {
-                return !targetBibleItems.includes(item);
-            });
-            await fromBible.save();
+            for (const item of targetBibleItems) {
+                await this.saveBibleItem(item);
+                await fromBible.deleteBibleItem(item);
+            }
         } catch (error: any) {
             showSimpleToast('Moving Bible Item', error.message);
         }
@@ -228,7 +271,20 @@ export default class Bible extends AppDocumentSourceAbs implements DocumentInf {
     }
 
     static async create(dir: string, name: string) {
-        return super.create(dir, name, []);
+        const data = JSON.stringify({
+            metadata: super.genMetadata(),
+            items: [],
+        });
+        const filePath = await createNewFileDetail(
+            dir,
+            name,
+            data,
+            this.mimetypeName,
+        );
+        if (filePath !== null) {
+            return FileSource.getInstance(filePath);
+        }
+        return null;
     }
 
     clone() {

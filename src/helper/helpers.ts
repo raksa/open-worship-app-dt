@@ -384,7 +384,13 @@ export function changeDragEventStyle(
     key: string,
     value: string,
 ) {
-    (event.currentTarget.style as any)[key] = value;
+    ((event.currentTarget?.style ?? {}) as any)[key] = value;
+}
+
+export function stopDraggingState(event: any) {
+    event.preventDefault();
+    event.stopPropagation();
+    changeDragEventStyle(event, 'opacity', '1');
 }
 
 export function bringDomToView(dom: Element, block: ScrollLogicalPosition) {

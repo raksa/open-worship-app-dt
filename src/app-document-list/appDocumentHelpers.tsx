@@ -415,7 +415,7 @@ export async function appDocumentItemFromKey(key: string) {
         return null;
     }
     const varyAppDocument = varyAppDocumentFromFilePath(filePath);
-    return await varyAppDocument.getSlideById(id);
+    return await varyAppDocument.getItemById(id);
 }
 
 const SELECTED_APP_DOCUMENT_SETTING_NAME = 'selected-vary-app-document';
@@ -495,7 +495,7 @@ export async function getSelectedEditingSlide() {
     if (!AppDocument.checkIsThisType(varyAppDocument)) {
         return null;
     }
-    return await varyAppDocument.getSlideById(id);
+    return await varyAppDocument.getItemById(id);
 }
 
 export function setSelectedEditingSlide(slide: Slide | null) {

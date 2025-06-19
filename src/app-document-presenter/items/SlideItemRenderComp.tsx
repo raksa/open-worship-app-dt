@@ -5,7 +5,7 @@ import { useScreenVaryAppDocumentManagerEvents } from '../../_screen/managers/sc
 import {
     genRemovingAttachedBackgroundMenu,
     handleDragStart,
-    onDropHandling,
+    handleAttachBackgroundDrop,
     useAttachedBackgroundData,
 } from '../../helper/dragHelpers';
 import ShowingScreenIcon from '../../_screen/preview/ShowingScreenIcon';
@@ -246,7 +246,7 @@ export default function SlideItemRenderComp({
                 changeDragEventStyle(event, 'opacity', '1');
             }}
             onDrop={(event) => {
-                onDropHandling(event, item);
+                handleAttachBackgroundDrop(event, item);
             }}
             onDragStart={(event) => {
                 handleDragStart(event, item);

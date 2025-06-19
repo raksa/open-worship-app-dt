@@ -101,52 +101,51 @@ export async function genVerseList({
 export async function moveBibleItemTo(
     event: any,
     bible: Bible,
-    index?: number,
+    bibleItem?: BibleItem,
 ) {
     const dirSource = await DirSource.getInstance(
         Bible.getDirSourceSettingName(),
     );
-    dirSource.getFilePaths('bible').then((filePaths) => {
-        const targetNames = (filePaths ?? [])
-            .map((filePath) => {
-                return FileSource.getInstance(filePath).name;
-            })
-            .filter((name) => {
-                const fileSource = FileSource.getInstance(bible.filePath);
-                return name !== fileSource.name;
-            });
-        if (targetNames.length === 0) {
-            showSimpleToast('Move Bible Item', 'No other bibles found');
-            return;
-        }
-        showAppContextMenu(
-            event,
-            targetNames.map((name) => {
-                return {
-                    menuElement: name,
-                    onSelect: async () => {
-                        const bibleFileSource = FileSource.getInstance(
-                            bible.filePath,
+    const filePaths = await dirSource.getFilePaths('bible');
+    const targetNames = (filePaths ?? [])
+        .map((filePath) => {
+            return FileSource.getInstance(filePath).name;
+        })
+        .filter((name) => {
+            const fileSource = FileSource.getInstance(bible.filePath);
+            return name !== fileSource.name;
+        });
+    if (targetNames.length === 0) {
+        showSimpleToast('Move Bible Item', 'No other bibles found');
+        return;
+    }
+    showAppContextMenu(
+        event,
+        targetNames.map((name) => {
+            return {
+                menuElement: name,
+                onSelect: async () => {
+                    const bibleFileSource = FileSource.getInstance(
+                        bible.filePath,
+                    );
+                    const { basePath, extension } = bibleFileSource;
+                    const fileSource = FileSource.getInstance(
+                        basePath,
+                        addExtension(name, extension),
+                    );
+                    const targetBible = await Bible.fromFilePath(
+                        fileSource.filePath,
+                    );
+                    if (!targetBible) {
+                        showSimpleToast(
+                            'Move Bible Item',
+                            'Target bible not found',
                         );
-                        const { basePath, extension } = bibleFileSource;
-                        const fileSource = FileSource.getInstance(
-                            basePath,
-                            addExtension(name, extension),
-                        );
-                        const targetBible = await Bible.fromFilePath(
-                            fileSource.filePath,
-                        );
-                        if (!targetBible) {
-                            showSimpleToast(
-                                'Move Bible Item',
-                                'Target bible not found',
-                            );
-                            return;
-                        }
-                        targetBible.moveItemFrom(bible.filePath, index);
-                    },
-                };
-            }),
-        );
-    });
+                        return;
+                    }
+                    targetBible.moveItemFrom(bible.filePath, bibleItem);
+                },
+            };
+        }),
+    );
 }

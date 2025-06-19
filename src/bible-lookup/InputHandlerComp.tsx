@@ -1,13 +1,10 @@
 import { createContext, createRef, Fragment, use } from 'react';
 
-import { useKeyboardRegistering } from '../event/KeyboardEventListener';
 import BibleSelectionComp from './BibleSelectionComp';
 import {
     BIBLE_LOOKUP_INPUT_ID,
     INPUT_TEXT_CLASS,
-    checkIsBibleLookupInputFocused,
     focusRenderFound,
-    setBibleLookupInputFocus,
 } from './selectionHelpers';
 import { useBibleKeyContext } from '../bible-list/bibleHelpers';
 import { useAppStateAsync } from '../helper/debuggerHelpers';
@@ -48,24 +45,6 @@ export default function InputHandlerComp({
     const [placeholder] = useAppStateAsync(() => {
         return toInputText(bibleKey, bookKey, 1, 1, 2);
     });
-    useKeyboardRegistering(
-        [{ key: 'Escape' }],
-        () => {
-            if (!checkIsBibleLookupInputFocused()) {
-                setBibleLookupInputFocus();
-                return;
-            }
-            const arr = inputText.split(' ').filter((str) => str !== '');
-            if (arr.length === 1) {
-                viewController.inputText = '';
-                return;
-            }
-            arr.pop();
-            const newInputText = arr.join(' ') + (arr.length > 0 ? ' ' : '');
-            viewController.inputText = newInputText;
-        },
-        [inputText],
-    );
     return (
         <Fragment>
             <BibleSelectionComp

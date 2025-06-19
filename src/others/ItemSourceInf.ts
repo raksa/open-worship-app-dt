@@ -2,8 +2,8 @@ import { AnyObjectType } from '../helper/helpers';
 import { OptionalPromise } from './otherHelpers';
 
 export interface ItemSourceInfBasic<T> {
-    getSlideById(id: number): OptionalPromise<T | null>;
-    setSlideById(id: number, item: T): OptionalPromise<void>;
+    getItemById(id: number): OptionalPromise<T | null>;
+    setItemById(id: number, item: T): OptionalPromise<void>;
 }
 
 export default interface ItemSourceInf<T> extends ItemSourceInfBasic<T> {

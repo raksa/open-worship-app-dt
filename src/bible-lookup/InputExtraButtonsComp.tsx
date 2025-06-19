@@ -1,11 +1,24 @@
 import { createRef } from 'react';
 
-import { INPUT_TEXT_CLASS } from './selectionHelpers';
+import {
+    checkIsBibleLookupInputFocused,
+    INPUT_TEXT_CLASS,
+    setBibleLookupInputFocus,
+} from './selectionHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { useLookupBibleItemControllerContext } from '../bible-reader/LookupBibleItemController';
+import {
+    EventMapper as KeyboardEventMapper,
+    toShortcutKey,
+    useKeyboardRegistering,
+} from '../event/KeyboardEventListener';
+import { useInputTextContext } from './InputHandlerComp';
+
+const escapeEventMap: KeyboardEventMapper = { key: 'Escape' };
 
 export default function InputExtraButtonsComp() {
     const viewController = useLookupBibleItemControllerContext();
+    const { inputText } = useInputTextContext();
     const extractButtonsRef = createRef<HTMLDivElement>();
     useAppEffect(() => {
         const wrapper = extractButtonsRef.current;
@@ -20,6 +33,28 @@ export default function InputExtraButtonsComp() {
         wrapper.style.right = `${parentRect.right - inputRect.right + 5}px`;
         wrapper.style.zIndex = '5';
     }, []);
+    const removeInputTextChunk = () => {
+        const arr = inputText.split(' ').filter((str) => str !== '');
+        if (arr.length === 1) {
+            viewController.inputText = '';
+            return;
+        }
+        arr.pop();
+        const newInputText = arr.join(' ') + (arr.length > 0 ? ' ' : '');
+        viewController.inputText = newInputText;
+        setBibleLookupInputFocus();
+    };
+    useKeyboardRegistering(
+        [escapeEventMap],
+        () => {
+            if (!checkIsBibleLookupInputFocused()) {
+                setBibleLookupInputFocus();
+                return;
+            }
+            removeInputTextChunk();
+        },
+        [inputText],
+    );
     return (
         <div
             ref={extractButtonsRef}
@@ -30,7 +65,7 @@ export default function InputExtraButtonsComp() {
             style={{ position: 'absolute', fontSize: '12px', lineHeight: '0' }}
         >
             <i
-                className="bi bi-x-lg app-caught-hover-pointer"
+                className="bi bi-x app-caught-hover-pointer"
                 title="Clear input"
                 style={{
                     color: 'red',
@@ -41,9 +76,13 @@ export default function InputExtraButtonsComp() {
             />
             <i
                 className="bi bi-x app-caught-hover-pointer"
-                title="Clear input"
+                title={`Clear input chunk [${toShortcutKey(escapeEventMap)}]`}
                 style={{
                     color: 'var(--bs-danger-text-emphasis)',
+                }}
+                onClick={(event) => {
+                    event.stopPropagation();
+                    removeInputTextChunk();
                 }}
             />
             <i

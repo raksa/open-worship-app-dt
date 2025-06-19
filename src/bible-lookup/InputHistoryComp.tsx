@@ -13,6 +13,7 @@ import {
 } from '../context-menu/appContextMenuHelpers';
 import { copyToClipboard } from '../server/appHelpers';
 import { handleDragStart } from '../helper/dragHelpers';
+import { saveBibleItem } from '../bible-list/bibleHelpers';
 
 const HISTORY_TEXT_LIST_SETTING_NAME = 'history-text-list';
 function useHistoryTextList(maxHistoryCount: number) {
@@ -109,10 +110,12 @@ function handleContextMenuOpening(
     {
         open,
         copy,
+        save,
         remove,
     }: {
         open: () => void;
         copy: () => void;
+        save: () => void;
         remove: () => void;
     },
 ) {
@@ -124,9 +127,15 @@ function handleContextMenuOpening(
             },
         },
         {
-            menuElement: '`Copy',
+            menuElement: '`Copy Title',
             onSelect: () => {
                 copy();
+            },
+        },
+        {
+            menuElement: '`Save bible item',
+            onSelect: () => {
+                save();
             },
         },
         {
@@ -154,6 +163,14 @@ export default function InputHistoryComp({
             },
             copy: () => {
                 copyToClipboard(historyText);
+            },
+            save: () => {
+                getBibleItemFromHistoryText(historyText).then((bibleItem) => {
+                    if (bibleItem === null) {
+                        return;
+                    }
+                    saveBibleItem(bibleItem);
+                });
             },
             remove: () => {
                 handleHistoryRemoving(

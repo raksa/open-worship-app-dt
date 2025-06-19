@@ -5,8 +5,9 @@ import { useFileSourceRefreshEvents } from '../helper/dirSourceHelpers';
 import {
     genRemovingAttachedBackgroundMenu,
     handleDragStart,
-    onDropHandling,
+    handleAttachBackgroundDrop,
     useAttachedBackgroundData,
+    extractDropData,
 } from '../helper/dragHelpers';
 import ItemColorNoteComp from '../others/ItemColorNoteComp';
 import { BibleSelectionMiniComp } from '../bible-lookup/BibleSelectionComp';
@@ -16,7 +17,7 @@ import { useShowBibleLookupContext } from '../others/commonButtons';
 import appProvider from '../server/appProvider';
 import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
 import { useMemo } from 'react';
-import { changeDragEventStyle } from '../helper/helpers';
+import { changeDragEventStyle, stopDraggingState } from '../helper/helpers';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 import BibleViewTitleEditorComp from '../bible-reader/BibleViewTitleEditorComp';
 import LookupBibleItemController from '../bible-reader/LookupBibleItemController';
@@ -171,7 +172,29 @@ export default function BibleItemRenderComp({
     if (bibleItem.isError) {
         return <ItemReadErrorComp onContextMenu={handleContextMenuOpening} />;
     }
-
+    const handleDataDropping = async (event: any) => {
+        const droppedData = await extractDropData(event);
+        if (droppedData?.type === DragTypeEnum.BIBLE_ITEM) {
+            const bible = await Bible.fromFilePath(filePath);
+            if (bible === null) {
+                return;
+            }
+            const droppedBibleItem = droppedData.item as BibleItem;
+            if (droppedBibleItem.filePath !== undefined) {
+                if (droppedBibleItem.filePath === bibleItem.filePath) {
+                    const toIndex = bible.getItemIndex(bibleItem);
+                    bible.moveItemToIndex(droppedBibleItem, toIndex);
+                    await bible.save();
+                    stopDraggingState(event);
+                }
+            }
+        } else {
+            handleAttachBackgroundDrop(event, {
+                filePath,
+                id: bibleItem.id,
+            });
+        }
+    };
     return (
         <li
             className="list-group-item item app-caught-hover-pointer px-1"
@@ -189,12 +212,7 @@ export default function BibleItemRenderComp({
                 event.preventDefault();
                 changeDragEventStyle(event, 'opacity', '1');
             }}
-            onDrop={(event) => {
-                onDropHandling(event, {
-                    filePath,
-                    id: bibleItem.id,
-                });
-            }}
+            onDrop={handleDataDropping}
             onDoubleClick={(event) => {
                 handleOpening(event, viewController, bibleItem);
             }}
@@ -218,6 +236,7 @@ export default function BibleItemRenderComp({
                     >
                         <BibleViewTitleEditorComp
                             bibleItem={bibleItem}
+                            withCtrl
                             onTargetChange={async (newBibleTarget) => {
                                 const bible = await getBible(bibleItem);
                                 if (bible === null) {

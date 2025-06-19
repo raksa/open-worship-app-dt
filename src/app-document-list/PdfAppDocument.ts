@@ -28,7 +28,7 @@ export default class PdfAppDocument
     setSlides(_items: PdfSlide[]): OptionalPromise<void> {
         throw new Error('Method not implemented.');
     }
-    setSlideById(_id: number, _item: PdfSlide): OptionalPromise<void> {
+    setItemById(_id: number, _item: PdfSlide): OptionalPromise<void> {
         throw new Error('Method not implemented.');
     }
 
@@ -75,7 +75,7 @@ export default class PdfAppDocument
         return items[index] ?? null;
     }
 
-    async getSlideById(id: number) {
+    async getItemById(id: number) {
         const items = await this.getSlides();
         return items.find((item) => item.id === id) ?? null;
     }

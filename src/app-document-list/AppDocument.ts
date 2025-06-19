@@ -88,7 +88,7 @@ export default class AppDocument
         return slides[index] ?? null;
     }
 
-    async getSlideById(id: number) {
+    async getItemById(id: number) {
         const slides = await this.getSlides();
         return (
             slides.find((slide) => {
@@ -97,7 +97,7 @@ export default class AppDocument
         );
     }
 
-    setSlideById(_id: number, _slide: Slide): OptionalPromise<void> {
+    setItemById(_id: number, _slide: Slide): OptionalPromise<void> {
         throw new Error('Method not implemented.');
     }
 

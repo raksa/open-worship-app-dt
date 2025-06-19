@@ -12,10 +12,14 @@ import { copyToClipboard } from '../server/appHelpers';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 import {
+    extractDropData,
     genRemovingAttachedBackgroundMenu,
-    onDropHandling,
+    handleAttachBackgroundDrop,
 } from '../helper/dragHelpers';
 import { useAttachedBackgroundElement } from './BibleItemRenderComp';
+import { DragTypeEnum } from '../helper/DragInf';
+import { stopDraggingState } from '../helper/helpers';
+import BibleItem from './BibleItem';
 
 const LazyRenderBibleItemsComp = lazy(() => {
     return import('./RenderBibleItemsComp');
@@ -73,60 +77,6 @@ function genContextMenu(
     ];
 }
 
-export default function BibleFileComp({
-    index,
-    filePath,
-}: Readonly<{
-    index: number;
-    filePath: string;
-}>) {
-    const attachedBackgroundElement = useAttachedBackgroundElement(filePath);
-    const [data, setData] = useState<Bible | null | undefined>(null);
-    useAppEffectAsync(
-        async (methodContext) => {
-            if (data === null) {
-                const bible = await Bible.fromFilePath(filePath);
-                methodContext.setData(bible);
-            }
-        },
-        [data],
-        { setData },
-    );
-    const handlerChildRendering = (bible: AppDocumentSourceAbs) => {
-        return (
-            <BiblePreview
-                bible={bible as Bible}
-                attachedBackgroundElement={attachedBackgroundElement}
-            />
-        );
-    };
-    const handleReloading = () => {
-        setData(null);
-    };
-    useFileSourceEvents(['update'], handleReloading, [data], filePath);
-    return (
-        <FileItemHandlerComp
-            index={index}
-            data={data}
-            reload={handleReloading}
-            filePath={filePath}
-            className="bible-file"
-            renderChild={handlerChildRendering}
-            isDisabledColorNote
-            userClassName={`p-0 ${data?.isOpened ? 'flex-fill' : ''}`}
-            contextMenuItems={genContextMenu(data, {
-                isAttachedBackgroundElement: !!attachedBackgroundElement,
-            })}
-            isSelected={!!data?.isOpened}
-            onDrop={(event) => {
-                onDropHandling(event, {
-                    filePath,
-                });
-            }}
-        />
-    );
-}
-
 function BiblePreview({
     bible,
     attachedBackgroundElement,
@@ -176,5 +126,71 @@ function BiblePreview({
                 )}
             </div>
         </div>
+    );
+}
+
+export default function BibleFileComp({
+    index,
+    filePath,
+}: Readonly<{
+    index: number;
+    filePath: string;
+}>) {
+    const attachedBackgroundElement = useAttachedBackgroundElement(filePath);
+    const [data, setData] = useState<Bible | null | undefined>(null);
+    useAppEffectAsync(
+        async (methodContext) => {
+            if (data === null) {
+                const bible = await Bible.fromFilePath(filePath);
+                methodContext.setData(bible);
+            }
+        },
+        [data],
+        { setData },
+    );
+    const handlerChildRendering = (bible: AppDocumentSourceAbs) => {
+        return (
+            <BiblePreview
+                bible={bible as Bible}
+                attachedBackgroundElement={attachedBackgroundElement}
+            />
+        );
+    };
+    const handleReloading = () => {
+        setData(null);
+    };
+    useFileSourceEvents(['update'], handleReloading, [data], filePath);
+    const handleDataDropping = async (event: any) => {
+        const droppedData = await extractDropData(event);
+        if (droppedData?.type === DragTypeEnum.BIBLE_ITEM) {
+            stopDraggingState(event);
+            const bibleItem = droppedData.item as BibleItem;
+            if (bibleItem.filePath !== undefined) {
+                data?.moveItemFrom(bibleItem.filePath, bibleItem);
+            } else {
+                data?.saveBibleItem(droppedData.item);
+            }
+        } else {
+            handleAttachBackgroundDrop(event, {
+                filePath,
+            });
+        }
+    };
+    return (
+        <FileItemHandlerComp
+            index={index}
+            data={data}
+            reload={handleReloading}
+            filePath={filePath}
+            className="bible-file"
+            renderChild={handlerChildRendering}
+            isDisabledColorNote
+            userClassName={`p-0 ${data?.isOpened ? 'flex-fill' : ''}`}
+            contextMenuItems={genContextMenu(data, {
+                isAttachedBackgroundElement: !!attachedBackgroundElement,
+            })}
+            isSelected={!!data?.isOpened}
+            onDrop={handleDataDropping}
+        />
     );
 }

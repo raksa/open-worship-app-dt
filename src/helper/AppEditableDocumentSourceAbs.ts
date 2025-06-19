@@ -67,6 +67,14 @@ export abstract class AppDocumentSourceAbs {
     static getInstance(_filePath: string) {
         throw new Error('getInstance must be implemented in derived class');
     }
+
+    static genMetadata() {
+        return {
+            fileVersion: 1,
+            app: 'OpenWorship',
+            initDate: new Date().toJSON(),
+        };
+    }
 }
 
 export default abstract class AppEditableDocumentSourceAbs<
@@ -156,11 +164,7 @@ export default abstract class AppEditableDocumentSourceAbs<
 
     static async create(dir: string, name: string, extraData: AnyObjectType) {
         const data = JSON.stringify({
-            metadata: {
-                fileVersion: 1,
-                app: 'OpenWorship',
-                initDate: new Date().toJSON(),
-            },
+            metadata: super.genMetadata(),
             ...extraData,
         });
         const filePath = await createNewFileDetail(

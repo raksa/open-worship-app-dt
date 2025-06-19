@@ -104,14 +104,13 @@ export async function openBibleItemContextMenu(
         {
             menuElement: '`' + 'Move To',
             onSelect: (event1: any) => {
-                moveBibleItemTo(event1, bible, index);
+                moveBibleItemTo(event1, bible, bibleItem);
             },
         },
         {
             menuElement: '`' + 'Delete',
-            onSelect: () => {
-                bible.deleteItemAtIndex(index);
-                bible.save();
+            onSelect: async () => {
+                await bible.deleteBibleItem(bibleItem);
                 if (bibleItem.filePath !== undefined) {
                     attachBackgroundManager.detachBackground(
                         bibleItem.filePath,

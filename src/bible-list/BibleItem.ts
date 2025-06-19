@@ -147,10 +147,10 @@ export default class BibleItem
         if (this.filePath === null) {
             return false;
         }
-        const bibleItem = bible.getSlideById(this.id) as BibleItem | null;
+        const bibleItem = bible.getItemById(this.id) as BibleItem | null;
         if (bibleItem !== null) {
             bibleItem.update(this);
-            bible.setSlideById(this.id, bibleItem);
+            bible.setItemById(this.id, bibleItem);
             return bible.save();
         }
         return false;
