@@ -1,6 +1,6 @@
 import { useAppStateAsync } from '../helper/debuggerHelpers';
 import { useSelectedLyricContext } from './lyricHelpers';
-import { renderMarkdown } from './markdownHelpers';
+import { renderLyricMarkdown } from './markdownHelpers';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { useMemo } from 'react';
 import { genTimeoutAttempt } from '../helper/helpers';
@@ -8,7 +8,7 @@ import { genTimeoutAttempt } from '../helper/helpers';
 export default function LyricSlidesComp() {
     const selectedLyric = useSelectedLyricContext();
     const [html, setHtml] = useAppStateAsync<string>(() => {
-        return renderMarkdown(selectedLyric);
+        return renderLyricMarkdown(selectedLyric);
     }, [selectedLyric]);
     const attemptTimeout = useMemo(() => {
         return genTimeoutAttempt(500);
@@ -17,7 +17,7 @@ export default function LyricSlidesComp() {
         ['update'],
         async () => {
             attemptTimeout(async () => {
-                setHtml(await renderMarkdown(selectedLyric));
+                setHtml(await renderLyricMarkdown(selectedLyric));
             });
         },
         [],

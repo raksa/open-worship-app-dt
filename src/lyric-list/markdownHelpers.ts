@@ -4,7 +4,18 @@ import CacheManager from '../others/CacheManager';
 import { unlocking } from '../server/appHelpers';
 import appProvider from '../server/appProvider';
 
-function wrapHTML(html: string, theme: string = 'dark') {
+type RenderMarkdownOptions = {
+    isOptimized?: boolean; // If true, will not render music notation
+};
+function wrapHTML({
+    html,
+    theme = 'dark',
+    options = {},
+}: {
+    html: string;
+    theme?: string;
+    options?: RenderMarkdownOptions;
+}) {
     return `
 <!DOCTYPE html>
 <html>
@@ -39,6 +50,16 @@ function wrapHTML(html: string, theme: string = 'dark') {
             overflow: hidden;
         }
         #container {
+            ${
+                options.isOptimized
+                    ? `
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                pointer-events: none;
+                `
+                    : ''
+            }
             width: 100vw;
             height: 100vh;
             overflow: auto;
@@ -61,26 +82,40 @@ function wrapHTML(html: string, theme: string = 'dark') {
 }
 
 const cacher = new CacheManager<string>(10); // 10 second
-export async function renderMarkdown(lyric: Lyric) {
+export async function renderMarkdown(
+    text: string,
+    options?: RenderMarkdownOptions,
+) {
+    const hashKey = appProvider.systemUtils.generateMD5(text);
+    const cached = await cacher.get(hashKey);
+    if (cached) {
+        return cached;
+    }
+    const MarkdownIt = (await import('markdown-it')).default;
+    const MarkdownItMusic = (await import('markdown-it-music')).default;
+    const markdown = new MarkdownIt({ html: true }).use(MarkdownItMusic);
+    (markdown as any).setTheme('dark');
+    let html = '';
+    try {
+        html = wrapHTML({
+            html: markdown.render(text),
+            options,
+        });
+    } catch (error) {
+        handleError(error);
+        html = wrapHTML({
+            html: `<pre>${text}</pre>`,
+        });
+    }
+    await cacher.set(hashKey, html);
+    return html;
+}
+
+export async function renderLyricMarkdown(lyric: Lyric) {
     return unlocking(`lyric-slides-${lyric.filePath}`, async () => {
         const content = await lyric.getContent();
-        const hashKey = appProvider.systemUtils.generateMD5(content);
-        const cached = await cacher.get(hashKey);
-        if (cached) {
-            return cached;
-        }
-        const MarkdownIt = (await import('markdown-it')).default;
-        const MarkdownItMusic = (await import('markdown-it-music')).default;
-        const markdown = new MarkdownIt({ html: true }).use(MarkdownItMusic);
-        (markdown as any).setTheme('dark');
-        let html = '';
-        try {
-            html = wrapHTML(markdown.render(content));
-        } catch (error) {
-            handleError(error);
-            html = wrapHTML(`<pre>${content}</pre>`);
-        }
-        await cacher.set(hashKey, html);
-        return html;
+        return renderMarkdown(content, {
+            isOptimized: true,
+        });
     });
 }
