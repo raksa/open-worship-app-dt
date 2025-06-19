@@ -8,10 +8,17 @@ import AppRangeComp from '../others/AppRangeComp';
 
 const DEFAULT_FONT_SIZE = 100;
 
-function getWidgetRoundPercentageExtraStyle(
-    settingName: string,
+function getWidgetRoundExtraStyle(
+    settingNamePX: string,
+    settingNamePercentage: string,
 ): React.CSSProperties {
-    const percentage = parseInt(getSetting(settingName, '50'));
+    const roundSizePX = parseInt(getSetting(settingNamePX, '0'));
+    if (roundSizePX > 0) {
+        return {
+            borderRadius: `${roundSizePX}px`,
+        };
+    }
+    const percentage = parseInt(getSetting(settingNamePercentage, '50'));
     const roundPercentage = Math.ceil(
         Math.max(0, Math.min(100, percentage)) / 2,
     );
@@ -25,6 +32,13 @@ function genWidgetWidthExtraStyle(settingName: string): React.CSSProperties {
     return {
         width: `${Math.max(1, Math.min(100, widthScale))}%`,
         height: 'auto',
+    };
+}
+
+function genWidgetOpacityExtraStyle(settingName: string): React.CSSProperties {
+    const opacityScale = parseInt(getSetting(settingName, '50'));
+    return {
+        opacity: Math.max(0, Math.min(100, opacityScale)) / 100,
     };
 }
 
@@ -97,6 +111,8 @@ function PropertiesSettingComp({
     setAlignmentData,
     widgetWidthPercentage,
     setWidgetWidthPercentage,
+    opacityPercentage,
+    setOpacityPercentage,
     roundPercentage,
     setRoundPercentage,
     widgetOffsetX,
@@ -106,11 +122,15 @@ function PropertiesSettingComp({
     isFontSize,
     fontSize,
     setFontSize,
+    roundSizePX,
+    setRoundSizePX,
 }: Readonly<{
     alignmentData: string;
     setAlignmentData: (data: string) => void;
     widgetWidthPercentage: number;
     setWidgetWidthPercentage: (value: number) => void;
+    opacityPercentage: number;
+    setOpacityPercentage: (value: number) => void;
     roundPercentage: number;
     setRoundPercentage: (value: number) => void;
     widgetOffsetX: number;
@@ -120,6 +140,8 @@ function PropertiesSettingComp({
     isFontSize: boolean;
     fontSize: number;
     setFontSize: (value: number) => void;
+    roundSizePX: number;
+    setRoundSizePX: (value: number) => void;
 }>) {
     return (
         <div className="d-flex flex-wrap p-1 align-items-center">
@@ -176,10 +198,34 @@ function PropertiesSettingComp({
                 />
             </div>
             <div className="d-flex app-border-white-round m-1">
-                `Round Size:
+                `Opacity:
+                <AppRangeComp
+                    value={opacityPercentage}
+                    title="`Opacity (%)"
+                    setValue={setOpacityPercentage}
+                    defaultSize={{
+                        size: opacityPercentage,
+                        min: 0,
+                        max: 100,
+                        step: 1,
+                    }}
+                    isShowValue
+                />
+            </div>
+            <div
+                className="d-flex app-border-white-round m-1"
+                style={{
+                    opacity: roundSizePX > 0 ? 0.5 : 1,
+                }}
+            >
+                `Round Size %:
                 <AppRangeComp
                     value={roundPercentage}
-                    title="`Round (%)"
+                    title={
+                        roundSizePX > 0
+                            ? 'Set round size pixel to 0 to use this'
+                            : '`Round (%)'
+                    }
                     setValue={setRoundPercentage}
                     defaultSize={{
                         size: roundPercentage,
@@ -189,6 +235,21 @@ function PropertiesSettingComp({
                     }}
                     isShowValue
                 />
+            </div>
+            <div
+                className="d-flex input-group m-1"
+                style={{ width: '260px', height: '35px' }}
+            >
+                <div className="input-group-text">`Round size pixel:</div>
+                <input
+                    type="number"
+                    className="form-control"
+                    value={roundSizePX}
+                    onChange={(event) => {
+                        setRoundSizePX(parseInt(event.target.value) || 0);
+                    }}
+                />
+                <div className="input-group-text">px</div>
             </div>
             {isFontSize ? (
                 <div
@@ -225,19 +286,23 @@ export function useOtherPropsSetting({
 }>) {
     const widgetRoundPercentageSettingName = `${prefix}-setting-show-widget-round-percentage`;
     const widgetWidthPercentageSettingName = `${prefix}-setting-show-widget-width-percentage`;
-    const alignmentSettingName = `${prefix}-setting-alignment-data`;
-    const offsetXSettingName = `${prefix}-setting-offset-x`;
-    const offsetYSettingName = `${prefix}-setting-offset-y`;
-    const fontSizeSettingName = `${prefix}-setting-font-size`;
+    const opacityPercentageSettingName = `${prefix}-setting-show-widget-opacity-percentage`;
+    const alignmentSettingName = `${prefix}-setting-show-widget-alignment-data`;
+    const offsetXSettingName = `${prefix}-setting-show-widget-offset-x`;
+    const offsetYSettingName = `${prefix}-setting-show-widget-offset-y`;
+    const fontSizeSettingName = `${prefix}-setting-show-widget-font-size`;
+    const roundSizePXSettingName = `${prefix}-setting-show-widget-round-size-px`;
 
     const genStyle = () => {
         return {
             position: 'absolute',
             height: 'auto',
-            ...getWidgetRoundPercentageExtraStyle(
+            ...getWidgetRoundExtraStyle(
+                roundSizePXSettingName,
                 widgetRoundPercentageSettingName,
             ),
             ...genWidgetWidthExtraStyle(widgetWidthPercentageSettingName),
+            ...genWidgetOpacityExtraStyle(opacityPercentageSettingName),
             ...genAlignmentExtraStyle(
                 alignmentSettingName,
                 offsetXSettingName,
@@ -282,6 +347,14 @@ export function useOtherPropsSetting({
         setWidgetWidthPercentage(value);
         onChange1();
     };
+    const [opacityPercentage, setOpacityPercentage] = useStateSettingNumber(
+        opacityPercentageSettingName,
+        100,
+    );
+    const setOpacityPercentage1 = (value: number) => {
+        setOpacityPercentage(value);
+        onChange1();
+    };
     const [alignmentData, setAlignmentData] = useStateSettingString(
         alignmentSettingName,
         JSON.stringify({
@@ -301,6 +374,14 @@ export function useOtherPropsSetting({
         setFontSize(value);
         onChange1();
     };
+    const [roundSizePX, setRoundSizePX] = useStateSettingNumber(
+        roundSizePXSettingName,
+        0,
+    );
+    const setRoundSizePX1 = (value: number) => {
+        setRoundSizePX(value);
+        onChange1();
+    };
 
     return {
         genStyle,
@@ -310,6 +391,8 @@ export function useOtherPropsSetting({
                 setAlignmentData={setAlignmentData1}
                 widgetWidthPercentage={widgetWidthPercentage}
                 setWidgetWidthPercentage={setWidgetWidthPercentage1}
+                opacityPercentage={opacityPercentage}
+                setOpacityPercentage={setOpacityPercentage1}
                 roundPercentage={roundPercentage}
                 setRoundPercentage={setRoundPercentage1}
                 widgetOffsetX={widgetOffsetX}
@@ -319,6 +402,8 @@ export function useOtherPropsSetting({
                 isFontSize={isFontSize}
                 fontSize={fontSize}
                 setFontSize={setFontSize1}
+                roundSizePX={roundSizePX}
+                setRoundSizePX={setRoundSizePX1}
             />
         ),
     };

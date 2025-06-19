@@ -26,6 +26,7 @@ export default class ScreenOtherManager extends ScreenEventHandler<ScreenOtherEv
     static readonly eventNamePrefix: string = 'screen-alert-m';
     private _div: HTMLDivElement | null = null;
     alertData: AlertDataType;
+    clearCameraTracks: () => void = () => {};
 
     constructor(screenManagerBase: ScreenManagerBase) {
         super(screenManagerBase);
@@ -309,6 +310,8 @@ export default class ScreenOtherManager extends ScreenEventHandler<ScreenOtherEv
             id: cameraId,
             container: this.divCamera,
             extraStyle: this.alertData.cameraData.extraStyle,
+        }).then((clearTracks) => {
+            this.clearCameraTracks = clearTracks ?? (() => {});
         });
     }
 
@@ -319,6 +322,10 @@ export default class ScreenOtherManager extends ScreenEventHandler<ScreenOtherEv
     }
 
     cleanRender(divContainer: HTMLDivElement) {
+        if (divContainer === this.divCamera) {
+            this.clearCameraTracks();
+            this.clearCameraTracks = () => {};
+        }
         const childList = Array.from(divContainer.children);
         childList.forEach((child) => {
             removeAlert(child);

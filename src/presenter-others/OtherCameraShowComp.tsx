@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { useAppEffect, useAppEffectAsync } from '../helper/debuggerHelpers';
+import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { useStateSettingBoolean } from '../helper/settingHelpers';
 import OtherRenderHeaderTitleComp from './OtherRenderHeaderTitleComp';
 import LoadingComp from '../others/LoadingComp';
@@ -27,11 +27,11 @@ function RenderCameraInfoComp({
     genStyle: () => React.CSSProperties;
 }>) {
     const containerRef = useRef<HTMLDivElement>(null);
-    useAppEffect(() => {
+    useAppEffectAsync(async () => {
         if (containerRef.current === null) {
             return;
         }
-        getAndShowMedia({
+        return await getAndShowMedia({
             id: cameraInfo.deviceId,
             container: containerRef.current,
             width,
