@@ -143,6 +143,7 @@ export default function SettingGeneralPathComp() {
     }
     dirSource.setDirPath = async (dirPath: string) => {
         await setSelectedParentDirectory(dirPath);
+        await selectPathForChildDir(dirPath);
         const newDirSource = new ParentDirSource(dirPath);
         setDirSource(newDirSource);
     };
