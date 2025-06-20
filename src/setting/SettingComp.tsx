@@ -34,7 +34,7 @@ type TabKeyType = (typeof tabTypeList)[number][0];
 export default function SettingComp() {
     const [tabKey, setTabKey] = useStateSettingString<TabKeyType>(
         SETTING_SETTING_NAME,
-        'b',
+        'g',
     );
     return (
         <div
