@@ -1,4 +1,4 @@
-import { useScreenManagerEvents } from '../_screen/managers/screenManagerHooks';
+import { useScreenUpdateEvents } from '../_screen/managers/screenManagerHooks';
 import { useAppStateAsync } from '../helper/debuggerHelpers';
 
 export type OptionalPromise<T> = T | Promise<T>;
@@ -13,7 +13,7 @@ export function useFileSourceIsOnScreen(
         onUpdate?.(isOnScreen);
         return isOnScreen;
     }, [filePaths]);
-    useScreenManagerEvents([], undefined, async () => {
+    useScreenUpdateEvents(undefined, async () => {
         const isOnScreen = await checkIsOnScreen(filePaths);
         onUpdate?.(isOnScreen);
         setIsOnScreen(isOnScreen);

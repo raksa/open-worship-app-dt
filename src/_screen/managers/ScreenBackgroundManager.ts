@@ -207,8 +207,7 @@ class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManager
                     return element instanceof HTMLDivElement;
                 },
             );
-            this.div.appendChild(newDiv);
-            aminData.animIn(newDiv);
+            aminData.animIn(newDiv, this.div);
             this.removeOldElements(aminData, childList);
         } else if (this.div.lastChild !== null) {
             const targetDiv = this.div.lastChild as HTMLDivElement;

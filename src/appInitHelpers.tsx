@@ -28,7 +28,7 @@ import { getSetting, setSetting } from './helper/settingHelpers';
 import { unlocking } from './server/appHelpers';
 import { applyFontFamily } from './others/LanguageWrapper';
 import {
-    bringDomToCenterView,
+    bringDomToNearestView,
     HIGHLIGHT_SELECTED_CLASSNAME,
 } from './helper/helpers';
 import {
@@ -168,7 +168,7 @@ export async function main(children: React.ReactNode) {
             null,
             HIGHLIGHT_SELECTED_CLASSNAME,
             (target) => {
-                bringDomToCenterView(target as HTMLDivElement);
+                bringDomToNearestView(target as HTMLDivElement);
             },
         ),
     );

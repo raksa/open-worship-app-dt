@@ -11,7 +11,7 @@ export default function AppDocumentPreviewerComp() {
     if (!selectedAppDocumentContext?.selectedVaryAppDocument) {
         return (
             <div className="w-100 h-100 d-flex justify-content-center align-items-center">
-                <h3 className="text-muted">`No Lyric Selected</h3>
+                <h3 className="text-muted">`No App Document Selected</h3>
             </div>
         );
     }

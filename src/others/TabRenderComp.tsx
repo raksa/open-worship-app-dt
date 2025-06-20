@@ -4,7 +4,7 @@ import { tran } from '../lang';
 import AppSuspenseComp from './AppSuspenseComp';
 import { OptionalPromise } from './otherHelpers';
 import { useAppStateAsync } from '../helper/debuggerHelpers';
-import { useScreenManagerEvents } from '../_screen/managers/screenManagerHooks';
+import { useScreenUpdateEvents } from '../_screen/managers/screenManagerHooks';
 
 export type TabHeaderPropsType<T> = {
     key: T;
@@ -20,7 +20,7 @@ function useIsOnScreen<T>(tab: TabHeaderPropsType<T>) {
         }
         return tab.checkIsOnScreen(tab.key);
     }, [tab.key]);
-    useScreenManagerEvents([], undefined, async () => {
+    useScreenUpdateEvents(undefined, async () => {
         if (tab.checkIsOnScreen === undefined) {
             return;
         }

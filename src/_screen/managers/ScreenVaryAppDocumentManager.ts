@@ -270,7 +270,6 @@ class ScreenVaryAppDocumentManager extends ScreenEventHandler<ScreenVaryAppDocum
             );
             child.remove();
         });
-        div.appendChild(divContainer);
         divHaftScale.appendChild(target.content);
         Object.assign(divContainer.style, {
             position: 'absolute',
@@ -278,7 +277,7 @@ class ScreenVaryAppDocumentManager extends ScreenEventHandler<ScreenVaryAppDocum
             height: `${this.screenManagerBase.height}px`,
             transform: `scale(${target.scale},${target.scale}) translate(50%, 50%)`,
         });
-        this.slideEffectManager.styleAnim.animIn(divContainer);
+        this.slideEffectManager.styleAnim.animIn(divContainer, div);
     }
 
     get containerStyle(): CSSProperties {

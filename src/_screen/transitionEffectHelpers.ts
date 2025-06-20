@@ -5,8 +5,11 @@ import ScreenEffectManager from './managers/ScreenEffectManager';
 
 export type StyleAnimType = {
     style: string;
-    animIn: (_: HTMLElement) => Promise<void>;
-    animOut: (_: HTMLElement) => Promise<void>;
+    animIn: (
+        targetElement: HTMLElement,
+        parentElement: HTMLElement,
+    ) => Promise<void>;
+    animOut: (targetElement: HTMLElement) => Promise<void>;
     duration: number;
 };
 
@@ -48,21 +51,30 @@ export type GenAnimPropsType = {
 function none(): StyleAnimType {
     return {
         style: '',
-        animIn: async () => void 0,
-        animOut: async () => void 0,
+        animIn: (targetElement: HTMLElement, parentElement: HTMLElement) => {
+            parentElement.appendChild(targetElement);
+            return Promise.resolve();
+        },
+        animOut: () => {
+            return Promise.resolve();
+        },
         duration: 0,
     };
 }
 
-function fade(target: TargetType): StyleAnimType {
-    const duration = 1000;
-    const cssProps = {
-        animationDuration: `${duration / 1e3}s`,
+function genCssProps(duration: number) {
+    const cssProps: React.CSSProperties = {
+        animationDuration: `${Math.ceil(duration / 1000)}s`,
         animationFillMode: 'forwards',
     };
+    return cssProps;
+}
+
+function fade(target: TargetType) {
     const animationNameIn = `${target}-animation-fade-in`;
     const animationNameOut = `${target}animation-fade-out`;
-    return {
+    const anim: StyleAnimType = {
+        duration: 1000,
         style: `
             @keyframes ${animationNameIn} {
                 from {
@@ -81,30 +93,31 @@ function fade(target: TargetType): StyleAnimType {
                 }
             }
         `,
-        animIn: (targetElement: HTMLElement) => {
+        animIn: (targetElement: HTMLElement, parentElement: HTMLElement) => {
             return new Promise((resolve) => {
                 Object.assign(targetElement.style, {
-                    ...cssProps,
+                    ...genCssProps(anim.duration),
                     animationName: animationNameIn,
+                    opacity: 0,
                 });
-                setTimeout(resolve, duration + 100);
+                parentElement.appendChild(targetElement);
+                setTimeout(resolve, anim.duration + 100);
             });
         },
         animOut: (targetElement: HTMLElement) => {
             return new Promise((resolve) => {
                 Object.assign(targetElement.style, {
-                    ...cssProps,
+                    ...genCssProps(anim.duration),
                     animationName: animationNameOut,
                 });
-                setTimeout(resolve, duration + 100);
+                setTimeout(resolve, anim.duration + 100);
             });
         },
-        duration,
     };
+    return anim;
 }
 
-function move(): StyleAnimType {
-    const duration = 500;
+function move() {
     const movingMaker = ({
         from,
         to,
@@ -135,29 +148,28 @@ function move(): StyleAnimType {
         };
         window.requestAnimationFrame(step);
     };
-    return {
+    const anim: StyleAnimType = {
+        duration: 500,
         style: '',
-        animIn: (targetElement: HTMLElement) => {
+        animIn: (targetElement: HTMLElement, parentElement: HTMLElement) => {
             return new Promise<void>((resolve) => {
-                if (targetElement.parentElement === null) {
-                    return;
-                }
-                const rect =
-                    targetElement.parentElement.getBoundingClientRect();
+                parentElement.appendChild(targetElement);
+                const rect = parentElement.getBoundingClientRect();
                 const from = -rect.width;
-                const styleLst = (targetElement.previousSibling as HTMLElement)
-                    ?.style ?? {
+                const siblingStyle = (
+                    targetElement.previousSibling as HTMLElement
+                )?.style ?? {
                     left: '0px',
                 };
-                const styleTarget = targetElement.style;
-                styleTarget.left = `${from}px`;
+                const targetStyle = targetElement.style;
+                targetStyle.left = `${from}px`;
                 movingMaker({
                     from,
                     to: 0,
-                    durationMil: duration,
+                    durationMil: anim.duration,
                     callback: (n, isDone) => {
-                        styleLst.left = `${n + rect.width}px`;
-                        styleTarget.left = `${n}px`;
+                        siblingStyle.left = `${n + rect.width}px`;
+                        targetStyle.left = `${n}px`;
                         if (isDone) {
                             resolve();
                         }
@@ -175,7 +187,7 @@ function move(): StyleAnimType {
                 movingMaker({
                     from: 0,
                     to: rect.width,
-                    durationMil: duration,
+                    durationMil: anim.duration,
                     callback: (n, isDone) => {
                         targetElement.style.left = `${n}px`;
                         if (isDone) {
@@ -185,12 +197,71 @@ function move(): StyleAnimType {
                 });
             });
         },
-        duration,
     };
+    return anim;
 }
 
-function zoom(): StyleAnimType {
-    return none();
+function zoom(target: TargetType): StyleAnimType {
+    const animationNameIn = `${target}-animation-zoom-in`;
+    const animationNameOut = `${target}animation-zoom-out`;
+    const createDiv = (targetElement: HTMLElement) => {
+        const div = document.createElement('div');
+        div.style.position = 'absolute';
+        div.style.left = '0';
+        div.style.top = '0';
+        div.style.width = '100%';
+        div.style.height = '100%';
+        div.appendChild(targetElement);
+        return div;
+    };
+    const anim: StyleAnimType = {
+        duration: 1000,
+        style: `
+            @keyframes ${animationNameIn} {
+                from {
+                    opacity: 0;
+                    transform: scale(0.1);
+                }
+                to {
+                    opacity: 1;
+                    transform: scale(1);
+                }
+            }
+            @keyframes ${animationNameOut} {
+                from {
+                    opacity: 1;
+                    transform: scale(1);
+                }
+                to {
+                    opacity: 0;
+                    transform: scale(0.1);
+                }
+            }
+        `,
+        animIn: (targetElement: HTMLElement, parentElement: HTMLElement) => {
+            return new Promise((resolve) => {
+                const div = createDiv(targetElement);
+                Object.assign(div.style, {
+                    ...genCssProps(anim.duration),
+                    animationName: animationNameIn,
+                    opacity: 0,
+                    transform: 'scale(0.1)',
+                });
+                parentElement.appendChild(div);
+                setTimeout(resolve, anim.duration + 100);
+            });
+        },
+        animOut: (targetElement: HTMLElement) => {
+            return new Promise((resolve) => {
+                Object.assign(targetElement.style, {
+                    ...genCssProps(anim.duration),
+                    animationName: animationNameOut,
+                });
+                setTimeout(resolve, anim.duration + 100);
+            });
+        },
+    };
+    return anim;
 }
 
 export const styleAnimList: {
