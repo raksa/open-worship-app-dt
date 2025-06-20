@@ -127,15 +127,17 @@ export default function FileListHandlerComp({
                             {header}
                         </span>
                         {onNewFile && dirSource.dirPath ? (
-                            <button
-                                className={
-                                    'btn btn-sm btn-outline-info float-end'
-                                }
+                            <div
+                                className="float-end app-caught-hover-pointer"
                                 title="`New File"
                                 onClick={() => setIsCreatingNew(true)}
+                                style={{
+                                    color: 'var(--bs-info-text-emphasis)',
+                                    fontSize: '20px',
+                                }}
                             >
                                 <i className="bi bi-file-earmark-plus" />
-                            </button>
+                            </div>
                         ) : null}
                     </div>
                 ) : null}
