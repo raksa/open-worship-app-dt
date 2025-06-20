@@ -122,7 +122,12 @@ export default function FileListHandlerComp({
                 })}
             >
                 {header !== undefined ? (
-                    <div className="card-header">
+                    <div
+                        className="card-header"
+                        style={{
+                            maxHeight: '35px',
+                        }}
+                    >
                         <span className={isOnScreen ? 'app-on-screen' : ''}>
                             {header}
                         </span>

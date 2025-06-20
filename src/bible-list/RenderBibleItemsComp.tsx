@@ -15,7 +15,7 @@ export default function RenderBibleItemsComp({
             className="list-group"
             style={{
                 minWidth: '220px',
-                maxWidth: '380px',
+                maxWidth: '420px',
             }}
         >
             {items.map((bibleItem, i1) => {
