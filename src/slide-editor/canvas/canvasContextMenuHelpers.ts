@@ -1,7 +1,7 @@
-import { selectFiles } from '../../server/appHelpers';
 import {
     getMimetypeExtensions,
     isSupportedMimetype,
+    selectFiles,
 } from '../../server/fileHelpers';
 import CanvasItem from './CanvasItem';
 import CanvasController from './CanvasController';

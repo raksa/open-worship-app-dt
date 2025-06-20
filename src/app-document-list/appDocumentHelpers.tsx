@@ -19,6 +19,7 @@ import {
     getFileExtension,
     getFileFullName,
     getFileName,
+    getTempPath,
     mimetypePdf,
     pathBasename,
 } from '../server/fileHelpers';
@@ -31,7 +32,7 @@ import {
     hideProgressBard,
     showProgressBard,
 } from '../progress-bar/progressBarHelpers';
-import { convertToPdf, getTempPath } from '../server/appHelpers';
+import { convertToPdf } from '../server/appHelpers';
 import { dirSourceSettingNames } from '../helper/constants';
 import { genShowOnScreensContextMenu } from '../others/FileItemHandlerComp';
 import ScreenVaryAppDocumentManager from '../_screen/managers/ScreenVaryAppDocumentManager';

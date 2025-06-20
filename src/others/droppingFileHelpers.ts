@@ -2,10 +2,10 @@ import {
     fsCopyFilePathToPath,
     isSupportedExt,
     MimetypeNameType,
+    selectFiles,
 } from '../server/fileHelpers';
 import DirSource from '../helper/DirSource';
 import { showSimpleToast } from '../toast/toastHelpers';
-import { selectFiles } from '../server/appHelpers';
 import {
     ContextMenuItemType,
     showAppContextMenu,

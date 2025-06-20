@@ -6,18 +6,17 @@ import {
     fsWriteFile,
     pathJoin,
 } from '../server/fileHelpers';
-import { getUserWritablePath } from '../server/appHelpers';
-import EditingHistoryManager, {
-    useEditingHistoryStatus,
-} from '../editing-manager/EditingHistoryManager';
+import EditingHistoryManager from '../editing-manager/EditingHistoryManager';
 import { useCallback, useMemo, useState } from 'react';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
+import { useEditingHistoryStatus } from '../editing-manager/editingHelpers';
+import { appLocalStorage } from '../setting/directory-setting/appLocalStorage';
 
 const container = getRootElement<HTMLDivElement>();
 const root = createRoot(container);
 
-const filePath = pathJoin(getUserWritablePath(), 'history1.txt');
+const filePath = pathJoin(appLocalStorage.defaultStorage, 'history1.txt');
 
 let timeoutId: any = null;
 function HistoryAppComp() {

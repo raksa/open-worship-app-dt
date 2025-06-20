@@ -21,7 +21,7 @@ import {
 } from './lang';
 import appProvider from './server/appProvider';
 import initCrypto from './_owa-crypto';
-import { useCheckSelectedDir } from './setting/path-setting/directoryHelpers';
+import { useCheckSelectedDir } from './setting/directory-setting/directoryHelpers';
 import { createRoot } from 'react-dom/client';
 import { StrictMode } from 'react';
 import { getSetting, setSetting } from './helper/settingHelpers';
@@ -36,6 +36,7 @@ import {
     handleFullWidgetView,
     onDomChange,
 } from './helper/domHelpers';
+import { appLocalStorage } from './setting/directory-setting/appLocalStorage';
 
 const ERROR_DATETIME_SETTING_NAME = 'error-datetime-setting';
 const ERROR_DURATION = 1000 * 10; // 10 seconds;
@@ -47,7 +48,7 @@ async function confirmLocalStorageErasing() {
             ' storage and reload the app',
     );
     if (isOk) {
-        localStorage.clear();
+        appLocalStorage.clear();
     }
     appProvider.reload();
 }

@@ -6,12 +6,13 @@ import {
     checkShouldSelectChildDir,
     getDefaultDataDir,
     selectPathForChildDir,
-    SELECTED_PARENT_DIR_SETTING_NAME,
-    setSelectedParentDirectory,
-    getSelectedParentDirectory,
 } from './directoryHelpers';
 import { fsCreateDir } from '../../server/fileHelpers';
 import { OptionalPromise } from '../../others/otherHelpers';
+import {
+    appLocalStorage,
+    SELECTED_PARENT_DIR_SETTING_NAME,
+} from './appLocalStorage';
 
 class ParentDirSource extends DirSource {
     _dirPath: string;
@@ -77,7 +78,7 @@ function RenderParentDirectoryComp({
                 <div>
                     <hr />
                     <button
-                        className="btn btn-sm btn-secondary ms-2"
+                        className="btn btn-sm btn-info ms-2"
                         onClick={async () => {
                             await fsCreateDir(defaultPath);
                             selectPathForChildDir(defaultPath);
@@ -134,7 +135,8 @@ function RenderBodyComp({ dirSource }: Readonly<{ dirSource: DirSource }>) {
 
 export default function SettingGeneralPathComp() {
     const [dirSource, setDirSource] = useAppStateAsync(async () => {
-        const selectedParentDir = await getSelectedParentDirectory();
+        const selectedParentDir =
+            await appLocalStorage.getSelectedParentDirectory();
         const dirSource = new ParentDirSource(selectedParentDir ?? '');
         return dirSource;
     });
@@ -142,7 +144,7 @@ export default function SettingGeneralPathComp() {
         return null;
     }
     dirSource.setDirPath = async (dirPath: string) => {
-        await setSelectedParentDirectory(dirPath);
+        await appLocalStorage.setSelectedParentDirectory(dirPath);
         await selectPathForChildDir(dirPath);
         const newDirSource = new ParentDirSource(dirPath);
         setDirSource(newDirSource);

@@ -22,7 +22,7 @@ import { showSimpleToast } from '../toast/toastHelpers';
 import { handleError } from './errorHelpers';
 import FileSourceMetaManager from './FileSourceMetaManager';
 import ColorNoteInf from './ColorNoteInf';
-import { unlocking } from '../server/appHelpers';
+import { electronSendAsync, unlocking } from '../server/appHelpers';
 
 export type SrcData = `data:${string}`;
 
@@ -301,5 +301,12 @@ export default class FileSource
             this.filePath,
             this.filePath,
         );
+    }
+
+    async trashFile() {
+        await electronSendAsync<void>('main:app:trash-path', {
+            path: this.filePath,
+        });
+        FileSource.getInstance(this.filePath).fireDeleteEvent();
     }
 }

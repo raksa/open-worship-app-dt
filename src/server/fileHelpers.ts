@@ -234,12 +234,12 @@ function fsFilePromise<T>(
     ...args: any
 ): Promise<T> {
     return new Promise<T>((resolve, reject) => {
-        args = args || [];
+        args = args ?? [];
         args.push(function (error: any, ...args1: any) {
             if (error) {
                 reject(error as Error);
             } else {
-                args1 = args1 || [];
+                args1 = args1 ?? [];
                 (resolve as any)(...args1);
             }
         });
@@ -428,6 +428,12 @@ export function fsCreateDir(dirPath: string, isRecursive = true) {
     return _fsMkdir(dirPath, isRecursive);
 }
 
+export function fsMkDirSync(dirPath: string, isRecursive = true) {
+    return appProvider.fileUtils.mkdirSync(dirPath, {
+        recursive: isRecursive,
+    });
+}
+
 export async function fsWriteFile(
     filePath: string,
     txt: string,
@@ -438,6 +444,13 @@ export async function fsWriteFile(
         flag: 'w',
     });
     return filePath;
+}
+
+export function fsWriteFileSync(filePath: string, txt: string, encoding?: any) {
+    return appProvider.fileUtils.writeFileSync(filePath, txt, {
+        encoding: encoding ?? 'utf8',
+        flag: 'w',
+    });
 }
 
 export async function fsCreateFile(
@@ -454,6 +467,10 @@ export async function fsCreateFile(
     }
     await _fsWriteFile(filePath, txt);
     return filePath;
+}
+
+export function fsExistSync(filePath: string) {
+    return appProvider.fileUtils.existsSync(filePath);
 }
 
 export async function fsRenameFile(
@@ -480,6 +497,10 @@ export async function fsDeleteFile(filePath: string) {
     }
 }
 
+export function fsUnlinkSync(filePath: string) {
+    return appProvider.fileUtils.unlinkSync(filePath);
+}
+
 export async function fsDeleteDir(filePath: string) {
     if (await fsCheckFileExist(filePath)) {
         throw new Error(`${filePath} is not a directory`);
@@ -491,6 +512,10 @@ export async function fsDeleteDir(filePath: string) {
 
 export function fsReadFile(filePath: string) {
     return _fsReadFile(filePath, 'utf8');
+}
+
+export function fsReadSync(filePath: string) {
+    return appProvider.fileUtils.readFileSync(filePath, 'utf8');
 }
 
 export async function fsCopyFilePathToPath(
@@ -537,4 +562,33 @@ export function getFileFullName(file: File | string) {
     }
     const fileFullName = pathBasename(file);
     return fileFullName;
+}
+
+export function selectDirs() {
+    return appProvider.messageUtils.sendDataSync(
+        'main:app:select-dirs',
+    ) as string[];
+}
+export function selectFiles(
+    filters: {
+        name: string;
+        extensions: string[];
+    }[],
+) {
+    return appProvider.messageUtils.sendDataSync(
+        'main:app:select-files',
+        filters,
+    ) as string[];
+}
+
+export function getUserWritablePath(): string {
+    return appProvider.messageUtils.sendDataSync('main:app:get-data-path');
+}
+
+export function getDesktopPath(): string {
+    return appProvider.messageUtils.sendDataSync('main:app:get-desktop-path');
+}
+
+export function getTempPath(): string {
+    return appProvider.messageUtils.sendDataSync('main:app:get-temp-path');
 }

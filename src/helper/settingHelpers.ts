@@ -1,12 +1,13 @@
 import { useState } from 'react';
 
 import appProvider from '../server/appProvider';
+import { appLocalStorage } from '../setting/directory-setting/appLocalStorage';
 
 export function setSetting(key: string, value: string) {
-    localStorage.setItem(key, value);
+    appLocalStorage.setItem(key, value);
 }
 export function getSetting(key: string, defaultValue?: string): string {
-    const value = localStorage.getItem(key);
+    const value = appLocalStorage.getItem(key);
     if (value === null) {
         if (defaultValue !== undefined) {
             return defaultValue;

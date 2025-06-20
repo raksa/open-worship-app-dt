@@ -1,7 +1,10 @@
 import { showAppConfirm } from '../../popup-widget/popupWidgetHelpers';
-import { getDesktopPath } from '../../server/appHelpers';
 import appProvider from '../../server/appProvider';
-import { fsCheckDirExist, fsCreateDir } from '../../server/fileHelpers';
+import {
+    fsCheckDirExist,
+    fsCreateDir,
+    getDesktopPath,
+} from '../../server/fileHelpers';
 import { showSimpleToast } from '../../toast/toastHelpers';
 import {
     defaultDataDirNames,
@@ -12,23 +15,7 @@ import DirSource from '../../helper/DirSource';
 import { handleError } from '../../helper/errorHelpers';
 import { getSetting, setSetting } from '../../helper/settingHelpers';
 import { goToGeneralSetting } from '../SettingComp';
-
-export const SELECTED_PARENT_DIR_SETTING_NAME = 'selected-parent-dir';
-export async function getSelectedParentDirectory() {
-    const selectedParentDir = localStorage.getItem(
-        SELECTED_PARENT_DIR_SETTING_NAME,
-    );
-    if (!selectedParentDir || !(await fsCheckDirExist(selectedParentDir))) {
-        return null;
-    }
-    return selectedParentDir;
-}
-export async function setSelectedParentDirectory(dirPath: string) {
-    if (!(await fsCheckDirExist(dirPath))) {
-        throw new Error(`Directory does not exist: ${dirPath}`);
-    }
-    localStorage.setItem(SELECTED_PARENT_DIR_SETTING_NAME, dirPath);
-}
+import { appLocalStorage } from './appLocalStorage';
 
 export function getDefaultDataDir() {
     const desktopPath = getDesktopPath();
@@ -42,7 +29,7 @@ export function getDefaultDataDir() {
 export async function selectPathForChildDir(newPath: string) {
     const isOk = await showAppConfirm(
         'Set according paths',
-        `All child dir will be set under "${newPath}"?`,
+        `All child directories will be set under "${newPath}"?`,
     );
     if (!isOk) {
         return;
@@ -88,7 +75,7 @@ export function useCheckSelectedDir() {
     useAppEffectAsync(async () => {
         if (
             !appProvider.isPageSetting &&
-            !(await getSelectedParentDirectory())
+            !(await appLocalStorage.getSelectedParentDirectory())
         ) {
             const isOk = await showAppConfirm(
                 '`No Parent Directory Selected',

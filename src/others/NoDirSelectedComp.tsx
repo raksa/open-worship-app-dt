@@ -1,5 +1,5 @@
 import DirSource from '../helper/DirSource';
-import { selectDefaultDataDirName } from '../setting/path-setting/directoryHelpers';
+import { selectDefaultDataDirName } from '../setting/directory-setting/directoryHelpers';
 
 export default function NoDirSelectedComp({
     dirSource,

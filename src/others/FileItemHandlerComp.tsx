@@ -1,7 +1,7 @@
 import { lazy, useState } from 'react';
 
 import FileReadErrorComp from './FileReadErrorComp';
-import { copyToClipboard, showExplorer, trashFile } from '../server/appHelpers';
+import { copyToClipboard, showExplorer } from '../server/appHelpers';
 import FileSource from '../helper/FileSource';
 import { AppDocumentSourceAbs } from '../helper/AppEditableDocumentSourceAbs';
 import appProvider from '../server/appProvider';
@@ -77,7 +77,8 @@ export function genTrashContextMenu(
                         `"${fileSource.fileFullName}" to trash?`,
                 );
                 if (isOk) {
-                    await trashFile(filePath);
+                    const fileSource = FileSource.getInstance(filePath);
+                    await fileSource.trashFile();
                     onTrashed();
                 }
             },

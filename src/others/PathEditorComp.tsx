@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-import { selectDirs } from '../server/appHelpers';
 import DirSource from '../helper/DirSource';
+import { selectDirs } from '../server/fileHelpers';
 
 export default function PathEditorComp({
     dirSource,

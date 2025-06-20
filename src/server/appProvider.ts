@@ -31,6 +31,11 @@ export type FileUtilsType = {
     unlink: typeof fs.unlink;
     rmdir: typeof fs.rmdir;
     readFile: typeof fs.readFile;
+    readFileSync: typeof fs.readFileSync;
+    writeFileSync: typeof fs.writeFileSync;
+    unlinkSync: typeof fs.unlinkSync;
+    existsSync: typeof fs.existsSync;
+    mkdirSync: typeof fs.mkdirSync;
     copyFile: typeof fs.copyFile;
     copyBlobFile: (
         blobUrl: string,
