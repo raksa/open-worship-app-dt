@@ -65,7 +65,7 @@ function RenderParentDirectoryComp({
     return (
         <div className="d-flex flex-column m-3">
             <div>
-                <div>Parent Directory:</div>
+                <div>`Parent Directory:</div>
                 <div>
                     <PathSelectorComp
                         prefix="path-parent-dir"
@@ -110,7 +110,7 @@ function RenderBodyComp({ dirSource }: Readonly<{ dirSource: DirSource }>) {
     }, [dirSource]);
     return (
         <div className="card">
-            <div className="card-header">Path Settings</div>
+            <div className="card-header">`Path Settings</div>
             <div className="card-body">
                 <RenderParentDirectoryComp dirSource={dirSource} />
                 <hr />

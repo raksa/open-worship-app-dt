@@ -6,10 +6,14 @@ import { useStateSettingBoolean } from '../helper/settingHelpers';
 import DirSource from '../helper/DirSource';
 import AppSuspenseComp from './AppSuspenseComp';
 import { PathPreviewerComp } from './PathPreviewerComp';
-import { showAppContextMenu } from '../context-menu/appContextMenuHelpers';
+import {
+    ContextMenuItemType,
+    showAppContextMenu,
+} from '../context-menu/appContextMenuHelpers';
 import { menuTitleRealFile } from '../helper/helpers';
 import { copyToClipboard, showExplorer } from '../server/appHelpers';
 import { goToGeneralSetting } from '../setting/SettingComp';
+import appProvider from '../server/appProvider';
 
 const LazyPathEditorComp = lazy(() => {
     return import('./PathEditorComp');
@@ -21,7 +25,7 @@ function openContextMenu(dirPath: string, event: any) {
         event.stopPropagation();
         return;
     }
-    showAppContextMenu(event, [
+    const menuItems: ContextMenuItemType[] = [
         {
             menuElement: 'Copy to Clipboard',
             onSelect: () => {
@@ -34,13 +38,16 @@ function openContextMenu(dirPath: string, event: any) {
                 showExplorer(dirPath);
             },
         },
-        {
+    ];
+    if (!appProvider.isPageSetting) {
+        menuItems.push({
             menuElement: '`Edit Parent Path`',
             onSelect: () => {
                 goToGeneralSetting();
             },
-        },
-    ]);
+        });
+    }
+    showAppContextMenu(event, menuItems);
 }
 
 export default function PathSelectorComp({
