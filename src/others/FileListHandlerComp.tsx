@@ -141,7 +141,7 @@ export default function FileListHandlerComp({
                 ) : null}
                 <div
                     className="card-body d-flex flex-column pb-5"
-                    onContextMenu={genOnContextMenu({
+                    onContextMenu={genOnContextMenu(dirSource, {
                         contextMenu,
                         addItems: handleItemsAdding,
                         onStartNewFile:
