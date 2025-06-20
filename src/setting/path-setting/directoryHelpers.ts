@@ -1,17 +1,38 @@
-import { showAppConfirm } from '../popup-widget/popupWidgetHelpers';
-import { getDesktopPath } from '../server/appHelpers';
-import appProvider from '../server/appProvider';
-import { fsCheckDirExist, fsCreateDir } from '../server/fileHelpers';
-import { showSimpleToast } from '../toast/toastHelpers';
-import { defaultDataDirNames, dirSourceSettingNames } from './constants';
-import { useAppEffect } from './debuggerHelpers';
-import DirSource from './DirSource';
-import { handleError } from './errorHelpers';
-import { getSetting, setSetting } from './settingHelpers';
+import { showAppConfirm } from '../../popup-widget/popupWidgetHelpers';
+import { getDesktopPath } from '../../server/appHelpers';
+import appProvider from '../../server/appProvider';
+import { fsCheckDirExist, fsCreateDir } from '../../server/fileHelpers';
+import { showSimpleToast } from '../../toast/toastHelpers';
+import {
+    defaultDataDirNames,
+    dirSourceSettingNames,
+} from '../../helper/constants';
+import { useAppEffect } from '../../helper/debuggerHelpers';
+import DirSource from '../../helper/DirSource';
+import { handleError } from '../../helper/errorHelpers';
+import { getSetting, setSetting } from '../../helper/settingHelpers';
+
+export const SELECTED_PARENT_DIR_SETTING_NAME = 'selected-parent-dir';
+export async function getSelectedParentDirectory() {
+    const selectedParentDir = getSetting(SELECTED_PARENT_DIR_SETTING_NAME);
+    if (!selectedParentDir || !(await fsCheckDirExist(selectedParentDir))) {
+        return null;
+    }
+    return selectedParentDir;
+}
+export async function setSelectedParentDirectory(dirPath: string) {
+    if (!(await fsCheckDirExist(dirPath))) {
+        throw new Error(`Directory does not exist: ${dirPath}`);
+    }
+    setSetting(SELECTED_PARENT_DIR_SETTING_NAME, dirPath);
+}
 
 function getDefaultDataDir() {
     const desktopPath = getDesktopPath();
-    const dirPath = appProvider.pathUtils.join(desktopPath, 'worship');
+    const dirPath = appProvider.pathUtils.join(
+        desktopPath,
+        'open-worship-data',
+    );
     return dirPath;
 }
 

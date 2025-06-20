@@ -9,6 +9,7 @@ import { PathPreviewerComp } from './PathPreviewerComp';
 import { showAppContextMenu } from '../context-menu/appContextMenuHelpers';
 import { menuTitleRealFile } from '../helper/helpers';
 import { copyToClipboard, showExplorer } from '../server/appHelpers';
+import { goToGeneralSetting } from '../setting/SettingComp';
 
 const LazyPathEditorComp = lazy(() => {
     return import('./PathEditorComp');
@@ -31,6 +32,12 @@ function openContextMenu(dirPath: string, event: any) {
             menuElement: menuTitleRealFile,
             onSelect: () => {
                 showExplorer(dirPath);
+            },
+        },
+        {
+            menuElement: '`Edit Parent Path`',
+            onSelect: () => {
+                goToGeneralSetting();
             },
         },
     ]);

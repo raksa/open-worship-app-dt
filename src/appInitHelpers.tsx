@@ -21,7 +21,7 @@ import {
 } from './lang';
 import appProvider from './server/appProvider';
 import initCrypto from './_owa-crypto';
-import { useCheckSelectedDir } from './helper/tourHelpers';
+import { useCheckSelectedDir } from './setting/path-setting/directoryHelpers';
 import { createRoot } from 'react-dom/client';
 import { StrictMode } from 'react';
 import { getSetting, setSetting } from './helper/settingHelpers';

@@ -10,8 +10,36 @@ import {
 } from '../lang';
 import appProvider from '../server/appProvider';
 
+function RenderLanguageButtonComp({
+    currentLocale,
+    langData,
+}: Readonly<{
+    currentLocale: string;
+    langData: LanguageDataType;
+}>) {
+    const btnType =
+        langData.locale === currentLocale ? 'btn-info' : 'btn-outline-info';
+    return (
+        <button
+            key={langData.locale}
+            onClick={() => {
+                setCurrentLocale(langData.locale);
+                appProvider.reload();
+            }}
+            className={`item btn ${btnType}`}
+        >
+            {langData.name}
+            <div
+                className="icon"
+                dangerouslySetInnerHTML={{
+                    __html: langData.flagSVG,
+                }}
+            />
+        </button>
+    );
+}
+
 export default function SettingGeneralLanguageComp() {
-    const [isSelecting, setIsSelecting] = useState(false);
     const [allLangs, setAllLangs] = useState<LanguageDataType[]>([]);
     const currentLocale = getCurrentLocale();
     const selectedLang = getLang(currentLocale);
@@ -25,50 +53,19 @@ export default function SettingGeneralLanguageComp() {
     }
     return (
         <div className="card lang">
-            <div className="card-header">Language</div>
+            <div className="card-header">`Language</div>
             <div className="card-body">
-                <button
-                    className={'btn btn-info flag-item'}
-                    onClick={() => {
-                        setIsSelecting(!isSelecting);
-                    }}
-                >
-                    {selectedLang.name}
-                    <div
-                        className="icon"
-                        dangerouslySetInnerHTML={{
-                            __html: selectedLang.flagSVG,
-                        }}
-                    />
-                </button>
-                {isSelecting && (
-                    <div className="options d-flex flex-wrap">
-                        {allLangs.map((lang) => {
-                            const btnType =
-                                lang.locale === currentLocale
-                                    ? 'btn-info'
-                                    : 'btn-outline-info';
-                            return (
-                                <button
-                                    key={lang.locale}
-                                    onClick={() => {
-                                        setCurrentLocale(lang.locale);
-                                        appProvider.reload();
-                                    }}
-                                    className={`item btn ${btnType}`}
-                                >
-                                    {lang.name}
-                                    <div
-                                        className="icon"
-                                        dangerouslySetInnerHTML={{
-                                            __html: lang.flagSVG,
-                                        }}
-                                    />
-                                </button>
-                            );
-                        })}
-                    </div>
-                )}
+                <div className="options d-flex flex-wrap">
+                    {allLangs.map((langData) => {
+                        return (
+                            <RenderLanguageButtonComp
+                                key={langData.locale}
+                                currentLocale={currentLocale}
+                                langData={langData}
+                            />
+                        );
+                    })}
+                </div>
             </div>
         </div>
     );

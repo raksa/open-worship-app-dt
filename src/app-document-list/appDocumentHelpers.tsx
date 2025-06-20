@@ -280,7 +280,7 @@ export async function convertOfficeFile(
 }
 
 export async function selectSlide(event: any, currentFilePath: string) {
-    const dirSource = await DirSource.getInstance(dirSourceSettingNames.SLIDE);
+    const dirSource = await DirSource.getInstance(dirSourceSettingNames.DOCUMENT);
     const newFilePaths = await dirSource.getFilePaths('slide');
     if (!newFilePaths?.length) {
         return null;
