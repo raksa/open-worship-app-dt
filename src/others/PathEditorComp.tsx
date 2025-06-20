@@ -13,11 +13,11 @@ export default function PathEditorComp({
         setPath(newPath);
         dirSource.dirPath = newPath;
     };
-    let dirValidCN = 'is-valid';
+    let dirValidClassname = 'is-valid';
     if (dirSource.isDirPathValid === null) {
-        dirValidCN = '';
+        dirValidClassname = '';
     } else if (!dirSource.isDirPathValid) {
-        dirValidCN = 'is-invalid';
+        dirValidClassname = 'is-invalid';
     }
     return (
         <div className="input-group mb-3">
@@ -34,7 +34,7 @@ export default function PathEditorComp({
             ) : null}
             <input
                 type="text"
-                className={`form-control ${dirValidCN}`}
+                className={`form-control ${dirValidClassname}`}
                 value={path}
                 onChange={(event) => {
                     setPath1(event.target.value);

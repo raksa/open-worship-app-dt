@@ -10,7 +10,13 @@ export default function SettingBibleJsonComp() {
         useDownloadedBibleInfoList();
     const [onlineBbInfoList, setOnlineBbInfoList] = useOnlineBibleInfoList();
     return (
-        <div className="w-100 app-border-white-round p-2">
+        <div
+            className="app-border-white-round p-2"
+            style={{
+                maxWidth: '800px',
+                margin: 'auto',
+            }}
+        >
             <h3>Downloaded Bible List</h3>
             <SettingDownloadedBibleComp
                 onlineBibleInfoList={onlineBbInfoList}

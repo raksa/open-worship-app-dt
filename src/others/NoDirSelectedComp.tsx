@@ -1,5 +1,25 @@
 import DirSource from '../helper/DirSource';
 import { selectDefaultDataDirName } from '../setting/directory-setting/directoryHelpers';
+import { goToGeneralSetting } from '../setting/SettingComp';
+
+export function SelectDefaultDirButton({
+    dirSource,
+    defaultFolderName,
+}: Readonly<{
+    dirSource: DirSource;
+    defaultFolderName: string;
+}>) {
+    return (
+        <button
+            className="btn btn-sm btn-info"
+            onClick={() => {
+                selectDefaultDataDirName(dirSource, defaultFolderName);
+            }}
+        >
+            `Select Default "{defaultFolderName}"
+        </button>
+    );
+}
 
 export default function NoDirSelectedComp({
     dirSource,
@@ -9,18 +29,31 @@ export default function NoDirSelectedComp({
     defaultFolderName: string;
 }>) {
     return (
-        <div className="card-body pb-5">
-            <div className="alert alert-warning">
-                <i className="bi bi-info-circle" />
-                <div className="ms-2">No directory selected</div>
-                <button
-                    className="btn btn-info"
-                    onClick={() => {
-                        selectDefaultDataDirName(dirSource, defaultFolderName);
+        <div className="card p-1">
+            <div className="card-body">
+                <div
+                    className="ms-2"
+                    style={{
+                        color: 'yellow',
                     }}
                 >
-                    Select Default "{defaultFolderName}"
-                </button>
+                    <i className="bi bi-info-circle" />
+                    <span>No directory selected</span>
+                </div>
+                <div className="btn-group control">
+                    <SelectDefaultDirButton
+                        dirSource={dirSource}
+                        defaultFolderName={defaultFolderName}
+                    />
+                    <button
+                        className="btn btn-sm btn-warning"
+                        onClick={() => {
+                            goToGeneralSetting();
+                        }}
+                    >
+                        `Go to Settings
+                    </button>
+                </div>
             </div>
         </div>
     );

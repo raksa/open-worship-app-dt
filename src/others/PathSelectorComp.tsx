@@ -1,8 +1,7 @@
 import './PathSelectorComp.scss';
 
-import { lazy } from 'react';
+import { lazy, useState } from 'react';
 
-import { useStateSettingBoolean } from '../helper/settingHelpers';
 import DirSource from '../helper/DirSource';
 import AppSuspenseComp from './AppSuspenseComp';
 import { PathPreviewerComp } from './PathPreviewerComp';
@@ -52,17 +51,13 @@ function openContextMenu(dirPath: string, event: any) {
 
 export default function PathSelectorComp({
     dirSource,
-    prefix,
     addItems,
 }: Readonly<{
     dirSource: DirSource;
     prefix: string;
     addItems?: () => void;
 }>) {
-    const [showing, setShowing] = useStateSettingBoolean(
-        `${prefix}-selector-opened`,
-        false,
-    );
+    const [showing, setShowing] = useState(false);
     const dirPath = dirSource.dirPath;
     const isShowingEditor = !dirPath || showing;
     return (

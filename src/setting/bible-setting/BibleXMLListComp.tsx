@@ -189,7 +189,7 @@ export default function BibleXMLListComp({
     return (
         <>
             <h3>Bibles XML {buttons}</h3>
-            <div className="w-100 app-border-white-round p-2">
+            <div className="w-100">
                 <ul className="list-group d-flex flex-fill">
                     {Object.entries(bibleKeysMap).map(
                         ([bibleKey, filePath]) => {

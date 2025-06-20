@@ -37,47 +37,32 @@ export default function SettingComp() {
         'g',
     );
     return (
-        <div
-            id="app-setting"
-            className="shadow card w-100 h-100 overflow-hidden"
-        >
-            <div className="card-body d-flex flex-column">
-                <div className="setting-header d-flex">
-                    <TabRenderComp<TabKeyType>
-                        tabs={tabTypeList.map(([key, name]) => {
-                            return {
-                                key,
-                                title: name,
-                            };
-                        })}
-                        activeTab={tabKey}
-                        setActiveTab={setTabKey}
-                    />
-                </div>
-                <div className="setting-body flex-fill">
-                    <div
-                        style={{
-                            margin: 'auto',
-                            maxWidth: '600px',
-                        }}
-                    >
-                        {tabTypeList.map(([type, _, target]) => {
-                            return genTabBody<TabKeyType>(tabKey, [
-                                type,
-                                target,
-                            ]);
-                        })}
-                    </div>
+        <div id="app-setting" className="card w-100 h-100 overflow-hidden">
+            <div className="card-header">
+                <TabRenderComp<TabKeyType>
+                    tabs={tabTypeList.map(([key, name]) => {
+                        return {
+                            key,
+                            title: name,
+                        };
+                    })}
+                    activeTab={tabKey}
+                    setActiveTab={setTabKey}
+                />
+                <div
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        right: 0,
+                    }}
+                >
+                    <QuickOrBackButtonComp title="Quit Setting" />
                 </div>
             </div>
-            <div
-                style={{
-                    position: 'fixed',
-                    top: 0,
-                    right: 0,
-                }}
-            >
-                <QuickOrBackButtonComp title="Quit Setting" />
+            <div className="card-body overflow-hidden">
+                {tabTypeList.map(([type, _, target]) => {
+                    return genTabBody<TabKeyType>(tabKey, [type, target]);
+                })}
             </div>
         </div>
     );

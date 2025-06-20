@@ -99,7 +99,7 @@ export default function BibleXMLImportComp({
                 </div>
             )}
             <form onSubmit={handleFormSubmitting}>
-                <div className="app-border-white-round p-2">
+                <div className="p-1">
                     {isValidUrl ? null : (
                         <div className="input-group">
                             <input

@@ -1,6 +1,9 @@
 import PathSelectorComp from '../../others/PathSelectorComp';
 import { useAppEffect, useAppStateAsync } from '../../helper/debuggerHelpers';
-import { dirSourceSettingNames } from '../../helper/constants';
+import {
+    defaultDataDirNames,
+    dirSourceSettingNames,
+} from '../../helper/constants';
 import DirSource from '../../helper/DirSource';
 import {
     checkShouldSelectChildDir,
@@ -13,6 +16,8 @@ import {
     appLocalStorage,
     SELECTED_PARENT_DIR_SETTING_NAME,
 } from './appLocalStorage';
+import { SelectDefaultDirButton } from '../../others/NoDirSelectedComp';
+import { useGenDirSource } from '../../helper/dirSourceHelpers';
 
 class ParentDirSource extends DirSource {
     _dirPath: string;
@@ -36,25 +41,36 @@ class ParentDirSource extends DirSource {
 function RenderPathElementComp({
     title,
     settingName,
+    defaultFolderName,
 }: Readonly<{
     title: string;
     settingName: string;
+    defaultFolderName: string;
 }>) {
-    const [dirSource] = useAppStateAsync(() => {
-        return DirSource.getInstance(settingName);
-    });
+    const dirSource = useGenDirSource(settingName);
     if (!dirSource) {
         return null;
     }
     return (
-        <div className="d-flex m-3">
+        <div className="d-flex w-100 flex-column">
             <div>{title}:</div>
-            <div>
-                <PathSelectorComp
-                    prefix={`path-${settingName}`}
-                    dirSource={dirSource}
-                />
+            <div className="d-flex">
+                <div className="flex-grow-1">
+                    <PathSelectorComp
+                        prefix={`path-${settingName}`}
+                        dirSource={dirSource}
+                    />
+                </div>
+                {!dirSource.dirPath ? (
+                    <div className="m-1">
+                        <SelectDefaultDirButton
+                            dirSource={dirSource}
+                            defaultFolderName={defaultFolderName}
+                        />
+                    </div>
+                ) : null}
             </div>
+            <hr />
         </div>
     );
 }
@@ -64,8 +80,8 @@ function RenderParentDirectoryComp({
 }: Readonly<{ dirSource: DirSource }>) {
     const defaultPath = getDefaultDataDir();
     return (
-        <div className="d-flex flex-column m-3">
-            <div>
+        <div className="d-flex flex-column">
+            <div className="app-highlight-selected p-2">
                 <div>`Parent Directory:</div>
                 <div>
                     <PathSelectorComp
@@ -94,14 +110,29 @@ function RenderParentDirectoryComp({
 }
 
 const titleSettingNames = {
-    Documents: dirSourceSettingNames.DOCUMENT,
-    Lyrics: dirSourceSettingNames.LYRIC,
-    Playlists: dirSourceSettingNames.PLAYLIST,
-    'Background Images': dirSourceSettingNames.BACKGROUND_IMAGE,
-    'Background Videos': dirSourceSettingNames.BACKGROUND_VIDEO,
-    'Background Sounds': dirSourceSettingNames.BACKGROUND_SOUND,
-    'Bible Present': dirSourceSettingNames.BIBLE_PRESENT,
-    'Bible Reader': dirSourceSettingNames.BIBLE_READ,
+    Documents: [dirSourceSettingNames.DOCUMENT, defaultDataDirNames.DOCUMENT],
+    Lyrics: [dirSourceSettingNames.LYRIC, defaultDataDirNames.LYRIC],
+    Playlists: [dirSourceSettingNames.PLAYLIST, defaultDataDirNames.PLAYLIST],
+    'Background Images': [
+        dirSourceSettingNames.BACKGROUND_IMAGE,
+        defaultDataDirNames.BACKGROUND_IMAGE,
+    ],
+    'Background Videos': [
+        dirSourceSettingNames.BACKGROUND_VIDEO,
+        defaultDataDirNames.BACKGROUND_VIDEO,
+    ],
+    'Background Sounds': [
+        dirSourceSettingNames.BACKGROUND_SOUND,
+        defaultDataDirNames.BACKGROUND_SOUND,
+    ],
+    'Bible Present': [
+        dirSourceSettingNames.BIBLE_PRESENT,
+        defaultDataDirNames.BIBLE_PRESENT,
+    ],
+    'Bible Reader': [
+        dirSourceSettingNames.BIBLE_READ,
+        defaultDataDirNames.BIBLE_READ,
+    ],
 };
 function RenderBodyComp({ dirSource }: Readonly<{ dirSource: DirSource }>) {
     useAppEffect(() => {
@@ -112,22 +143,24 @@ function RenderBodyComp({ dirSource }: Readonly<{ dirSource: DirSource }>) {
     return (
         <div className="card">
             <div className="card-header">`Path Settings</div>
-            <div className="card-body">
+            <div className="card-body w-100 p-2">
                 <RenderParentDirectoryComp dirSource={dirSource} />
-                <hr />
-                {dirSource.dirPath
-                    ? Object.entries(titleSettingNames).map(
-                          ([title, settingName]) => {
-                              return (
-                                  <RenderPathElementComp
-                                      key={title}
-                                      title={title}
-                                      settingName={settingName}
-                                  />
-                              );
-                          },
-                      )
-                    : null}
+                <div className="app-border-white-round p-1">
+                    {dirSource.dirPath
+                        ? Object.entries(titleSettingNames).map(
+                              ([title, [settingName, defaultFolderName]]) => {
+                                  return (
+                                      <RenderPathElementComp
+                                          key={title}
+                                          title={title}
+                                          settingName={settingName}
+                                          defaultFolderName={defaultFolderName}
+                                      />
+                                  );
+                              },
+                          )
+                        : null}
+                </div>
             </div>
         </div>
     );
