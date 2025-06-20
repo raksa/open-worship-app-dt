@@ -5,7 +5,8 @@ import { unlocking } from '../server/appHelpers';
 import appProvider from '../server/appProvider';
 
 type RenderMarkdownOptions = {
-    isOptimized?: boolean; // If true, will not render music notation
+    isJustifyCenter?: boolean;
+    isDisablePointerEvents?: boolean;
 };
 function wrapHTML({
     html,
@@ -51,11 +52,17 @@ function wrapHTML({
         }
         #container {
             ${
-                options.isOptimized
+                options.isJustifyCenter
                     ? `
                 display: flex;
                 flex-direction: column;
                 align-items: center;
+                `
+                    : ''
+            }
+            ${
+                options.isDisablePointerEvents
+                    ? `
                 pointer-events: none;
                 `
                     : ''
@@ -115,7 +122,7 @@ export async function renderLyricMarkdown(lyric: Lyric) {
     return unlocking(`lyric-slides-${lyric.filePath}`, async () => {
         const content = await lyric.getContent();
         return renderMarkdown(content, {
-            isOptimized: true,
+            isJustifyCenter: true,
         });
     });
 }
