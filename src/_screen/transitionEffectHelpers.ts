@@ -3,6 +3,12 @@ import { useState } from 'react';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import ScreenEffectManager from './managers/ScreenEffectManager';
 
+const ZOOM_CONTAINER_CLASS = 'zoom-container';
+
+function checkIsZoomContainer(targetElement: HTMLElement): boolean {
+    return targetElement.classList.contains(ZOOM_CONTAINER_CLASS);
+}
+
 export type StyleAnimType = {
     style: string;
     animIn: (
@@ -106,6 +112,9 @@ function fade(target: TargetType) {
         },
         animOut: (targetElement: HTMLElement) => {
             return new Promise((resolve) => {
+                if (checkIsZoomContainer(targetElement)) {
+                    return resolve();
+                }
                 Object.assign(targetElement.style, {
                     ...genCssProps(anim.duration),
                     animationName: animationNameOut,
@@ -179,11 +188,11 @@ function move() {
         },
         animOut: (targetElement: HTMLElement) => {
             return new Promise<void>((resolve) => {
-                if (targetElement.parentElement === null) {
-                    return;
+                if (checkIsZoomContainer(targetElement)) {
+                    return resolve();
                 }
                 const rect =
-                    targetElement.parentElement.getBoundingClientRect();
+                    targetElement.parentElement!.getBoundingClientRect();
                 movingMaker({
                     from: 0,
                     to: rect.width,
@@ -206,17 +215,20 @@ function zoom(target: TargetType): StyleAnimType {
     const animationNameOut = `${target}animation-zoom-out`;
     const createDiv = (targetElement: HTMLElement) => {
         const div = document.createElement('div');
-        div.style.position = 'absolute';
-        div.style.left = '0';
-        div.style.top = '0';
-        div.style.width = '100%';
-        div.style.height = '100%';
+        div.classList.add('zoom-container');
         div.appendChild(targetElement);
         return div;
     };
     const anim: StyleAnimType = {
-        duration: 1000,
+        duration: 500,
         style: `
+            .zoom-container {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+            }
             @keyframes ${animationNameIn} {
                 from {
                     opacity: 0;
@@ -253,6 +265,9 @@ function zoom(target: TargetType): StyleAnimType {
         },
         animOut: (targetElement: HTMLElement) => {
             return new Promise((resolve) => {
+                if (!checkIsZoomContainer(targetElement)) {
+                    return resolve();
+                }
                 Object.assign(targetElement.style, {
                     ...genCssProps(anim.duration),
                     animationName: animationNameOut,

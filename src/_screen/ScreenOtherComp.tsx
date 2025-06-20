@@ -10,7 +10,7 @@ import {
 
 export default function ScreenOtherComp() {
     const screenManager = useScreenManagerContext();
-    useScreenManagerEvents(['resize'], screenManager, () => {
+    useScreenManagerEvents(['refresh'], screenManager, () => {
         screenManager.screenOtherManager.renderAll();
     });
     const div = useRef<HTMLDivElement>(null);

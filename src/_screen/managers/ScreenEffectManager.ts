@@ -46,6 +46,7 @@ class ScreenEffectManager extends EventHandler<PTFEventType> {
         setSetting(this.settingName, value);
         this.sendSyncScreen();
         this.addPropEvent('update');
+        this.screenManagerBase.fireRefreshEvent();
     }
     get styleAnim() {
         return styleAnimList[this.effectType](this.target);

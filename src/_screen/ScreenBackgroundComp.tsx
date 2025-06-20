@@ -17,7 +17,7 @@ import {
 export default function ScreenBackgroundComp() {
     const screenManager = useScreenManagerContext();
     const { screenBackgroundManager } = screenManager;
-    useScreenManagerEvents(['resize'], screenManager, () => {
+    useScreenManagerEvents(['refresh'], screenManager, () => {
         screenBackgroundManager.render();
     });
     const div = useRef<HTMLDivElement>(null);

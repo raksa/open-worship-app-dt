@@ -5,6 +5,7 @@ export default function ScreenEffectControlComp() {
     const screenManager = useScreenManagerContext();
     return (
         <>
+            <small>`Transition:</small>
             <RenderTransitionEffectComp
                 title="Slide:"
                 domTitle="Slide transition"
