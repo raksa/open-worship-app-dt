@@ -23,7 +23,7 @@ import LoadingComp from '../../others/LoadingComp';
 import {
     DEFAULT_THUMBNAIL_SIZE_FACTOR,
     useAnyItemSelected,
-    useSelectedVaryAppDocumentContext,
+    useVaryAppDocumentContext,
     VaryAppDocumentItemType,
 } from '../../app-document-list/appDocumentHelpers';
 import SlideAutoPlayComp from '../../slide-auto-play/SlideAutoPlayComp';
@@ -32,7 +32,7 @@ const varyAppDocumentItemsToView: { [key: string]: VaryAppDocumentItemType } =
     {};
 
 function useAppDocumentItems() {
-    const selectedAppDocument = useSelectedVaryAppDocumentContext();
+    const selectedAppDocument = useVaryAppDocumentContext();
     const [varyAppDocumentItems, setVaryAppDocumentItems] = useAppStateAsync<
         VaryAppDocumentItemType[]
     >(() => {

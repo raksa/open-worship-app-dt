@@ -6,10 +6,10 @@ import {
     MAX_THUMBNAIL_SCALE,
     THUMBNAIL_SCALE_STEP,
     selectSlide,
-    useSelectedVaryAppDocumentContext,
     useSelectedAppDocumentSetterContext,
     VaryAppDocumentItemType,
     toKeyByFilePath,
+    useVaryAppDocumentContext,
 } from '../../app-document-list/appDocumentHelpers';
 import AppRangeComp from '../../others/AppRangeComp';
 import { useAppDocumentItemThumbnailSizeScale } from '../../event/VaryAppDocumentEventListener';
@@ -80,7 +80,7 @@ export const defaultRangeSize = {
     step: THUMBNAIL_SCALE_STEP,
 };
 export default function AppDocumentPreviewerFooterComp() {
-    const selectedVaryAppDocument = useSelectedVaryAppDocumentContext();
+    const selectedVaryAppDocument = useVaryAppDocumentContext();
     const setSelectedSlide = useSelectedAppDocumentSetterContext();
     const [thumbnailSizeScale, setThumbnailSizeScale] =
         useAppDocumentItemThumbnailSizeScale();

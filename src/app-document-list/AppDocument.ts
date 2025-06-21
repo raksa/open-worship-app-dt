@@ -36,6 +36,7 @@ export default class AppDocument
     implements ItemSourceInf<Slide>
 {
     static readonly mimetypeName: MimetypeNameType = 'slide';
+    isEditable = true;
 
     async getSlides() {
         let jsonData = await this.getJsonData();

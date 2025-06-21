@@ -6,7 +6,7 @@ import PdfAppDocumentItemRenderComp from './PdfSlideRenderComp';
 import { handleAppDocumentItemSelecting } from './varyAppDocumentHelpers';
 import {
     useSelectedEditingSlideSetterContext,
-    useSelectedVaryAppDocumentContext,
+    useVaryAppDocumentContext,
     VaryAppDocumentItemType,
 } from '../../app-document-list/appDocumentHelpers';
 import PdfSlide from '../../app-document-list/PdfSlide';
@@ -28,7 +28,7 @@ export default function VaryAppDocumentItemRenderWrapperComp({
     index: number;
     setDraggingIndex: (index: number | null) => void;
 }>) {
-    const selectedAppDocument = useSelectedVaryAppDocumentContext();
+    const selectedAppDocument = useVaryAppDocumentContext();
     const setSelectedAppDocumentItem = useSelectedEditingSlideSetterContext();
     const handleDropping = (id: number, isLeft: boolean) => {
         if (!AppDocument.checkIsThisType(selectedAppDocument)) {

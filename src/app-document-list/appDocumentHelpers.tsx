@@ -317,12 +317,16 @@ function useContext() {
     return context;
 }
 
-export function useSelectedVaryAppDocumentContext() {
-    const context = useContext();
-    if (context.selectedVaryAppDocument === null) {
-        throw new Error('No selected document');
+export const VaryAppDocumentContext = createContext<VaryAppDocumentType | null>(
+    null,
+);
+
+export function useVaryAppDocumentContext() {
+    const varyAppDocument = use(VaryAppDocumentContext);
+    if (varyAppDocument === null) {
+        throw new Error('No VaryAppDocumentContext found');
     }
-    return context.selectedVaryAppDocument;
+    return varyAppDocument;
 }
 
 export function useSelectedAppDocumentSetterContext() {

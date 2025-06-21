@@ -4,7 +4,10 @@ import { use } from 'react';
 
 import VaryAppDocumentItemsPreviewerComp from './VaryAppDocumentItemsPreviewerComp';
 import AppDocumentPreviewerFooterComp from './AppDocumentPreviewerFooterComp';
-import { SelectedVaryAppDocumentContext } from '../../app-document-list/appDocumentHelpers';
+import {
+    SelectedVaryAppDocumentContext,
+    VaryAppDocumentContext,
+} from '../../app-document-list/appDocumentHelpers';
 
 export default function AppDocumentPreviewerComp() {
     const selectedAppDocumentContext = use(SelectedVaryAppDocumentContext);
@@ -16,11 +19,15 @@ export default function AppDocumentPreviewerComp() {
         );
     }
     return (
-        <div id="slide-previewer" className="card w-100 h-100">
+        <VaryAppDocumentContext
+            value={selectedAppDocumentContext.selectedVaryAppDocument}
+        >
             <div className="card-body w-100 h-100 overflow-hidden">
-                <VaryAppDocumentItemsPreviewerComp />
+                <div className="slide-previewer card w-100 h-100">
+                    <VaryAppDocumentItemsPreviewerComp />
+                </div>
+                <AppDocumentPreviewerFooterComp />
             </div>
-            <AppDocumentPreviewerFooterComp />
-        </div>
+        </VaryAppDocumentContext>
     );
 }

@@ -1,7 +1,7 @@
 import { getDefaultScreenDisplay } from '../../_screen/managers/screenHelpers';
 import {
-    useSelectedVaryAppDocumentContext,
     useSlideWrongDimension,
+    useVaryAppDocumentContext,
 } from '../../app-document-list/appDocumentHelpers';
 import AppDocument, {
     WrongDimensionType,
@@ -14,7 +14,7 @@ function CheckingDimensionComp({
 }: Readonly<{
     wrongDimension: WrongDimensionType;
 }>) {
-    const selectedVaryAppDocument = useSelectedVaryAppDocumentContext();
+    const selectedVaryAppDocument = useVaryAppDocumentContext();
     const screenDisplay = getDefaultScreenDisplay();
     if (!AppDocument.checkIsThisType(selectedVaryAppDocument)) {
         return null;
@@ -38,7 +38,7 @@ function CheckingDimensionComp({
 }
 
 export default function SlidesMenuComp() {
-    const selectedVaryAppDocument = useSelectedVaryAppDocumentContext();
+    const selectedVaryAppDocument = useVaryAppDocumentContext();
     const screenDisplay = useMemo(() => {
         return getDefaultScreenDisplay();
     }, []);

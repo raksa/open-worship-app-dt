@@ -1,71 +1,75 @@
-import { useMemo } from 'react';
+import '../app-document-presenter/items/SlidePreviewer.scss';
 
-import { useAppStateAsync } from '../helper/debuggerHelpers';
+import { useState } from 'react';
+
 import { useSelectedLyricContext } from './lyricHelpers';
-import { HTMLDataType, renderLyricSlidesMarkdown } from './markdownHelpers';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
-import { genTimeoutAttempt } from '../helper/helpers';
+import { VaryAppDocumentContext } from '../app-document-list/appDocumentHelpers';
+import VaryAppDocumentItemsPreviewerComp from '../app-document-presenter/items/VaryAppDocumentItemsPreviewerComp';
+import AppDocument from '../app-document-list/AppDocument';
+import Lyric from './Lyric';
+import Slide from '../app-document-list/Slide';
+import { getDefaultScreenDisplay } from '../_screen/managers/screenHelpers';
+import AppDocumentPreviewerFooterComp from '../app-document-presenter/items/AppDocumentPreviewerFooterComp';
+import { MimetypeNameType } from '../server/fileHelpers';
 
-function RenderItemComp({ html }: Readonly<{ html: string }>) {
-    return (
-        <div
-            className="m-1"
-            style={{
-                transition: 'width 0.3s, height 0.3s',
-                height: '300px',
-            }}
-        >
-            <iframe
-                className="w-100 h-100 p-0 m-0 overflow-hidden"
-                srcDoc={html}
-                sandbox="allow-same-origin allow-scripts"
-                style={{
-                    border: 'none',
-                    backgroundColor: 'black',
-                }}
-                title="Lyric Slides"
-            />
-        </div>
-    );
+class LyricSlide extends Slide {}
+
+// FIXME: drag and drop on mini screen does not work
+class LyricAppDocument extends AppDocument {
+    static readonly mimetypeName: MimetypeNameType = 'lyric';
+    isEditable = false;
+    lyric: Lyric;
+
+    constructor(lyric: Lyric) {
+        super(lyric.filePath);
+        this.lyric = lyric;
+    }
+
+    async getSlides() {
+        const display = getDefaultScreenDisplay();
+        return [
+            new LyricSlide(this.filePath, {
+                id: 0,
+                canvasItems: [],
+                metadata: {
+                    width: display.bounds.width,
+                    height: display.bounds.height,
+                },
+            }),
+        ];
+    }
+
+    async save(): Promise<boolean> {
+        throw new Error('LyricAppDocument does not support saving slides.');
+    }
 }
 
 export default function LyricSlidesPreviewerComp() {
     const selectedLyric = useSelectedLyricContext();
-    const [htmlDataList, setHtmlDataList] = useAppStateAsync<
-        HTMLDataType[]
-    >(() => {
-        return renderLyricSlidesMarkdown(selectedLyric);
-    }, [selectedLyric]);
-    const attemptTimeout = useMemo(() => {
-        return genTimeoutAttempt(500);
-    }, []);
+    const [appDocument, setAppDocument] = useState<LyricAppDocument>(
+        () => new LyricAppDocument(selectedLyric),
+    );
     useFileSourceEvents(
         ['update'],
         async () => {
-            attemptTimeout(async () => {
-                setHtmlDataList(await renderLyricSlidesMarkdown(selectedLyric));
-            });
+            setAppDocument(new LyricAppDocument(selectedLyric));
         },
         [],
         selectedLyric.filePath,
     );
-    if (!htmlDataList) {
-        return (
-            <div
-                className={
-                    'w-100 h-100 d-flex justify-content-center' +
-                    ' align-items-center'
-                }
-            >
-                <h3 className="text-muted">`Rendered Text Not</h3>
-            </div>
-        );
-    }
+    console.log(appDocument.getItemById);
+    
     return (
-        <div className="w-100 h-100 d-flex flex-column p-1">
-            {htmlDataList.map((htmlData) => (
-                <RenderItemComp key={htmlData.id} html={htmlData.html} />
-            ))}
+        <div className="card w-100 h-100 p-1">
+            <VaryAppDocumentContext value={appDocument}>
+                <div className="card-body w-100 h-100 overflow-hidden">
+                    <div className="slide-previewer card w-100 h-100">
+                        <VaryAppDocumentItemsPreviewerComp />
+                    </div>
+                    <AppDocumentPreviewerFooterComp />
+                </div>
+            </VaryAppDocumentContext>
         </div>
     );
 }

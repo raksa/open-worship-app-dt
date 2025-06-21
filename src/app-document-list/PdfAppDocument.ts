@@ -17,6 +17,7 @@ export default class PdfAppDocument
     implements ItemSourceInf<PdfSlide>
 {
     static readonly mimetypeName: MimetypeNameType = 'slide';
+    isEditable = false;
 
     constructor(filePath: string) {
         super(filePath);

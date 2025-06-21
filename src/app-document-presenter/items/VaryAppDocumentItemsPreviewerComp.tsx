@@ -5,12 +5,11 @@ import { handleCtrlWheel } from '../../others/AppRangeComp';
 import { defaultRangeSize } from './AppDocumentPreviewerFooterComp';
 import SlidesMenuComp from './SlidesMenuComp';
 import { DIV_CLASS_NAME } from './varyAppDocumentHelpers';
-import { useSelectedVaryAppDocumentContext } from '../../app-document-list/appDocumentHelpers';
-import PdfSlide from '../../app-document-list/PdfSlide';
+import { useVaryAppDocumentContext } from '../../app-document-list/appDocumentHelpers';
 import ScrollingHandlerComp from '../../scrolling/ScrollingHandlerComp';
 
 export default function VaryAppDocumentItemsPreviewerComp() {
-    const varyAppDocument = useSelectedVaryAppDocumentContext();
+    const varyAppDocument = useVaryAppDocumentContext();
     const [thumbSizeScale, setThumbnailSizeScale] =
         useAppDocumentItemThumbnailSizeScale();
     const handlePasting = async () => {
@@ -40,9 +39,7 @@ export default function VaryAppDocumentItemsPreviewerComp() {
             }}
             onPaste={handlePasting}
         >
-            {!PdfSlide.checkIsThisType(varyAppDocument) ? (
-                <SlidesMenuComp />
-            ) : null}
+            {varyAppDocument.isEditable ? <SlidesMenuComp /> : null}
             <AppDocumentItemsComp />
             <ScrollingHandlerComp style={{ bottom: '40px' }} />
         </div>
