@@ -14,10 +14,10 @@ import {
 export const SELECTED_PARENT_DIR_SETTING_NAME = 'selected-parent-dir';
 
 const FOLDER_NAME = 'local-storage';
-const defaultStorageCacher = new CacheManager<string>(3);
+const cache = new CacheManager<string>(10);
 class AppLocalStorage {
     get defaultStorage() {
-        const cachedDefaultStorage = defaultStorageCacher.getSync(
+        const cachedDefaultStorage = cache.getSync(
             SELECTED_PARENT_DIR_SETTING_NAME,
         );
         if (cachedDefaultStorage !== null) {
@@ -30,15 +30,12 @@ class AppLocalStorage {
             window.localStorage.removeItem(SELECTED_PARENT_DIR_SETTING_NAME);
             selectedParentDir = getUserWritablePath();
         }
-        defaultStorageCacher.setSync(
-            SELECTED_PARENT_DIR_SETTING_NAME,
-            selectedParentDir,
-        );
+        cache.setSync(SELECTED_PARENT_DIR_SETTING_NAME, selectedParentDir);
         return selectedParentDir;
     }
 
     get localStorageDir() {
-        const cachedLocalStorageDir = defaultStorageCacher.getSync(FOLDER_NAME);
+        const cachedLocalStorageDir = cache.getSync(FOLDER_NAME);
         if (cachedLocalStorageDir !== null) {
             return cachedLocalStorageDir;
         }
@@ -47,7 +44,7 @@ class AppLocalStorage {
         if (!fsExistSync(localStorageDir)) {
             fsMkDirSync(localStorageDir, true);
         }
-        defaultStorageCacher.setSync(FOLDER_NAME, localStorageDir);
+        cache.setSync(FOLDER_NAME, localStorageDir);
         return localStorageDir;
     }
 
@@ -64,7 +61,7 @@ class AppLocalStorage {
         if (!(await fsCheckDirExist(dirPath))) {
             throw new Error(`Directory does not exist: ${dirPath}`);
         }
-        defaultStorageCacher.setSync(SELECTED_PARENT_DIR_SETTING_NAME, dirPath);
+        cache.setSync(SELECTED_PARENT_DIR_SETTING_NAME, dirPath);
         window.localStorage.setItem(SELECTED_PARENT_DIR_SETTING_NAME, dirPath);
     }
 
@@ -74,11 +71,17 @@ class AppLocalStorage {
 
     getItem(key: string): string | null {
         const fullPath = this.toFullPath(key);
+        const cachedValue = cache.getSync(fullPath);
+        if (cachedValue !== null) {
+            return cachedValue;
+        }
         try {
             if (!fsExistSync(fullPath)) {
                 return null;
             }
-            return fsReadSync(fullPath);
+            const value = fsReadSync(fullPath);
+            cache.setSync(fullPath, value);
+            return value;
         } catch (error) {
             handleError(error);
             return null;
@@ -88,6 +91,7 @@ class AppLocalStorage {
     setItem(key: string, value: string): void {
         const fullPath = this.toFullPath(key);
         fsWriteFileSync(fullPath, value);
+        cache.setSync(fullPath, value);
     }
 
     removeItem(key: string): void {

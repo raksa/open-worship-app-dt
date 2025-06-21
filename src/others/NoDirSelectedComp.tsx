@@ -51,7 +51,8 @@ export default function NoDirSelectedComp({
                             goToGeneralSetting();
                         }}
                     >
-                        `Go to Settings
+                        <span>`Go to Settings </span>
+                        <i className="bi bi-gear-wide-connected" />
                     </button>
                 </div>
             </div>

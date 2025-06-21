@@ -4,7 +4,7 @@ import { checkIsAppFile, fsCheckFileExist } from '../server/fileHelpers';
 import { handleError } from './errorHelpers';
 import FileSource from './FileSource';
 import { isColor } from './helpers';
-import { SettingManager } from './settingHelpers';
+import SettingManager from './SettingManager';
 
 async function readJsonData(filePath: string) {
     const fileSource = FileSource.getInstance(filePath);

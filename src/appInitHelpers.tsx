@@ -25,7 +25,6 @@ import { useCheckSelectedDir } from './setting/directory-setting/directoryHelper
 import { createRoot } from 'react-dom/client';
 import { StrictMode } from 'react';
 import { getSetting, setSetting } from './helper/settingHelpers';
-import { unlocking } from './server/appHelpers';
 import { applyFontFamily } from './others/LanguageWrapper';
 import {
     bringDomToNearestView,
@@ -37,6 +36,7 @@ import {
     onDomChange,
 } from './helper/domHelpers';
 import { appLocalStorage } from './setting/directory-setting/appLocalStorage';
+import { unlocking } from './server/unlockingHelpers';
 
 const ERROR_DATETIME_SETTING_NAME = 'error-datetime-setting';
 const ERROR_DURATION = 1000 * 10; // 10 seconds;

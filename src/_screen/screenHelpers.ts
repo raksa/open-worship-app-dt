@@ -12,7 +12,7 @@ import {
     ScreenTransitionEffectType,
     TargetType,
 } from './transitionEffectHelpers';
-import { electronSendAsync, unlocking } from '../server/appHelpers';
+import { electronSendAsync } from '../server/appHelpers';
 import { getValidOnScreen } from './managers/screenManagerBaseHelpers';
 import { VaryAppDocumentItemDataType } from '../app-document-list/appDocumentHelpers';
 import appProvider from '../server/appProvider';
@@ -23,6 +23,7 @@ import {
     applyPlayToBottom,
     applyToTheTop,
 } from '../scrolling/scrollingHandlerHelpers';
+import { unlocking } from '../server/unlockingHelpers';
 
 export const bibleDataTypeList = ['bible-item', 'lyric'] as const;
 export type BibleDataType = (typeof bibleDataTypeList)[number];

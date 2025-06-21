@@ -28,13 +28,13 @@ import {
 import * as loggerHelpers from '../../helper/loggerHelpers';
 import { handleError } from '../../helper/errorHelpers';
 import { screenManagerSettingNames } from '../../helper/constants';
-import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
 import ScreenManagerBase from './ScreenManagerBase';
 import { getAllScreenManagerBases } from './screenManagerBaseHelpers';
 import appProvider from '../../server/appProvider';
 import { applyAttachBackground } from './screenBackgroundHelpers';
 import { BibleItemType } from '../../bible-list/bibleItemHelpers';
+import { unlocking } from '../../server/unlockingHelpers';
 
 let textStyle: AnyObjectType = {};
 class ScreenBibleManager extends ScreenEventHandler<ScreenBibleManagerEventType> {

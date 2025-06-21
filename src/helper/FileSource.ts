@@ -22,7 +22,8 @@ import { showSimpleToast } from '../toast/toastHelpers';
 import { handleError } from './errorHelpers';
 import FileSourceMetaManager from './FileSourceMetaManager';
 import ColorNoteInf from './ColorNoteInf';
-import { electronSendAsync, unlocking } from '../server/appHelpers';
+import { electronSendAsync } from '../server/appHelpers';
+import { unlocking } from '../server/unlockingHelpers';
 
 export type SrcData = `data:${string}`;
 

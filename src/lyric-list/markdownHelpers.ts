@@ -1,8 +1,8 @@
 import Lyric from './Lyric';
 import { handleError } from '../helper/errorHelpers';
 import CacheManager from '../others/CacheManager';
-import { unlocking } from '../server/appHelpers';
 import appProvider from '../server/appProvider';
+import { unlocking } from '../server/unlockingHelpers';
 
 type RenderMarkdownOptions = {
     isJustifyCenter?: boolean;

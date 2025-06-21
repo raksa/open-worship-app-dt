@@ -11,7 +11,6 @@ import {
     VaryAppDocumentItemScreenDataType,
 } from '../screenHelpers';
 import { screenManagerSettingNames } from '../../helper/constants';
-import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
 import ScreenManagerBase from './ScreenManagerBase';
 import ScreenEffectManager from './ScreenEffectManager';
@@ -24,6 +23,7 @@ import {
 import PdfSlide, { PdfSlideType } from '../../app-document-list/PdfSlide';
 import appProvider from '../../server/appProvider';
 import { applyAttachBackground } from './screenBackgroundHelpers';
+import { unlocking } from '../../server/unlockingHelpers';
 
 export type ScreenVaryAppDocumentManagerEventType = 'update';
 

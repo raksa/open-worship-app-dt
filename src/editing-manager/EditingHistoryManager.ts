@@ -11,10 +11,10 @@ import {
     pathBasename,
     pathJoin,
 } from '../server/fileHelpers';
-import { unlocking } from '../server/appHelpers';
 import GarbageCollectableCacher from '../others/GarbageCollectableCacher';
 import FileSource from '../helper/FileSource';
 import { parsePatch, reversePatch, applyPatch, createPatch } from 'diff';
+import { unlocking } from '../server/unlockingHelpers';
 
 const CURRENT_FILE_SIGN = '-head';
 export class FileLineHandler {

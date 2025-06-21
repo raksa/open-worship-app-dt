@@ -14,12 +14,12 @@ import {
 } from '../screenHelpers';
 import { handleError } from '../../helper/errorHelpers';
 import { screenManagerSettingNames } from '../../helper/constants';
-import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
 import ScreenManagerBase from './ScreenManagerBase';
 import ScreenEffectManager from './ScreenEffectManager';
 import appProvider from '../../server/appProvider';
 import { StyleAnimType } from '../transitionEffectHelpers';
+import { unlocking } from '../../server/unlockingHelpers';
 
 export type ScreenBackgroundManagerEventType = 'update';
 

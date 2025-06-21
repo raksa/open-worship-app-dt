@@ -1,7 +1,6 @@
 import appProvider from '../../server/appProvider';
 import { fsCreateDir, pathJoin } from '../../server/fileHelpers';
 import { LocaleType } from '../../lang';
-import { unlocking } from '../../server/appHelpers';
 import { is_dev, decrypt } from '../../_owa-crypto';
 import { handleError } from '../errorHelpers';
 import {
@@ -12,6 +11,7 @@ import BibleDatabaseController from './BibleDatabaseController';
 import FileSource from '../FileSource';
 import CacheManager from '../../others/CacheManager';
 import { appLocalStorage } from '../../setting/directory-setting/appLocalStorage';
+import { unlocking } from '../../server/unlockingHelpers';
 
 const { base64Decode } = appProvider.appUtils;
 

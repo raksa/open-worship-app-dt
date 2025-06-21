@@ -4,9 +4,11 @@ import appProvider from '../server/appProvider';
 import { appLocalStorage } from '../setting/directory-setting/appLocalStorage';
 
 export function setSetting(key: string, value: string) {
+    // TODO: Change to use SettingManager
     appLocalStorage.setItem(key, value);
 }
 export function getSetting(key: string, defaultValue?: string): string {
+    // TODO: Change to use SettingManager
     const value = appLocalStorage.getItem(key);
     if (value === null) {
         if (defaultValue !== undefined) {
@@ -58,60 +60,6 @@ export function useStateSettingNumber(
         setSetting(settingName, `${b}`);
     };
     return [data, setDataSetting];
-}
-
-type SettingValidatorType = (value: string) => boolean;
-type SettingSerializeType = (value: any) => string;
-type SettingDeserializeType = (value: string) => any;
-export class SettingManager<T> {
-    settingName: string;
-    validate: SettingValidatorType;
-    serialize: SettingSerializeType;
-    deserialize: SettingDeserializeType;
-    defaultValue: T;
-    isErrorToDefault: boolean;
-    constructor({
-        settingName,
-        defaultValue,
-        isErrorToDefault,
-        validate,
-        serialize,
-        deserialize,
-    }: {
-        settingName: string;
-        defaultValue: T;
-        isErrorToDefault?: boolean;
-        validate?: SettingValidatorType;
-        serialize?: SettingSerializeType;
-        deserialize?: SettingDeserializeType;
-    }) {
-        this.settingName = settingName;
-        this.defaultValue = defaultValue;
-        this.isErrorToDefault = isErrorToDefault ?? false;
-        this.validate = validate ?? (() => true);
-        this.serialize = serialize ?? ((value) => value);
-        this.deserialize = deserialize ?? ((value) => value);
-    }
-    getSetting(defaultValue?: T): T {
-        defaultValue = defaultValue ?? this.defaultValue;
-        const value = getSetting(
-            this.settingName,
-            this.serialize(defaultValue),
-        );
-        if (!this.validate(value)) {
-            if (this.isErrorToDefault) {
-                return defaultValue;
-            }
-            throw new Error(`Invalid setting value: ${value}`);
-        }
-        return this.deserialize(value);
-    }
-    setSetting(value: T) {
-        if (!this.validate(this.serialize(value))) {
-            throw new Error(`Invalid setting value: ${value}`);
-        }
-        setSetting(this.settingName, this.serialize(value));
-    }
 }
 
 export function getSettingPrefix() {

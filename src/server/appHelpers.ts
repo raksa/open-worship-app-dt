@@ -1,6 +1,5 @@
 import appProvider, { FontListType } from './appProvider';
 import { showSimpleToast } from '../toast/toastHelpers';
-import { OptionalPromise } from '../others/otherHelpers';
 import { AnyObjectType } from '../helper/helpers';
 
 export function getFontListByNodeFont() {
@@ -63,21 +62,4 @@ export function copyToClipboard(str: string) {
     appProvider.systemUtils.copyToClipboard(str);
     showSimpleToast('Copy', 'Text has been copied to clip');
     return true;
-}
-
-const lockSet = new Set<string>();
-export async function unlocking<T>(
-    key: string,
-    callback: () => OptionalPromise<T>,
-) {
-    if (lockSet.has(key)) {
-        await new Promise((resolve) => {
-            setTimeout(resolve, 100);
-        });
-        return unlocking(key, callback);
-    }
-    lockSet.add(key);
-    const data = await callback();
-    lockSet.delete(key);
-    return data;
 }

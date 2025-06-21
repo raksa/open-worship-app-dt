@@ -25,6 +25,11 @@ export function goToGeneralSetting() {
     goToPath(appProvider.settingHomePage);
 }
 
+export function goToBibleSetting() {
+    setSetting(SETTING_SETTING_NAME, 'b');
+    goToPath(appProvider.settingHomePage);
+}
+
 const tabTypeList = [
     ['g', 'General', LazySettingGeneralComp],
     ['b', 'Bible', LazySettingBibleComp],

@@ -16,9 +16,9 @@ import {
     ScreenMessageType,
 } from '../screenHelpers';
 import { screenManagerSettingNames } from '../../helper/constants';
-import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
 import ScreenManagerBase from './ScreenManagerBase';
+import { unlocking } from '../../server/unlockingHelpers';
 
 export type ScreenOtherEventType = 'update';
 
