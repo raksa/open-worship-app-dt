@@ -128,10 +128,10 @@ export async function moveBibleItemTo(
                     const bibleFileSource = FileSource.getInstance(
                         bible.filePath,
                     );
-                    const { basePath, extension } = bibleFileSource;
+                    const { basePath, dotExtension } = bibleFileSource;
                     const fileSource = FileSource.getInstance(
                         basePath,
-                        addExtension(name, extension),
+                        addExtension(name, dotExtension),
                     );
                     const targetBible = await Bible.fromFilePath(
                         fileSource.filePath,

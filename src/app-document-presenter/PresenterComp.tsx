@@ -14,6 +14,8 @@ import {
     checkIsVaryAppDocumentOnScreen,
     getSelectedVaryAppDocument,
 } from '../app-document-list/appDocumentHelpers';
+import LyricAppDocument from '../lyric-list/LyricAppDocument';
+import { getSelectedLyric } from '../lyric-list/lyricHelpers';
 
 const LazyAppDocumentPreviewerComp = lazy(() => {
     return import('./items/AppDocumentPreviewerComp');
@@ -48,6 +50,20 @@ async function checkIsOnScreen<T>(targeKey: T) {
         }
         const isOnScreen =
             await checkIsVaryAppDocumentOnScreen(varyAppDocument);
+        return isOnScreen;
+    } else if (targeKey === 'l') {
+        const selectedLyric = await getSelectedLyric();
+        if (selectedLyric === null) {
+            return false;
+        }
+        const lyricAppDocument = LyricAppDocument.getInstanceFromLyricFilePath(
+            selectedLyric.filePath,
+        );
+        if (lyricAppDocument === null) {
+            return false;
+        }
+        const isOnScreen =
+            await checkIsVaryAppDocumentOnScreen(lyricAppDocument);
         return isOnScreen;
     }
     return false;

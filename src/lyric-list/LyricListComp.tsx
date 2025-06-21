@@ -2,7 +2,7 @@ import './LyricListComp.scss';
 
 import FileListHandlerComp from '../others/FileListHandlerComp';
 import {
-    getFileExtension,
+    getFileDotExtension,
     getMimetypeExtensions,
     mimetypePdf,
 } from '../server/fileHelpers';
@@ -27,7 +27,7 @@ const handleBodyRendering = (filePaths: string[]) => {
 
 function handleExtraFileChecking(filePath: string) {
     const fileSource = FileSource.getInstance(filePath);
-    if (checkIsMarkdown(fileSource.extension)) {
+    if (checkIsMarkdown(fileSource.dotExtension)) {
         return true;
     }
     return false;
@@ -44,7 +44,7 @@ export default function LyricListComp() {
         return null;
     }
     dirSource.checkExtraFile = (fileFullName: string) => {
-        if (checkIsMarkdown(getFileExtension(fileFullName))) {
+        if (checkIsMarkdown(getFileDotExtension(fileFullName))) {
             return {
                 fileFullName: fileFullName,
                 appMimetype: mimetypePdf,

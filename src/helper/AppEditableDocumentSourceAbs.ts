@@ -1,6 +1,10 @@
 import EditingHistoryManager from '../editing-manager/EditingHistoryManager';
 import { attachBackgroundManager } from '../others/AttachBackgroundManager';
-import { MimetypeNameType, createNewFileDetail } from '../server/fileHelpers';
+import {
+    MimetypeNameType,
+    createNewFileDetail,
+    getMimetypeExtensions,
+} from '../server/fileHelpers';
 import { handleError } from './errorHelpers';
 import FileSource from './FileSource';
 import { AnyObjectType } from './helpers';
@@ -53,15 +57,21 @@ export abstract class AppDocumentSourceAbs {
         filePath: string,
         createInstance: () => T,
     ) {
+        const extensions = getMimetypeExtensions(this.mimetypeName);
+        const fileSource = FileSource.getInstance(filePath);
+        if (!extensions.includes(fileSource.extension)) {
+            throw new Error(
+                `File extension ${fileSource.extension} does not match ` +
+                    `expected extensions: ${extensions.join(', ')}`,
+            );
+        }
         if (!cache.has(filePath)) {
             const instance = createInstance();
             cache.set(filePath, instance as any);
         }
         const instance = cache.get(filePath) as any as T;
         if (instance instanceof this === false) {
-            throw new Error(
-                `Instance of ${this.name} already exists for filePath: ${filePath}`,
-            );
+            throw new Error('Invalid Instance');
         }
         return instance;
     }

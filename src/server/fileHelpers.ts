@@ -80,8 +80,8 @@ export type FileMetadataType = {
 };
 
 export function checkIsAppFile(fileFullName: string) {
-    const ext = getFileExtension(fileFullName);
-    const isAppFile = appExtensions.includes(ext);
+    const dotExtension = getFileDotExtension(fileFullName);
+    const isAppFile = appExtensions.includes(dotExtension);
     return isAppFile;
 }
 
@@ -98,7 +98,7 @@ export function getFileName(fileFullName: string) {
     return fileFullName.substring(0, fileFullName.lastIndexOf('.'));
 }
 
-export function getFileExtension(fileFullName: string) {
+export function getFileDotExtension(fileFullName: string) {
     return fileFullName.substring(fileFullName.lastIndexOf('.'));
 }
 
@@ -113,8 +113,11 @@ export const createNewFileDetail = async (
     mimetypeName: MimetypeNameType,
 ) => {
     // TODO: verify file name before create
-    const mimetypeList = getAppMimetype(mimetypeName);
-    const fileFullName = `${name}${mimetypeList[0].extensions[0]}`;
+    const extensions = getMimetypeExtensions(mimetypeName);
+    if (extensions.length === 0) {
+        throw new Error(`No extensions found for mimetype: ${mimetypeName}`);
+    }
+    const fileFullName = `${name}.${extensions[0]}`;
     try {
         const filePath = pathJoin(dir, fileFullName);
         return await fsCreateFile(filePath, content);
@@ -143,9 +146,9 @@ export function getFileMetaData(
     mimetypeList?: AppMimetypeType[],
 ): FileMetadataType | null {
     mimetypeList = mimetypeList ?? getAllAppMimetype();
-    const ext = getFileExtension(fileFullName);
+    const dotExtension = getFileDotExtension(fileFullName);
     const foundMT = mimetypeList.find((mt) => {
-        return mt.extensions.includes(ext);
+        return mt.extensions.includes(dotExtension);
     });
     if (foundMT) {
         return { fileFullName: fileFullName, appMimetype: foundMT };
@@ -205,13 +208,13 @@ export function isSupportedExt(
     mimetypeName: MimetypeNameType,
 ) {
     const mimetypeList = getAppMimetype(mimetypeName);
-    const ext = getFileExtension(fileFullName);
+    const dotExtension = getFileDotExtension(fileFullName);
     return mimetypeList
         .map((newMimetype) => {
             return newMimetype.extensions;
         })
         .some((extensions) => {
-            return extensions.includes(ext);
+            return extensions.includes(dotExtension);
         });
 }
 

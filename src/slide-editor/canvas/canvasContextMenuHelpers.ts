@@ -46,12 +46,12 @@ export async function showCanvasContextMenu(
         {
             menuElement: 'Insert Medias',
             onSelect: () => {
-                const imageExts = getMimetypeExtensions('image');
-                const videoExts = getMimetypeExtensions('video');
+                const imageExtensions = getMimetypeExtensions('image');
+                const videoExtension = getMimetypeExtensions('video');
                 const filePaths = selectFiles([
                     {
                         name: 'All Files',
-                        extensions: [...imageExts, ...videoExts],
+                        extensions: [...imageExtensions, ...videoExtension],
                     },
                 ]);
                 filePaths.forEach((filePath) => {

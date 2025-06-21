@@ -13,6 +13,8 @@ import {
 } from './lyricHelpers';
 import { getIsShowingLyricPreviewer } from '../app-document-presenter/PresenterComp';
 import { useEditingHistoryStatus } from '../editing-manager/editingHelpers';
+import { checkIsVaryAppDocumentOnScreen } from '../app-document-list/appDocumentHelpers';
+import LyricAppDocument from './LyricAppDocument';
 
 function LyricFilePreview({ lyric }: Readonly<{ lyric: Lyric }>) {
     const fileSource = FileSource.getInstance(lyric.filePath);
@@ -26,9 +28,14 @@ function LyricFilePreview({ lyric }: Readonly<{ lyric: Lyric }>) {
     );
 }
 
-async function checkIsOnScreen(_filePath: string) {
-    //  TODO: implement this function
-    return false;
+async function checkIsOnScreen(filePath: string) {
+    const lyricAppDocument =
+        LyricAppDocument.getInstanceFromLyricFilePath(filePath);
+    if (lyricAppDocument === null) {
+        return false;
+    }
+    const isOnScreen = await checkIsVaryAppDocumentOnScreen(lyricAppDocument);
+    return isOnScreen;
 }
 
 export default function LyricFileComp({

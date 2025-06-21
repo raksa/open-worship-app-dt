@@ -1,7 +1,7 @@
 import DirSource from './DirSource';
 import {
     checkIsAppFile,
-    getFileExtension,
+    getFileDotExtension,
     fsCheckFileExist,
     fsCreateFile,
     fsReadFile,
@@ -99,8 +99,12 @@ export default class FileSource
         return getFileName(this.fileFullName);
     }
 
+    get dotExtension() {
+        return getFileDotExtension(this.fileFullName);
+    }
+
     get extension() {
-        return getFileExtension(this.fileFullName);
+        return this.dotExtension.substring(1);
     }
 
     get dirSource() {
@@ -225,11 +229,11 @@ export default class FileSource
             await fsRenameFile(
                 this.basePath,
                 this.fileFullName,
-                newName + this.extension,
+                newName + this.dotExtension,
             );
             const newFilePath = pathJoin(
                 this.basePath,
-                newName + this.extension,
+                newName + this.dotExtension,
             );
             return FileSource.getInstance(newFilePath);
         } catch (error: any) {
@@ -246,12 +250,15 @@ export default class FileSource
         let i = 1;
         let newName = this.name + ' (Copy)';
         while (
-            await fsCheckFileExist(this.basePath, newName + this.extension)
+            await fsCheckFileExist(this.basePath, newName + this.dotExtension)
         ) {
             newName = this.name + ' (Copy ' + i + ')';
             i++;
         }
-        const newFilePath = pathJoin(this.basePath, newName + this.extension);
+        const newFilePath = pathJoin(
+            this.basePath,
+            newName + this.dotExtension,
+        );
         const data = await this.readFileJsonData();
         if (data !== null) {
             await fsCreateFile(newFilePath, JSON.stringify(data));

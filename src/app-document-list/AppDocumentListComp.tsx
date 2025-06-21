@@ -4,7 +4,7 @@ import FileListHandlerComp from '../others/FileListHandlerComp';
 import AppDocumentFileComp from './AppDocumentFileComp';
 import AppDocument from './AppDocument';
 import {
-    getFileExtension,
+    getFileDotExtension,
     getFileFullName,
     getMimetypeExtensions,
     mimetypePdf,
@@ -27,7 +27,7 @@ import DirSource from '../helper/DirSource';
 
 function handleExtraFileChecking(filePath: string) {
     const fileSource = FileSource.getInstance(filePath);
-    if (checkIsPdf(fileSource.extension)) {
+    if (checkIsPdf(fileSource.dotExtension)) {
         return true;
     }
     return false;
@@ -41,8 +41,8 @@ function handleFileTaking(
         return false;
     }
     const fileFullName = getFileFullName(file);
-    const ext = getFileExtension(fileFullName).toLocaleLowerCase();
-    if (supportOfficeFileExtensions.includes(ext)) {
+    const dotExtension = getFileDotExtension(fileFullName).toLocaleLowerCase();
+    if (supportOfficeFileExtensions.includes(dotExtension)) {
         convertOfficeFile(file, dirSource);
         return true;
     }
@@ -79,7 +79,7 @@ export default function AppDocumentListComp() {
         return null;
     }
     dirSource.checkExtraFile = (fileFullName: string) => {
-        if (checkIsPdf(getFileExtension(fileFullName))) {
+        if (checkIsPdf(getFileDotExtension(fileFullName))) {
             return {
                 fileFullName: fileFullName,
                 appMimetype: mimetypePdf,
