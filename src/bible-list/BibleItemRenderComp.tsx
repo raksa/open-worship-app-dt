@@ -6,7 +6,6 @@ import {
     genRemovingAttachedBackgroundMenu,
     handleDragStart,
     handleAttachBackgroundDrop,
-    useAttachedBackgroundData,
     extractDropData,
 } from '../helper/dragHelpers';
 import ItemColorNoteComp from '../others/ItemColorNoteComp';
@@ -15,8 +14,7 @@ import ScreenBibleManager from '../_screen/managers/ScreenBibleManager';
 import { openBibleItemContextMenu } from './bibleItemHelpers';
 import { useShowBibleLookupContext } from '../others/commonButtons';
 import appProvider from '../server/appProvider';
-import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
-import { useMemo } from 'react';
+import { DragTypeEnum } from '../helper/DragInf';
 import { changeDragEventStyle, stopDraggingState } from '../helper/helpers';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 import BibleViewTitleEditorComp from '../bible-reader/BibleViewTitleEditorComp';
@@ -24,62 +22,13 @@ import LookupBibleItemController from '../bible-reader/LookupBibleItemController
 import BibleItemsViewController, {
     useBibleItemsViewControllerContext,
 } from '../bible-reader/BibleItemsViewController';
-
-function genAttachBackgroundComponent(
-    droppedData: DroppedDataType | null | undefined,
-) {
-    if (droppedData === null || droppedData === undefined) {
-        return null;
-    }
-    let element = null;
-    if (droppedData.type === DragTypeEnum.BACKGROUND_COLOR) {
-        element = (
-            <button
-                className="btn btn-secondary btn-sm"
-                title={droppedData.item}
-            >
-                <i
-                    className="bi bi-filter-circle-fill"
-                    style={{
-                        color: droppedData.item,
-                    }}
-                />
-            </button>
-        );
-    } else if (droppedData.type === DragTypeEnum.BACKGROUND_IMAGE) {
-        element = (
-            <button
-                className="btn btn-secondary btn-sm"
-                title={droppedData.item.src}
-            >
-                <i className="bi bi-image" />
-            </button>
-        );
-    } else if (droppedData.type === DragTypeEnum.BACKGROUND_VIDEO) {
-        element = (
-            <button
-                className="btn btn-secondary btn-sm"
-                title={droppedData.item.src}
-            >
-                <i className="bi bi-file-earmark-play-fill" />
-            </button>
-        );
-    }
-    // TODO: show bg on button click
-    return element;
-}
+import { attachBackgroundManager } from '../others/AttachBackgroundManager';
+import AttachBackgroundIconComponent from '../others/AttachBackgroundIconComponent';
 
 async function getBible(bibleItem: BibleItem) {
     return bibleItem.filePath
         ? await Bible.fromFilePath(bibleItem.filePath)
         : null;
-}
-
-export function useAttachedBackgroundElement(filePath: string, id?: string) {
-    const attachedBackgroundData = useAttachedBackgroundData(filePath, id);
-    return useMemo(() => {
-        return genAttachBackgroundComponent(attachedBackgroundData);
-    }, [attachedBackgroundData]);
 }
 
 function handleOpening(
@@ -138,12 +87,8 @@ export default function BibleItemRenderComp({
         bibleItem.bibleKey = newBibleKey;
         bibleItem.save(bible);
     };
-    const attachedBackgroundElement = useAttachedBackgroundElement(
-        filePath,
-        bibleItem.id.toString(),
-    );
 
-    const handleContextMenuOpening = (event: React.MouseEvent<any>) => {
+    const handleContextMenuOpening = async (event: React.MouseEvent<any>) => {
         const menuItems: ContextMenuItemType[] = [
             {
                 menuElement: '`Open',
@@ -152,12 +97,14 @@ export default function BibleItemRenderComp({
                 },
             },
         ];
-        if (attachedBackgroundElement) {
+        const attachedBackgroundData =
+            await attachBackgroundManager.getAttachedBackground(
+                filePath,
+                bibleItem.id,
+            );
+        if (attachedBackgroundData) {
             menuItems.push(
-                ...genRemovingAttachedBackgroundMenu(
-                    filePath,
-                    bibleItem.id.toString(),
-                ),
+                ...genRemovingAttachedBackgroundMenu(filePath, bibleItem.id),
             );
         }
         openBibleItemContextMenu(
@@ -253,7 +200,12 @@ export default function BibleItemRenderComp({
                         </span>
                     )}
                 </div>
-                <div className="float-end">{attachedBackgroundElement}</div>
+                <div className="float-end">
+                    <AttachBackgroundIconComponent
+                        filePath={filePath}
+                        id={bibleItem.id}
+                    />
+                </div>
             </div>
         </li>
     );

@@ -82,12 +82,15 @@ export async function handleAttachBackgroundDrop(
         await attachBackgroundManager.attachDroppedBackground(
             droppedData,
             item.filePath,
-            item.id?.toString(),
+            item.id,
         );
     }
 }
 
-export function useAttachedBackgroundData(filePath: string, id?: string) {
+export function useAttachedBackgroundData(
+    filePath: string,
+    id?: string | number,
+) {
     const [droppedData, setDroppedData] = useState<
         DroppedDataType | null | undefined
     >(undefined);
@@ -119,7 +122,7 @@ export function useAttachedBackgroundData(filePath: string, id?: string) {
 
 export function genRemovingAttachedBackgroundMenu(
     filePath: string,
-    id?: string,
+    id?: string | number,
 ): ContextMenuItemType[] {
     return [
         {

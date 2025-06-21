@@ -384,11 +384,7 @@ class ScreenBibleManager extends ScreenEventHandler<ScreenBibleManagerEventType>
         );
         this.applyFullDataSrcWithSyncGroup(newBibleItemData);
         if (filePath !== undefined) {
-            applyAttachBackground(
-                this.screenId,
-                filePath,
-                bibleItemJson.id.toString(),
-            );
+            applyAttachBackground(this.screenId, filePath, bibleItemJson.id);
         }
     }
 

@@ -114,7 +114,7 @@ export async function openBibleItemContextMenu(
                 if (bibleItem.filePath !== undefined) {
                     attachBackgroundManager.detachBackground(
                         bibleItem.filePath,
-                        bibleItem.id.toString(),
+                        bibleItem.id,
                     );
                 }
             },

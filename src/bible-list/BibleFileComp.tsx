@@ -15,11 +15,12 @@ import {
     extractDropData,
     genRemovingAttachedBackgroundMenu,
     handleAttachBackgroundDrop,
+    useAttachedBackgroundData,
 } from '../helper/dragHelpers';
-import { useAttachedBackgroundElement } from './BibleItemRenderComp';
 import { DragTypeEnum } from '../helper/DragInf';
 import { stopDraggingState } from '../helper/helpers';
 import BibleItem from './BibleItem';
+import AttachBackgroundIconComponent from '../others/AttachBackgroundIconComponent';
 
 const LazyRenderBibleItemsComp = lazy(() => {
     return import('./RenderBibleItemsComp');
@@ -77,10 +78,7 @@ function genContextMenu(
     ];
 }
 
-function BiblePreview({
-    bible,
-    attachedBackgroundElement,
-}: Readonly<{ bible: Bible; attachedBackgroundElement: React.ReactNode }>) {
+function BiblePreview({ bible }: Readonly<{ bible: Bible }>) {
     const fileSource = FileSource.getInstance(bible.filePath);
     return (
         <div className="accordion accordion-flush py-1">
@@ -107,7 +105,7 @@ function BiblePreview({
                         {fileSource.name}
                     </span>
                 </div>
-                {attachedBackgroundElement}
+                <AttachBackgroundIconComponent filePath={bible.filePath} />
             </div>
             <div
                 className={`accordion-collapse collapse ${
@@ -136,7 +134,7 @@ export default function BibleFileComp({
     index: number;
     filePath: string;
 }>) {
-    const attachedBackgroundElement = useAttachedBackgroundElement(filePath);
+    const attachedBackgroundData = useAttachedBackgroundData(filePath);
     const [data, setData] = useState<Bible | null | undefined>(null);
     useAppEffectAsync(
         async (methodContext) => {
@@ -149,12 +147,7 @@ export default function BibleFileComp({
         { setData },
     );
     const handlerChildRendering = (bible: AppDocumentSourceAbs) => {
-        return (
-            <BiblePreview
-                bible={bible as Bible}
-                attachedBackgroundElement={attachedBackgroundElement}
-            />
-        );
+        return <BiblePreview bible={bible as Bible} />;
     };
     const handleReloading = () => {
         setData(null);
@@ -187,7 +180,7 @@ export default function BibleFileComp({
             isDisabledColorNote
             userClassName={`p-0 ${data?.isOpened ? 'flex-fill' : ''}`}
             contextMenuItems={genContextMenu(data, {
-                isAttachedBackgroundElement: !!attachedBackgroundElement,
+                isAttachedBackgroundElement: !!attachedBackgroundData,
             })}
             isSelected={!!data?.isOpened}
             onDrop={handleDataDropping}

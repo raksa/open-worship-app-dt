@@ -22,6 +22,7 @@ import { useMemo, useState } from 'react';
 import { useAppEffect } from '../../helper/debuggerHelpers';
 import ScreenVaryAppDocumentManager from '../../_screen/managers/ScreenVaryAppDocumentManager';
 import AppDocument from '../../app-document-list/AppDocument';
+import AttachBackgroundIconComponent from '../../others/AttachBackgroundIconComponent';
 
 function RenderScreenInfoComp({
     varyAppDocumentItem,
@@ -43,52 +44,16 @@ function RenderScreenInfoComp({
     );
 }
 
-function RenderInfoComp({
-    viewIndex,
+function RenderHeaderInfoComp({
     varyAppDocumentItem,
+    viewIndex,
 }: Readonly<{
-    viewIndex: number;
     varyAppDocumentItem: VaryAppDocumentItemType;
+    viewIndex: number;
 }>) {
     const isChanged =
         Slide.checkIsThisType(varyAppDocumentItem) &&
         (varyAppDocumentItem as Slide).isChanged;
-    return (
-        <div className="d-flex w-100">
-            <div className="flex-fill d-flex">
-                <div>
-                    <span
-                        className="badge rounded-pill text-bg-info"
-                        title={`Index: ${viewIndex}`}
-                    >
-                        {viewIndex}
-                    </span>
-                </div>
-            </div>
-            <div className="flex-fill d-flex justify-content-end">
-                <RenderScreenInfoComp
-                    varyAppDocumentItem={varyAppDocumentItem}
-                />
-                <span
-                    title={
-                        `width:${varyAppDocumentItem.width}, ` +
-                        `height:${varyAppDocumentItem.height}`
-                    }
-                >
-                    <small className="pe-2">
-                        {varyAppDocumentItem.width}x{varyAppDocumentItem.height}
-                    </small>
-                </span>
-                {isChanged && <span style={{ color: 'red' }}>*</span>}
-            </div>
-        </div>
-    );
-}
-
-function RenderHeaderInfoComp({
-    item,
-    viewIndex,
-}: Readonly<{ item: VaryAppDocumentItemType; viewIndex: number }>) {
     return (
         <div
             className="card-header d-flex"
@@ -97,7 +62,39 @@ function RenderHeaderInfoComp({
                 backgroundColor: 'var(--bs-gray-800)',
             }}
         >
-            <RenderInfoComp viewIndex={viewIndex} varyAppDocumentItem={item} />
+            <div className="d-flex w-100">
+                <div className="flex-fill d-flex">
+                    <div>
+                        <span
+                            className="badge rounded-pill text-bg-info"
+                            title={`Index: ${viewIndex}`}
+                        >
+                            {viewIndex}
+                        </span>
+                    </div>
+                </div>
+                <div className="flex-fill d-flex justify-content-end">
+                    <RenderScreenInfoComp
+                        varyAppDocumentItem={varyAppDocumentItem}
+                    />
+                    <AttachBackgroundIconComponent
+                        filePath={varyAppDocumentItem.filePath}
+                        id={varyAppDocumentItem.id}
+                    />
+                    <span
+                        title={
+                            `width:${varyAppDocumentItem.width}, ` +
+                            `height:${varyAppDocumentItem.height}`
+                        }
+                    >
+                        <small className="pe-2">
+                            {varyAppDocumentItem.width}x
+                            {varyAppDocumentItem.height}
+                        </small>
+                    </span>
+                    {isChanged && <span style={{ color: 'red' }}>*</span>}
+                </div>
+            </div>
         </div>
     );
 }
@@ -214,7 +211,7 @@ export default function SlideItemRenderComp({
     const { activeCN, presenterCN } = toClassNameHighlight(slide, selectedItem);
     const attachedBackgroundData = useAttachedBackgroundData(
         slide.filePath,
-        slide.id.toString(),
+        slide.id,
     );
     const attachedBackgroundElement = useMemo(() => {
         return genAttachBackgroundComponent(attachedBackgroundData);
@@ -272,7 +269,7 @@ export default function SlideItemRenderComp({
                     menuItems.push(
                         ...genRemovingAttachedBackgroundMenu(
                             slide.filePath,
-                            slide.id.toString(),
+                            slide.id,
                         ),
                     );
                 }
@@ -280,7 +277,10 @@ export default function SlideItemRenderComp({
             }}
             onCopy={onCopy ?? (() => {})}
         >
-            <RenderHeaderInfoComp item={slide} viewIndex={index + 1} />
+            <RenderHeaderInfoComp
+                varyAppDocumentItem={slide}
+                viewIndex={index + 1}
+            />
             <div className="card-body overflow-hidden w-100" style={style}>
                 {attachedBackgroundElement && (
                     <div

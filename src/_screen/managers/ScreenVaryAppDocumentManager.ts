@@ -91,7 +91,7 @@ class ScreenVaryAppDocumentManager extends ScreenEventHandler<ScreenVaryAppDocum
             applyAttachBackground(
                 this.screenId,
                 appDocumentItemData.filePath,
-                appDocumentItemData.itemJson.id.toString(),
+                appDocumentItemData.itemJson.id,
             );
         }
         this._varyAppDocumentItemData = appDocumentItemData;
