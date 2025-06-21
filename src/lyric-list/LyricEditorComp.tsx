@@ -7,6 +7,7 @@ import LyricMenuComp from './LyricMenuComp';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { genTimeoutAttempt } from '../helper/helpers';
 import { useStateSettingBoolean } from '../helper/settingHelpers';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
 async function getCopiedText() {
     try {
@@ -24,13 +25,14 @@ async function getCopiedText() {
     return null;
 }
 
-function initEditor(
-    div: HTMLDivElement,
-    options: {
-        isWrapText: boolean;
-        setIsWrapText: (isWrapText: boolean) => void;
-    },
-) {
+function createEditor() {
+    const div = document.createElement('div');
+    Object.assign(div.style, {
+        width: '100%',
+        height: '100%',
+        position: 'relative',
+        overflow: 'hidden',
+    });
     let monacoEditor: editor.IStandaloneCodeEditor | null = null;
     monacoEditor = editor.create(div, {
         value: '',
@@ -40,9 +42,13 @@ function initEditor(
         minimap: {
             enabled: false,
         },
-        wordWrap: options.isWrapText ? 'on' : 'off',
         scrollbar: {},
     });
+    const editorStore = {
+        monacoEditor,
+        div,
+        toggleIsWrapText: () => {},
+    };
     // add context menu
     monacoEditor.addAction({
         id: 'toggle-wrap-text',
@@ -51,7 +57,7 @@ function initEditor(
         keybindings: [KeyMod.Alt | KeyCode.KeyZ],
         contextMenuOrder: 1.5,
         run: () => {
-            options.setIsWrapText(!options.isWrapText);
+            editorStore.toggleIsWrapText();
         },
     });
     // TODO: fix Monaco native paste fail
@@ -72,130 +78,78 @@ function initEditor(
             ]);
         },
     });
-    return monacoEditor;
+    return editorStore;
+}
+
+async function loadLyricContent(lyric: Lyric, monacoEditor: any) {
+    const lyricContent = await lyric.getContent();
+    if (lyricContent === null) {
+        return;
+    }
+    const editorContent = monacoEditor.getValue();
+    if (editorContent === lyricContent) {
+        return;
+    }
+    monacoEditor.setValue(lyricContent);
 }
 
 function useInit(lyric: Lyric) {
-    const store = useMemo(() => {
-        return { monacoEditor: null as editor.IStandaloneCodeEditor | null };
-    }, []);
+    const [isWrapText, setIsWrapText] = useStateSettingBoolean(
+        'lytic-editor-wrap-text',
+        false,
+    );
+    const editorStore = useMemo(() => {
+        const newEditorStore = createEditor();
+        loadLyricContent(lyric, newEditorStore.monacoEditor);
+        newEditorStore.monacoEditor.onDidChangeModelContent(async () => {
+            const editorContent = newEditorStore.monacoEditor.getValue();
+            const lyricContent = await lyric.getContent();
+            if (editorContent === lyricContent) {
+                return;
+            }
+            lyric.setContent(editorContent);
+        });
+        return newEditorStore;
+    }, [lyric]);
+    useAppEffect(() => {
+        editorStore.toggleIsWrapText = () => {
+            setIsWrapText(!isWrapText);
+        };
+    }, [editorStore]);
+    useAppEffect(() => {
+        editorStore.monacoEditor.updateOptions({
+            wordWrap: isWrapText ? 'on' : 'off',
+        });
+        editorStore.monacoEditor.layout();
+        editorStore.monacoEditor.focus();
+    }, [isWrapText]);
+
     const attemptTimeout = useMemo(() => {
         return genTimeoutAttempt(500);
     }, []);
-    const loadLyricContent = async (
-        monacoEditor1?: editor.IStandaloneCodeEditor | null,
-    ) => {
-        monacoEditor1 = monacoEditor1 ?? store.monacoEditor;
-        if (monacoEditor1 === null) {
-            return;
-        }
-        const lyricContent = await lyric.getContent();
-        if (lyricContent === null) {
-            return;
-        }
-        const editorContent = monacoEditor1.getValue();
-        if (editorContent === lyricContent) {
-            return;
-        }
-        monacoEditor1.setValue(lyricContent);
-    };
     useFileSourceEvents(
         ['update'],
         () => {
-            attemptTimeout(loadLyricContent);
+            attemptTimeout(() => {
+                loadLyricContent(lyric, editorStore.monacoEditor);
+            });
         },
         [lyric],
         lyric.filePath,
     );
     return {
-        setMonacoEditor: (monacoEditor1: editor.IStandaloneCodeEditor) => {
-            loadLyricContent(monacoEditor1);
-            monacoEditor1.onDidChangeModelContent(async () => {
-                const editorContent = monacoEditor1.getValue();
-                const lyricContent = await lyric.getContent();
-                if (editorContent === lyricContent) {
-                    return;
-                }
-                lyric.setContent(editorContent);
-            });
-            store.monacoEditor = monacoEditor1;
-            (window as any).monacoEditor = monacoEditor1;
-        },
-        removeMonacoEditor: () => {
-            const monacoEditor = store.monacoEditor;
-            store.monacoEditor = null;
-            monacoEditor?.dispose();
-        },
-        store,
+        isWrapText,
+        setIsWrapText,
+        editorStore,
     };
 }
 
 export default function LyricEditorComp1() {
     const selectedLyric = useSelectedLyricContext();
-    const { setMonacoEditor, removeMonacoEditor, store } =
-        useInit(selectedLyric);
-    const [isWrapText, setIsWrapText] = useStateSettingBoolean(
-        'lytic-editor-wrap-text',
-        false,
-    );
-    const setIsWrapText1 = (isWrapText: boolean) => {
-        setIsWrapText(isWrapText);
-        const monacoEditor = store.monacoEditor;
-        if (monacoEditor === null) {
-            return;
-        }
-        monacoEditor.updateOptions({
-            wordWrap: isWrapText ? 'on' : 'off',
-        });
-        monacoEditor.layout();
-        monacoEditor.focus();
-    };
-    return (
-        <div className="w-100 h-100 d-flex flex-column">
-            <div className="d-flex">
-                <div className="input-group-text">
-                    Wrap Text:{' '}
-                    <input
-                        className="form-check-input mt-0"
-                        type="checkbox"
-                        checked={isWrapText}
-                        onChange={(event) => {
-                            const checked = event.target.checked;
-                            setIsWrapText1(checked);
-                        }}
-                    />
-                </div>
-                <div className="flex-grow-1">
-                    <LyricMenuComp />
-                </div>
-            </div>
-            <div
-                className="w-100 h-100 overflow-hidden"
-                ref={(div) => {
-                    if (div === null) {
-                        return;
-                    }
-                    const monacoEditor = initEditor(div, {
-                        isWrapText,
-                        setIsWrapText: setIsWrapText1,
-                    });
-                    setMonacoEditor(monacoEditor);
-                    return () => {
-                        removeMonacoEditor();
-                    };
-                }}
-            />
-        </div>
-    );
-}
-
-// Monaco pasting not working, fallback to textarea
-export function LyricEditorComp2() {
-    const [isWrapText, setIsWrapText] = useStateSettingBoolean(
-        'lytic-editor-wrap-text',
-        false,
-    );
-    const selectedLyric = useSelectedLyricContext();
+    const { editorStore, isWrapText, setIsWrapText } = useInit(selectedLyric);
+    const resizeAttemptTimeout = useMemo(() => {
+        return genTimeoutAttempt(500);
+    }, []);
     return (
         <div className="w-100 h-100 d-flex flex-column">
             <div className="d-flex">
@@ -211,21 +165,27 @@ export function LyricEditorComp2() {
                         }}
                     />
                 </div>
-                <LyricMenuComp />
+                <div className="flex-grow-1">
+                    <LyricMenuComp />
+                </div>
             </div>
-            <textarea
-                className="w-100 h-100"
-                ref={(target) => {
-                    if (target === null) {
+            <div
+                className="w-100 h-100 overflow-hidden"
+                ref={(container) => {
+                    if (container === null) {
                         return;
                     }
-                    selectedLyric.getContent().then((content) => {
-                        target.value = content;
+                    const resizeObserver = new ResizeObserver(() => {
+                        resizeAttemptTimeout(() => {
+                            editorStore.monacoEditor.layout();
+                        });
                     });
-                }}
-                onChange={(event) => {
-                    const value = event.target.value;
-                    selectedLyric.setContent(value);
+                    resizeObserver.observe(container);
+                    container.appendChild(editorStore.div);
+                    return () => {
+                        resizeObserver.disconnect();
+                        container.removeChild(editorStore.div);
+                    };
                 }}
             />
         </div>
