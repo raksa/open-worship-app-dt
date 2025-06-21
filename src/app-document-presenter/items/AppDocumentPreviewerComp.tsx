@@ -19,15 +19,15 @@ export default function AppDocumentPreviewerComp() {
         );
     }
     return (
-        <VaryAppDocumentContext
-            value={selectedAppDocumentContext.selectedVaryAppDocument}
-        >
-            <div className="card-body w-100 h-100 overflow-hidden">
-                <div className="slide-previewer card w-100 h-100">
+        <div className="slide-previewer card w-100 h-100">
+            <VaryAppDocumentContext
+                value={selectedAppDocumentContext.selectedVaryAppDocument}
+            >
+                <div className="card-body w-100 h-100 overflow-hidden">
                     <VaryAppDocumentItemsPreviewerComp />
                 </div>
                 <AppDocumentPreviewerFooterComp />
-            </div>
-        </VaryAppDocumentContext>
+            </VaryAppDocumentContext>
+        </div>
     );
 }

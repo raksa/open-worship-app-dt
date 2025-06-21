@@ -57,7 +57,13 @@ export abstract class AppDocumentSourceAbs {
             const instance = createInstance();
             cache.set(filePath, instance as any);
         }
-        return cache.get(filePath) as any as T;
+        const instance = cache.get(filePath) as any as T;
+        if (instance instanceof this === false) {
+            throw new Error(
+                `Instance of ${this.name} already exists for filePath: ${filePath}`,
+            );
+        }
+        return instance;
     }
 
     async preDelete() {

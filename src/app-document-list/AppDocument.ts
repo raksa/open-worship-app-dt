@@ -2,7 +2,7 @@ import Slide, { SlideType } from './Slide';
 import AppDocumentSourceAbs, {
     AppDocumentMetadataType,
 } from '../helper/AppEditableDocumentSourceAbs';
-import { showAppDocumentContextMenu } from './appDocumentHelpers';
+import { gemSlideContextMenuItems } from './appDocumentHelpers';
 import { AnyObjectType, checkIsSameValues, toMaxId } from '../helper/helpers';
 import { MimetypeNameType } from '../server/fileHelpers';
 import { DisplayType } from '../_screen/screenHelpers';
@@ -35,7 +35,7 @@ export default class AppDocument
     extends AppDocumentSourceAbs<AppDocumentType>
     implements ItemSourceInf<Slide>
 {
-    static readonly mimetypeName: MimetypeNameType = 'slide';
+    static readonly mimetypeName: MimetypeNameType = 'appDocument';
     isEditable = true;
 
     async getSlides() {
@@ -251,7 +251,12 @@ export default class AppDocument
         slide: Slide,
         extraMenuItems: ContextMenuItemType[] = [],
     ) {
-        showAppDocumentContextMenu(event, this, slide, extraMenuItems);
+        const contextMenuItems = gemSlideContextMenuItems(
+            this,
+            slide,
+            extraMenuItems,
+        );
+        showAppContextMenu(event, contextMenuItems);
     }
 
     async showContextMenu(event: any) {

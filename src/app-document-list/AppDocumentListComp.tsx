@@ -91,7 +91,7 @@ export default function AppDocumentListComp() {
     return (
         <FileListHandlerComp
             className="app-document-list"
-            mimetypeName="slide"
+            mimetypeName="appDocument"
             defaultFolderName={defaultDataDirNames.DOCUMENT}
             dirSource={dirSource}
             checkExtraFile={handleExtraFileChecking}
@@ -105,7 +105,7 @@ export default function AppDocumentListComp() {
                 dirPath: dirSource.dirPath,
                 extensions: Array.from(
                     new Set([
-                        ...getMimetypeExtensions('slide'),
+                        ...getMimetypeExtensions('appDocument'),
                         ...getMimetypeExtensions('pdf'),
                         ...supportOfficeFileExtensions.map((ext) => {
                             return ext.slice(1);

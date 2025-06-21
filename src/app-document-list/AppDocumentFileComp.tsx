@@ -26,7 +26,7 @@ import { useEditingHistoryStatus } from '../editing-manager/editingHelpers';
 
 function genContextMenuItems(
     varyAppDocument: VaryAppDocumentDynamicType,
-    setSelectedSlide: (value: VaryAppDocumentType | null) => void,
+    setSelectedDocument: (value: VaryAppDocumentType | null) => void,
 ): ContextMenuItemType[] {
     if (PdfAppDocument.checkIsThisType(varyAppDocument)) {
         return [
@@ -50,7 +50,7 @@ function genContextMenuItems(
             menuElement: 'Edit',
             onSelect: () => {
                 if (varyAppDocument) {
-                    setSelectedSlide(varyAppDocument);
+                    setSelectedDocument(varyAppDocument);
                     goToPath(editorTab.routePath);
                 }
             },
@@ -58,11 +58,11 @@ function genContextMenuItems(
     ];
 }
 
-function SlideFilePreviewNormalComp({
-    slide,
-}: Readonly<{ slide: AppDocumentSourceAbs }>) {
-    const fileSource = FileSource.getInstance(slide.filePath);
-    const { canSave } = useEditingHistoryStatus(slide.filePath);
+function FilePreviewAppDocumentNormalComp({
+    varyAppDocument,
+}: Readonly<{ varyAppDocument: AppDocumentSourceAbs }>) {
+    const fileSource = FileSource.getInstance(varyAppDocument.filePath);
+    const { canSave } = useEditingHistoryStatus(varyAppDocument.filePath);
     return (
         <div className="w-100 h-100 app-ellipsis">
             <i className="bi bi-file-earmark-slides" />
@@ -72,10 +72,10 @@ function SlideFilePreviewNormalComp({
     );
 }
 
-function SlideFilePreviewPdfComp({
-    pdfSlide,
-}: Readonly<{ pdfSlide: PdfAppDocument }>) {
-    const fileSource = FileSource.getInstance(pdfSlide.filePath);
+function FilePreviewPdfAppDocumentComp({
+    pdfAppDocument,
+}: Readonly<{ pdfAppDocument: PdfAppDocument }>) {
+    const fileSource = FileSource.getInstance(pdfAppDocument.filePath);
     return (
         <div className="w-100 h-100 app-ellipsis">
             <i className="bi bi-filetype-pdf" />
@@ -133,10 +133,18 @@ export default function AppDocumentFileComp({
     };
     const handleChildRendering = (varyAppDocument: AppDocumentSourceAbs) => {
         if (AppDocument.checkIsThisType(varyAppDocument)) {
-            return <SlideFilePreviewNormalComp slide={varyAppDocument} />;
+            return (
+                <FilePreviewAppDocumentNormalComp
+                    varyAppDocument={varyAppDocument}
+                />
+            );
         }
         if (PdfAppDocument.checkIsThisType(varyAppDocument)) {
-            return <SlideFilePreviewPdfComp pdfSlide={varyAppDocument} />;
+            return (
+                <FilePreviewPdfAppDocumentComp
+                    pdfAppDocument={varyAppDocument}
+                />
+            );
         }
         return null;
     };

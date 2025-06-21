@@ -1,4 +1,4 @@
-import { lazy, use, useState } from 'react';
+import { lazy, use } from 'react';
 
 import ResizeActorComp from '../resize-actor/ResizeActorComp';
 import { SelectedLyricContext } from './lyricHelpers';
@@ -10,40 +10,7 @@ const LazyLyricSlidesPreviewerComp = lazy(() => {
     return import('./LyricSlidesPreviewerComp');
 });
 
-function RenderFooterComp({
-    isFullWidget,
-    setIsFullWidget,
-}: Readonly<{
-    isFullWidget: boolean;
-    setIsFullWidget: (value: boolean) => void;
-}>) {
-    const fullScreenClassname = isFullWidget
-        ? 'fullscreen-exit'
-        : 'arrows-fullscreen';
-    return (
-        <div
-            className="card-footer"
-            style={{
-                maxHeight: '35px',
-            }}
-        >
-            <button
-                className={
-                    `btn btn-${isFullWidget ? '' : 'outline-'}info ` +
-                    'btn-sm p-0 px-2 float-end'
-                }
-                onClick={async () => {
-                    setIsFullWidget(!isFullWidget);
-                }}
-            >
-                <i className={`bi bi-${fullScreenClassname}`} />
-            </button>
-        </div>
-    );
-}
-
 export default function LyricHandlerComp() {
-    const [isFullWidget, setIsFullWidget] = useState(false);
     const context = use(SelectedLyricContext);
     const selectedLyric = context?.selectedLyric ?? null;
     if (selectedLyric === null) {
@@ -59,11 +26,7 @@ export default function LyricHandlerComp() {
         );
     }
     return (
-        <div
-            className={
-                'card w-100 h-100' + ` ${isFullWidget ? ' app-full-view' : ''}`
-            }
-        >
+        <div className="card w-100 h-100">
             <div className="card-body">
                 <ResizeActorComp
                     flexSizeName={'lyric-previewer'}
@@ -86,10 +49,6 @@ export default function LyricHandlerComp() {
                     ]}
                 />
             </div>
-            <RenderFooterComp
-                isFullWidget={isFullWidget}
-                setIsFullWidget={setIsFullWidget}
-            />
         </div>
     );
 }

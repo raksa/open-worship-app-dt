@@ -20,6 +20,7 @@ import ScreenEffectManager from './ScreenEffectManager';
 import appProvider from '../../server/appProvider';
 import { StyleAnimType } from '../transitionEffectHelpers';
 import { unlocking } from '../../server/unlockingHelpers';
+import { checkAreObjectsEqual } from '../../server/comparisonHelpers';
 
 export type ScreenBackgroundManagerEventType = 'update';
 
@@ -59,7 +60,10 @@ class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManager
     }
 
     set backgroundSrc(backgroundSrc: BackgroundSrcType | null) {
-        if (this.screenManagerBase.checkIsLockedWithMessage()) {
+        if (
+            this.screenManagerBase.checkIsLockedWithMessage() ||
+            checkAreObjectsEqual(this._backgroundSrc, backgroundSrc)
+        ) {
             return;
         }
         this._backgroundSrc = backgroundSrc;

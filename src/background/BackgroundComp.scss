@@ -1,11 +1,11 @@
 @use '../others/variables.scss' as *;
 
 .background {
-  & > .background-header {
+  & > .header {
     height: $header-height;
   }
 
-  & > .background-body {
+  & > .body {
     background-color: var(--bs-gray-900);
     overflow-y: auto;
     padding: 1px;

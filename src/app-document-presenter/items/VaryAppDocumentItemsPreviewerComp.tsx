@@ -5,22 +5,25 @@ import { handleCtrlWheel } from '../../others/AppRangeComp';
 import { defaultRangeSize } from './AppDocumentPreviewerFooterComp';
 import SlidesMenuComp from './SlidesMenuComp';
 import { DIV_CLASS_NAME } from './varyAppDocumentHelpers';
-import { useVaryAppDocumentContext } from '../../app-document-list/appDocumentHelpers';
+import {
+    useVaryAppDocumentContext,
+    VaryAppDocumentType,
+} from '../../app-document-list/appDocumentHelpers';
 import ScrollingHandlerComp from '../../scrolling/ScrollingHandlerComp';
 
+const handlePasting = async (varyAppDocument: VaryAppDocumentType) => {
+    if (!AppDocument.checkIsThisType(varyAppDocument)) {
+        return;
+    }
+    const copiedSlides = await AppDocument.getCopiedSlides();
+    for (const copiedSlide of copiedSlides) {
+        varyAppDocument.addSlide(copiedSlide);
+    }
+};
 export default function VaryAppDocumentItemsPreviewerComp() {
     const varyAppDocument = useVaryAppDocumentContext();
     const [thumbSizeScale, setThumbnailSizeScale] =
         useAppDocumentItemThumbnailSizeScale();
-    const handlePasting = async () => {
-        if (!AppDocument.checkIsThisType(varyAppDocument)) {
-            return;
-        }
-        const copiedSlides = await AppDocument.getCopiedSlides();
-        for (const copiedSlide of copiedSlides) {
-            varyAppDocument.addSlide(copiedSlide);
-        }
-    };
     return (
         <div
             className={`${DIV_CLASS_NAME} app-focusable w-100 h-100 pb-5`}
@@ -37,7 +40,11 @@ export default function VaryAppDocumentItemsPreviewerComp() {
             onContextMenu={(event) => {
                 varyAppDocument.showContextMenu(event);
             }}
-            onPaste={handlePasting}
+            onPaste={
+                varyAppDocument.isEditable
+                    ? handlePasting.bind(null, varyAppDocument)
+                    : undefined
+            }
         >
             {varyAppDocument.isEditable ? <SlidesMenuComp /> : null}
             <AppDocumentItemsComp />

@@ -16,7 +16,7 @@ export default class PdfAppDocument
     extends AppDocumentSourceAbs
     implements ItemSourceInf<PdfSlide>
 {
-    static readonly mimetypeName: MimetypeNameType = 'slide';
+    static readonly mimetypeName: MimetypeNameType = 'pdf';
     isEditable = false;
 
     constructor(filePath: string) {

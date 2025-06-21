@@ -1,6 +1,6 @@
 import './PresenterComp.scss';
 
-import { lazy } from 'react';
+import { lazy, useState } from 'react';
 
 import {
     useBibleItemShowing,
@@ -53,6 +53,32 @@ async function checkIsOnScreen<T>(targeKey: T) {
     return false;
 }
 
+function RenderToggleFullViewComp({
+    isFullWidget,
+    setIsFullWidget,
+}: Readonly<{
+    isFullWidget: boolean;
+    setIsFullWidget: (value: boolean) => void;
+}>) {
+    const fullScreenClassname = isFullWidget
+        ? 'fullscreen-exit'
+        : 'arrows-fullscreen';
+    return (
+        <div>
+            <button
+                className={
+                    `btn btn-${isFullWidget ? '' : 'outline-'}info ` + 'btn-sm'
+                }
+                onClick={async () => {
+                    setIsFullWidget(!isFullWidget);
+                }}
+            >
+                <i className={`bi bi-${fullScreenClassname}`} />
+            </button>
+        </div>
+    );
+}
+
 const tabTypeList = [
     ['d', 'Documents', LazyAppDocumentPreviewerComp],
     ['l', 'Lyrics', LazyLyricPreviewerComp],
@@ -61,6 +87,7 @@ const tabTypeList = [
 ] as const;
 type TabKeyType = (typeof tabTypeList)[number][0];
 export default function PresenterComp() {
+    const [isFullWidget, setIsFullWidget] = useState(false);
     const [tabKey, setTabKey] = useStateSettingString<TabKeyType>(
         PRESENT_TAB_SETTING_NAME,
         'd',
@@ -70,20 +97,31 @@ export default function PresenterComp() {
     useVaryAppDocumentSelecting(() => setTabKey('d'));
     useAppDocumentItemSelecting(() => setTabKey('d'));
     return (
-        <div id="presenter-manager" className="w-100 h-100">
-            <TabRenderComp<TabKeyType>
-                tabs={tabTypeList.map(([key, name]) => {
-                    return {
-                        key,
-                        title: name,
-                        checkIsOnScreen: checkIsOnScreen<TabKeyType>,
-                    };
-                })}
-                activeTab={tabKey}
-                setActiveTab={setTabKey}
-                className="header"
-            />
-            <div className="body w-100 overflow-hidden">
+        <div
+            className={
+                'presenter-manager w-100 h-100 d-flex flex-column overflow-hidden' +
+                ` ${isFullWidget ? ' app-full-view' : ''}`
+            }
+        >
+            <div className="header d-flex w-100">
+                <TabRenderComp<TabKeyType>
+                    tabs={tabTypeList.map(([key, name]) => {
+                        return {
+                            key,
+                            title: name,
+                            checkIsOnScreen: checkIsOnScreen<TabKeyType>,
+                        };
+                    })}
+                    activeTab={tabKey}
+                    setActiveTab={setTabKey}
+                    className="flex-fill"
+                />
+                <RenderToggleFullViewComp
+                    isFullWidget={isFullWidget}
+                    setIsFullWidget={setIsFullWidget}
+                />
+            </div>
+            <div className="body flex-fill overflow-hidden">
                 {tabTypeList.map(([type, _, target]) => {
                     return genTabBody<TabKeyType>(tabKey, [type, target]);
                 })}

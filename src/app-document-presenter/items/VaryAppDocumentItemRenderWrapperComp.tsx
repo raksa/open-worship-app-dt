@@ -89,6 +89,20 @@ export default function VaryAppDocumentItemRenderWrapperComp({
             />
         );
     }
+    if (!selectedAppDocument.isEditable) {
+        return (
+            <SlideRenderComp
+                index={index}
+                slide={varyAppDocumentItem}
+                width={thumbSize}
+                onClick={handleClicking}
+                onContextMenu={handleContextMenuOpening}
+                onCopy={handleCopying}
+                onDragStart={handleDragStarting}
+                onDragEnd={handleDragEnding}
+            />
+        );
+    }
     const shouldReceiveAtFirst =
         draggingIndex !== null && draggingIndex !== 0 && index === 0;
     const shouldReceiveAtLast =

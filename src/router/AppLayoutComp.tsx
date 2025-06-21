@@ -131,7 +131,7 @@ function useAppDocumentContextValues() {
     const editingSlideContextValue = useMemo(() => {
         return {
             selectedSlide: slide,
-            setSelectedSlide: (newSelectedSlide: Slide) => {
+            setSelectedDocument: (newSelectedSlide: Slide) => {
                 setSlide1(newSelectedSlide);
             },
         };

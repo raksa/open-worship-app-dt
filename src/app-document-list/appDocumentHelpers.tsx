@@ -72,8 +72,7 @@ export function showPdfDocumentContextMenu(
     showAppContextMenu(event, [...menuItemOnScreens, ...extraMenuItems]);
 }
 
-export function showAppDocumentContextMenu(
-    event: any,
+export function gemSlideContextMenuItems(
     appDocument: AppDocument,
     slide: Slide,
     extraMenuItems: ContextMenuItemType[],
@@ -124,7 +123,7 @@ export function showAppDocumentContextMenu(
             },
         },
     ];
-    showAppContextMenu(event, [...menuItems, ...extraMenuItems]);
+    return [...menuItems, ...extraMenuItems];
 }
 
 export function checkIsPdf(ext: string) {
@@ -279,7 +278,7 @@ export async function selectSlide(event: any, currentFilePath: string) {
     const dirSource = await DirSource.getInstance(
         dirSourceSettingNames.DOCUMENT,
     );
-    const newFilePaths = await dirSource.getFilePaths('slide');
+    const newFilePaths = await dirSource.getFilePaths('appDocument');
     if (!newFilePaths?.length) {
         return null;
     }
@@ -336,7 +335,7 @@ export function useSelectedAppDocumentSetterContext() {
 
 export const SelectedEditingSlideContext = createContext<{
     selectedSlide: Slide | null;
-    setSelectedSlide: (newSlide: Slide | null) => void;
+    setSelectedDocument: (newSlide: Slide | null) => void;
 } | null>(null);
 
 function useContextItem() {
@@ -363,7 +362,7 @@ export function useSelectedEditingSlideContext() {
 
 export function useSelectedEditingSlideSetterContext() {
     const context = useContextItem();
-    return context.setSelectedSlide;
+    return context.setSelectedDocument;
 }
 
 export function useSlideWrongDimension(

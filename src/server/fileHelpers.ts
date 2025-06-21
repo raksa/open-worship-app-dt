@@ -8,7 +8,7 @@ import { handleError } from '../helper/errorHelpers';
 import mimeBibleList from './mime/bible-types.json';
 import mimeLyricList from './mime/lyric-types.json';
 import mimeMarkdownList from './mime/markdown-types.json';
-import mimeSlideList from './mime/slide-types.json';
+import mimeAppDocumentList from './mime/app-document-types.json';
 import mimeImageList from './mime/image-types.json';
 import mimePlaylistList from './mime/playlist-types.json';
 import mimeVideoList from './mime/video-types.json';
@@ -23,7 +23,7 @@ import { cloneJson, freezeObject } from '../helper/helpers';
 freezeObject(mimeBibleList);
 freezeObject(mimeLyricList);
 freezeObject(mimeMarkdownList);
-freezeObject(mimeSlideList);
+freezeObject(mimeAppDocumentList);
 freezeObject(mimeImageList);
 freezeObject(mimePlaylistList);
 freezeObject(mimeVideoList);
@@ -40,7 +40,7 @@ export const mimetypePdf: AppMimetypeType = {
 const appMimeTypesMapper = {
     bible: mimeBibleList,
     lyric: mimeLyricList,
-    slide: mimeSlideList,
+    appDocument: mimeAppDocumentList,
 };
 const _mimeTypes = Object.values(appMimeTypesMapper) as AppMimetypeType[][];
 const appExtensions = _mimeTypes.reduce((acc: string[], cur) => {
@@ -58,7 +58,7 @@ const mimeTypesMapper = {
     bible: mimeBibleList,
     lyric: mimeLyricList,
     markdown: mimeMarkdownList,
-    slide: mimeSlideList,
+    appDocument: mimeAppDocumentList,
     pdf: [mimetypePdf],
     image: mimeImageList,
     playlist: mimePlaylistList,
@@ -127,12 +127,13 @@ export const createNewFileDetail = async (
 export const mimetypeNameTypeList = [
     'image',
     'video',
-    'slide',
+    'appDocument',
     'pdf',
     'playlist',
     'lyric',
     'markdown',
     'bible',
+    'sound',
     'other',
 ] as const;
 export type MimetypeNameType = (typeof mimetypeNameTypeList)[number];

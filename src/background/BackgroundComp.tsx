@@ -99,7 +99,7 @@ export default function BackgroundComp() {
     });
     return (
         <div className="background w-100 d-flex flex-column">
-            <div className="background-header d-flex">
+            <div className="header d-flex">
                 <TabRenderComp<TabKeyType>
                     tabs={tabTypeList.map(([key, name]) => {
                         return {
@@ -121,7 +121,7 @@ export default function BackgroundComp() {
                     setIsSoundActive={setIsSoundActive}
                 />
             </div>
-            <div className="background-body w-100 flex-fill d-flex">
+            <div className="body flex-fill d-flex">
                 {isSoundActive ? (
                     <ResizeActorComp
                         flexSizeName={'flex-size-background'}
