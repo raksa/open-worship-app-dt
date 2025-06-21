@@ -161,8 +161,16 @@ export default class Bible
         this.items = bibleItems;
     }
 
-    swapItem(fromIndex: number, toIndex: number) {
+    swapItems(fromIndex: number, toIndex: number) {
         const bibleItems = this.items;
+        if (
+            fromIndex < 0 ||
+            fromIndex >= bibleItems.length ||
+            toIndex < 0 ||
+            toIndex >= bibleItems.length
+        ) {
+            return;
+        }
         const fromItem = bibleItems[fromIndex];
         const toItem = bibleItems[toIndex];
         bibleItems[fromIndex] = toItem;
@@ -182,7 +190,7 @@ export default class Bible
             return;
         }
         const fromIndex = this.getItemIndex(bibleItem);
-        if (fromIndex === -1) {
+        if (fromIndex === -1 || fromIndex === toIndex) {
             return;
         }
         const [item] = bibleItems.splice(fromIndex, 1);

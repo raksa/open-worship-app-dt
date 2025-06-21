@@ -90,7 +90,6 @@ function useAppDocumentItems() {
 
 export default function AppDocumentItemsComp() {
     const [thumbSizeScale] = useAppDocumentItemThumbnailSizeScale();
-    const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
     const { varyAppDocumentItems, startLoading } = useAppDocumentItems();
     const appDocumentItemThumbnailSize =
         thumbSizeScale * DEFAULT_THUMBNAIL_SIZE_FACTOR;
@@ -114,11 +113,9 @@ export default function AppDocumentItemsComp() {
                 return (
                     <VaryAppDocumentItemRenderWrapperComp
                         key={varyAppDocumentItem.id}
-                        draggingIndex={draggingIndex}
                         thumbSize={appDocumentItemThumbnailSize}
                         varyAppDocumentItem={varyAppDocumentItem}
                         index={i}
-                        setDraggingIndex={setDraggingIndex}
                     />
                 );
             })}

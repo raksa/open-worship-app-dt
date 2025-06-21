@@ -71,15 +71,20 @@ export default class AppDocument
         await this.setJsonData(jsonData);
     }
 
-    async updateSlide(slide: Slide) {
+    async getSlideIndex(slide: Slide) {
         const slides = await this.getSlides();
         const index = slides.findIndex((slide1) => {
-            return slide1.id === slide.id;
+            return slide1.checkIsSame(slide);
         });
+        return index;
+    }
+
+    async updateSlide(slide: Slide) {
+        const index = await this.getSlideIndex(slide);
         if (index === -1) {
-            showSimpleToast('Set Slide', 'Unable to find a slide');
             return;
         }
+        const slides = await this.getSlides();
         slides[index] = slide;
         await this.setSlides(slides);
     }
@@ -129,35 +134,30 @@ export default class AppDocument
     }
 
     async duplicateSlide(slide: Slide) {
-        const slides = await this.getSlides();
-        const index = slides.findIndex((slide1) => {
-            return slide1.checkIsSame(slide);
-        });
+        const index = await this.getSlideIndex(slide);
         if (index === -1) {
-            showSimpleToast('Duplicate Slide', 'Unable to find a slide');
             return;
         }
         const newSlide = slide.clone();
-        if (newSlide !== null) {
-            const maxSlideId = await this.getMaxSlideId();
-            newSlide.id = maxSlideId + 1;
-            slides.splice(index + 1, 0, newSlide);
-            await this.setSlides(slides);
-        }
+        const maxSlideId = await this.getMaxSlideId();
+        newSlide.id = maxSlideId + 1;
+        const slides = await this.getSlides();
+        slides.splice(index + 1, 0, newSlide);
+        await this.setSlides(slides);
     }
 
-    async moveSlide(id: number, toIndex: number, isLeft: boolean) {
+    async moveSlideToIndex(slide: Slide, toIndex: number) {
         const slides = await this.getSlides();
-        const fromIndex: number = slides.findIndex((slide) => {
-            return slide.id === id;
-        });
-        if (fromIndex > toIndex && !isLeft) {
-            toIndex++;
+        if (toIndex < 0 || toIndex >= slides.length) {
+            return;
         }
-        const target = slides.splice(fromIndex, 1)[0];
-        slides.splice(toIndex, 0, target);
+        const fromIndex = await this.getSlideIndex(slide);
+        if (fromIndex === -1 || fromIndex === toIndex) {
+            return;
+        }
+        const [item] = slides.splice(fromIndex, 1);
+        slides.splice(toIndex, 0, item);
         await this.setSlides(slides);
-        this.fileSource.fireUpdateEvent(slides);
     }
 
     async addSlide(slide: Slide) {
@@ -167,6 +167,36 @@ export default class AppDocument
         slide.filePath = this.filePath;
         slides.push(slide);
         await this.setSlides(slides);
+    }
+
+    async swapSlides(fromIndex: number, toIndex: number) {
+        const slides = await this.getSlides();
+        if (fromIndex < 0 || fromIndex >= slides.length) {
+            return;
+        }
+        if (toIndex < 0 || toIndex >= slides.length) {
+            return;
+        }
+        const fromSlide = slides[fromIndex];
+        const toSlide = slides[toIndex];
+        slides[fromIndex] = toSlide;
+        slides[toIndex] = fromSlide;
+        await this.setSlides(slides);
+    }
+
+    async moveSlide(slide: Slide, isForward: boolean) {
+        const index = await this.getSlideIndex(slide);
+        if (index === -1) {
+            return;
+        }
+        const slides = await this.getSlides();
+        let toIndex = 0;
+        if (isForward) {
+            toIndex = (index + 1) % slides.length;
+        } else {
+            toIndex = (index - 1 + slides.length) % slides.length;
+        }
+        return this.moveSlideToIndex(slide, toIndex);
     }
 
     async addNewSlide() {

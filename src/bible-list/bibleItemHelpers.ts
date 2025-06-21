@@ -124,7 +124,7 @@ export async function openBibleItemContextMenu(
         menuItem.push({
             menuElement: '`' + 'Move up',
             onSelect: () => {
-                bible.swapItem(index, index - 1);
+                bible.swapItems(index, index - 1);
                 bible.save();
             },
         });
@@ -133,7 +133,7 @@ export async function openBibleItemContextMenu(
         menuItem.push({
             menuElement: '`' + 'Move down',
             onSelect: () => {
-                bible.swapItem(index, index + 1);
+                bible.swapItems(index, index + 1);
                 bible.save();
             },
         });

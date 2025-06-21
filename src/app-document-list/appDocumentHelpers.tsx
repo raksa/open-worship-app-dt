@@ -87,22 +87,34 @@ export function gemSlideContextMenuItems(
     });
     const menuItems: ContextMenuItemType[] = [
         {
-            menuElement: 'Copy',
+            menuElement: '`Copy',
             onSelect: async () => {
                 navigator.clipboard.writeText(slide.clipboardSerialize());
                 showSimpleToast('Copied', 'Slide is copied');
             },
         },
         {
-            menuElement: 'Duplicate',
+            menuElement: '`Duplicate',
             onSelect: () => {
                 appDocument.duplicateSlide(slide);
+            },
+        },
+        {
+            menuElement: '`Move forward',
+            onSelect: () => {
+                appDocument.moveSlide(slide, true);
+            },
+        },
+        {
+            menuElement: '`Move backward',
+            onSelect: () => {
+                appDocument.moveSlide(slide, false);
             },
         },
         ...(appProvider.isPagePresenter
             ? [
                   {
-                      menuElement: 'Quick Edit',
+                      menuElement: '`Quick Edit',
                       onSelect: () => {
                           if (appProvider.isPageEditor) {
                               AppDocumentListEventListener.selectAppDocumentItem(
@@ -117,7 +129,7 @@ export function gemSlideContextMenuItems(
             : []),
         ...menuItemOnScreens,
         {
-            menuElement: 'Delete',
+            menuElement: '`Delete',
             onSelect: () => {
                 appDocument.deleteSlide(slide);
             },
