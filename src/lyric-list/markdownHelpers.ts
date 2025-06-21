@@ -3,6 +3,8 @@ import { handleError } from '../helper/errorHelpers';
 import CacheManager from '../others/CacheManager';
 import appProvider from '../server/appProvider';
 import { unlocking } from '../server/unlockingHelpers';
+import { toIframe } from './markdownHtmlHelpers';
+import { cloneJson } from '../helper/helpers';
 
 type RenderMarkdownOptions = {
     isJustifyCenter?: boolean;
@@ -60,16 +62,14 @@ function wrapHTML({
                 `
                     : ''
             }
-            ${
-                options.isDisablePointerEvents
-                    ? `
-                pointer-events: none;
-                `
-                    : ''
-            }
             width: 100vw;
             height: 100vh;
             overflow: auto;
+        }
+        ${
+            options.isDisablePointerEvents
+                ? `body { pointer-events: none; }`
+                : ''
         }
     </style>
     <body>
@@ -98,6 +98,12 @@ export async function renderMarkdown(
     text: string,
     options?: RenderMarkdownOptions,
 ) {
+    if (!text) {
+        return {
+            id: '',
+            html: '',
+        };
+    }
     const hashKey = appProvider.systemUtils.generateMD5(text);
     const cached = await cacher.get(hashKey);
     if (cached) {
@@ -124,23 +130,29 @@ export async function renderMarkdown(
     return data;
 }
 
-export async function renderLyricSlidesMarkdown(lyric: Lyric) {
+export async function renderLyricSlideHtmlList(lyric: Lyric) {
     return unlocking(`lyric-slides-${lyric.filePath}`, async () => {
         const content = await lyric.getContent();
         const contentList = content.split('\n---\n').map((item) => {
             return item.trim();
         });
-        return Promise.all(
+        const htmlDataList = await Promise.all(
             contentList.map((item) => {
                 return renderMarkdown(item, {
                     isJustifyCenter: true,
+                    isDisablePointerEvents: true,
                 });
             }),
         );
+        return htmlDataList.map((htmlData) => {
+            const newHtmlData = cloneJson(htmlData);
+            newHtmlData.html = toIframe(htmlData.html, htmlData.id);
+            return newHtmlData;
+        });
     });
 }
 
-export async function renderLyricMarkdown(lyric: Lyric) {
+export async function renderLyricSlide(lyric: Lyric) {
     return unlocking(`lyric-slides-${lyric.filePath}`, async () => {
         const content = await lyric.getContent();
         return await renderMarkdown(content);

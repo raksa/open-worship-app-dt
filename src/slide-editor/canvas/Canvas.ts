@@ -53,6 +53,7 @@ export default class Canvas {
             case 'video':
                 return CanvasItemVideo.fromJson(json);
             case 'text':
+            case 'html':
                 return CanvasItemText.fromJson(json);
             case 'bible':
                 return CanvasItemBibleItem.fromJson(json);

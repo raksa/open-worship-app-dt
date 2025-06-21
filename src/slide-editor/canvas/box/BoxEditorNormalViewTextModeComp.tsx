@@ -26,11 +26,37 @@ export function BoxEditorNormalTextRender() {
         handleError(error);
         return <BENViewErrorRender />;
     }
-    const htmlText = props.text.replace(/\n/g, '<br />');
+    const text = props.text.replace(/\n/g, '<br />');
     return (
         <div
-            className="w-100 h-100"
-            style={CanvasItemText.genStyle(props)}
+            style={{
+                width: '100%',
+                height: '100%',
+                ...CanvasItemText.genStyle(props),
+            }}
+            dangerouslySetInnerHTML={{
+                __html: text,
+            }}
+        />
+    );
+}
+
+export function BoxEditorNormalHtmlRender() {
+    const props = useCanvasItemPropsContext<CanvasItemTextPropsType>();
+    try {
+        CanvasItemText.validate(props);
+    } catch (error) {
+        handleError(error);
+        return <BENViewErrorRender />;
+    }
+    const htmlText = props.text;
+    return (
+        <div
+            style={{
+                width: '100%',
+                height: '100%',
+                ...CanvasItemText.genStyle(props),
+            }}
             dangerouslySetInnerHTML={{
                 __html: htmlText,
             }}

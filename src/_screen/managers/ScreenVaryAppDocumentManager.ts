@@ -4,7 +4,7 @@ import { DroppedDataType } from '../../helper/DragInf';
 import { getSetting, setSetting } from '../../helper/settingHelpers';
 import { SlideType } from '../../app-document-list/Slide';
 import { genPdfSlide } from '../../app-document-presenter/items/PdfSlideRenderComp';
-import { genHtmlSlide } from '../../app-document-presenter/items/SlideRendererComp';
+import { genSlideHtml } from '../../app-document-presenter/items/SlideRendererComp';
 import {
     BasicScreenMessageType,
     ScreenMessageType,
@@ -223,7 +223,7 @@ class ScreenVaryAppDocumentManager extends ScreenEventHandler<ScreenVaryAppDocum
     }
 
     renderAppDocument(divHaftScale: HTMLDivElement, itemJson: SlideType) {
-        const content = genHtmlSlide(itemJson.canvasItems);
+        const content = genSlideHtml(itemJson.canvasItems);
         this.cleanupSlideContent(content);
         const { width, height } = itemJson.metadata;
         Object.assign(divHaftScale.style, {

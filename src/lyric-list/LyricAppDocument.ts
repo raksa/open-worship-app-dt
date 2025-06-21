@@ -11,6 +11,8 @@ import { genShowOnScreensContextMenu } from '../others/FileItemHandlerComp';
 import LyricSlide from './LyricSlide';
 import FileSource from '../helper/FileSource';
 import Lyric from './Lyric';
+import { renderLyricSlideHtmlList } from './markdownHelpers';
+import { CanvasItemTextPropsType } from '../slide-editor/canvas/CanvasItemText';
 
 export default class LyricAppDocument extends AppDocument {
     static readonly mimetypeName: MimetypeNameType = 'appDocument';
@@ -18,24 +20,54 @@ export default class LyricAppDocument extends AppDocument {
 
     async getSlides() {
         const display = getDefaultScreenDisplay();
-        return [
-            new LyricSlide(this.filePath, {
-                id: 0,
-                canvasItems: [],
+        const offsetPercentage = 5;
+        const left = Math.floor(
+            display.bounds.width * (offsetPercentage / 100),
+        );
+        const top = Math.floor(
+            display.bounds.height * (offsetPercentage / 100),
+        );
+        const lyric = Lyric.getInstance(
+            LyricAppDocument.toLyricFilePath(this.filePath),
+        );
+        const htmlDataList = await renderLyricSlideHtmlList(lyric);
+        return htmlDataList.map((htmlData, i) => {
+            return new LyricSlide(this.filePath, {
+                id: i,
+                canvasItems: htmlData.html
+                    ? [
+                          {
+                              text: htmlData.html,
+                              color: '#FFFFFFFF',
+                              fontSize: 90,
+                              fontFamily: 'Battambang',
+                              fontWeight: null,
+                              textHorizontalAlignment: 'center',
+                              textVerticalAlignment: 'center',
+                              id: 0,
+                              top,
+                              left,
+                              backgroundColor: '#0000008B',
+                              width: Math.floor(
+                                  display.bounds.width - left * 2,
+                              ),
+                              height: Math.floor(
+                                  display.bounds.height - top * 2,
+                              ),
+                              rotate: 0,
+                              horizontalAlignment: 'center',
+                              verticalAlignment: 'center',
+                              type: 'html',
+                          } as CanvasItemTextPropsType,
+                      ]
+                    : [],
                 metadata: {
                     width: display.bounds.width,
                     height: display.bounds.height,
-                },
-            }),
-            new LyricSlide(this.filePath, {
-                id: 1,
-                canvasItems: [],
-                metadata: {
-                    width: display.bounds.width,
-                    height: display.bounds.height,
-                },
-            }),
-        ];
+                    uuid: htmlData.id,
+                } as any,
+            });
+        });
     }
 
     async showContextMenu(_event: any) {
@@ -68,6 +100,18 @@ export default class LyricAppDocument extends AppDocument {
             throw new Error('No extensions found for appDocument mimetype');
         }
         const filePath = `${lyricFilePath}.preview.${extensions[0]}`;
+        return filePath;
+    }
+
+    static toLyricFilePath(appDocumentFilePath: string) {
+        const extensions = getMimetypeExtensions(this.mimetypeName);
+        if (extensions.length === 0) {
+            throw new Error('No extensions found for appDocument mimetype');
+        }
+        const filePath = appDocumentFilePath.replace(
+            new RegExp(`\\.preview\\.${extensions[0]}$`),
+            '',
+        );
         return filePath;
     }
 

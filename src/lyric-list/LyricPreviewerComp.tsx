@@ -2,14 +2,14 @@ import { useMemo } from 'react';
 
 import { useAppStateAsync } from '../helper/debuggerHelpers';
 import { useSelectedLyricContext } from './lyricHelpers';
-import { HTMLDataType, renderLyricMarkdown } from './markdownHelpers';
+import { HTMLDataType, renderLyricSlide } from './markdownHelpers';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { genTimeoutAttempt } from '../helper/helpers';
 
 export default function LyricPreviewerComp() {
     const selectedLyric = useSelectedLyricContext();
     const [htmlData, setHtmlData] = useAppStateAsync<HTMLDataType>(() => {
-        return renderLyricMarkdown(selectedLyric);
+        return renderLyricSlide(selectedLyric);
     }, [selectedLyric]);
     const attemptTimeout = useMemo(() => {
         return genTimeoutAttempt(500);
@@ -18,7 +18,7 @@ export default function LyricPreviewerComp() {
         ['update'],
         async () => {
             attemptTimeout(async () => {
-                setHtmlData(await renderLyricMarkdown(selectedLyric));
+                setHtmlData(await renderLyricSlide(selectedLyric));
             });
         },
         [],
