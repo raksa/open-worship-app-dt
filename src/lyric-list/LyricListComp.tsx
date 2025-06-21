@@ -15,6 +15,8 @@ import {
 import { checkIsMarkdown } from './lyricHelpers';
 import Lyric from './Lyric';
 import LyricFileComp from './LyricFileComp';
+import LyricAppDocument from './LyricAppDocument';
+import { checkIsVaryAppDocumentOnScreen } from '../app-document-list/appDocumentHelpers';
 
 async function newFileHandling(dirPath: string, name: string) {
     return !(await Lyric.create(dirPath, name));
@@ -33,8 +35,17 @@ function handleExtraFileChecking(filePath: string) {
     return false;
 }
 
-async function checkIsOnScreen(_filePaths: string[]) {
-    //  TODO: implement this function
+async function checkIsOnScreen(filePaths: string[]) {
+    for (const filePath of filePaths) {
+        const lyricAppDocument =
+            LyricAppDocument.getInstanceFromLyricFilePath(filePath);
+        const isOnScreen =
+            lyricAppDocument !== null &&
+            (await checkIsVaryAppDocumentOnScreen(lyricAppDocument));
+        if (isOnScreen) {
+            return true;
+        }
+    }
     return false;
 }
 
