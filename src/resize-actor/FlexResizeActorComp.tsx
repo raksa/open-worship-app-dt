@@ -100,8 +100,8 @@ export default class FlexResizeActorComp extends Component<Props, object> {
     }
     setInactive() {
         this.currentNode.classList.remove('active');
-        this.preNode.style.pointerEvents = '';
-        this.nextNode.style.pointerEvents = '';
+        this.preNode.style.pointerEvents = 'auto';
+        this.nextNode.style.pointerEvents = 'auto';
     }
     init() {
         if (!this.currentNode) {
