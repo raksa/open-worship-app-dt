@@ -88,7 +88,12 @@ function wrapHTML({
 `;
 }
 
-const cacher = new CacheManager<string>(10); // 10 second
+export type HTMLDataType = {
+    id: string;
+    html: string;
+};
+
+const cacher = new CacheManager<HTMLDataType>(10); // 10 second
 export async function renderMarkdown(
     text: string,
     options?: RenderMarkdownOptions,
@@ -114,15 +119,30 @@ export async function renderMarkdown(
             html: `<pre>${text}</pre>`,
         });
     }
-    await cacher.set(hashKey, html);
-    return html;
+    const data = { id: hashKey, html };
+    await cacher.set(hashKey, data);
+    return data;
+}
+
+export async function renderLyricSlidesMarkdown(lyric: Lyric) {
+    return unlocking(`lyric-slides-${lyric.filePath}`, async () => {
+        const content = await lyric.getContent();
+        const contentList = content.split('\n---\n').map((item) => {
+            return item.trim();
+        });
+        return Promise.all(
+            contentList.map((item) => {
+                return renderMarkdown(item, {
+                    isJustifyCenter: true,
+                });
+            }),
+        );
+    });
 }
 
 export async function renderLyricMarkdown(lyric: Lyric) {
     return unlocking(`lyric-slides-${lyric.filePath}`, async () => {
         const content = await lyric.getContent();
-        return renderMarkdown(content, {
-            isJustifyCenter: true,
-        });
+        return await renderMarkdown(content);
     });
 }

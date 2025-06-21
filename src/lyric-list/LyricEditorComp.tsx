@@ -115,14 +115,12 @@ function useInit(lyric: Lyric) {
         editorStore.toggleIsWrapText = () => {
             setIsWrapText(!isWrapText);
         };
-    }, [editorStore]);
-    useAppEffect(() => {
         editorStore.monacoEditor.updateOptions({
             wordWrap: isWrapText ? 'on' : 'off',
         });
         editorStore.monacoEditor.layout();
         editorStore.monacoEditor.focus();
-    }, [isWrapText]);
+    }, [isWrapText, editorStore]);
 
     const attemptTimeout = useMemo(() => {
         return genTimeoutAttempt(500);
@@ -144,7 +142,7 @@ function useInit(lyric: Lyric) {
     };
 }
 
-export default function LyricEditorComp1() {
+export default function LyricEditorComp() {
     const selectedLyric = useSelectedLyricContext();
     const { editorStore, isWrapText, setIsWrapText } = useInit(selectedLyric);
     const resizeAttemptTimeout = useMemo(() => {
@@ -153,7 +151,12 @@ export default function LyricEditorComp1() {
     return (
         <div className="w-100 h-100 d-flex flex-column">
             <div className="d-flex">
-                <div className="input-group-text">
+                <div
+                    className="input-group-text"
+                    style={{
+                        height: '30px',
+                    }}
+                >
                     Wrap Text:{' '}
                     <input
                         className="form-check-input mt-0"

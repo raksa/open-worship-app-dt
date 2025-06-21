@@ -1,20 +1,30 @@
-import { lazy, use, useState } from 'react';
+import { useMemo } from 'react';
 
-import ResizeActorComp from '../resize-actor/ResizeActorComp';
-import { SelectedLyricContext } from './lyricHelpers';
-
-const LazyLyricEditorComp = lazy(() => {
-    return import('./LyricEditorComp');
-});
-const LazyLyricSlidesComp = lazy(() => {
-    return import('./LyricSlidesComp');
-});
+import { useAppStateAsync } from '../helper/debuggerHelpers';
+import { useSelectedLyricContext } from './lyricHelpers';
+import { HTMLDataType, renderLyricMarkdown } from './markdownHelpers';
+import { useFileSourceEvents } from '../helper/dirSourceHelpers';
+import { genTimeoutAttempt } from '../helper/helpers';
 
 export default function LyricPreviewerComp() {
-    const [isFullWidget, setIsFullWidget] = useState(false);
-    const context = use(SelectedLyricContext);
-    const selectedLyric = context?.selectedLyric ?? null;
-    if (selectedLyric === null) {
+    const selectedLyric = useSelectedLyricContext();
+    const [htmlData, setHtmlData] = useAppStateAsync<HTMLDataType>(() => {
+        return renderLyricMarkdown(selectedLyric);
+    }, [selectedLyric]);
+    const attemptTimeout = useMemo(() => {
+        return genTimeoutAttempt(500);
+    }, []);
+    useFileSourceEvents(
+        ['update'],
+        async () => {
+            attemptTimeout(async () => {
+                setHtmlData(await renderLyricMarkdown(selectedLyric));
+            });
+        },
+        [],
+        selectedLyric.filePath,
+    );
+    if (!htmlData) {
         return (
             <div
                 className={
@@ -22,59 +32,22 @@ export default function LyricPreviewerComp() {
                     ' align-items-center'
                 }
             >
-                <h3 className="text-muted">`No Lyric Selected</h3>
+                <h3 className="text-muted">`Rendered Text Not</h3>
             </div>
         );
     }
-    const fullScreenClassname = isFullWidget
-        ? 'fullscreen-exit'
-        : 'arrows-fullscreen';
     return (
-        <div
-            className={
-                'card w-100 h-100' + ` ${isFullWidget ? ' app-full-view' : ''}`
-            }
-        >
-            <div className="card-body">
-                <ResizeActorComp
-                    flexSizeName={'lyric-previewer'}
-                    isHorizontal
-                    flexSizeDefault={{
-                        h1: ['2'],
-                        h2: ['1'],
-                    }}
-                    dataInput={[
-                        {
-                            children: LazyLyricEditorComp,
-                            key: 'h1',
-                            widgetName: 'Editor',
-                        },
-                        {
-                            children: LazyLyricSlidesComp,
-                            key: 'h2',
-                            widgetName: 'Slides',
-                        },
-                    ]}
-                />
-            </div>
-            <div
-                className="card-footer"
+        <div className="w-100 h-100 d-flex flex-column p-1">
+            <iframe
+                className="w-100 h-100 p-0 m-0 overflow-hidden"
+                srcDoc={htmlData.html}
+                sandbox="allow-same-origin allow-scripts"
                 style={{
-                    maxHeight: '35px',
+                    border: 'none',
+                    backgroundColor: 'black',
                 }}
-            >
-                <button
-                    className={
-                        `btn btn-${isFullWidget ? '' : 'outline-'}info ` +
-                        'btn-sm p-0 px-2 float-end'
-                    }
-                    onClick={async () => {
-                        setIsFullWidget(!isFullWidget);
-                    }}
-                >
-                    <i className={`bi bi-${fullScreenClassname}`} />
-                </button>
-            </div>
+                title="Lyric Slides"
+            />
         </div>
     );
 }
