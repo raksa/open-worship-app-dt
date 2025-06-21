@@ -41,7 +41,6 @@ import { createContext, use, useState } from 'react';
 import { DisplayType } from '../_screen/screenHelpers';
 import { getSetting, setSetting } from '../helper/settingHelpers';
 import PdfSlide, { PdfSlideType } from './PdfSlide';
-import { OptionalPromise } from '../others/otherHelpers';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { useScreenVaryAppDocumentManagerEvents } from '../_screen/managers/screenEventHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
@@ -56,10 +55,6 @@ export type VaryAppDocumentType = AppDocument | PdfAppDocument;
 export type VaryAppDocumentItemType = Slide | PdfSlide;
 export type VaryAppDocumentItemDataType = SlideType | PdfSlideType;
 export type VaryAppDocumentDynamicType = VaryAppDocumentType | null | undefined;
-
-export interface ClipboardInf {
-    clipboardSerialize(): OptionalPromise<string | null>;
-}
 
 export function showPdfDocumentContextMenu(
     event: any,

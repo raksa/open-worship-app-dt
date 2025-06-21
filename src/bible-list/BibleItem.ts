@@ -16,7 +16,6 @@ export default class BibleItem
     extends ItemBase
     implements DragInf<BibleItemType>
 {
-    static readonly SELECT_SETTING_NAME = 'bible-item-selected';
     private originalJson: BibleItemType;
     _id: number;
     filePath?: string;

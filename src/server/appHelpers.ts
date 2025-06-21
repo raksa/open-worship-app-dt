@@ -1,6 +1,7 @@
 import appProvider, { FontListType } from './appProvider';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { AnyObjectType } from '../helper/helpers';
+import { OptionalPromise } from '../others/otherHelpers';
 
 export function getFontListByNodeFont() {
     appProvider.messageUtils.sendData('main:app:get-font-list');
@@ -62,4 +63,8 @@ export function copyToClipboard(str: string) {
     appProvider.systemUtils.copyToClipboard(str);
     showSimpleToast('Copy', 'Text has been copied to clip');
     return true;
+}
+
+export interface ClipboardInf {
+    clipboardSerialize(): OptionalPromise<string | null>;
 }

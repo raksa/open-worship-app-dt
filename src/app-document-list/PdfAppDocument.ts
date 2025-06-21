@@ -82,7 +82,7 @@ export default class PdfAppDocument
 
     static getInstance(filePath: string) {
         return this._getInstance(filePath, () => {
-            return new PdfAppDocument(filePath);
+            return new this(filePath);
         });
     }
 
