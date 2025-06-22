@@ -57,12 +57,14 @@ function wrapHTML({
                 display: flex;
                 flex-direction: column;
                 align-items: center;
+                justify-content: center;
+                transform: scale(3);
                 `
                     : ''
             }
             width: 100vw;
             height: 100vh;
-            overflow: auto;
+            overflow: hidden;
         }
         ${
             options.isDisablePointerEvents
@@ -116,8 +118,9 @@ export async function renderMarkdown(
         }
         let html = '';
         try {
+            const renderedHtml = markdown.render(text);
             html = wrapHTML({
-                html: markdown.render(text),
+                html: renderedHtml,
                 options,
             });
             html = toIframe(html, hashKey);

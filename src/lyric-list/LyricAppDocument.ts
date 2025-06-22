@@ -24,13 +24,11 @@ export default class LyricAppDocument extends AppDocument {
 
     async getSlides() {
         const display = getDefaultScreenDisplay();
-        const offsetPercentage = 5;
+        const offsetPercentage = 1;
         const left = Math.floor(
             display.bounds.width * (offsetPercentage / 100),
         );
-        const top = Math.floor(
-            display.bounds.height * (offsetPercentage / 100),
-        );
+        const top = left;
         const lyric = Lyric.getInstance(
             LyricAppDocument.toLyricFilePath(this.filePath),
         );

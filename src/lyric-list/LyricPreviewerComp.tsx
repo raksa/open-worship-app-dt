@@ -5,6 +5,7 @@ import { useSelectedLyricContext } from './lyricHelpers';
 import { HTMLDataType, renderLyricSlide } from './markdownHelpers';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { genTimeoutAttempt } from '../helper/helpers';
+import LoadingComp from '../others/LoadingComp';
 
 export default function LyricPreviewerComp() {
     const selectedLyric = useSelectedLyricContext();
@@ -32,7 +33,7 @@ export default function LyricPreviewerComp() {
                     ' align-items-center'
                 }
             >
-                <h3 className="text-muted">`Rendered Text Not</h3>
+                <LoadingComp />
             </div>
         );
     }
