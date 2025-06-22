@@ -5,21 +5,14 @@ import AppDocumentSourceAbs, {
 } from '../helper/AppEditableDocumentSourceAbs';
 
 const DEFAULT_CONTENT = `
-<!-- title:start -->
-# Lyric Title
-<!-- title:end -->
-<!-- verse:start -->
-# Lyric Content
-<!-- verse:end -->
-<!-- chorus:start -->
-# Lyric Chorus
-<!-- chorus:end -->
-<!-- bridge:start -->
-# Lyric Bridge
-<!-- bridge:end -->
-<!-- outro:start -->
-# Lyric Outro
-<!-- outro:end -->
+---
+# Test1
+---
+c1:                    Am     G  F          G      Esus4  E
+l1: All the leaves are brown        and the sky is gray
+
+c1: F               C     E  Am       F        Esus4  E
+l1: I've been for a walk         on a winter's day
 `;
 
 type LyricType = {
@@ -35,6 +28,11 @@ export default class Lyric extends AppDocumentSourceAbs<LyricType> {
         if (typeof json.content !== 'string') {
             throw new Error(`Invalid lyric data json:${JSON.stringify(json)}`);
         }
+    }
+
+    async getMetadata() {
+        const jsonData = await this.getJsonData();
+        return jsonData?.metadata ?? ({} as AppDocumentMetadataType);
     }
 
     async getContent() {

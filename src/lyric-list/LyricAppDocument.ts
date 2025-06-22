@@ -37,6 +37,7 @@ export default class LyricAppDocument extends AppDocument {
                 return [text, text, undefined];
             },
         );
+        const metadata = await lyric.getMetadata();
         if (this.isPreRender) {
             textList = await Promise.all(
                 textList.map(async ([text, htmlText]) => {
@@ -47,6 +48,10 @@ export default class LyricAppDocument extends AppDocument {
                         isJustifyCenter: true,
                         isDisablePointerEvents: true,
                         theme: 'dark',
+                        // TODO: set font family on UI
+                        fontFamily:
+                            metadata.renderProps?.['fontFamily'] ??
+                            'Kh Battambang',
                     });
                     return [text, htmlData.html, htmlData.id];
                 }),

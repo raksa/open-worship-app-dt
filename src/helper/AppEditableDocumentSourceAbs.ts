@@ -14,6 +14,7 @@ export type AppDocumentMetadataType = {
     fileVersion: number;
     initDate: string;
     lastEditDate?: string;
+    renderProps?: AnyObjectType;
 };
 
 function validateAppMeta(metadata: any) {

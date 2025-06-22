@@ -39,7 +39,7 @@ export default function LyricPreviewerComp() {
     }
     return (
         <div
-            className="w-100 h-100 p-3"
+            className="card w-100 h-100 p-3"
             dangerouslySetInnerHTML={{ __html: htmlData.html }}
         />
     );

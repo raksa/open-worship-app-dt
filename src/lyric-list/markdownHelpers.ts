@@ -9,6 +9,7 @@ type RenderMarkdownOptions = {
     isJustifyCenter?: boolean;
     isDisablePointerEvents?: boolean;
     theme?: string;
+    fontFamily?: string;
 };
 function wrapHTML({
     html,
@@ -59,12 +60,16 @@ function wrapHTML({
                 align-items: center;
                 justify-content: center;
                 transform: scale(3);
+                user-select: none !important;
                 `
                     : ''
             }
             width: 100vw;
             height: 100vh;
-            overflow: hidden;
+            overflow: auto;
+        }
+        * {
+            font-family: ${options.fontFamily}, "Arial", sans-serif;
         }
         ${
             options.isDisablePointerEvents

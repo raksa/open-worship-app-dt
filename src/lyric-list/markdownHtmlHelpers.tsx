@@ -15,7 +15,7 @@ export function toIframe(html: string, title: string) {
                 backgroundColor: 'transparent',
                 width: '100%',
                 height: '100%',
-                overflow: 'hidden',
+                overflowY: 'auto',
             }}
         />,
     );
