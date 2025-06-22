@@ -2,9 +2,11 @@ import './SettingComp.scss';
 
 import { lazy } from 'react';
 
-import { useStateSettingString } from '../helper/settingHelpers';
+import { setSetting, useStateSettingString } from '../helper/settingHelpers';
 import TabRenderComp, { genTabBody } from '../others/TabRenderComp';
 import { QuickOrBackButtonComp } from '../others/commonButtons';
+import { goToPath } from '../router/routeHelpers';
+import appProvider from '../server/appProvider';
 
 const LazySettingGeneralComp = lazy(() => {
     return import('./SettingGeneralComp');
@@ -16,53 +18,56 @@ const LazySettingAboutComp = lazy(() => {
     return import('./SettingAboutComp');
 });
 
+const SETTING_SETTING_NAME = 'setting-tabs';
+
+export function goToGeneralSetting() {
+    setSetting(SETTING_SETTING_NAME, 'g');
+    goToPath(appProvider.settingHomePage);
+}
+
+export function goToBibleSetting() {
+    setSetting(SETTING_SETTING_NAME, 'b');
+    goToPath(appProvider.settingHomePage);
+}
+
 const tabTypeList = [
     ['g', 'General', LazySettingGeneralComp],
     ['b', 'Bible', LazySettingBibleComp],
     ['a', 'About', LazySettingAboutComp],
 ] as const;
-type TabType = (typeof tabTypeList)[number][0];
+type TabKeyType = (typeof tabTypeList)[number][0];
 export default function SettingComp() {
-    const [tabType, setTabType] = useStateSettingString<TabType>(
-        'popup-setting-tab',
-        'b',
+    const [tabKey, setTabKey] = useStateSettingString<TabKeyType>(
+        SETTING_SETTING_NAME,
+        'g',
     );
     return (
-        <div
-            id="app-setting"
-            className="shadow card w-100 h-100 overflow-hidden"
-        >
-            <div className="card-body d-flex flex-column">
-                <div className="setting-header d-flex">
-                    <TabRenderComp<TabType>
-                        tabs={tabTypeList.map(([type, name]) => {
-                            return [type, name];
-                        })}
-                        activeTab={tabType}
-                        setActiveTab={setTabType}
-                    />
-                </div>
-                <div className="setting-body flex-fill">
-                    <div
-                        style={{
-                            margin: 'auto',
-                            maxWidth: '600px',
-                        }}
-                    >
-                        {tabTypeList.map(([type, _, target]) => {
-                            return genTabBody<TabType>(tabType, [type, target]);
-                        })}
-                    </div>
+        <div id="app-setting" className="card w-100 h-100 overflow-hidden">
+            <div className="card-header">
+                <TabRenderComp<TabKeyType>
+                    tabs={tabTypeList.map(([key, name]) => {
+                        return {
+                            key,
+                            title: name,
+                        };
+                    })}
+                    activeTab={tabKey}
+                    setActiveTab={setTabKey}
+                />
+                <div
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        right: 0,
+                    }}
+                >
+                    <QuickOrBackButtonComp title="Quit Setting" />
                 </div>
             </div>
-            <div
-                style={{
-                    position: 'fixed',
-                    top: 0,
-                    right: 0,
-                }}
-            >
-                <QuickOrBackButtonComp title="Quit Setting" />
+            <div className="card-body overflow-hidden">
+                {tabTypeList.map(([type, _, target]) => {
+                    return genTabBody<TabKeyType>(tabKey, [type, target]);
+                })}
             </div>
         </div>
     );

@@ -28,7 +28,7 @@ export type ScreenManagerEventType =
     | 'update'
     | 'visible'
     | 'display-id'
-    | 'resize';
+    | 'refresh';
 
 export default class ScreenManagerBase
     extends EventHandler<ScreenManagerEventType>
@@ -150,7 +150,7 @@ export default class ScreenManagerBase
         this.updateDim();
         this.addPropEvent('display-id', data);
         ScreenManagerBase.addPropEvent('display-id', data);
-        this.fireResizeEvent();
+        this.fireRefreshEvent();
     }
 
     set isShowing(isShowing: boolean) {
@@ -189,8 +189,8 @@ export default class ScreenManagerBase
         ScreenManagerBase.fireVisibleEvent();
     }
 
-    fireResizeEvent() {
-        this.addPropEvent('resize');
+    fireRefreshEvent() {
+        this.addPropEvent('refresh');
         ScreenManagerBase.fireVisibleEvent();
     }
 
@@ -206,8 +206,8 @@ export default class ScreenManagerBase
         this.addPropEvent('visible');
     }
 
-    static fireResizeEvent() {
-        this.addPropEvent('resize');
+    static fireRefreshEvent() {
+        this.addPropEvent('refresh');
     }
 
     sendSyncScreen() {

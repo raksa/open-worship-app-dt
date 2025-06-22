@@ -4,7 +4,7 @@ import FileListHandlerComp from '../others/FileListHandlerComp';
 import AppDocumentFileComp from './AppDocumentFileComp';
 import AppDocument from './AppDocument';
 import {
-    getFileExtension,
+    getFileDotExtension,
     getFileFullName,
     getMimetypeExtensions,
     mimetypePdf,
@@ -18,14 +18,16 @@ import {
 import { DroppedFileType } from '../others/droppingFileHelpers';
 import {
     checkIsPdf,
+    checkIsVaryAppDocumentOnScreen,
     convertOfficeFile,
     supportOfficeFileExtensions,
+    varyAppDocumentFromFilePath,
 } from './appDocumentHelpers';
 import DirSource from '../helper/DirSource';
 
 function handleExtraFileChecking(filePath: string) {
     const fileSource = FileSource.getInstance(filePath);
-    if (checkIsPdf(fileSource.extension)) {
+    if (checkIsPdf(fileSource.dotExtension)) {
         return true;
     }
     return false;
@@ -39,8 +41,8 @@ function handleFileTaking(
         return false;
     }
     const fileFullName = getFileFullName(file);
-    const ext = getFileExtension(fileFullName).toLocaleLowerCase();
-    if (supportOfficeFileExtensions.includes(ext)) {
+    const dotExtension = getFileDotExtension(fileFullName).toLocaleLowerCase();
+    if (supportOfficeFileExtensions.includes(dotExtension)) {
         convertOfficeFile(file, dirSource);
         return true;
     }
@@ -59,13 +61,25 @@ async function newFileHandling(dirPath: string, name: string) {
     return !(await AppDocument.create(dirPath, name));
 }
 
+async function checkIsOnScreen(filePaths: string[]) {
+    for (const filePath of filePaths) {
+        const varyAppDocument = varyAppDocumentFromFilePath(filePath);
+        const isOnScreen =
+            await checkIsVaryAppDocumentOnScreen(varyAppDocument);
+        if (isOnScreen) {
+            return true;
+        }
+    }
+    return false;
+}
+
 export default function AppDocumentListComp() {
-    const dirSource = useGenDirSource(dirSourceSettingNames.SLIDE);
+    const dirSource = useGenDirSource(dirSourceSettingNames.DOCUMENT);
     if (dirSource === null) {
         return null;
     }
     dirSource.checkExtraFile = (fileFullName: string) => {
-        if (checkIsPdf(getFileExtension(fileFullName))) {
+        if (checkIsPdf(getFileDotExtension(fileFullName))) {
             return {
                 fileFullName: fileFullName,
                 appMimetype: mimetypePdf,
@@ -77,20 +91,21 @@ export default function AppDocumentListComp() {
     return (
         <FileListHandlerComp
             className="app-document-list"
-            mimetypeName="slide"
-            defaultFolderName={defaultDataDirNames.SLIDE}
+            mimetypeName="appDocument"
+            defaultFolderName={defaultDataDirNames.DOCUMENT}
             dirSource={dirSource}
             checkExtraFile={handleExtraFileChecking}
             takeDroppedFile={handleFileTaking.bind(null, dirSource)}
             onNewFile={newFileHandling}
             header={<span>Documents</span>}
             bodyHandler={handleBodyRendering}
+            checkIsOnScreen={checkIsOnScreen}
             fileSelectionOption={{
                 windowTitle: 'Select slide files',
                 dirPath: dirSource.dirPath,
                 extensions: Array.from(
                     new Set([
-                        ...getMimetypeExtensions('slide'),
+                        ...getMimetypeExtensions('appDocument'),
                         ...getMimetypeExtensions('pdf'),
                         ...supportOfficeFileExtensions.map((ext) => {
                             return ext.slice(1);

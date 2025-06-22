@@ -3,10 +3,12 @@ import {
     useStateSettingString,
 } from '../helper/settingHelpers';
 import ScreenOtherManager from '../_screen/managers/ScreenOtherManager';
-import { getShowingScreenIds, getScreenManagerInstances } from './alertHelpers';
+import { getShowingScreenIds, getScreenManagerInstances } from './otherHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
 import { useScreenOtherManagerEvents } from '../_screen/managers/screenEventHelpers';
 import OtherRenderHeaderTitleComp from './OtherRenderHeaderTitleComp';
+import { useOtherPropsSetting } from './propertiesSettingHelpers';
+import { genTimeoutAttempt } from '../helper/helpers';
 
 function useTiming() {
     const nowArray = () => {
@@ -30,13 +32,18 @@ function useTiming() {
     return { date, setDate, time, setTime, nowString, todayString };
 }
 
-function CountDownOnDatetimeComp() {
+function CountDownOnDatetimeComp({
+    genStyle,
+}: Readonly<{
+    genStyle: () => React.CSSProperties;
+}>) {
     const { date, setDate, time, setTime, nowString, todayString } =
         useTiming();
     const handleDateTimeShowing = (event: any, isForceChoosing = false) => {
         ScreenOtherManager.setCountdown(
             event,
             new Date(date + ' ' + time),
+            genStyle(),
             isForceChoosing,
         );
     };
@@ -80,7 +87,11 @@ function CountDownOnDatetimeComp() {
     );
 }
 
-function CountDownTimerComp() {
+function CountDownTimerComp({
+    genStyle,
+}: Readonly<{
+    genStyle: () => React.CSSProperties;
+}>) {
     const [hours, setHours] = useStateSettingString<string>(
         'alert-hours-setting',
         '0',
@@ -97,7 +108,12 @@ function CountDownTimerComp() {
                 3600 * parseInt(hours) +
                 1,
         );
-        ScreenOtherManager.setCountdown(event, targetDatetime, isForceChoosing);
+        ScreenOtherManager.setCountdown(
+            event,
+            targetDatetime,
+            genStyle(),
+            isForceChoosing,
+        );
     };
     const handleContextMenuOpening = (event: any) => {
         handleTimerShowing(event, true);
@@ -150,15 +166,45 @@ function CountDownTimerComp() {
     );
 }
 
+const attemptTimeout = genTimeoutAttempt(500);
+function refreshAllCountdowns(
+    showingScreenIds: number[],
+    extraStyle: React.CSSProperties,
+) {
+    attemptTimeout(() => {
+        showingScreenIds.forEach((screenId) => {
+            getScreenManagerInstances(screenId, (screenOtherManager) => {
+                const countdownData =
+                    screenOtherManager.alertData?.countdownData;
+                if (countdownData === null) {
+                    return;
+                }
+                screenOtherManager.setCountdownData(null);
+                screenOtherManager.setCountdownData({
+                    ...countdownData,
+                    extraStyle,
+                });
+            });
+        });
+    });
+}
+
 export default function OtherCountDownComp() {
-    const [isOpened, setIsOpened] = useStateSettingBoolean(
-        'other-countdown-opened',
-        true,
-    );
     useScreenOtherManagerEvents(['update']);
     const showingScreenIds = getShowingScreenIds((data) => {
         return data.countdownData !== null;
     });
+    const { genStyle, element: propsSetting } = useOtherPropsSetting({
+        prefix: 'countdown',
+        onChange: (extraStyle) => {
+            refreshAllCountdowns(showingScreenIds, extraStyle);
+        },
+        isFontSize: true,
+    });
+    const [isOpened, setIsOpened] = useStateSettingBoolean(
+        'other-countdown-opened',
+        true,
+    );
     const handleCountdownHiding = (screenId: number) => {
         getScreenManagerInstances(screenId, (screenOtherManager) => {
             screenOtherManager.setCountdownData(null);
@@ -189,11 +235,13 @@ export default function OtherCountDownComp() {
             </div>
             {isOpened ? (
                 <div className="card-body">
+                    {propsSetting}
+                    <hr />
                     <div className="m-1">
-                        <CountDownOnDatetimeComp />
+                        <CountDownOnDatetimeComp genStyle={genStyle} />
                     </div>
                     <div className="m-1">
-                        <CountDownTimerComp />
+                        <CountDownTimerComp genStyle={genStyle} />
                     </div>
                     <div className="m-1">
                         <ScreensRendererComp

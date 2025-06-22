@@ -1,33 +1,70 @@
 import './PathSelectorComp.scss';
 
-import { lazy } from 'react';
+import { lazy, useState } from 'react';
 
-import { useStateSettingBoolean } from '../helper/settingHelpers';
 import DirSource from '../helper/DirSource';
 import AppSuspenseComp from './AppSuspenseComp';
 import { PathPreviewerComp } from './PathPreviewerComp';
+import {
+    ContextMenuItemType,
+    showAppContextMenu,
+} from '../context-menu/appContextMenuHelpers';
+import { menuTitleRealFile } from '../helper/helpers';
+import { copyToClipboard, showExplorer } from '../server/appHelpers';
+import { goToGeneralSetting } from '../setting/SettingComp';
+import appProvider from '../server/appProvider';
 
 const LazyPathEditorComp = lazy(() => {
     return import('./PathEditorComp');
 });
 
+function openContextMenu(dirPath: string, event: any) {
+    if (!dirPath) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+    }
+    const menuItems: ContextMenuItemType[] = [
+        {
+            menuElement: 'Copy to Clipboard',
+            onSelect: () => {
+                copyToClipboard(dirPath);
+            },
+        },
+        {
+            menuElement: menuTitleRealFile,
+            onSelect: () => {
+                showExplorer(dirPath);
+            },
+        },
+    ];
+    if (!appProvider.isPageSetting) {
+        menuItems.push({
+            menuElement: '`Edit Parent Path`',
+            onSelect: () => {
+                goToGeneralSetting();
+            },
+        });
+    }
+    showAppContextMenu(event, menuItems);
+}
+
 export default function PathSelectorComp({
     dirSource,
-    prefix,
     addItems,
 }: Readonly<{
     dirSource: DirSource;
     prefix: string;
     addItems?: () => void;
 }>) {
-    const [showing, setShowing] = useStateSettingBoolean(
-        `${prefix}-selector-opened`,
-        false,
-    );
+    const [showing, setShowing] = useState(false);
     const dirPath = dirSource.dirPath;
     const isShowingEditor = !dirPath || showing;
     return (
-        <div className="path-selector w-100">
+        <div
+            className="path-selector w-100"
+            onContextMenu={openContextMenu.bind(null, dirPath)}
+        >
             <div
                 className="d-flex path-previewer app-caught-hover-pointer"
                 title={(isShowingEditor ? 'Hide' : 'Show') + ' path editor'}
@@ -41,7 +78,10 @@ export default function PathSelectorComp({
                     }`}
                 />
                 {!isShowingEditor && (
-                    <RenderTitle dirSource={dirSource} addItems={addItems} />
+                    <RenderPathTitleComp
+                        dirSource={dirSource}
+                        addItems={addItems}
+                    />
                 )}
             </div>
             {isShowingEditor && (
@@ -53,7 +93,7 @@ export default function PathSelectorComp({
     );
 }
 
-function RenderTitle({
+function RenderPathTitleComp({
     dirSource,
     addItems,
 }: Readonly<{

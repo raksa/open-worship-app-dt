@@ -3,7 +3,7 @@ import { use, useState } from 'react';
 import Lyric from './Lyric';
 import FileItemHandlerComp from '../others/FileItemHandlerComp';
 import FileSource from '../helper/FileSource';
-import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
+import { AppDocumentSourceAbs } from '../helper/AppEditableDocumentSourceAbs';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
@@ -12,16 +12,30 @@ import {
     useSelectedLyricSetterContext,
 } from './lyricHelpers';
 import { getIsShowingLyricPreviewer } from '../app-document-presenter/PresenterComp';
+import { useEditingHistoryStatus } from '../editing-manager/editingHelpers';
+import { checkIsVaryAppDocumentOnScreen } from '../app-document-list/appDocumentHelpers';
+import LyricAppDocument from './LyricAppDocument';
 
 function LyricFilePreview({ lyric }: Readonly<{ lyric: Lyric }>) {
     const fileSource = FileSource.getInstance(lyric.filePath);
+    const { canSave } = useEditingHistoryStatus(lyric.filePath);
     return (
         <>
             <i className="bi bi-music-note" />
             {fileSource.name}
-            <span style={{ color: 'red' }}>*</span>
+            {canSave && <span style={{ color: 'red' }}>*</span>}
         </>
     );
+}
+
+async function checkIsOnScreen(filePath: string) {
+    const lyricAppDocument =
+        LyricAppDocument.getInstanceFromLyricFilePath(filePath);
+    if (lyricAppDocument === null) {
+        return false;
+    }
+    const isOnScreen = await checkIsVaryAppDocumentOnScreen(lyricAppDocument);
+    return isOnScreen;
 }
 
 export default function LyricFileComp({
@@ -58,11 +72,10 @@ export default function LyricFileComp({
         if (!lyric) {
             return;
         }
-        if (selectedContext && !getIsShowingLyricPreviewer()) {
-            previewingEventListener.showLyric(lyric);
-            return;
-        }
         setSelectedLyric(lyric);
+        if (!getIsShowingLyricPreviewer()) {
+            previewingEventListener.showLyric(lyric);
+        }
     };
     const handleChildRendering = (lyric: AppDocumentSourceAbs) => {
         return <LyricFilePreview lyric={lyric as Lyric} />;
@@ -77,6 +90,7 @@ export default function LyricFileComp({
             onClick={handleClicking}
             renderChild={handleChildRendering}
             isSelected={isSelected}
+            checkIsOnScreen={checkIsOnScreen}
         />
     );
 }

@@ -1,23 +1,23 @@
 import { useState } from 'react';
 
-import { selectDirs } from '../server/appHelpers';
 import DirSource from '../helper/DirSource';
+import { selectDirs } from '../server/fileHelpers';
 
 export default function PathEditorComp({
     dirSource,
 }: Readonly<{
     dirSource: DirSource;
 }>) {
-    const [text, setText] = useState(dirSource.dirPath);
-    const handleNewTextSetting = (newText: string) => {
-        setText(newText);
-        dirSource.dirPath = newText;
+    const [path, setPath] = useState(dirSource.dirPath);
+    const setPath1 = (newPath: string) => {
+        setPath(newPath);
+        dirSource.dirPath = newPath;
     };
-    let dirValidCN = 'is-valid';
+    let dirValidClassname = 'is-valid';
     if (dirSource.isDirPathValid === null) {
-        dirValidCN = '';
+        dirValidClassname = '';
     } else if (!dirSource.isDirPathValid) {
-        dirValidCN = 'is-invalid';
+        dirValidClassname = 'is-invalid';
     }
     return (
         <div className="input-group mb-3">
@@ -34,10 +34,10 @@ export default function PathEditorComp({
             ) : null}
             <input
                 type="text"
-                className={`form-control ${dirValidCN}`}
-                value={text}
+                className={`form-control ${dirValidClassname}`}
+                value={path}
                 onChange={(event) => {
-                    handleNewTextSetting(event.target.value);
+                    setPath1(event.target.value);
                 }}
             />
             <button
@@ -46,7 +46,7 @@ export default function PathEditorComp({
                 onClick={() => {
                     const dirs = selectDirs();
                     if (dirs.length) {
-                        handleNewTextSetting(dirs[0]);
+                        setPath1(dirs[0]);
                     }
                 }}
             >

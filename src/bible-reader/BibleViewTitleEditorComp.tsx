@@ -70,9 +70,11 @@ async function getNumItem(bibleKey: string, n: number) {
 export default function BibleViewTitleEditorComp({
     bibleItem,
     onTargetChange,
+    withCtrl = false,
 }: Readonly<{
     bibleItem: ReadIdOnlyBibleItem;
     onTargetChange?: (target: BibleTargetType) => void;
+    withCtrl?: boolean;
 }>) {
     const [title] = useAppStateAsync(() => {
         return bibleItem.toTitle();
@@ -111,6 +113,9 @@ export default function BibleViewTitleEditorComp({
             <span
                 className="app-caught-hover-pointer"
                 onContextMenu={(event) => {
+                    if (withCtrl && !event.ctrlKey) {
+                        return;
+                    }
                     event.preventDefault();
                     event.stopPropagation();
                     onClick(event);

@@ -10,6 +10,7 @@ import TabRenderComp, { genTabBody } from '../others/TabRenderComp';
 import { useScreenBackgroundManagerEvents } from '../_screen/managers/screenEventHelpers';
 import ShowingScreenIcon from '../_screen/preview/ShowingScreenIcon';
 import {
+    BackgroundSrcListType,
     BackgroundType,
     getBackgroundSrcListOnScreenSetting,
 } from '../_screen/screenHelpers';
@@ -52,7 +53,7 @@ function RenderSoundTabComp({
                     className={
                         'btn btn-link nav-link' +
                         ` ${isSoundActive ? 'active' : ''}` +
-                        ` ${isPlaying ? ' highlight-star' : ''}`
+                        ` ${isPlaying ? ' app-on-screen' : ''}`
                     }
                     onClick={() => {
                         setIsSoundActive(!isSoundActive);
@@ -65,48 +66,62 @@ function RenderSoundTabComp({
     );
 }
 
+const genIsSelected = (
+    backgroundSrcList: BackgroundSrcListType,
+    type: BackgroundType,
+) => {
+    const isSelected = Object.values(backgroundSrcList).some((src) => {
+        return src.type === type;
+    });
+    return isSelected;
+};
+
 const tabTypeList = [
     ['color', 'Colors', LazyBackgroundColorsComp],
     ['image', 'Images', LazyBackgroundImagesComp],
     ['video', 'Videos', LazyBackgroundVideosComp],
 ] as const;
-type TabType = (typeof tabTypeList)[number][0] | 'sound';
+type TabKeyType = (typeof tabTypeList)[number][0] | 'sound';
 export default function BackgroundComp() {
     const [isSoundActive, setIsSoundActive] = useStateSettingBoolean(
         'background-sound',
         false,
     );
-    const [tabType, setTabType] = useStateSettingString<TabType>(
+    const [tabKey, setTabKey] = useStateSettingString<TabKeyType>(
         'background-tab',
         'image',
     );
     useScreenBackgroundManagerEvents(['update']);
     const backgroundSrcList = getBackgroundSrcListOnScreenSetting();
-    const toHLS = (type: BackgroundType) => {
-        const isSelected = Object.values(backgroundSrcList).some((src) => {
-            return src.type === type;
-        });
-        return isSelected ? 'app-nav-highlight-selected' : undefined;
-    };
+
     const normalBackgroundChild = tabTypeList.map(([type, _, target]) => {
-        return genTabBody<TabType>(tabType, [type, target]);
+        return genTabBody<TabKeyType>(tabKey, [type, target]);
     });
     return (
         <div className="background w-100 d-flex flex-column">
-            <div className="background-header d-flex">
-                <TabRenderComp<TabType>
-                    tabs={tabTypeList.map(([type, name]) => {
-                        return [type, name, toHLS(type)];
+            <div className="header d-flex">
+                <TabRenderComp<TabKeyType>
+                    tabs={tabTypeList.map(([key, name]) => {
+                        return {
+                            key,
+                            title: name,
+                            checkIsOnScreen: (targeKey) => {
+                                return genIsSelected(
+                                    backgroundSrcList,
+                                    targeKey,
+                                );
+                            },
+                        };
                     })}
-                    activeTab={tabType}
-                    setActiveTab={setTabType}
+                    activeTab={tabKey}
+                    setActiveTab={setTabKey}
                 />
                 <RenderSoundTabComp
                     isSoundActive={isSoundActive}
                     setIsSoundActive={setIsSoundActive}
                 />
             </div>
-            <div className="background-body w-100 flex-fill d-flex">
+            <div className="body flex-fill d-flex">
                 {isSoundActive ? (
                     <ResizeActorComp
                         flexSizeName={'flex-size-background'}

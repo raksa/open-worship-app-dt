@@ -259,7 +259,7 @@ class CanvasController extends EventHandler<CanvasControllerEventType> {
 
     setCanvasItems(canvasItems: CanvasItem<any>[]) {
         this.canvas.canvasItems = canvasItems;
-        this.appDocument.setSlide(this.canvas.slide);
+        this.appDocument.updateSlide(this.canvas.slide);
         this.fireUpdateEvent();
     }
 

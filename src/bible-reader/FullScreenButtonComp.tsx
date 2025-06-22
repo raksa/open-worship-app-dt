@@ -29,7 +29,7 @@ export default function FullScreenButtonComp({
     isFulledScreen: boolean;
     setIsFullScreen: (isFullScreen: boolean) => void;
 }>) {
-    const fullScreenCN = isFulledScreen
+    const fullScreenClassname = isFulledScreen
         ? 'fullscreen-exit'
         : 'arrows-fullscreen';
     return (
@@ -53,8 +53,8 @@ export default function FullScreenButtonComp({
                     setIsFullScreen(isFulledScreenSuccess);
                 }}
             >
-                <i className={`bi bi-${fullScreenCN}`} />
-                {isFulledScreen ? 'Exit ' : ''}Full
+                <i className={`bi bi-${fullScreenClassname}`} />
+                {isFulledScreen ? '`Exit ' : ''}`Full
             </button>
         </div>
     );

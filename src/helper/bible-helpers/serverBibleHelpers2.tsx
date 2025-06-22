@@ -13,8 +13,8 @@ import { useAppEffect } from '../debuggerHelpers';
 import BibleItem from '../../bible-list/BibleItem';
 import { getKJVChapterCount } from './serverBibleHelpers';
 import CacheManager from '../../others/CacheManager';
-import { unlocking } from '../../server/appHelpers';
 import { getAllLocalBibleInfoList } from './bibleDownloadHelpers';
+import { unlocking } from '../../server/unlockingHelpers';
 
 export async function toInputText(
     bibleKey: string,

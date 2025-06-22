@@ -1,8 +1,8 @@
 const SELECT_DIR = 'select-dir';
 export const dirSourceSettingNames = {
-    SLIDE: `${SELECT_DIR}-slide`,
-    PLAYLIST: `${SELECT_DIR}-playlist`,
+    DOCUMENT: `${SELECT_DIR}-document`,
     LYRIC: `${SELECT_DIR}-lyric`,
+    PLAYLIST: `${SELECT_DIR}-playlist`,
     BACKGROUND_IMAGE: `${SELECT_DIR}-image-bg`,
     BACKGROUND_VIDEO: `${SELECT_DIR}-video-bg`,
     BACKGROUND_SOUND: `${SELECT_DIR}-sound-bg`,
@@ -10,7 +10,7 @@ export const dirSourceSettingNames = {
     BIBLE_READ: `${SELECT_DIR}-bible-read`,
 };
 export const defaultDataDirNames = {
-    SLIDE: 'slides',
+    DOCUMENT: 'documents',
     PLAYLIST: 'playlists',
     LYRIC: 'lyrics',
     BACKGROUND_IMAGE: 'images',

@@ -14,7 +14,7 @@ import {
 } from '../helper/bible-helpers/serverBibleHelpers2';
 import { getLangAsync } from '../lang';
 import CacheManager from '../others/CacheManager';
-import { unlocking } from '../server/appHelpers';
+import { unlocking } from '../server/unlockingHelpers';
 
 export type BibleTargetType = {
     bookKey: string;

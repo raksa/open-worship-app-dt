@@ -2,11 +2,7 @@ import { showSimpleToast } from '../../toast/toastHelpers';
 import { handleError } from '../../helper/errorHelpers';
 import appProvider from '../../server/appProvider';
 import { writeStreamToFile } from '../../helper/bible-helpers/downloadHelpers';
-import {
-    getUserWritablePath,
-    showExplorer,
-    trashFile,
-} from '../../server/appHelpers';
+import { showExplorer } from '../../server/appHelpers';
 import { fsDeleteFile, pathJoin } from '../../server/fileHelpers';
 import { allLocalesMap, LocaleType } from '../../lang';
 import { showAppInput } from '../../popup-widget/popupWidgetHelpers';
@@ -39,6 +35,7 @@ import {
 } from '../../helper/bible-helpers/BibleDataReader';
 import FileSource from '../../helper/FileSource';
 import { menuTitleRealFile } from '../../helper/helpers';
+import { appLocalStorage } from '../directory-setting/appLocalStorage';
 
 type MessageCallbackType = (message: string | null) => void;
 
@@ -155,7 +152,7 @@ export async function readFromUrl(
     try {
         messageCallback('Downloading file...');
         const response = await initHttpRequest(url);
-        const userWritablePath = getUserWritablePath();
+        const userWritablePath = appLocalStorage.defaultStorage;
         let fileFullName = appProvider.pathUtils.basename(url.pathname);
         if (fileFullName.endsWith('.xml') === false) {
             fileFullName += '.xml';
@@ -219,7 +216,7 @@ export async function getBibleXMLCacheInfoList() {
 export async function saveXMLText(bibleKey: string, xmlText: string) {
     const filePath = await bibleKeyToFilePath(bibleKey);
     const fileSource = FileSource.getInstance(filePath);
-    return await fileSource.saveFileData(xmlText);
+    return await fileSource.writeFileData(xmlText);
 }
 
 export function handBibleKeyContextMenuOpening(bibleKey: string, event: any) {
@@ -388,7 +385,8 @@ export async function saveJsonDataToXMLfile(jsonData: BibleJsonType) {
 export async function deleteBibleXML(bibleKey: string) {
     await bibleDataReader.clearBibleDatabaseData(bibleKey);
     const filePath = await bibleKeyToFilePath(bibleKey);
-    await trashFile(filePath);
+    const fileSource = FileSource.getInstance(filePath);
+    await fileSource.trashFile();
 }
 
 export async function getBibleXMLDataFromKey(bibleKey: string) {

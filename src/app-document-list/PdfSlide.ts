@@ -1,7 +1,7 @@
 import { ItemBase } from '../helper/ItemBase';
 import { AnyObjectType, cloneJson } from '../helper/helpers';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
-import { ClipboardInf } from './appDocumentHelpers';
+import { ClipboardInf } from '../server/appHelpers';
 
 export type PdfSlideType = {
     id: number;
@@ -15,7 +15,6 @@ export default class PdfSlide
     implements DragInf<string>, ClipboardInf
 {
     private _originalJson: PdfSlideType;
-    static readonly SELECT_SETTING_NAME = 'slide-selected';
     filePath: string;
 
     constructor(filePath: string, json: PdfSlideType) {
@@ -70,7 +69,7 @@ export default class PdfSlide
     }
 
     static fromJson(json: PdfSlideType, filePath: string) {
-        return new PdfSlide(filePath, json);
+        return new this(filePath, json);
     }
 
     toJson(): PdfSlideType {

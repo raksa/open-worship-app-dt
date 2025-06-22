@@ -49,6 +49,7 @@ function ChapterOptions({
             OPTION_CLASS,
             OPTION_SELECTED_CLASS,
             event.key as KeyboardType,
+            event,
         );
     };
     useKeyboardRegistering(
@@ -66,7 +67,7 @@ function ChapterOptions({
         <>
             {matches.map(([chapter, chapterNumStr, bibleKey], i) => {
                 const className =
-                    'chapter-select btn btn-outline-success' +
+                    'chapter-select btn btn-outline-success w-100' +
                     ` ${OPTION_CLASS}` +
                     ` ${i === 0 ? OPTION_SELECTED_CLASS : ''}`;
                 const isDiff = `${chapter}` !== chapterNumStr;
@@ -74,7 +75,7 @@ function ChapterOptions({
                     <div
                         key={chapter}
                         title={isDiff ? `Chapter ${chapter}` : undefined}
-                        style={{ margin: '2px' }}
+                        style={{ margin: '2px', minWidth: '100px' }}
                     >
                         <button
                             className={className}

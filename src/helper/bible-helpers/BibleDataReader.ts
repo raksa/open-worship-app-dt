@@ -1,7 +1,6 @@
 import appProvider from '../../server/appProvider';
 import { fsCreateDir, pathJoin } from '../../server/fileHelpers';
 import { LocaleType } from '../../lang';
-import { getUserWritablePath, unlocking } from '../../server/appHelpers';
 import { is_dev, decrypt } from '../../_owa-crypto';
 import { handleError } from '../errorHelpers';
 import {
@@ -11,6 +10,8 @@ import {
 import BibleDatabaseController from './BibleDatabaseController';
 import FileSource from '../FileSource';
 import CacheManager from '../../others/CacheManager';
+import { appLocalStorage } from '../../setting/directory-setting/appLocalStorage';
+import { unlocking } from '../../server/unlockingHelpers';
 
 const { base64Decode } = appProvider.appUtils;
 
@@ -35,9 +36,7 @@ export default class BibleDataReader {
     private _writableBiblePath: string | null = null;
     private _dbController: BibleDatabaseController | null = null;
     async getDatabaseController() {
-        if (this._dbController === null) {
-            this._dbController = await BibleDatabaseController.getInstance();
-        }
+        this._dbController ??= await BibleDatabaseController.getInstance();
         return this._dbController;
     }
     async readBibleData(bibleKey: string, key: string) {
@@ -100,10 +99,10 @@ export default class BibleDataReader {
     }
     async getWritableBiblePath() {
         if (this._writableBiblePath === null) {
-            const userWritablePath = getUserWritablePath();
+            const userWritablePath = appLocalStorage.defaultStorage;
             const dirPath = pathJoin(
                 userWritablePath,
-                `bibles${is_dev() ? '-dev' : ''}`,
+                `bibles-data${is_dev() ? '-dev' : ''}`,
             );
             try {
                 await fsCreateDir(dirPath);

@@ -4,8 +4,8 @@ import {
 } from '../../event/KeyboardEventListener';
 import ScreenManager from '../managers/ScreenManager';
 import {
-    useScreenManagerEvents,
     useScreenManagerContext,
+    useScreenUpdateEvents,
 } from '../managers/screenManagerHooks';
 
 function RenderButtonComp({
@@ -95,7 +95,7 @@ function genBtnMaps(screenManager: ScreenManager) {
 }
 
 export default function MiniScreenClearControlComp() {
-    useScreenManagerEvents(['update']);
+    useScreenUpdateEvents();
     const screenManager = useScreenManagerContext();
     const btnMaps = genBtnMaps(screenManager);
     return (

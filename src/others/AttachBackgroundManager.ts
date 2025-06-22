@@ -16,7 +16,7 @@ export default class AttachBackgroundManager {
     static async saveData(filePath: string, data: AttachBackgroundType) {
         const metaDataFilePath =
             AttachBackgroundManager.genMetaDataFilePath(filePath);
-        await FileSource.getInstance(metaDataFilePath).saveFileData(
+        await FileSource.getInstance(metaDataFilePath).writeFileData(
             JSON.stringify(data),
         );
         FileSource.getInstance(metaDataFilePath).fireUpdateEvent();
@@ -38,13 +38,16 @@ export default class AttachBackgroundManager {
         return data;
     }
 
-    toKey(id?: string) {
+    toKey(id?: string | number): string {
+        if (typeof id === 'number') {
+            return id.toString();
+        }
         return id ?? 'self';
     }
 
     public async getAttachedBackground(
         filePath: string,
-        id?: string,
+        id?: string | number,
     ): Promise<DroppedDataType | null> {
         const data = await this.getAttachedBackgrounds(filePath);
         return data[this.toKey(id)] ?? null;
@@ -53,14 +56,14 @@ export default class AttachBackgroundManager {
     public async attachDroppedBackground(
         droppedData: DroppedDataType,
         filePath: string,
-        id?: string,
+        id?: string | number,
     ) {
         const data = await this.getAttachedBackgrounds(filePath);
         data[this.toKey(id)] = droppedData;
         await AttachBackgroundManager.saveData(filePath, data);
     }
 
-    public async detachBackground(filePath: string, id?: string) {
+    public async detachBackground(filePath: string, id?: string | number) {
         const data = await this.getAttachedBackgrounds(filePath);
         delete data[this.toKey(id)];
         await AttachBackgroundManager.saveData(filePath, data);

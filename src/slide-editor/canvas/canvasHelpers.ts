@@ -62,6 +62,7 @@ export type ToolingBoxType = {
 };
 export const canvasItemList = [
     'text',
+    'html',
     'image',
     'video',
     'bible',

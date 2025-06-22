@@ -69,37 +69,6 @@ export function handleClassNameAction<T>(
     handle(element as T);
 }
 
-export function addClearInputButton(
-    target: HTMLInputElement,
-    onClick: () => void,
-) {
-    const targetParent = target.parentElement;
-    if (
-        targetParent === null ||
-        targetParent.querySelector('.custom-clear-input-wrapper')
-    ) {
-        return;
-    }
-    const clearButton = document.createElement('i');
-    clearButton.className = 'bi bi-x-lg app-caught-hover-pointer';
-    clearButton.title = 'Clear input';
-    clearButton.style.color = 'red';
-    clearButton.onclick = () => {
-        onClick();
-    };
-    const wrapper = document.createElement('div');
-    wrapper.className =
-        'd-flex justify-content-end align-items-center h-100' +
-        ' custom-clear-input-wrapper';
-    wrapper.style.position = 'absolute';
-    const targetRect = target.getBoundingClientRect();
-    const parentRect = targetParent.getBoundingClientRect();
-    wrapper.style.right = `${parentRect.right - targetRect.right + 5}px`;
-    wrapper.style.zIndex = '5';
-    wrapper.appendChild(clearButton);
-    targetParent.appendChild(wrapper);
-}
-
 export function handleAutoHide(
     targetDom: HTMLDivElement,
     isLeftAligned = true,

@@ -10,6 +10,7 @@ const dictionary = {
     about: 'About',
 };
 const lang: LanguageDataType = {
+    locale: 'en-US',
     langCode: 'en',
     genCss: () => {
         return '';

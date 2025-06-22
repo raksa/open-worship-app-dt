@@ -22,6 +22,7 @@ const dictionary = {
     'Full Text': 'បង្ហាញពេញ',
 };
 const lang: LanguageDataType = {
+    locale: 'km-KH',
     langCode: 'km',
     genCss: () => {
         if (lang.dirPath === undefined) {
