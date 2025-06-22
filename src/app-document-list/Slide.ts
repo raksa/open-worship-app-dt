@@ -3,8 +3,9 @@ import { AnyObjectType, cloneJson } from '../helper/helpers';
 import { CanvasItemPropsType } from '../slide-editor/canvas/CanvasItem';
 import { DisplayType } from '../_screen/screenHelpers';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
-import { ClipboardInf, toKeyByFilePath } from './appDocumentHelpers';
+import { toKeyByFilePath } from './appDocumentHelpers';
 import { getDefaultScreenDisplay } from '../_screen/managers/screenHelpers';
+import { ClipboardInf } from '../server/appHelpers';
 
 export type SlideType = {
     id: number;
@@ -160,14 +161,14 @@ export default class Slide
         }
         try {
             const { filePath, data } = JSON.parse(json);
-            Slide.validate(data);
-            return Slide.fromJson(data, filePath);
+            this.validate(data);
+            return this.fromJson(data, filePath);
         } catch (_error) {}
         return null;
     }
 
     static fromJson(json: SlideType, filePath: string) {
-        return new Slide(filePath, json);
+        return new this(filePath, json);
     }
 
     static fromJsonError(json: AnyObjectType, filePath: string) {

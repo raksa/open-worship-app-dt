@@ -93,6 +93,16 @@ export default class FlexResizeActorComp extends Component<Props, object> {
     getOffsetSize(div: HTMLDivElement) {
         return this.isVertical ? div.offsetHeight : div.offsetWidth;
     }
+    setActive() {
+        this.currentNode.classList.add('active');
+        this.preNode.style.pointerEvents = 'none';
+        this.nextNode.style.pointerEvents = 'none';
+    }
+    setInactive() {
+        this.currentNode.classList.remove('active');
+        this.preNode.style.pointerEvents = 'auto';
+        this.nextNode.style.pointerEvents = 'auto';
+    }
     init() {
         if (!this.currentNode) {
             return;
@@ -102,7 +112,7 @@ export default class FlexResizeActorComp extends Component<Props, object> {
         if (!prev || !next) {
             return;
         }
-        this.currentNode.classList.add('active');
+        this.setActive();
 
         this.previousMinSize = parseInt(this.preNode.dataset['minSize'] ?? '');
         this.nextMinSize = parseInt(this.nextNode.dataset['minSize'] ?? '');
@@ -195,7 +205,7 @@ export default class FlexResizeActorComp extends Component<Props, object> {
         window.removeEventListener('mousemove', this.mouseMoveListener);
         window.removeEventListener('mouseup', this.mouseUpListener);
 
-        this.currentNode.classList.remove('active');
+        this.setInactive();
         if (this.preNode.classList.contains(HIDDEN_WIDGET_CLASS)) {
             this.quicMove('left');
             return;
@@ -223,7 +233,7 @@ export default class FlexResizeActorComp extends Component<Props, object> {
                 isFirst ? this.previousGrow : this.nextGrow,
             ]);
         }
-        this.currentNode.classList.remove('active');
+        this.setInactive();
     }
     componentDidMount() {
         const target = this.currentNode;

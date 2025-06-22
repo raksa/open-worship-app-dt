@@ -2,10 +2,10 @@ import {
     fsCopyFilePathToPath,
     isSupportedExt,
     MimetypeNameType,
+    selectFiles,
 } from '../server/fileHelpers';
 import DirSource from '../helper/DirSource';
 import { showSimpleToast } from '../toast/toastHelpers';
-import { selectFiles } from '../server/appHelpers';
 import {
     ContextMenuItemType,
     showAppContextMenu,
@@ -165,15 +165,21 @@ export async function handleFilesSelectionMenuItem(
     await Promise.all(promises);
 }
 
-export function genOnContextMenu({
-    contextMenu,
-    addItems,
-    onStartNewFile,
-}: {
-    contextMenu?: ContextMenuItemType[];
-    addItems?: () => void;
-    onStartNewFile?: () => void;
-}) {
+export function genOnContextMenu(
+    dirSource: DirSource,
+    {
+        contextMenu,
+        addItems,
+        onStartNewFile,
+    }: {
+        contextMenu?: ContextMenuItemType[];
+        addItems?: () => void;
+        onStartNewFile?: () => void;
+    },
+) {
+    if (!dirSource.dirPath) {
+        return;
+    }
     return (event: React.MouseEvent<any>) => {
         const menuItems: ContextMenuItemType[] = [...(contextMenu ?? [])];
         if (addItems !== undefined) {

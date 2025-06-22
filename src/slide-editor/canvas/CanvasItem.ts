@@ -16,7 +16,7 @@ import {
 import EventHandler from '../../event/EventHandler';
 import { useAppEffect } from '../../helper/debuggerHelpers';
 import { useProgressBarComp } from '../../progress-bar/ProgressBarComp';
-import { ClipboardInf } from '../../app-document-list/appDocumentHelpers';
+import { ClipboardInf } from '../../server/appHelpers';
 
 export type CanvasItemPropsType = {
     id: number;

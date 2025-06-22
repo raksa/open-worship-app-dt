@@ -10,7 +10,7 @@ import {
 
 export default function ScreenOtherComp() {
     const screenManager = useScreenManagerContext();
-    useScreenManagerEvents(['resize'], screenManager, () => {
+    useScreenManagerEvents(['refresh'], screenManager, () => {
         screenManager.screenOtherManager.renderAll();
     });
     const div = useRef<HTMLDivElement>(null);
@@ -22,9 +22,9 @@ export default function ScreenOtherComp() {
     }, [div.current]);
     return (
         <div id="alert" ref={div} style={screenOtherManager.containerStyle}>
-            <div id="countdown" />
-            <div id="marquee" />
             <div id="camera" />
+            <div id="marquee" />
+            <div id="countdown" />
             <div id="toast" />
         </div>
     );

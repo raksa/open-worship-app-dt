@@ -32,7 +32,8 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
         if (!this.dirPath) {
             return;
         }
-        const isDirectory = await fsCheckDirExist(this.dirPath);
+        const isDirectory =
+            !!this.dirPath && (await fsCheckDirExist(this.dirPath));
         this._isDirPathValid = isDirectory;
     }
     get isDirPathValid() {

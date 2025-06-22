@@ -1,20 +1,17 @@
-import { createContext, Fragment, use } from 'react';
+import { createContext, createRef, Fragment, use } from 'react';
 
-import { useKeyboardRegistering } from '../event/KeyboardEventListener';
 import BibleSelectionComp from './BibleSelectionComp';
 import {
     BIBLE_LOOKUP_INPUT_ID,
     INPUT_TEXT_CLASS,
-    checkIsBibleLookupInputFocused,
     focusRenderFound,
-    setBibleLookupInputFocus,
 } from './selectionHelpers';
 import { useBibleKeyContext } from '../bible-list/bibleHelpers';
 import { useAppStateAsync } from '../helper/debuggerHelpers';
 import { toInputText } from '../helper/bible-helpers/serverBibleHelpers2';
 import { useLookupBibleItemControllerContext } from '../bible-reader/LookupBibleItemController';
 import { getBookKVList } from '../helper/bible-helpers/bibleInfoHelpers';
-import { addClearInputButton } from '../helper/domHelpers';
+import InputExtraButtonsComp from './InputExtraButtonsComp';
 
 export const InputTextContext = createContext<{
     inputText: string;
@@ -37,6 +34,7 @@ export default function InputHandlerComp({
 }: Readonly<{
     onBibleKeyChange: (oldBibleKey: string, newBibleKey: string) => void;
 }>) {
+    const inputRef = createRef<HTMLInputElement>();
     const { inputText } = useInputTextContext();
     const viewController = useLookupBibleItemControllerContext();
     const bibleKey = useBibleKeyContext();
@@ -47,24 +45,6 @@ export default function InputHandlerComp({
     const [placeholder] = useAppStateAsync(() => {
         return toInputText(bibleKey, bookKey, 1, 1, 2);
     });
-    useKeyboardRegistering(
-        [{ key: 'Escape' }],
-        () => {
-            if (!checkIsBibleLookupInputFocused()) {
-                setBibleLookupInputFocus();
-                return;
-            }
-            const arr = inputText.split(' ').filter((str) => str !== '');
-            if (arr.length === 1) {
-                viewController.inputText = '';
-                return;
-            }
-            arr.pop();
-            const newInputText = arr.join(' ') + (arr.length > 0 ? ' ' : '');
-            viewController.inputText = newInputText;
-        },
-        [inputText],
-    );
     return (
         <Fragment>
             <BibleSelectionComp
@@ -73,13 +53,7 @@ export default function InputHandlerComp({
             />
             <input
                 id={BIBLE_LOOKUP_INPUT_ID}
-                ref={(element) => {
-                    if (element) {
-                        addClearInputButton(element, () => {
-                            viewController.inputText = '';
-                        });
-                    }
-                }}
+                ref={inputRef}
                 data-bible-key={bibleKey}
                 type="text"
                 className={`form-control ${INPUT_TEXT_CLASS}`}
@@ -99,6 +73,7 @@ export default function InputHandlerComp({
                     viewController.inputText = value;
                 }}
             />
+            <InputExtraButtonsComp />
             <div className="d-flex justify-content-between h-100">
                 <button
                     className="btn btn-sm btn-outline-secondary"

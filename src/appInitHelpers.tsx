@@ -21,14 +21,13 @@ import {
 } from './lang';
 import appProvider from './server/appProvider';
 import initCrypto from './_owa-crypto';
-import { useCheckSelectedDir } from './helper/tourHelpers';
+import { useCheckSelectedDir } from './setting/directory-setting/directoryHelpers';
 import { createRoot } from 'react-dom/client';
 import { StrictMode } from 'react';
 import { getSetting, setSetting } from './helper/settingHelpers';
-import { unlocking } from './server/appHelpers';
 import { applyFontFamily } from './others/LanguageWrapper';
 import {
-    bringDomToCenterView,
+    bringDomToNearestView,
     HIGHLIGHT_SELECTED_CLASSNAME,
 } from './helper/helpers';
 import {
@@ -36,6 +35,8 @@ import {
     handleFullWidgetView,
     onDomChange,
 } from './helper/domHelpers';
+import { appLocalStorage } from './setting/directory-setting/appLocalStorage';
+import { unlocking } from './server/unlockingHelpers';
 
 const ERROR_DATETIME_SETTING_NAME = 'error-datetime-setting';
 const ERROR_DURATION = 1000 * 10; // 10 seconds;
@@ -47,7 +48,7 @@ async function confirmLocalStorageErasing() {
             ' storage and reload the app',
     );
     if (isOk) {
-        localStorage.clear();
+        appLocalStorage.clear();
     }
     appProvider.reload();
 }
@@ -80,6 +81,9 @@ export async function initApp() {
 
     window.onunhandledrejection = (promiseError) => {
         const reason = promiseError.reason;
+        if (reason.name === 'Canceled') {
+            return;
+        }
         handleError(reason);
         if (isDomException(reason)) {
             return;
@@ -165,7 +169,7 @@ export async function main(children: React.ReactNode) {
             null,
             HIGHLIGHT_SELECTED_CLASSNAME,
             (target) => {
-                bringDomToCenterView(target as HTMLDivElement);
+                bringDomToNearestView(target as HTMLDivElement);
             },
         ),
     );

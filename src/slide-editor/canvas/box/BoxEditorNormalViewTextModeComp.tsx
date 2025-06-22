@@ -1,6 +1,9 @@
 import { CSSProperties } from 'react';
 
-import CanvasItemText, { CanvasItemTextPropsType } from '../CanvasItemText';
+import CanvasItemText, {
+    CanvasItemTextHtmlPropsType,
+    CanvasItemTextPropsType,
+} from '../CanvasItemText';
 import { BENViewErrorRender } from './BoxEditorNormalViewErrorComp';
 import { handleError } from '../../../helper/errorHelpers';
 import { useCanvasItemPropsContext } from '../CanvasItem';
@@ -26,13 +29,38 @@ export function BoxEditorNormalTextRender() {
         handleError(error);
         return <BENViewErrorRender />;
     }
-    const htmlText = props.text.replace(/\n/g, '<br />');
+    const text = props.text.replace(/\n/g, '<br />');
     return (
         <div
-            className="w-100 h-100"
-            style={CanvasItemText.genStyle(props)}
+            style={{
+                width: '100%',
+                height: '100%',
+                ...CanvasItemText.genStyle(props),
+            }}
             dangerouslySetInnerHTML={{
-                __html: htmlText,
+                __html: text,
+            }}
+        />
+    );
+}
+
+export function BoxEditorNormalHtmlRender() {
+    const props = useCanvasItemPropsContext<CanvasItemTextHtmlPropsType>();
+    try {
+        CanvasItemText.validate(props);
+    } catch (error) {
+        handleError(error);
+        return <BENViewErrorRender />;
+    }
+    return (
+        <div
+            style={{
+                width: '100%',
+                height: '100%',
+                ...CanvasItemText.genStyle(props),
+            }}
+            dangerouslySetInnerHTML={{
+                __html: props.htmlText,
             }}
         />
     );

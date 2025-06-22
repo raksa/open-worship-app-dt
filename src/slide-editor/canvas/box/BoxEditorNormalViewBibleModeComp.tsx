@@ -33,8 +33,11 @@ export function BoxEditorNormalBibleRender() {
         .bibleRenderingList;
     return (
         <div
-            className="w-100 h-100"
-            style={CanvasItemBibleItem.genStyle(props)}
+            style={{
+                width: '100%',
+                height: '100%',
+                ...CanvasItemBibleItem.genStyle(props),
+            }}
         >
             {bibleRenderingList.map((bibleRendered) => {
                 return (

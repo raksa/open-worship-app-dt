@@ -8,10 +8,10 @@ import {
 } from '../helper/bible-helpers/serverBibleHelpers';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { appApiFetch } from '../helper/networkHelpers';
-import { unlocking } from '../server/appHelpers';
 import CacheManager from '../others/CacheManager';
 import { bibleRenderHelper } from '../bible-list/bibleRenderHelpers';
 import BibleItem from '../bible-list/BibleItem';
+import { unlocking } from '../server/unlockingHelpers';
 
 export type RawBibleRefListType = string[][];
 export type BibleRefType = {

@@ -256,6 +256,7 @@ export const langDataMap: { [key: string]: LanguageDataType } = {
 export const langCodes = ['km', 'en'] as const;
 export type LocaleType = keyof typeof allLocalesMap;
 export type LanguageDataType = {
+    locale: LocaleType;
     langCode: string;
     dirPath?: string;
     genCss: () => string;
@@ -279,6 +280,9 @@ const LANGUAGE_LOCALE_SETTING_NAME = 'language-locale';
 export const defaultLocale: LocaleType = 'en-US';
 let currentLocale: LocaleType = defaultLocale;
 export function setCurrentLocale(locale: LocaleType) {
+    if (!checkIsValidLocale(locale)) {
+        locale = defaultLocale;
+    }
     setSetting(LANGUAGE_LOCALE_SETTING_NAME, locale);
     currentLocale = locale;
 }
@@ -288,12 +292,12 @@ export function checkIsValidLangCode(text: string) {
 export function checkIsValidLocale(text: string) {
     return !!(allLocalesMap as any)[text];
 }
-export function getCurrentLocale() {
-    const lc = getSetting(LANGUAGE_LOCALE_SETTING_NAME, 'en');
-    if (checkIsValidLangCode(lc)) {
-        currentLocale = lc as LocaleType;
+export function getCurrentLocale(): LocaleType {
+    const locale = getSetting(LANGUAGE_LOCALE_SETTING_NAME, 'en-US');
+    if (checkIsValidLocale(locale)) {
+        return locale as LocaleType;
     }
-    return currentLocale;
+    return 'en-US';
 }
 
 const cache = new Map<string, LanguageDataType>();

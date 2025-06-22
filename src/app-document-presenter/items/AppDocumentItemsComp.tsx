@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import {
     allArrows,
     KeyboardType,
@@ -23,7 +21,7 @@ import LoadingComp from '../../others/LoadingComp';
 import {
     DEFAULT_THUMBNAIL_SIZE_FACTOR,
     useAnyItemSelected,
-    useSelectedVaryAppDocumentContext,
+    useVaryAppDocumentContext,
     VaryAppDocumentItemType,
 } from '../../app-document-list/appDocumentHelpers';
 import SlideAutoPlayComp from '../../slide-auto-play/SlideAutoPlayComp';
@@ -32,18 +30,18 @@ const varyAppDocumentItemsToView: { [key: string]: VaryAppDocumentItemType } =
     {};
 
 function useAppDocumentItems() {
-    const selectedAppDocument = useSelectedVaryAppDocumentContext();
+    const selectedAppDocument = useVaryAppDocumentContext();
     const [varyAppDocumentItems, setVaryAppDocumentItems] = useAppStateAsync<
         VaryAppDocumentItemType[]
     >(() => {
-        return selectedAppDocument.getItems();
+        return selectedAppDocument.getSlides();
     }, [selectedAppDocument]);
 
     useAppEffectAsync(
         async (context) => {
             if (varyAppDocumentItems === undefined) {
                 const newVaryAppDocumentItems =
-                    await selectedAppDocument.getItems();
+                    await selectedAppDocument.getSlides();
                 context.setVaryAppDocumentItems(newVaryAppDocumentItems);
             }
         },
@@ -90,7 +88,6 @@ function useAppDocumentItems() {
 
 export default function AppDocumentItemsComp() {
     const [thumbSizeScale] = useAppDocumentItemThumbnailSizeScale();
-    const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
     const { varyAppDocumentItems, startLoading } = useAppDocumentItems();
     const appDocumentItemThumbnailSize =
         thumbSizeScale * DEFAULT_THUMBNAIL_SIZE_FACTOR;
@@ -114,11 +111,9 @@ export default function AppDocumentItemsComp() {
                 return (
                     <VaryAppDocumentItemRenderWrapperComp
                         key={varyAppDocumentItem.id}
-                        draggingIndex={draggingIndex}
                         thumbSize={appDocumentItemThumbnailSize}
                         varyAppDocumentItem={varyAppDocumentItem}
                         index={i}
-                        setDraggingIndex={setDraggingIndex}
                     />
                 );
             })}

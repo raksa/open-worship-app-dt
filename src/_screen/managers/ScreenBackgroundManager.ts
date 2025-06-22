@@ -14,12 +14,13 @@ import {
 } from '../screenHelpers';
 import { handleError } from '../../helper/errorHelpers';
 import { screenManagerSettingNames } from '../../helper/constants';
-import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
 import ScreenManagerBase from './ScreenManagerBase';
 import ScreenEffectManager from './ScreenEffectManager';
 import appProvider from '../../server/appProvider';
 import { StyleAnimType } from '../transitionEffectHelpers';
+import { unlocking } from '../../server/unlockingHelpers';
+import { checkAreObjectsEqual } from '../../server/comparisonHelpers';
 
 export type ScreenBackgroundManagerEventType = 'update';
 
@@ -59,7 +60,10 @@ class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManager
     }
 
     set backgroundSrc(backgroundSrc: BackgroundSrcType | null) {
-        if (this.screenManagerBase.checkIsLockedWithMessage()) {
+        if (
+            this.screenManagerBase.checkIsLockedWithMessage() ||
+            checkAreObjectsEqual(this._backgroundSrc, backgroundSrc)
+        ) {
             return;
         }
         this._backgroundSrc = backgroundSrc;
@@ -207,8 +211,7 @@ class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManager
                     return element instanceof HTMLDivElement;
                 },
             );
-            this.div.appendChild(newDiv);
-            aminData.animIn(newDiv);
+            aminData.animIn(newDiv, this.div);
             this.removeOldElements(aminData, childList);
         } else if (this.div.lastChild !== null) {
             const targetDiv = this.div.lastChild as HTMLDivElement;

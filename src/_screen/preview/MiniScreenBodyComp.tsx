@@ -31,7 +31,7 @@ function openContextMenu(event: any) {
             menuElement: 'Refresh Preview',
             onSelect() {
                 getAllScreenManagers().forEach((screenManager) => {
-                    screenManager.fireResizeEvent();
+                    screenManager.fireRefreshEvent();
                 });
             },
         },

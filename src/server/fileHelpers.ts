@@ -8,7 +8,7 @@ import { handleError } from '../helper/errorHelpers';
 import mimeBibleList from './mime/bible-types.json';
 import mimeLyricList from './mime/lyric-types.json';
 import mimeMarkdownList from './mime/markdown-types.json';
-import mimeSlideList from './mime/slide-types.json';
+import mimeAppDocumentList from './mime/app-document-types.json';
 import mimeImageList from './mime/image-types.json';
 import mimePlaylistList from './mime/playlist-types.json';
 import mimeVideoList from './mime/video-types.json';
@@ -23,7 +23,7 @@ import { cloneJson, freezeObject } from '../helper/helpers';
 freezeObject(mimeBibleList);
 freezeObject(mimeLyricList);
 freezeObject(mimeMarkdownList);
-freezeObject(mimeSlideList);
+freezeObject(mimeAppDocumentList);
 freezeObject(mimeImageList);
 freezeObject(mimePlaylistList);
 freezeObject(mimeVideoList);
@@ -40,7 +40,7 @@ export const mimetypePdf: AppMimetypeType = {
 const appMimeTypesMapper = {
     bible: mimeBibleList,
     lyric: mimeLyricList,
-    slide: mimeSlideList,
+    appDocument: mimeAppDocumentList,
 };
 const _mimeTypes = Object.values(appMimeTypesMapper) as AppMimetypeType[][];
 const appExtensions = _mimeTypes.reduce((acc: string[], cur) => {
@@ -58,7 +58,7 @@ const mimeTypesMapper = {
     bible: mimeBibleList,
     lyric: mimeLyricList,
     markdown: mimeMarkdownList,
-    slide: mimeSlideList,
+    appDocument: mimeAppDocumentList,
     pdf: [mimetypePdf],
     image: mimeImageList,
     playlist: mimePlaylistList,
@@ -80,8 +80,8 @@ export type FileMetadataType = {
 };
 
 export function checkIsAppFile(fileFullName: string) {
-    const ext = getFileExtension(fileFullName);
-    const isAppFile = appExtensions.includes(ext);
+    const dotExtension = getFileDotExtension(fileFullName);
+    const isAppFile = appExtensions.includes(dotExtension);
     return isAppFile;
 }
 
@@ -98,7 +98,7 @@ export function getFileName(fileFullName: string) {
     return fileFullName.substring(0, fileFullName.lastIndexOf('.'));
 }
 
-export function getFileExtension(fileFullName: string) {
+export function getFileDotExtension(fileFullName: string) {
     return fileFullName.substring(fileFullName.lastIndexOf('.'));
 }
 
@@ -113,8 +113,11 @@ export const createNewFileDetail = async (
     mimetypeName: MimetypeNameType,
 ) => {
     // TODO: verify file name before create
-    const mimetypeList = getAppMimetype(mimetypeName);
-    const fileFullName = `${name}${mimetypeList[0].extensions[0]}`;
+    const extensions = getMimetypeExtensions(mimetypeName);
+    if (extensions.length === 0) {
+        throw new Error(`No extensions found for mimetype: ${mimetypeName}`);
+    }
+    const fileFullName = `${name}.${extensions[0]}`;
     try {
         const filePath = pathJoin(dir, fileFullName);
         return await fsCreateFile(filePath, content);
@@ -127,12 +130,13 @@ export const createNewFileDetail = async (
 export const mimetypeNameTypeList = [
     'image',
     'video',
-    'slide',
+    'appDocument',
     'pdf',
     'playlist',
     'lyric',
     'markdown',
     'bible',
+    'sound',
     'other',
 ] as const;
 export type MimetypeNameType = (typeof mimetypeNameTypeList)[number];
@@ -142,9 +146,9 @@ export function getFileMetaData(
     mimetypeList?: AppMimetypeType[],
 ): FileMetadataType | null {
     mimetypeList = mimetypeList ?? getAllAppMimetype();
-    const ext = getFileExtension(fileFullName);
+    const dotExtension = getFileDotExtension(fileFullName);
     const foundMT = mimetypeList.find((mt) => {
-        return mt.extensions.includes(ext);
+        return mt.extensions.includes(dotExtension);
     });
     if (foundMT) {
         return { fileFullName: fileFullName, appMimetype: foundMT };
@@ -204,13 +208,13 @@ export function isSupportedExt(
     mimetypeName: MimetypeNameType,
 ) {
     const mimetypeList = getAppMimetype(mimetypeName);
-    const ext = getFileExtension(fileFullName);
+    const dotExtension = getFileDotExtension(fileFullName);
     return mimetypeList
         .map((newMimetype) => {
             return newMimetype.extensions;
         })
         .some((extensions) => {
-            return extensions.includes(ext);
+            return extensions.includes(dotExtension);
         });
 }
 
@@ -234,12 +238,12 @@ function fsFilePromise<T>(
     ...args: any
 ): Promise<T> {
     return new Promise<T>((resolve, reject) => {
-        args = args || [];
+        args = args ?? [];
         args.push(function (error: any, ...args1: any) {
             if (error) {
                 reject(error as Error);
             } else {
-                args1 = args1 || [];
+                args1 = args1 ?? [];
                 (resolve as any)(...args1);
             }
         });
@@ -366,9 +370,7 @@ export async function fsList(dir: string) {
                 name: file,
                 filePath,
             });
-        } catch (error) {
-            handleError(error);
-        }
+        } catch (_error) {}
     }
     return fileList;
 }
@@ -430,6 +432,12 @@ export function fsCreateDir(dirPath: string, isRecursive = true) {
     return _fsMkdir(dirPath, isRecursive);
 }
 
+export function fsMkDirSync(dirPath: string, isRecursive = true) {
+    return appProvider.fileUtils.mkdirSync(dirPath, {
+        recursive: isRecursive,
+    });
+}
+
 export async function fsWriteFile(
     filePath: string,
     txt: string,
@@ -440,6 +448,13 @@ export async function fsWriteFile(
         flag: 'w',
     });
     return filePath;
+}
+
+export function fsWriteFileSync(filePath: string, txt: string, encoding?: any) {
+    return appProvider.fileUtils.writeFileSync(filePath, txt, {
+        encoding: encoding ?? 'utf8',
+        flag: 'w',
+    });
 }
 
 export async function fsCreateFile(
@@ -456,6 +471,10 @@ export async function fsCreateFile(
     }
     await _fsWriteFile(filePath, txt);
     return filePath;
+}
+
+export function fsExistSync(filePath: string) {
+    return appProvider.fileUtils.existsSync(filePath);
 }
 
 export async function fsRenameFile(
@@ -482,6 +501,10 @@ export async function fsDeleteFile(filePath: string) {
     }
 }
 
+export function fsUnlinkSync(filePath: string) {
+    return appProvider.fileUtils.unlinkSync(filePath);
+}
+
 export async function fsDeleteDir(filePath: string) {
     if (await fsCheckFileExist(filePath)) {
         throw new Error(`${filePath} is not a directory`);
@@ -493,6 +516,10 @@ export async function fsDeleteDir(filePath: string) {
 
 export function fsReadFile(filePath: string) {
     return _fsReadFile(filePath, 'utf8');
+}
+
+export function fsReadSync(filePath: string) {
+    return appProvider.fileUtils.readFileSync(filePath, 'utf8');
 }
 
 export async function fsCopyFilePathToPath(
@@ -539,4 +566,33 @@ export function getFileFullName(file: File | string) {
     }
     const fileFullName = pathBasename(file);
     return fileFullName;
+}
+
+export function selectDirs() {
+    return appProvider.messageUtils.sendDataSync(
+        'main:app:select-dirs',
+    ) as string[];
+}
+export function selectFiles(
+    filters: {
+        name: string;
+        extensions: string[];
+    }[],
+) {
+    return appProvider.messageUtils.sendDataSync(
+        'main:app:select-files',
+        filters,
+    ) as string[];
+}
+
+export function getUserWritablePath(): string {
+    return appProvider.messageUtils.sendDataSync('main:app:get-data-path');
+}
+
+export function getDesktopPath(): string {
+    return appProvider.messageUtils.sendDataSync('main:app:get-desktop-path');
+}
+
+export function getTempPath(): string {
+    return appProvider.messageUtils.sendDataSync('main:app:get-temp-path');
 }

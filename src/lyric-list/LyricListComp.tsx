@@ -2,7 +2,7 @@ import './LyricListComp.scss';
 
 import FileListHandlerComp from '../others/FileListHandlerComp';
 import {
-    getFileExtension,
+    getFileDotExtension,
     getMimetypeExtensions,
     mimetypePdf,
 } from '../server/fileHelpers';
@@ -15,6 +15,8 @@ import {
 import { checkIsMarkdown } from './lyricHelpers';
 import Lyric from './Lyric';
 import LyricFileComp from './LyricFileComp';
+import LyricAppDocument from './LyricAppDocument';
+import { checkIsVaryAppDocumentOnScreen } from '../app-document-list/appDocumentHelpers';
 
 async function newFileHandling(dirPath: string, name: string) {
     return !(await Lyric.create(dirPath, name));
@@ -27,8 +29,22 @@ const handleBodyRendering = (filePaths: string[]) => {
 
 function handleExtraFileChecking(filePath: string) {
     const fileSource = FileSource.getInstance(filePath);
-    if (checkIsMarkdown(fileSource.extension)) {
+    if (checkIsMarkdown(fileSource.dotExtension)) {
         return true;
+    }
+    return false;
+}
+
+async function checkIsOnScreen(filePaths: string[]) {
+    for (const filePath of filePaths) {
+        const lyricAppDocument =
+            LyricAppDocument.getInstanceFromLyricFilePath(filePath);
+        const isOnScreen =
+            lyricAppDocument !== null &&
+            (await checkIsVaryAppDocumentOnScreen(lyricAppDocument));
+        if (isOnScreen) {
+            return true;
+        }
     }
     return false;
 }
@@ -39,7 +55,7 @@ export default function LyricListComp() {
         return null;
     }
     dirSource.checkExtraFile = (fileFullName: string) => {
-        if (checkIsMarkdown(getFileExtension(fileFullName))) {
+        if (checkIsMarkdown(getFileDotExtension(fileFullName))) {
             return {
                 fileFullName: fileFullName,
                 appMimetype: mimetypePdf,
@@ -58,6 +74,7 @@ export default function LyricListComp() {
             onNewFile={newFileHandling}
             header={<span>Lyrics</span>}
             bodyHandler={handleBodyRendering}
+            checkIsOnScreen={checkIsOnScreen}
             fileSelectionOption={{
                 windowTitle: 'Select lyric files',
                 dirPath: dirSource.dirPath,

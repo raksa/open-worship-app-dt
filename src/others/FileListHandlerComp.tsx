@@ -67,6 +67,7 @@ export default function FileListHandlerComp({
     userClassName,
     defaultFolderName,
     fileSelectionOption,
+    checkIsOnScreen,
 }: Readonly<{
     className: string;
     mimetypeName: MimetypeNameType;
@@ -81,7 +82,9 @@ export default function FileListHandlerComp({
     userClassName?: string;
     defaultFolderName?: string;
     fileSelectionOption?: FileSelectionOptionType;
+    checkIsOnScreen?: (filePaths: string[]) => Promise<boolean>;
 }>) {
+    const [isOnScreen, setIsOnScreen] = useState(false);
     const handleNameApplying = async (name: string | null) => {
         if (name === null) {
             setIsCreatingNew(false);
@@ -119,24 +122,33 @@ export default function FileListHandlerComp({
                 })}
             >
                 {header !== undefined ? (
-                    <div className="card-header">
-                        {header}
+                    <div
+                        className="card-header"
+                        style={{
+                            maxHeight: '35px',
+                        }}
+                    >
+                        <span className={isOnScreen ? 'app-on-screen' : ''}>
+                            {header}
+                        </span>
                         {onNewFile && dirSource.dirPath ? (
-                            <button
-                                className={
-                                    'btn btn-sm btn-outline-info float-end'
-                                }
-                                title="New File"
+                            <div
+                                className="float-end app-caught-hover-pointer"
+                                title="`New File"
                                 onClick={() => setIsCreatingNew(true)}
+                                style={{
+                                    color: 'var(--bs-info-text-emphasis)',
+                                    fontSize: '20px',
+                                }}
                             >
                                 <i className="bi bi-file-earmark-plus" />
-                            </button>
+                            </div>
                         ) : null}
                     </div>
                 ) : null}
                 <div
                     className="card-body d-flex flex-column pb-5"
-                    onContextMenu={genOnContextMenu({
+                    onContextMenu={genOnContextMenu(dirSource, {
                         contextMenu,
                         addItems: handleItemsAdding,
                         onStartNewFile:
@@ -168,6 +180,8 @@ export default function FileListHandlerComp({
                                 dirSource={dirSource}
                                 bodyHandler={bodyHandler}
                                 mimetypeName={mimetypeName}
+                                setIsOnScreen={setIsOnScreen}
+                                checkIsOnScreen={checkIsOnScreen}
                             />
                         </ul>
                     )}

@@ -1,7 +1,7 @@
 import DirSource from './DirSource';
 import {
     checkIsAppFile,
-    getFileExtension,
+    getFileDotExtension,
     fsCheckFileExist,
     fsCreateFile,
     fsReadFile,
@@ -14,7 +14,6 @@ import {
     getFileName,
 } from '../server/fileHelpers';
 import { AnyObjectType, isValidJson } from './helpers';
-import AppDocumentSourceAbs from './DocumentSourceAbs';
 import { pathToFileURL } from '../server/helpers';
 import EventHandler from '../event/EventHandler';
 import appProvider from '../server/appProvider';
@@ -23,6 +22,8 @@ import { showSimpleToast } from '../toast/toastHelpers';
 import { handleError } from './errorHelpers';
 import FileSourceMetaManager from './FileSourceMetaManager';
 import ColorNoteInf from './ColorNoteInf';
+import { electronSendAsync } from '../server/appHelpers';
+import { unlocking } from '../server/unlockingHelpers';
 
 export type SrcData = `data:${string}`;
 
@@ -98,28 +99,38 @@ export default class FileSource
         return getFileName(this.fileFullName);
     }
 
+    get dotExtension() {
+        return getFileDotExtension(this.fileFullName);
+    }
+
     get extension() {
-        return getFileExtension(this.fileFullName);
+        return this.dotExtension.substring(1);
     }
 
     get dirSource() {
         return DirSource.getInstanceByDirPath(this.basePath);
     }
 
+    static toRWLockingKey(filePath: string) {
+        return `rw-${filePath}`;
+    }
+
     static async readFileData(filePath: string, isSilent?: boolean) {
-        try {
-            const dataText = await fsReadFile(filePath);
-            return dataText;
-        } catch (error: any) {
-            if (!isSilent) {
-                showSimpleToast(
-                    'Reader File Data',
-                    'Error occurred during reading ' +
-                        `file: "${filePath}", error: ${error.message}`,
-                );
+        return await unlocking(this.toRWLockingKey(filePath), async () => {
+            try {
+                const dataText = await fsReadFile(filePath);
+                return dataText;
+            } catch (error: any) {
+                if (!isSilent) {
+                    showSimpleToast(
+                        'Reader File Data',
+                        'Error occurred during reading ' +
+                            `file: "${filePath}", error: ${error.message}`,
+                    );
+                }
             }
-        }
-        return null;
+            return null;
+        });
     }
 
     async readFileData() {
@@ -127,6 +138,32 @@ export default class FileSource
             return null;
         }
         return await FileSource.readFileData(this.filePath);
+    }
+
+    async writeFileData(data: string) {
+        return await unlocking(
+            FileSource.toRWLockingKey(this.filePath),
+            async () => {
+                try {
+                    const isFileExist = await fsCheckFileExist(this.filePath);
+                    if (isFileExist) {
+                        await fsWriteFile(this.filePath, data);
+                    } else {
+                        await fsCreateFile(this.filePath, data, true);
+                    }
+                    this.fireUpdateEvent();
+                    return true;
+                } catch (error: any) {
+                    showSimpleToast('Saving File', error.message);
+                }
+                return false;
+            },
+        );
+    }
+
+    static async writeFileData(filePath: string, data: string) {
+        const fileSource = this.getInstance(filePath);
+        return await fileSource.writeFileData(data);
     }
 
     async readFileJsonData() {
@@ -137,32 +174,6 @@ export default class FileSource
             }
         } catch (_error) {}
         return null;
-    }
-
-    static async saveFileData(filePath: string, data: string) {
-        const fileSource = this.getInstance(filePath);
-        return await fileSource.saveFileData(data);
-    }
-
-    async saveFileData(data: string) {
-        try {
-            const isFileExist = await fsCheckFileExist(this.filePath);
-            if (isFileExist) {
-                await fsWriteFile(this.filePath, data);
-            } else {
-                await fsCreateFile(this.filePath, data, true);
-            }
-            this.fireUpdateEvent();
-            return true;
-        } catch (error: any) {
-            showSimpleToast('Saving File', error.message);
-        }
-        return false;
-    }
-
-    async saveDataFromItem(item: AppDocumentSourceAbs) {
-        const content = JSON.stringify(item.toJson());
-        return this.saveFileData(content);
     }
 
     static getInstanceNoCache(filePath: string, fileFullName?: string) {
@@ -218,11 +229,11 @@ export default class FileSource
             await fsRenameFile(
                 this.basePath,
                 this.fileFullName,
-                newName + this.extension,
+                newName + this.dotExtension,
             );
             const newFilePath = pathJoin(
                 this.basePath,
-                newName + this.extension,
+                newName + this.dotExtension,
             );
             return FileSource.getInstance(newFilePath);
         } catch (error: any) {
@@ -239,12 +250,15 @@ export default class FileSource
         let i = 1;
         let newName = this.name + ' (Copy)';
         while (
-            await fsCheckFileExist(this.basePath, newName + this.extension)
+            await fsCheckFileExist(this.basePath, newName + this.dotExtension)
         ) {
             newName = this.name + ' (Copy ' + i + ')';
             i++;
         }
-        const newFilePath = pathJoin(this.basePath, newName + this.extension);
+        const newFilePath = pathJoin(
+            this.basePath,
+            newName + this.dotExtension,
+        );
         const data = await this.readFileJsonData();
         if (data !== null) {
             await fsCreateFile(newFilePath, JSON.stringify(data));
@@ -295,5 +309,12 @@ export default class FileSource
             this.filePath,
             this.filePath,
         );
+    }
+
+    async trashFile() {
+        await electronSendAsync<void>('main:app:trash-path', {
+            path: this.filePath,
+        });
+        FileSource.getInstance(this.filePath).fireDeleteEvent();
     }
 }

@@ -4,7 +4,7 @@ import ScreenBackgroundManager from './ScreenBackgroundManager';
 export async function applyAttachBackground(
     screenId: number,
     filePath: string,
-    id: string,
+    id: string | number,
 ) {
     const droppedData =
         (await attachBackgroundManager.getAttachedBackground(filePath, id)) ??

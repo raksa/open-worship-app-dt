@@ -2,7 +2,7 @@ import { screenManagerSettingNames } from '../../helper/constants';
 import { getSetting, setSetting } from '../../helper/settingHelpers';
 import ScreenManagerBase from './ScreenManagerBase';
 import { isValidJson } from '../../helper/helpers';
-import { unlocking } from '../../server/appHelpers';
+import { unlocking } from '../../server/unlockingHelpers';
 
 export type TypeScreenManagerSettingType = {
     screenId: number;

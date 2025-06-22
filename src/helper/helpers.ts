@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useAppEffect } from './debuggerHelpers';
 import { handleError } from './errorHelpers';
 import FileSource from './FileSource';
-import AppDocumentSourceAbs from './DocumentSourceAbs';
+import { AppDocumentSourceAbs } from './AppEditableDocumentSourceAbs';
 import { trace } from './loggerHelpers';
 import appProvider from '../server/appProvider';
 import {
@@ -133,16 +133,7 @@ export function getWindowDim() {
         document.body.clientHeight;
     return { width, height };
 }
-export function validateAppMeta(meta: any) {
-    try {
-        if (meta.fileVersion === 1 && meta.app === 'OpenWorship') {
-            return true;
-        }
-    } catch (error) {
-        handleError(error);
-    }
-    return false;
-}
+
 export function useReadFileToData<T extends AppDocumentSourceAbs>(
     filePath: string | null,
 ) {
@@ -393,7 +384,13 @@ export function changeDragEventStyle(
     key: string,
     value: string,
 ) {
-    (event.currentTarget.style as any)[key] = value;
+    ((event.currentTarget?.style ?? {}) as any)[key] = value;
+}
+
+export function stopDraggingState(event: any) {
+    event.preventDefault();
+    event.stopPropagation();
+    changeDragEventStyle(event, 'opacity', '1');
 }
 
 export function bringDomToView(dom: Element, block: ScrollLogicalPosition) {

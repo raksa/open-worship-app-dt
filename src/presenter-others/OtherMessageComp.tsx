@@ -4,7 +4,7 @@ import {
 } from '../helper/settingHelpers';
 import ScreenOtherManager from '../_screen/managers/ScreenOtherManager';
 import { useScreenOtherManagerEvents } from '../_screen/managers/screenEventHelpers';
-import { getShowingScreenIds, getScreenManagerInstances } from './alertHelpers';
+import { getShowingScreenIds, getScreenManagerInstances } from './otherHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
 import OtherRenderHeaderTitleComp from './OtherRenderHeaderTitleComp';
 

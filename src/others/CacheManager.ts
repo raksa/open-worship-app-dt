@@ -1,4 +1,4 @@
-import { unlocking } from '../server/appHelpers';
+import { unlocking } from '../server/unlockingHelpers';
 
 type StoreType<T> = { value: T; timestamp: number };
 export default class CacheManager<T> {
@@ -39,24 +39,32 @@ export default class CacheManager<T> {
         });
     }
 
+    getSync(key: string): T | null {
+        const cacheItem = this.cache.get(key);
+        if (cacheItem) {
+            if (this.checkIsExpired(cacheItem)) {
+                this.cache.delete(key);
+                return null;
+            }
+            cacheItem.timestamp = Date.now();
+            return cacheItem.value;
+        }
+        return null;
+    }
+
     async get(key: string): Promise<T | null> {
         return await this.unlocking(key, async () => {
-            const cacheItem = this.cache.get(key);
-            if (cacheItem) {
-                if (this.checkIsExpired(cacheItem)) {
-                    this.cache.delete(key);
-                    return null;
-                }
-                cacheItem.timestamp = Date.now();
-                return cacheItem.value;
-            }
-            return null;
+            return this.getSync(key);
         });
+    }
+
+    setSync(key: string, value: T): void {
+        this.cache.set(key, { value, timestamp: Date.now() });
     }
 
     async set(key: string, value: T): Promise<void> {
         await this.unlocking(key, async () => {
-            this.cache.set(key, { value, timestamp: Date.now() });
+            this.setSync(key, value);
         });
     }
     clear(): void {

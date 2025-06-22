@@ -1,22 +1,28 @@
 import './VaryAppDocumentItem.scss';
 
 import Slide from '../../app-document-list/Slide';
-import ScreenVaryAppDocumentManager from '../../_screen/managers/ScreenVaryAppDocumentManager';
 import { useScreenVaryAppDocumentManagerEvents } from '../../_screen/managers/screenEventHelpers';
 import {
     genRemovingAttachedBackgroundMenu,
     handleDragStart,
-    onDropHandling,
+    handleAttachBackgroundDrop,
     useAttachedBackgroundData,
+    extractDropData,
 } from '../../helper/dragHelpers';
 import ShowingScreenIcon from '../../_screen/preview/ShowingScreenIcon';
 import appProvider from '../../server/appProvider';
-import { VaryAppDocumentItemType } from '../../app-document-list/appDocumentHelpers';
+import {
+    checkIsAppDocumentItemOnScreen,
+    VaryAppDocumentItemType,
+} from '../../app-document-list/appDocumentHelpers';
 import { changeDragEventStyle } from '../../helper/helpers';
 import { DragTypeEnum, DroppedDataType } from '../../helper/DragInf';
 import { ContextMenuItemType } from '../../context-menu/appContextMenuHelpers';
 import { useMemo, useState } from 'react';
 import { useAppEffect } from '../../helper/debuggerHelpers';
+import ScreenVaryAppDocumentManager from '../../_screen/managers/ScreenVaryAppDocumentManager';
+import AppDocument from '../../app-document-list/AppDocument';
+import AttachBackgroundIconComponent from '../../others/AttachBackgroundIconComponent';
 
 function RenderScreenInfoComp({
     varyAppDocumentItem,
@@ -38,52 +44,16 @@ function RenderScreenInfoComp({
     );
 }
 
-function RenderInfoComp({
-    viewIndex,
+function RenderHeaderInfoComp({
     varyAppDocumentItem,
+    viewIndex,
 }: Readonly<{
-    viewIndex: number;
     varyAppDocumentItem: VaryAppDocumentItemType;
+    viewIndex: number;
 }>) {
     const isChanged =
         Slide.checkIsThisType(varyAppDocumentItem) &&
         (varyAppDocumentItem as Slide).isChanged;
-    return (
-        <div className="d-flex w-100">
-            <div className="flex-fill d-flex">
-                <div>
-                    <span
-                        className="badge rounded-pill text-bg-info"
-                        title={`Index: ${viewIndex}`}
-                    >
-                        {viewIndex}
-                    </span>
-                </div>
-            </div>
-            <div className="flex-fill d-flex justify-content-end">
-                <RenderScreenInfoComp
-                    varyAppDocumentItem={varyAppDocumentItem}
-                />
-                <span
-                    title={
-                        `width:${varyAppDocumentItem.width}, ` +
-                        `height:${varyAppDocumentItem.height}`
-                    }
-                >
-                    <small className="pe-2">
-                        {varyAppDocumentItem.width}x{varyAppDocumentItem.height}
-                    </small>
-                </span>
-                {isChanged && <span style={{ color: 'red' }}>*</span>}
-            </div>
-        </div>
-    );
-}
-
-function RenderHeaderInfoComp({
-    item,
-    viewIndex,
-}: Readonly<{ item: VaryAppDocumentItemType; viewIndex: number }>) {
     return (
         <div
             className="card-header d-flex"
@@ -92,7 +62,39 @@ function RenderHeaderInfoComp({
                 backgroundColor: 'var(--bs-gray-800)',
             }}
         >
-            <RenderInfoComp viewIndex={viewIndex} varyAppDocumentItem={item} />
+            <div className="d-flex w-100">
+                <div className="flex-fill d-flex">
+                    <div>
+                        <span
+                            className="badge rounded-pill text-bg-info"
+                            title={`Index: ${viewIndex}`}
+                        >
+                            {viewIndex}
+                        </span>
+                    </div>
+                </div>
+                <div className="flex-fill d-flex justify-content-end">
+                    <RenderScreenInfoComp
+                        varyAppDocumentItem={varyAppDocumentItem}
+                    />
+                    <AttachBackgroundIconComponent
+                        filePath={varyAppDocumentItem.filePath}
+                        id={varyAppDocumentItem.id}
+                    />
+                    <span
+                        title={
+                            `width:${varyAppDocumentItem.width}, ` +
+                            `height:${varyAppDocumentItem.height}`
+                        }
+                    >
+                        <small className="pe-2">
+                            {varyAppDocumentItem.width}x
+                            {varyAppDocumentItem.height}
+                        </small>
+                    </span>
+                    {isChanged && <span style={{ color: 'red' }}>*</span>}
+                </div>
+            </div>
         </div>
     );
 }
@@ -107,18 +109,16 @@ export function toClassNameHighlight(
         varyAppDocumentItem.checkIsSame(selectedVaryAppDocumentItem)
             ? 'active'
             : '';
-    const selectedList = ScreenVaryAppDocumentManager.getDataList(
-        varyAppDocumentItem.filePath,
-        varyAppDocumentItem.id,
-    );
-    const presenterCN =
-        appProvider.isPageEditor || selectedList.length == 0
-            ? ''
-            : 'app-highlight-selected';
+    const isOnScreen = checkIsAppDocumentItemOnScreen(varyAppDocumentItem);
+    const presenterClassname =
+        appProvider.isPageEditor || !isOnScreen ? '' : 'app-highlight-selected';
     return {
-        selectedList,
+        selectedList: ScreenVaryAppDocumentManager.getDataList(
+            varyAppDocumentItem.filePath,
+            varyAppDocumentItem.id,
+        ),
         activeCN: activeClassname,
-        presenterCN,
+        presenterCN: presenterClassname,
     };
 }
 
@@ -188,34 +188,30 @@ export function useScale(item: VaryAppDocumentItemType, thumbnailSize: number) {
 }
 
 export default function SlideItemRenderComp({
-    item,
+    slide,
     width,
     index,
     onClick,
     onContextMenu,
     onCopy,
-    onDragStart,
-    onDragEnd,
     selectedItem,
     children,
 }: Readonly<{
-    item: VaryAppDocumentItemType;
+    slide: VaryAppDocumentItemType;
     width: number;
     index: number;
     onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
     onContextMenu: (event: any, extraMenuItems: ContextMenuItemType[]) => void;
     onCopy?: () => void;
-    onDragStart: (event: React.DragEvent<HTMLDivElement>) => void;
-    onDragEnd: (event: React.DragEvent<HTMLDivElement>) => void;
     selectedItem?: VaryAppDocumentItemType | null;
     children: React.ReactNode;
 }>) {
-    const { scale, setTargetDiv } = useScale(item, width);
+    const { scale, setTargetDiv } = useScale(slide, width);
     useScreenVaryAppDocumentManagerEvents(['update']);
-    const { activeCN, presenterCN } = toClassNameHighlight(item, selectedItem);
+    const { activeCN, presenterCN } = toClassNameHighlight(slide, selectedItem);
     const attachedBackgroundData = useAttachedBackgroundData(
-        item.filePath,
-        item.id.toString(),
+        slide.filePath,
+        slide.id,
     );
     const attachedBackgroundElement = useMemo(() => {
         return genAttachBackgroundComponent(attachedBackgroundData);
@@ -223,17 +219,32 @@ export default function SlideItemRenderComp({
     const style: React.CSSProperties = {
         padding: 0,
         margin: 0,
-        height: `${item.height * scale}px`,
+        height: `${slide.height * scale}px`,
+    };
+    const handleDataDropping = async (event: any) => {
+        changeDragEventStyle(event, 'opacity', '1');
+        const droppedData = await extractDropData(event);
+        if (droppedData?.type === DragTypeEnum.SLIDE) {
+            if (droppedData.item.filePath !== slide.filePath) {
+                return;
+            }
+            const appDocument = AppDocument.getInstance(slide.filePath);
+            const toIndex = await appDocument.getSlideIndex(slide as Slide);
+            appDocument.moveSlideToIndex(droppedData.item as Slide, toIndex);
+        } else {
+            handleAttachBackgroundDrop(event, slide);
+        }
     };
     return (
         <div
             className={
                 'data-vary-app-document-item card' +
-                ` app-caught-hover-pointer ${activeCN} ${presenterCN}`
+                ` app-caught-hover-pointer ${activeCN} ${presenterCN}` +
+                ' overflow-hidden'
             }
             ref={setTargetDiv}
             style={{ width: `${width}px` }}
-            data-vary-app-document-item-id={item.id}
+            data-vary-app-document-item-id={slide.id}
             draggable
             onDragOver={(event) => {
                 event.preventDefault();
@@ -243,23 +254,22 @@ export default function SlideItemRenderComp({
                 event.preventDefault();
                 changeDragEventStyle(event, 'opacity', '1');
             }}
-            onDrop={(event) => {
-                onDropHandling(event, item);
-            }}
+            onDrop={handleDataDropping}
             onDragStart={(event) => {
-                handleDragStart(event, item);
-                onDragStart(event);
+                handleDragStart(event, slide);
                 event.stopPropagation();
             }}
-            onDragEnd={onDragEnd}
+            onDragEnd={(event) => {
+                changeDragEventStyle(event, 'opacity', '1');
+            }}
             onClick={onClick}
             onContextMenu={(event) => {
                 const menuItems: ContextMenuItemType[] = [];
                 if (attachedBackgroundData) {
                     menuItems.push(
                         ...genRemovingAttachedBackgroundMenu(
-                            item.filePath,
-                            item.id.toString(),
+                            slide.filePath,
+                            slide.id,
                         ),
                     );
                 }
@@ -267,7 +277,10 @@ export default function SlideItemRenderComp({
             }}
             onCopy={onCopy ?? (() => {})}
         >
-            <RenderHeaderInfoComp item={item} viewIndex={index + 1} />
+            <RenderHeaderInfoComp
+                varyAppDocumentItem={slide}
+                viewIndex={index + 1}
+            />
             <div className="card-body overflow-hidden w-100" style={style}>
                 {attachedBackgroundElement && (
                     <div

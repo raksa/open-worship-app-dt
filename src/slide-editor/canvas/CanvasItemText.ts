@@ -5,7 +5,6 @@ import { AnyObjectType } from '../../helper/helpers';
 import { AppColorType } from '../../others/color/colorHelpers';
 import appProvider from '../../server/appProvider';
 import {
-    CanvasItemKindType,
     genTextDefaultBoxStyle,
     hAlignmentList,
     HAlignmentType,
@@ -35,6 +34,9 @@ export type TextPropsType = {
     textVerticalAlignment: VAlignmentType;
 };
 export type CanvasItemTextPropsType = CanvasItemPropsType & TextPropsType;
+export type CanvasItemTextHtmlPropsType = CanvasItemTextPropsType & {
+    htmlText: string;
+};
 export type ToolingTextType = {
     color?: AppColorType;
     fontSize?: number;
@@ -44,9 +46,6 @@ export type ToolingTextType = {
     textVerticalAlignment?: VAlignmentType;
 };
 class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> {
-    get type(): CanvasItemKindType {
-        return 'text';
-    }
     static genStyle(props: CanvasItemTextPropsType) {
         const style: CSSProperties = {
             display: 'flex',

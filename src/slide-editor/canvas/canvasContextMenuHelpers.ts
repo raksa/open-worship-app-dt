@@ -1,7 +1,7 @@
-import { selectFiles } from '../../server/appHelpers';
 import {
     getMimetypeExtensions,
     isSupportedMimetype,
+    selectFiles,
 } from '../../server/fileHelpers';
 import CanvasItem from './CanvasItem';
 import CanvasController from './CanvasController';
@@ -46,12 +46,12 @@ export async function showCanvasContextMenu(
         {
             menuElement: 'Insert Medias',
             onSelect: () => {
-                const imageExts = getMimetypeExtensions('image');
-                const videoExts = getMimetypeExtensions('video');
+                const imageExtensions = getMimetypeExtensions('image');
+                const videoExtension = getMimetypeExtensions('video');
                 const filePaths = selectFiles([
                     {
                         name: 'All Files',
-                        extensions: [...imageExts, ...videoExts],
+                        extensions: [...imageExtensions, ...videoExtension],
                     },
                 ]);
                 filePaths.forEach((filePath) => {

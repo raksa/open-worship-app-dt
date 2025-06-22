@@ -121,7 +121,7 @@ function useAppDocumentContextValues() {
                     AppDocument.checkIsThisType(newVaryAppDocument)
                 ) {
                     const varyAppDocumentItems =
-                        await newVaryAppDocument.getItems();
+                        await newVaryAppDocument.getSlides();
                     selectedSlide = varyAppDocumentItems[0] ?? null;
                 }
                 setSlide1(selectedSlide);
@@ -131,7 +131,7 @@ function useAppDocumentContextValues() {
     const editingSlideContextValue = useMemo(() => {
         return {
             selectedSlide: slide,
-            setSelectedSlide: (newSelectedSlide: Slide) => {
+            setSelectedDocument: (newSelectedSlide: Slide) => {
                 setSlide1(newSelectedSlide);
             },
         };
@@ -145,7 +145,7 @@ function useAppDocumentContextValues() {
             ) {
                 return;
             }
-            const slides = await varyAppDocument.getItems();
+            const slides = await varyAppDocument.getSlides();
             const newSlide =
                 slides.find((item) => {
                     return slide !== null && item.checkIsSame(slide);

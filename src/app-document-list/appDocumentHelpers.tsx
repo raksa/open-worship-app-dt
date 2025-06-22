@@ -16,9 +16,10 @@ import {
     fsCheckFileExist,
     fsCopyFilePathToPath,
     fsDeleteFile,
-    getFileExtension,
+    getFileDotExtension,
     getFileFullName,
     getFileName,
+    getTempPath,
     mimetypePdf,
     pathBasename,
 } from '../server/fileHelpers';
@@ -31,7 +32,7 @@ import {
     hideProgressBard,
     showProgressBard,
 } from '../progress-bar/progressBarHelpers';
-import { convertToPdf, getTempPath } from '../server/appHelpers';
+import { convertToPdf } from '../server/appHelpers';
 import { dirSourceSettingNames } from '../helper/constants';
 import { genShowOnScreensContextMenu } from '../others/FileItemHandlerComp';
 import ScreenVaryAppDocumentManager from '../_screen/managers/ScreenVaryAppDocumentManager';
@@ -40,7 +41,6 @@ import { createContext, use, useState } from 'react';
 import { DisplayType } from '../_screen/screenHelpers';
 import { getSetting, setSetting } from '../helper/settingHelpers';
 import PdfSlide, { PdfSlideType } from './PdfSlide';
-import { OptionalPromise } from '../others/otherHelpers';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { useScreenVaryAppDocumentManagerEvents } from '../_screen/managers/screenEventHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
@@ -55,10 +55,6 @@ export type VaryAppDocumentType = AppDocument | PdfAppDocument;
 export type VaryAppDocumentItemType = Slide | PdfSlide;
 export type VaryAppDocumentItemDataType = SlideType | PdfSlideType;
 export type VaryAppDocumentDynamicType = VaryAppDocumentType | null | undefined;
-
-export interface ClipboardInf {
-    clipboardSerialize(): OptionalPromise<string | null>;
-}
 
 export function showPdfDocumentContextMenu(
     event: any,
@@ -76,8 +72,7 @@ export function showPdfDocumentContextMenu(
     showAppContextMenu(event, [...menuItemOnScreens, ...extraMenuItems]);
 }
 
-export function showAppDocumentContextMenu(
-    event: any,
+export function gemSlideContextMenuItems(
     appDocument: AppDocument,
     slide: Slide,
     extraMenuItems: ContextMenuItemType[],
@@ -92,22 +87,34 @@ export function showAppDocumentContextMenu(
     });
     const menuItems: ContextMenuItemType[] = [
         {
-            menuElement: 'Copy',
+            menuElement: '`Copy',
             onSelect: async () => {
                 navigator.clipboard.writeText(slide.clipboardSerialize());
                 showSimpleToast('Copied', 'Slide is copied');
             },
         },
         {
-            menuElement: 'Duplicate',
+            menuElement: '`Duplicate',
             onSelect: () => {
                 appDocument.duplicateSlide(slide);
+            },
+        },
+        {
+            menuElement: '`Move forward',
+            onSelect: () => {
+                appDocument.moveSlide(slide, true);
+            },
+        },
+        {
+            menuElement: '`Move backward',
+            onSelect: () => {
+                appDocument.moveSlide(slide, false);
             },
         },
         ...(appProvider.isPagePresenter
             ? [
                   {
-                      menuElement: 'Quick Edit',
+                      menuElement: '`Quick Edit',
                       onSelect: () => {
                           if (appProvider.isPageEditor) {
                               AppDocumentListEventListener.selectAppDocumentItem(
@@ -122,13 +129,13 @@ export function showAppDocumentContextMenu(
             : []),
         ...menuItemOnScreens,
         {
-            menuElement: 'Delete',
+            menuElement: '`Delete',
             onSelect: () => {
                 appDocument.deleteSlide(slide);
             },
         },
     ];
-    showAppContextMenu(event, [...menuItems, ...extraMenuItems]);
+    return [...menuItems, ...extraMenuItems];
 }
 
 export function checkIsPdf(ext: string) {
@@ -280,8 +287,10 @@ export async function convertOfficeFile(
 }
 
 export async function selectSlide(event: any, currentFilePath: string) {
-    const dirSource = await DirSource.getInstance(dirSourceSettingNames.SLIDE);
-    const newFilePaths = await dirSource.getFilePaths('slide');
+    const dirSource = await DirSource.getInstance(
+        dirSourceSettingNames.DOCUMENT,
+    );
+    const newFilePaths = await dirSource.getFilePaths('appDocument');
     if (!newFilePaths?.length) {
         return null;
     }
@@ -319,12 +328,16 @@ function useContext() {
     return context;
 }
 
-export function useSelectedVaryAppDocumentContext() {
-    const context = useContext();
-    if (context.selectedVaryAppDocument === null) {
-        throw new Error('No selected document');
+export const VaryAppDocumentContext = createContext<VaryAppDocumentType | null>(
+    null,
+);
+
+export function useVaryAppDocumentContext() {
+    const varyAppDocument = use(VaryAppDocumentContext);
+    if (varyAppDocument === null) {
+        throw new Error('No VaryAppDocumentContext found');
     }
-    return context.selectedVaryAppDocument;
+    return varyAppDocument;
 }
 
 export function useSelectedAppDocumentSetterContext() {
@@ -334,7 +347,7 @@ export function useSelectedAppDocumentSetterContext() {
 
 export const SelectedEditingSlideContext = createContext<{
     selectedSlide: Slide | null;
-    setSelectedSlide: (newSlide: Slide | null) => void;
+    setSelectedDocument: (newSlide: Slide | null) => void;
 } | null>(null);
 
 function useContextItem() {
@@ -361,7 +374,7 @@ export function useSelectedEditingSlideContext() {
 
 export function useSelectedEditingSlideSetterContext() {
     const context = useContextItem();
-    return context.setSelectedSlide;
+    return context.setSelectedDocument;
 }
 
 export function useSlideWrongDimension(
@@ -369,18 +382,22 @@ export function useSlideWrongDimension(
     display: DisplayType,
 ) {
     const [wrong, setWrong] = useState<WrongDimensionType | null>(null);
+    const checkWrongDimension = async () => {
+        if (!AppDocument.checkIsThisType(varyAppDocument)) {
+            return;
+        }
+        const wrong = await varyAppDocument.getIsWrongDimension(display);
+        setWrong(wrong);
+    };
     useFileSourceEvents(
         ['update'],
-        async () => {
-            if (!AppDocument.checkIsThisType(varyAppDocument)) {
-                return;
-            }
-            const wrong = await varyAppDocument.getIsWrongDimension(display);
-            setWrong(wrong);
-        },
+        checkWrongDimension,
         [varyAppDocument, display],
         varyAppDocument.filePath,
     );
+    useAppEffect(() => {
+        checkWrongDimension();
+    }, [varyAppDocument, display]);
     return wrong;
 }
 
@@ -499,7 +516,7 @@ export function setSelectedEditingSlide(slide: Slide | null) {
 }
 
 export function varyAppDocumentFromFilePath(filePath: string) {
-    if (checkIsPdf(getFileExtension(filePath))) {
+    if (checkIsPdf(getFileDotExtension(filePath))) {
         return PdfAppDocument.getInstance(filePath);
     }
     return AppDocument.getInstance(filePath);
@@ -525,4 +542,27 @@ export function useAnyItemSelected(
     useScreenVaryAppDocumentManagerEvents(['update'], undefined, refresh);
     useAppEffect(refresh, [varyAppDocumentItems]);
     return isAnyItemSelected;
+}
+
+export function checkIsAppDocumentItemOnScreen(
+    varyAppDocumentItem: VaryAppDocumentItemType,
+) {
+    const data = ScreenVaryAppDocumentManager.getDataList(
+        varyAppDocumentItem.filePath,
+        varyAppDocumentItem.id,
+    );
+    return data.length > 0;
+}
+
+export async function checkIsVaryAppDocumentOnScreen(
+    varyAppDocument: VaryAppDocumentType,
+) {
+    const slides = await varyAppDocument.getSlides();
+    for (const slide of slides) {
+        const isOnScreen = checkIsAppDocumentItemOnScreen(slide);
+        if (isOnScreen) {
+            return true;
+        }
+    }
+    return false;
 }

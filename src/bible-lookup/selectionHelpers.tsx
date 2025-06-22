@@ -153,6 +153,7 @@ export function processSelection(
     optionClass: string,
     selectedClass: string,
     key: KeyboardType,
+    event: KeyboardEvent,
 ) {
     if (!checkIsRenderFoundFocused()) {
         return;
@@ -164,6 +165,8 @@ export function processSelection(
     ) {
         return;
     }
+    event.stopPropagation?.();
+    event.preventDefault?.();
     const { index, elements } = genIndex(optionClass, selectedClass, key);
     if (index === -1) {
         return;

@@ -25,6 +25,12 @@
     }
   }
 
+  .card-body {
+    .btn.active {
+      border: 1px dashed $hight-light-color;
+    }
+  }
+
   .title {
     white-space: nowrap;
     overflow: hidden;

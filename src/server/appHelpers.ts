@@ -1,8 +1,7 @@
 import appProvider, { FontListType } from './appProvider';
 import { showSimpleToast } from '../toast/toastHelpers';
-import { OptionalPromise } from '../others/otherHelpers';
-import FileSource from '../helper/FileSource';
 import { AnyObjectType } from '../helper/helpers';
+import { OptionalPromise } from '../others/otherHelpers';
 
 export function getFontListByNodeFont() {
     appProvider.messageUtils.sendData('main:app:get-font-list');
@@ -42,11 +41,6 @@ export function showExplorer(dir: string) {
     appProvider.messageUtils.sendData('main:app:reveal-path', dir);
 }
 
-export async function trashFile(filePath: string) {
-    await electronSendAsync<void>('main:app:trash-path', { path: filePath });
-    FileSource.getInstance(filePath).fireDeleteEvent();
-}
-
 export function previewPdf(src: string) {
     appProvider.messageUtils.sendData('main:app:preview-pdf', src);
 }
@@ -71,48 +65,6 @@ export function copyToClipboard(str: string) {
     return true;
 }
 
-export function selectDirs() {
-    return appProvider.messageUtils.sendDataSync(
-        'main:app:select-dirs',
-    ) as string[];
-}
-export function selectFiles(
-    filters: {
-        name: string;
-        extensions: string[];
-    }[],
-) {
-    return appProvider.messageUtils.sendDataSync(
-        'main:app:select-files',
-        filters,
-    ) as string[];
-}
-
-export function getUserWritablePath(): string {
-    return appProvider.messageUtils.sendDataSync('main:app:get-data-path');
-}
-
-export function getDesktopPath(): string {
-    return appProvider.messageUtils.sendDataSync('main:app:get-desktop-path');
-}
-
-export function getTempPath(): string {
-    return appProvider.messageUtils.sendDataSync('main:app:get-temp-path');
-}
-
-const lockSet = new Set<string>();
-export async function unlocking<T>(
-    key: string,
-    callback: () => OptionalPromise<T>,
-) {
-    if (lockSet.has(key)) {
-        await new Promise((resolve) => {
-            setTimeout(resolve, 100);
-        });
-        return unlocking(key, callback);
-    }
-    lockSet.add(key);
-    const data = await callback();
-    lockSet.delete(key);
-    return data;
+export interface ClipboardInf {
+    clipboardSerialize(): OptionalPromise<string | null>;
 }

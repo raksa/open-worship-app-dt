@@ -11,6 +11,11 @@ const fileUtils = {
     unlink: fs.unlink,
     rmdir: fs.rmdir,
     readFile: fs.readFile,
+    readFileSync: fs.readFileSync,
+    writeFileSync: fs.writeFileSync,
+    unlinkSync: fs.unlinkSync,
+    existsSync: fs.existsSync,
+    mkdirSync: fs.mkdirSync,
     copyFile: fs.copyFile,
     watch: fs.watch,
 };
