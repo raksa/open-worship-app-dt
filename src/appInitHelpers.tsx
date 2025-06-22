@@ -160,8 +160,27 @@ export function RenderApp({
     );
 }
 
+function listenDomAdding(element: Node) {
+    const topClassname = 'app-top-hover-motion';
+    if (
+        element instanceof HTMLElement === false ||
+        !element.className.includes(topClassname)
+    ) {
+        return;
+    }
+    const classnames = Array.from(element.classList)
+        .filter((classname) => {
+            return classname.startsWith(topClassname);
+        })
+        .map((classname) => {
+            return classname.split(`${topClassname}-`)[1];
+        });
+    console.log(classnames);
+}
+
 export async function main(children: React.ReactNode) {
     await initApp();
+    onDomChange(listenDomAdding);
     onDomChange(applyFontFamily);
     onDomChange(handleFullWidgetView);
     onDomChange(

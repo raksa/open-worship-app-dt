@@ -11,11 +11,13 @@ const callBackListeners = new Set<
 const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
         if (mutation.type === 'childList') {
-            mutation.addedNodes.forEach((node) => {
-                for (const callback of callBackListeners) {
-                    callback(node, 'added');
-                }
-            });
+            Array.from(mutation.addedNodes)
+                .concat([mutation.target])
+                .forEach((node) => {
+                    for (const callback of callBackListeners) {
+                        callback(node, 'added');
+                    }
+                });
         } else if (mutation.type === 'attributes') {
             for (const callback of callBackListeners) {
                 callback(mutation.target, 'attr-modified');
