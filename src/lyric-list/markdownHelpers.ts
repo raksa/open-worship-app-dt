@@ -4,19 +4,17 @@ import CacheManager from '../others/CacheManager';
 import appProvider from '../server/appProvider';
 import { unlocking } from '../server/unlockingHelpers';
 import { toIframe } from './markdownHtmlHelpers';
-import { cloneJson } from '../helper/helpers';
 
 type RenderMarkdownOptions = {
     isJustifyCenter?: boolean;
     isDisablePointerEvents?: boolean;
+    theme?: string;
 };
 function wrapHTML({
     html,
-    theme = 'dark',
     options = {},
 }: {
     html: string;
-    theme?: string;
     options?: RenderMarkdownOptions;
 }) {
     return `
@@ -73,7 +71,7 @@ function wrapHTML({
         }
     </style>
     <body>
-        <div id="container" class="${theme}">
+        <div id="container" class="${options.theme}">
             ${html}
         </div>
         <script>
@@ -105,56 +103,49 @@ export async function renderMarkdown(
         };
     }
     const hashKey = appProvider.systemUtils.generateMD5(text);
-    const cached = await cacher.get(hashKey);
-    if (cached) {
-        return cached;
-    }
-    const MarkdownIt = (await import('markdown-it')).default;
-    const MarkdownItMusic = (await import('markdown-it-music')).default;
-    const markdown = new MarkdownIt({ html: true }).use(MarkdownItMusic);
-    (markdown as any).setTheme('dark');
-    let html = '';
-    try {
-        html = wrapHTML({
-            html: markdown.render(text),
-            options,
-        });
-    } catch (error) {
-        handleError(error);
-        html = wrapHTML({
-            html: `<pre>${text}</pre>`,
-        });
-    }
-    const data = { id: hashKey, html };
-    await cacher.set(hashKey, data);
-    return data;
+    return unlocking(`markdown-${hashKey}`, async () => {
+        const cached = await cacher.get(hashKey);
+        if (cached) {
+            return cached;
+        }
+        const MarkdownIt = (await import('markdown-it')).default;
+        const MarkdownItMusic = (await import('markdown-it-music')).default;
+        const markdown = new MarkdownIt({ html: true }).use(MarkdownItMusic);
+        if (options?.theme) {
+            (markdown as any).setTheme(options.theme);
+        }
+        let html = '';
+        try {
+            html = wrapHTML({
+                html: markdown.render(text),
+                options,
+            });
+            html = toIframe(html, hashKey);
+        } catch (error) {
+            handleError(error);
+            html = wrapHTML({
+                html: `<pre>${text}</pre>`,
+            });
+        }
+        const data = { id: hashKey, html };
+        await cacher.set(hashKey, data);
+        return data;
+    });
 }
 
-export async function renderLyricSlideHtmlList(lyric: Lyric) {
-    return unlocking(`lyric-slides-${lyric.filePath}`, async () => {
-        const content = await lyric.getContent();
-        const contentList = content.split('\n---\n').map((item) => {
-            return item.trim();
-        });
-        const htmlDataList = await Promise.all(
-            contentList.map((item) => {
-                return renderMarkdown(item, {
-                    isJustifyCenter: true,
-                    isDisablePointerEvents: true,
-                });
-            }),
-        );
-        return htmlDataList.map((htmlData) => {
-            const newHtmlData = cloneJson(htmlData);
-            newHtmlData.html = toIframe(htmlData.html, htmlData.id);
-            return newHtmlData;
-        });
+export async function renderLyricSlideMarkdownTextList(lyric: Lyric) {
+    const content = await lyric.getContent();
+    const contentList = content.split('---\n').map((item) => {
+        return item.trim();
     });
+    return contentList;
 }
 
 export async function renderLyricSlide(lyric: Lyric) {
     return unlocking(`lyric-slides-${lyric.filePath}`, async () => {
         const content = await lyric.getContent();
-        return await renderMarkdown(content);
+        return await renderMarkdown(content, {
+            theme: 'dark',
+        });
     });
 }

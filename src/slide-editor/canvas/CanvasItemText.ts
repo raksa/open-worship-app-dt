@@ -34,6 +34,9 @@ export type TextPropsType = {
     textVerticalAlignment: VAlignmentType;
 };
 export type CanvasItemTextPropsType = CanvasItemPropsType & TextPropsType;
+export type CanvasItemTextHtmlPropsType = CanvasItemTextPropsType & {
+    htmlText: string;
+};
 export type ToolingTextType = {
     color?: AppColorType;
     fontSize?: number;

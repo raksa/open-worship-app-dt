@@ -37,17 +37,9 @@ export default function LyricPreviewerComp() {
         );
     }
     return (
-        <div className="w-100 h-100 d-flex flex-column p-1">
-            <iframe
-                className="w-100 h-100 p-0 m-0 overflow-hidden"
-                srcDoc={htmlData.html}
-                sandbox="allow-same-origin allow-scripts"
-                style={{
-                    border: 'none',
-                    backgroundColor: 'black',
-                }}
-                title="Lyric Slides"
-            />
-        </div>
+        <div
+            className="w-100 h-100 p-3"
+            dangerouslySetInnerHTML={{ __html: htmlData.html }}
+        />
     );
 }

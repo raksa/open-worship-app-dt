@@ -11,12 +11,16 @@ import { genShowOnScreensContextMenu } from '../others/FileItemHandlerComp';
 import LyricSlide from './LyricSlide';
 import FileSource from '../helper/FileSource';
 import Lyric from './Lyric';
-import { renderLyricSlideHtmlList } from './markdownHelpers';
+import {
+    renderLyricSlideMarkdownTextList,
+    renderMarkdown,
+} from './markdownHelpers';
 import { CanvasItemTextPropsType } from '../slide-editor/canvas/CanvasItemText';
 
 export default class LyricAppDocument extends AppDocument {
     static readonly mimetypeName: MimetypeNameType = 'appDocument';
     isEditable = false;
+    isPreRender = false;
 
     async getSlides() {
         const display = getDefaultScreenDisplay();
@@ -30,14 +34,34 @@ export default class LyricAppDocument extends AppDocument {
         const lyric = Lyric.getInstance(
             LyricAppDocument.toLyricFilePath(this.filePath),
         );
-        const htmlDataList = await renderLyricSlideHtmlList(lyric);
-        return htmlDataList.map((htmlData, i) => {
+        let textList = (await renderLyricSlideMarkdownTextList(lyric)).map(
+            (text) => {
+                return [text, text, undefined];
+            },
+        );
+        if (this.isPreRender) {
+            textList = await Promise.all(
+                textList.map(async ([text, htmlText]) => {
+                    if (!text) {
+                        return [text, htmlText];
+                    }
+                    const htmlData = await renderMarkdown(text, {
+                        isJustifyCenter: true,
+                        isDisablePointerEvents: true,
+                        theme: 'dark',
+                    });
+                    return [text, htmlData.html, htmlData.id];
+                }),
+            );
+        }
+        return textList.map(([text, htmlText, id], i) => {
             return new LyricSlide(this.filePath, {
                 id: i,
-                canvasItems: htmlData.html
+                canvasItems: text
                     ? [
                           {
-                              text: htmlData.html,
+                              text,
+                              htmlText,
                               color: '#FFFFFFFF',
                               fontSize: 90,
                               fontFamily: 'Battambang',
@@ -64,7 +88,7 @@ export default class LyricAppDocument extends AppDocument {
                 metadata: {
                     width: display.bounds.width,
                     height: display.bounds.height,
-                    uuid: htmlData.id,
+                    uuid: id ?? '',
                 } as any,
             });
         });
@@ -115,12 +139,19 @@ export default class LyricAppDocument extends AppDocument {
         return filePath;
     }
 
-    static getInstanceFromLyricFilePath(filePath: string) {
+    static getInstanceFromLyricFilePath(filePath: string, isForceNew = false) {
         const fileSource = FileSource.getInstance(filePath);
         const extensions = getMimetypeExtensions(Lyric.mimetypeName);
         if (!extensions.includes(fileSource.extension)) {
             return null;
         }
-        return this.getInstance(this.toAppDocumentFilePath(filePath));
+        const newFilePath = this.toAppDocumentFilePath(filePath);
+        if (isForceNew) {
+            return new LyricAppDocument(newFilePath);
+        }
+        const instance = this.getInstance(
+            newFilePath,
+        ) as any as LyricAppDocument;
+        return instance;
     }
 }

@@ -24,6 +24,7 @@ import PdfSlide, { PdfSlideType } from '../../app-document-list/PdfSlide';
 import appProvider from '../../server/appProvider';
 import { applyAttachBackground } from './screenBackgroundHelpers';
 import { unlocking } from '../../server/unlockingHelpers';
+import { checkAreObjectsEqual } from '../../server/comparisonHelpers';
 
 export type ScreenVaryAppDocumentManagerEventType = 'update';
 
@@ -84,7 +85,13 @@ class ScreenVaryAppDocumentManager extends ScreenEventHandler<ScreenVaryAppDocum
     set varyAppDocumentItemData(
         appDocumentItemData: VaryAppDocumentItemScreenDataType | null,
     ) {
-        if (this.screenManagerBase.checkIsLockedWithMessage()) {
+        if (
+            this.screenManagerBase.checkIsLockedWithMessage() ||
+            checkAreObjectsEqual(
+                this._varyAppDocumentItemData,
+                appDocumentItemData,
+            )
+        ) {
             return;
         }
         if (appDocumentItemData !== null && appDocumentItemData.itemJson) {

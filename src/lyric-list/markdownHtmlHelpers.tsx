@@ -10,6 +10,7 @@ export function toIframe(html: string, title: string) {
             srcDoc={html}
             title={title}
             style={{
+                colorScheme: 'normal',
                 border: 'none',
                 backgroundColor: 'transparent',
                 width: '100%',
@@ -18,6 +19,5 @@ export function toIframe(html: string, title: string) {
             }}
         />,
     );
-    html = html.replace('<iframe', '<iframe allowtransparency="true" ');
     return html;
 }
