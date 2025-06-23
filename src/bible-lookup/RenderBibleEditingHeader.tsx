@@ -47,7 +47,10 @@ export default function RenderBibleEditingHeader() {
                         />
                     </div>
                 )}
-                <div className={`${HoverMotionHandler.lowClassname}-0`}>
+                <div
+                    className={`${HoverMotionHandler.lowClassname}-0`}
+                    data-min-parent-width="600"
+                >
                     {viewController.isAlone ? null : (
                         <button
                             className="btn-close"

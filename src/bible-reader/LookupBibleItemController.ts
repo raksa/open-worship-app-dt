@@ -1,6 +1,5 @@
 import { showSimpleToast } from '../toast/toastHelpers';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
-import { genFoundBibleItemContextMenu } from '../bible-lookup/RenderEditingActionButtonsComp';
 import { closeCurrentEditingBibleItem } from './readBibleHelpers';
 import { EventMapper } from '../event/KeyboardEventListener';
 import {
@@ -31,6 +30,7 @@ import CacheManager from '../others/CacheManager';
 import { AnyObjectType } from '../helper/helpers';
 import { OptionalPromise } from '../others/otherHelpers';
 import { unlocking } from '../server/unlockingHelpers';
+import { genFoundBibleItemContextMenu } from '../bible-lookup/bibleActionHelpers';
 
 export const closeEventMapper: EventMapper = {
     wControlKey: ['Ctrl'],
@@ -84,7 +84,7 @@ class LookupBibleItemController extends BibleItemsViewController {
     ) => {};
     setBibleKey = (_bibleKey: string) => {};
     reloadEditingResult = (_inputText: string) => {};
-    onLookupAddBibleItem = () => {};
+    onLookupSaveBibleItem = () => {};
 
     constructor() {
         super('lookup');
@@ -328,7 +328,9 @@ class LookupBibleItemController extends BibleItemsViewController {
         const isBibleItemSelected = this.checkIsBibleItemSelected(bibleItem);
         const menu1 = genFoundBibleItemContextMenu(
             bibleItem,
-            this.onLookupAddBibleItem,
+            () => {
+                this.onLookupSaveBibleItem();
+            },
             isBibleItemSelected,
         );
         const menus2 = await super.genContextMenu(bibleItem, uuid);

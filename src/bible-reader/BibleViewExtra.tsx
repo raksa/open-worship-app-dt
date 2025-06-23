@@ -109,7 +109,10 @@ export function RenderHeaderComp({
             >
                 <RenderActionButtonsComp bibleItem={bibleItem} />
             </div>
-            <div className={`${HoverMotionHandler.lowClassname}-0`}>
+            <div
+                className={`${HoverMotionHandler.lowClassname}-0`}
+                data-min-parent-width="600"
+            >
                 <button
                     className="btn-close"
                     onClick={() => {

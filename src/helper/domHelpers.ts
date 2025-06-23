@@ -182,8 +182,8 @@ export class HoverMotionHandler {
         checkIt();
         this.map.set(element, resizeObserver);
     }
-    listenForHoverMotion(element: Node, type: MutationType) {
-        if (type !== 'added' || element instanceof HTMLElement === false) {
+    listenForHoverMotion(element: Node) {
+        if (element instanceof HTMLElement === false) {
             return;
         }
         element
