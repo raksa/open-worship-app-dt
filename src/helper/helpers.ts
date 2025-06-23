@@ -19,7 +19,7 @@ import { getBibleLocale } from './bible-helpers/serverBibleHelpers2';
 import { getLangCode } from '../lang';
 import { showSimpleToast } from '../toast/toastHelpers';
 
-export type MutationType = 'added' | 'attr-modified';
+export type MutationType = 'added' | 'attr-modified' | 'removed';
 
 export type AnyObjectType = {
     [key: string]: any;

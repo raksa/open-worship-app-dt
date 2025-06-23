@@ -25,6 +25,7 @@ import {
     toLocaleNumBible,
 } from '../helper/bible-helpers/serverBibleHelpers2';
 import RenderActionButtonsComp from '../bible-lookup/RenderActionButtonsComp';
+import { HoverMotionHandler } from '../helper/domHelpers';
 
 export const BibleViewTitleMaterialContext = createContext<{
     titleElement: React.ReactNode;
@@ -102,10 +103,13 @@ export function RenderHeaderComp({
                     });
                 }}
             />
-            <div className="app-low-hover-display-1">
+            <div
+                className={`${HoverMotionHandler.lowClassname}-1`}
+                data-min-parent-width="600"
+            >
                 <RenderActionButtonsComp bibleItem={bibleItem} />
             </div>
-            <div className="app-low-hover-display-0">
+            <div className={`${HoverMotionHandler.lowClassname}-0`}>
                 <button
                     className="btn-close"
                     onClick={() => {

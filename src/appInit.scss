@@ -363,6 +363,9 @@ body {
           display: block;
         }
       }
+      .app-low-hover-display-#{$i}.force-show {
+        display: block;
+      }
     }
   }
 
