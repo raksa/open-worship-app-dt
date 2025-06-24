@@ -50,7 +50,7 @@ async function confirmLocalStorageErasing() {
             ' storage and reload the app',
     );
     if (isOk) {
-        appLocalStorage.clear();
+        await appLocalStorage.clear();
     }
     appProvider.reload();
 }
