@@ -18,7 +18,7 @@ export default function BibleRefItemRendererComp({
     if (bibleRef === null) {
         return (
             <div>
-                Failed to load bible ref for {bookKey} {chapter}:{verse}
+                `Data not available for "{bookKey} {chapter}:{verse}"
             </div>
         );
     }

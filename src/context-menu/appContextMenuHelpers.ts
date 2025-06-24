@@ -31,6 +31,7 @@ export type OptionsType = {
     noKeystroke?: boolean;
     applyOnTab?: boolean;
     shouldHandleSelectedText?: boolean;
+    extraSelectedTextContextMenuItems?: ContextMenuItemType[];
 };
 
 export type PropsType = {
@@ -114,7 +115,9 @@ export function showAppContextMenu(
 ): AppContextMenuControlType {
     event.stopPropagation();
     if (options?.shouldHandleSelectedText) {
-        items = genSelectedTextContextMenus().concat(items);
+        items = genSelectedTextContextMenus(
+            options.extraSelectedTextContextMenuItems,
+        ).concat(items);
     }
     if (!items.length) {
         return {

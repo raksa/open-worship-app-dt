@@ -14,7 +14,10 @@ import {
 } from '../server/fileHelpers';
 import { copyToClipboard } from '../server/appHelpers';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
-import { elementDivider } from '../context-menu/AppContextMenuComp';
+import {
+    elementDivider,
+    genContextMenuItemIcon,
+} from '../context-menu/AppContextMenuComp';
 import { getBibleLocale } from './bible-helpers/serverBibleHelpers2';
 import { getLangCode } from '../lang';
 import { showSimpleToast } from '../toast/toastHelpers';
@@ -486,20 +489,24 @@ export function getSelectedText() {
     return selection.toString();
 }
 
-export function genSelectedTextContextMenus(): ContextMenuItemType[] {
+export function genSelectedTextContextMenus(
+    extraContextMenuItems: ContextMenuItemType[] = [],
+): ContextMenuItemType[] {
     const selectedText = getSelectedText();
     if (!selectedText) {
         return [];
     }
     return [
         {
+            childBefore: genContextMenuItemIcon('copy'),
             menuElement: '`Copy Selected Text',
             onSelect: () => {
                 copyToClipboard(selectedText);
             },
         },
         {
-            menuElement: '`Search Selected Text',
+            childBefore: genContextMenuItemIcon('google'),
+            menuElement: '`Search Selected Text on Google',
             onSelect: () => {
                 const url = new URL('https://www.google.com/search');
                 url.searchParams.set('q', selectedText);
@@ -507,6 +514,7 @@ export function genSelectedTextContextMenus(): ContextMenuItemType[] {
             },
         },
         {
+            childBefore: genContextMenuItemIcon('journal-arrow-up'),
             menuElement: '`Dictionary for Selected Text',
             onSelect: async () => {
                 const langCodes = await getSelectedTextLanguageCode();
@@ -525,6 +533,7 @@ export function genSelectedTextContextMenus(): ContextMenuItemType[] {
                 }
             },
         },
+        ...extraContextMenuItems,
         {
             menuElement: elementDivider,
         },

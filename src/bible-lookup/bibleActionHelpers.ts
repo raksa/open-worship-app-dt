@@ -13,7 +13,9 @@ import {
     genContextMenuItemIcon,
     genContextMenuItemShortcutKey,
 } from '../context-menu/AppContextMenuComp';
-import { useLookupBibleItemControllerContext } from '../bible-reader/LookupBibleItemController';
+import LookupBibleItemController, {
+    useLookupBibleItemControllerContext,
+} from '../bible-reader/LookupBibleItemController';
 
 export const presenterEventMapper: KeyboardEventMapper = {
     allControlKey: ['Ctrl', 'Shift'],
@@ -74,14 +76,22 @@ export function useFoundActionKeyboard(bibleItem: BibleItem) {
 }
 
 export function genFoundBibleItemContextMenu(
+    event: any,
+    viewController: LookupBibleItemController,
     bibleItem: BibleItem,
-    onDone: () => void,
     isKeyboardShortcut?: boolean,
 ): ContextMenuItemType[] {
     // TODO: fix slide select editing
     if (appProvider.isPageEditor) {
         return [];
     }
+    let verseKey: string | null = null;
+    if (event.target instanceof HTMLElement) {
+        verseKey = event.target.dataset.verseKey ?? null;
+    }
+    const onDone = () => {
+        viewController.onLookupSaveBibleItem();
+    };
     return [
         {
             menuElement: elementDivider,
@@ -99,6 +109,19 @@ export function genFoundBibleItemContextMenu(
                 }
             },
         },
+        ...(verseKey !== null
+            ? [
+                  {
+                      menuElement: '`Open in Cross Reference',
+                      title: verseKey,
+                      onSelect: () => {
+                          viewController.bibleCrossReferenceVerseKey = verseKey;
+                          viewController.openBibleSearch('c');
+                          viewController.setIsBibleSearching(true);
+                      },
+                  },
+              ]
+            : []),
         ...(appProvider.isPagePresenter
             ? [
                   {
