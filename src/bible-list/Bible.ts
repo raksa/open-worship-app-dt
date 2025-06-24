@@ -115,10 +115,10 @@ export default class Bible
     }
 
     static async addBibleItemToDefault(bibleItem: BibleItem) {
-        const bible = await this.getDefault();
-        if (bible !== null) {
-            bible.addBibleItem(bibleItem);
-            if (await bible.save()) {
+        const defaultBible = await this.getDefault();
+        if (defaultBible !== null) {
+            defaultBible.addBibleItem(bibleItem);
+            if (await defaultBible.save()) {
                 return bibleItem;
             }
         }

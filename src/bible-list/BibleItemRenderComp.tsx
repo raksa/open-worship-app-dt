@@ -12,7 +12,7 @@ import ItemColorNoteComp from '../others/ItemColorNoteComp';
 import { BibleSelectionMiniComp } from '../bible-lookup/BibleSelectionComp';
 import ScreenBibleManager from '../_screen/managers/ScreenBibleManager';
 import { openBibleItemContextMenu } from './bibleItemHelpers';
-import { useShowBibleLookupContext } from '../others/commonButtons';
+import { useToggleBibleLookupPopupContext } from '../others/commonButtons';
 import appProvider from '../server/appProvider';
 import { DragTypeEnum } from '../helper/DragInf';
 import { changeDragEventStyle, stopDraggingState } from '../helper/helpers';
@@ -77,7 +77,7 @@ export default function BibleItemRenderComp({
     filePath: string;
 }>) {
     const viewController = useBibleItemsViewControllerContext();
-    const showBibleLookupPopup = useShowBibleLookupContext();
+    const showBibleLookupPopup = useToggleBibleLookupPopupContext();
     useFileSourceRefreshEvents(['select'], filePath);
     const changeBible = async (newBibleKey: string) => {
         const bible = await getBible(bibleItem);

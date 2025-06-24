@@ -172,7 +172,7 @@ export default function FileItemHandlerComp({
     return (
         <li
             className={
-                `list-group-item m-1 ${moreClassName}` +
+                `list-group-item m-1 ${moreClassName} overflow-hidden` +
                 ` ${userClassName ?? ''} ${isPointer ? 'pointer' : ''}`
             }
             style={{

@@ -35,6 +35,7 @@ import appProvider from '../../server/appProvider';
 import { applyAttachBackground } from './screenBackgroundHelpers';
 import { BibleItemType } from '../../bible-list/bibleItemHelpers';
 import { unlocking } from '../../server/unlockingHelpers';
+import Bible from '../../bible-list/Bible';
 
 let textStyle: AnyObjectType = {};
 class ScreenBibleManager extends ScreenEventHandler<ScreenBibleManagerEventType> {
@@ -302,7 +303,7 @@ class ScreenBibleManager extends ScreenEventHandler<ScreenBibleManagerEventType>
     static readonly maxTextStyleTextFontSize = 200;
     static get textStyleTextFontSize() {
         const textStyle = this.textStyle;
-        return typeof textStyle.fontSize !== 'number' ? 25 : textStyle.fontSize;
+        return typeof textStyle.fontSize !== 'number' ? 65 : textStyle.fontSize;
     }
 
     static changeTextStyleTextFontSize(isUp: boolean) {
@@ -377,7 +378,14 @@ class ScreenBibleManager extends ScreenEventHandler<ScreenBibleManagerEventType>
         bibleItemJson: BibleItemType,
         filePath: string | undefined,
     ) {
-        const bibleKeys = this.getRenderedBibleKeys();
+        let bibleKeys = this.getRenderedBibleKeys();
+        if (bibleKeys.length === 1) {
+            bibleKeys = [bibleItemJson.bibleKey];
+        } else if (bibleKeys.length > 1) {
+            bibleKeys = Array.from(
+                new Set([bibleItemJson.bibleKey].concat(bibleKeys)),
+            );
+        }
         const newBibleItemData = await bibleItemJsonToScreenViewData(
             bibleItemJson,
             bibleKeys,
@@ -398,7 +406,11 @@ class ScreenBibleManager extends ScreenEventHandler<ScreenBibleManagerEventType>
             genScreenMouseEvent(event) as any,
             isForceChoosing,
         );
-        const filePath = bibleItem.filePath;
+        let filePath = bibleItem.filePath;
+        if (filePath === undefined) {
+            const defaultBible = await Bible.getDefault();
+            filePath = defaultBible?.filePath ?? undefined;
+        }
         screenIds.forEach(async (screenId) => {
             const screenBibleManager = this.getInstance(screenId);
             screenBibleManager.applyNewBibleItemJson(bibleItemJson, filePath);

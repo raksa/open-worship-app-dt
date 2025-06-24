@@ -28,17 +28,22 @@ export default function RenderExtraButtonsRightComp({
     return (
         <div className="d-flex">
             {appProvider.isPagePresenter ? (
-                <div className="btn-group form-check form-switch">
+                <div
+                    className="input-group-text app-caught-hover-pointer"
+                    onClick={() => {
+                        setIsKeepingPopup(!isKeepingPopup);
+                    }}
+                >
                     <input
-                        className="form-check-input app-caught-hover-pointer"
-                        title="Keep window open when add bible item"
+                        className="form-check-input mt-0"
                         type="checkbox"
-                        role="switch"
                         checked={isKeepingPopup}
                         onChange={(event) => {
-                            setIsKeepingPopup(event.target.checked);
+                            const checked = event.target.checked;
+                            setIsKeepingPopup(checked);
                         }}
                     />
+                    <span>Keep Window Open</span>
                 </div>
             ) : null}
             <button

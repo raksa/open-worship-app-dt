@@ -35,6 +35,7 @@ import {
     handleFullWidgetView,
     addDomChangeEventListener,
     HoverMotionHandler,
+    InputContextMenuHandler,
 } from './helper/domHelpers';
 import { appLocalStorage } from './setting/directory-setting/appLocalStorage';
 import { unlocking } from './server/unlockingHelpers';
@@ -166,6 +167,12 @@ export async function main(children: React.ReactNode) {
     const hoverMotionHandler = new HoverMotionHandler();
     addDomChangeEventListener(
         hoverMotionHandler.listenForHoverMotion.bind(hoverMotionHandler),
+    );
+    const inputContextMenuHandler = new InputContextMenuHandler();
+    addDomChangeEventListener(
+        inputContextMenuHandler.listenForInputContextMenu.bind(
+            inputContextMenuHandler,
+        ),
     );
     addDomChangeEventListener(applyFontFamily);
     addDomChangeEventListener(handleFullWidgetView);

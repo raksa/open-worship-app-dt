@@ -57,8 +57,10 @@ export default function AppContextMenuComp() {
     return (
         <div
             id={APP_CONTEXT_MENU_ID}
-            onClick={(event) => {
-                event.stopPropagation();
+            onClick={() => {
+                contextControl.setDataDelegator?.(null);
+            }}
+            onContextMenu={() => {
                 contextControl.setDataDelegator?.(null);
             }}
         >

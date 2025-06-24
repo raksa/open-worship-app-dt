@@ -7,9 +7,7 @@ import ScreenBibleManager from '../_screen/managers/ScreenBibleManager';
 import BibleItem from '../bible-list/BibleItem';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
-import { getIsKeepingPopup } from './RenderExtraButtonsRightComp';
 import appProvider from '../server/appProvider';
-import { useShowBibleLookupContext } from '../others/commonButtons';
 import {
     elementDivider,
     genContextMenuItemIcon,
@@ -44,22 +42,8 @@ export async function addBibleItemAndPresent(
     }
 }
 
-export function checkHideBibleLookupPopup(
-    hideBibleLookupPopup: (() => void) | null,
-) {
-    const isKeepingPopup = getIsKeepingPopup();
-    if (!isKeepingPopup) {
-        hideBibleLookupPopup?.();
-    }
-}
-
 export function useFoundActionKeyboard(bibleItem: BibleItem) {
     const viewController = useLookupBibleItemControllerContext();
-    const hideBibleLookupPopup = useShowBibleLookupContext(false);
-    viewController.onLookupSaveBibleItem = checkHideBibleLookupPopup.bind(
-        null,
-        hideBibleLookupPopup,
-    );
     useKeyboardRegistering(
         [addListEventMapper],
         async () => {
@@ -71,7 +55,7 @@ export function useFoundActionKeyboard(bibleItem: BibleItem) {
                 showAddingBibleItemFail();
             }
         },
-        [bibleItem, checkHideBibleLookupPopup],
+        [bibleItem],
     );
     useKeyboardRegistering(
         [presenterEventMapper],
@@ -85,7 +69,7 @@ export function useFoundActionKeyboard(bibleItem: BibleItem) {
                 viewController.onLookupSaveBibleItem,
             );
         },
-        [bibleItem, checkHideBibleLookupPopup],
+        [bibleItem],
     );
 }
 

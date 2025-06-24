@@ -39,7 +39,7 @@ function genContextMenu(
     }
     return [
         {
-            menuElement: '`' + 'Empty',
+            menuElement: '`Empty',
             onSelect: () => {
                 showAppConfirm(
                     'Empty Bible List',
@@ -54,7 +54,7 @@ function genContextMenu(
             },
         },
         {
-            menuElement: '`' + 'Copy All Items',
+            menuElement: '`Copy All Items',
             onSelect: async () => {
                 const promises = bible.items.map((item) => {
                     return item.toTitleText();
@@ -67,7 +67,7 @@ function genContextMenu(
             },
         },
         {
-            menuElement: '`' + 'Move All Items To',
+            menuElement: '`Move All Items To',
             onSelect: (event: any) => {
                 moveBibleItemTo(event, bible);
             },

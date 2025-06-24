@@ -29,7 +29,7 @@ export function genDefaultBibleItemContextMenu(
             childBefore: genContextMenuItemIcon('copy', {
                 color: 'var(--bs-secondary-text-emphasis)',
             }),
-            menuElement: '`' + 'Copy Title',
+            menuElement: '`Copy Title',
             onSelect: () => {
                 bibleItem.copyTitleToClipboard();
             },
@@ -38,7 +38,7 @@ export function genDefaultBibleItemContextMenu(
             childBefore: genContextMenuItemIcon('copy', {
                 color: 'var(--bs-secondary-text-emphasis)',
             }),
-            menuElement: '`' + 'Copy Text',
+            menuElement: '`Copy Text',
             onSelect: () => {
                 bibleItem.copyTextToClipboard();
             },
@@ -47,7 +47,7 @@ export function genDefaultBibleItemContextMenu(
             childBefore: genContextMenuItemIcon('copy', {
                 color: 'var(--bs-secondary-text-emphasis)',
             }),
-            menuElement: '`' + 'Copy All',
+            menuElement: '`Copy All',
             onSelect: () => {
                 bibleItem.copyToClipboard();
             },
@@ -74,7 +74,7 @@ export async function openBibleItemContextMenu(
         ...(openBibleLookup !== null
             ? [
                   {
-                      menuElement: '`' + 'Lookup',
+                      menuElement: '`Lookup',
                       onSelect: async () => {
                           const viewController =
                               new LookupBibleItemController();
@@ -92,7 +92,7 @@ export async function openBibleItemContextMenu(
               ]
             : []),
         {
-            menuElement: '`' + 'Duplicate',
+            menuElement: '`Duplicate',
             onSelect: () => {
                 bible.duplicate(index);
                 bible.save();
@@ -102,13 +102,13 @@ export async function openBibleItemContextMenu(
             ScreenBibleManager.handleBibleItemSelecting(event, bibleItem, true);
         }),
         {
-            menuElement: '`' + 'Move To',
+            menuElement: '`Move To',
             onSelect: (event1: any) => {
                 moveBibleItemTo(event1, bible, bibleItem);
             },
         },
         {
-            menuElement: '`' + 'Delete',
+            menuElement: '`Delete',
             onSelect: async () => {
                 await bible.deleteBibleItem(bibleItem);
                 if (bibleItem.filePath !== undefined) {
@@ -122,7 +122,7 @@ export async function openBibleItemContextMenu(
     ];
     if (index !== 0) {
         menuItem.push({
-            menuElement: '`' + 'Move up',
+            menuElement: '`Move up',
             onSelect: () => {
                 bible.swapItems(index, index - 1);
                 bible.save();
@@ -131,7 +131,7 @@ export async function openBibleItemContextMenu(
     }
     if (index !== bible.itemsLength - 1) {
         menuItem.push({
-            menuElement: '`' + 'Move down',
+            menuElement: '`Move down',
             onSelect: () => {
                 bible.swapItems(index, index + 1);
                 bible.save();

@@ -105,13 +105,13 @@ export function RenderHeaderComp({
             />
             <div
                 className={`${HoverMotionHandler.lowClassname}-1`}
-                data-min-parent-width="600"
+                data-min-parent-width="550"
             >
                 <RenderActionButtonsComp bibleItem={bibleItem} />
             </div>
             <div
                 className={`${HoverMotionHandler.lowClassname}-0`}
-                data-min-parent-width="600"
+                data-min-parent-width="550"
             >
                 <button
                     className="btn-close"

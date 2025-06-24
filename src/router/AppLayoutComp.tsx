@@ -10,7 +10,7 @@ import {
 } from './routeHelpers';
 import {
     BibleLookupButtonComp,
-    BibleLookupShowingContext,
+    BibleLookupTogglePopupContext,
     SettingButtonComp,
 } from '../others/commonButtons';
 import appProvider from '../server/appProvider';
@@ -221,7 +221,7 @@ export default function AppLayoutComp({
         <MultiContextRender
             contexts={[
                 {
-                    context: BibleLookupShowingContext,
+                    context: BibleLookupTogglePopupContext,
                     value: {
                         isShowing: isBibleLookupShowing,
                         setIsShowing: setIsBibleLookupShowing,

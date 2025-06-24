@@ -351,7 +351,7 @@ export default class BibleFindController {
             event,
             suggestWords.map((text) => {
                 return {
-                    menuElement: text,
+                    menuElement: <span data-locale={this.locale}>{text}</span>,
                     onSelect: (event: any) => {
                         if (event.key === 'Enter') {
                             this.isAddedByEnter = true;

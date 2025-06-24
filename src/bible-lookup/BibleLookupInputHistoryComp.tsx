@@ -11,9 +11,11 @@ import {
     ContextMenuItemType,
     showAppContextMenu,
 } from '../context-menu/appContextMenuHelpers';
-import { copyToClipboard } from '../server/appHelpers';
 import { handleDragStart } from '../helper/dragHelpers';
+import BibleItem from '../bible-list/BibleItem';
+import { genDefaultBibleItemContextMenu } from '../bible-list/bibleItemHelpers';
 import { saveBibleItem } from '../bible-list/bibleHelpers';
+import { genContextMenuItemIcon } from '../context-menu/AppContextMenuComp';
 
 const HISTORY_TEXT_LIST_SETTING_NAME = 'history-text-list';
 function useHistoryTextList(maxHistoryCount: number) {
@@ -75,16 +77,12 @@ async function getBibleItemFromHistoryText(historyText: string) {
     return result.bibleItem;
 }
 
-async function handleDoubleClicking(
+async function openInBibleLookup(
     event: any,
     viewController: LookupBibleItemController,
-    historyText: string,
+    bibleItem: BibleItem,
 ) {
     event.preventDefault();
-    const bibleItem = await getBibleItemFromHistoryText(historyText);
-    if (bibleItem === null) {
-        return;
-    }
     if (event.shiftKey) {
         viewController.addBibleItemLeft(
             viewController.selectedBibleItem,
@@ -94,7 +92,7 @@ async function handleDoubleClicking(
     viewController.setLookupContentFromBibleItem(bibleItem);
 }
 
-function handleHistoryRemoving(
+function removeHistory(
     historyTextList: string[],
     historyText: string,
     setHistoryTextList: (newHistoryTextList: string[]) => void,
@@ -105,50 +103,45 @@ function handleHistoryRemoving(
     setHistoryTextList(newHistoryTextList);
 }
 
-function handleContextMenuOpening(
+function openContextMenu(
     event: any,
     {
-        open,
-        copy,
-        save,
+        viewController,
+        bibleItem,
         remove,
     }: {
-        open: () => void;
-        copy: () => void;
-        save: () => void;
+        viewController: LookupBibleItemController;
+        bibleItem: BibleItem | null;
         remove: () => void;
     },
 ) {
-    const contextMenuItems: ContextMenuItemType[] = [
-        {
+    const contextMenuItems: ContextMenuItemType[] = [];
+    if (bibleItem !== null) {
+        contextMenuItems.push({
             menuElement: '`Open',
             onSelect: () => {
-                open();
+                openInBibleLookup(event, viewController, bibleItem);
             },
-        },
-        {
-            menuElement: '`Copy Title',
-            onSelect: () => {
-                copy();
-            },
-        },
-        {
+        });
+        contextMenuItems.push(...genDefaultBibleItemContextMenu(bibleItem));
+        contextMenuItems.push({
+            childBefore: genContextMenuItemIcon('floppy'),
             menuElement: '`Save bible item',
             onSelect: () => {
-                save();
+                saveBibleItem(bibleItem);
             },
+        });
+    }
+    contextMenuItems.push({
+        menuElement: '`Remove',
+        onSelect: () => {
+            remove();
         },
-        {
-            menuElement: '`Remove',
-            onSelect: () => {
-                remove();
-            },
-        },
-    ];
+    });
     showAppContextMenu(event, contextMenuItems);
 }
 
-export default function InputHistoryComp({
+export default function BibleLookupInputHistoryComp({
     maxHistoryCount = 20,
 }: Readonly<{
     maxHistoryCount?: number;
@@ -156,33 +149,25 @@ export default function InputHistoryComp({
     const viewController = useLookupBibleItemControllerContext();
     const [historyTextList, setHistoryTextList] =
         useHistoryTextList(maxHistoryCount);
-    const contextMenuHandling = (historyText: string, event: any) => {
-        handleContextMenuOpening(event, {
-            open: () => {
-                handleDoubleClicking(event, viewController, historyText);
-            },
-            copy: () => {
-                copyToClipboard(historyText);
-            },
-            save: () => {
-                getBibleItemFromHistoryText(historyText).then((bibleItem) => {
-                    if (bibleItem === null) {
-                        return;
-                    }
-                    saveBibleItem(bibleItem);
-                });
-            },
+    const handleContextMenuOpening = async (
+        historyText: string,
+        event: any,
+    ) => {
+        const bibleItem = await getBibleItemFromHistoryText(historyText);
+        openContextMenu(event, {
+            viewController,
+            bibleItem,
             remove: () => {
-                handleHistoryRemoving(
-                    historyTextList,
-                    historyText,
-                    setHistoryTextList,
-                );
+                removeHistory(historyTextList, historyText, setHistoryTextList);
             },
         });
     };
-    const doubleClickHandling = (historyText: string, event: any) => {
-        handleDoubleClicking(event, viewController, historyText);
+    const handleDoubleClicking = async (historyText: string, event: any) => {
+        const bibleItem = await getBibleItemFromHistoryText(historyText);
+        if (bibleItem === null) {
+            return;
+        }
+        openInBibleLookup(event, viewController, bibleItem);
     };
     return (
         <div
@@ -198,7 +183,7 @@ export default function InputHistoryComp({
                 return (
                     <button
                         key={historyText}
-                        data-bible-key={extracted?.bibleKey || ''}
+                        data-bible-key={extracted?.bibleKey ?? ''}
                         title={
                             'Double click to put back, shift double click to ' +
                             'put back split'
@@ -214,11 +199,11 @@ export default function InputHistoryComp({
                             }
                             handleDragStart(event, bibleItem);
                         }}
-                        onContextMenu={contextMenuHandling.bind(
+                        onContextMenu={handleContextMenuOpening.bind(
                             null,
                             historyText,
                         )}
-                        onDoubleClick={doubleClickHandling.bind(
+                        onDoubleClick={handleDoubleClicking.bind(
                             null,
                             historyText,
                         )}
@@ -227,7 +212,7 @@ export default function InputHistoryComp({
                             title="Remove"
                             style={{ color: 'red' }}
                             onClick={() => {
-                                handleHistoryRemoving(
+                                removeHistory(
                                     historyTextList,
                                     historyText,
                                     setHistoryTextList,

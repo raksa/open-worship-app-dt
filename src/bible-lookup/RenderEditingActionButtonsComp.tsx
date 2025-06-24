@@ -66,9 +66,10 @@ export default function RenderEditingActionButtonsComp({
                 className="btn btn-sm btn-info"
                 title={`Save bible item [${toShortcutKey(addListEventMapper)}]`}
                 onClick={() => {
-                    saveBibleItem(bibleItem, () => {
-                        viewController.onLookupSaveBibleItem();
-                    });
+                    saveBibleItem(
+                        bibleItem,
+                        viewController.onLookupSaveBibleItem,
+                    );
                 }}
             >
                 <i className="bi bi-floppy" />
@@ -81,9 +82,11 @@ export default function RenderEditingActionButtonsComp({
                         presenterEventMapper,
                     )}]`}
                     onClick={(event) => {
-                        addBibleItemAndPresent(event, bibleItem, () => {
-                            viewController.onLookupSaveBibleItem();
-                        });
+                        addBibleItemAndPresent(
+                            event,
+                            bibleItem,
+                            viewController.onLookupSaveBibleItem,
+                        );
                     }}
                 >
                     <i className="bi bi-cast" />

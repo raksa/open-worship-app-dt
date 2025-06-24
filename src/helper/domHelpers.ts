@@ -1,3 +1,8 @@
+import { genContextMenuItemIcon } from '../context-menu/AppContextMenuComp';
+import {
+    ContextMenuItemType,
+    showAppContextMenu,
+} from '../context-menu/appContextMenuHelpers';
 import KeyboardEventListener from '../event/KeyboardEventListener';
 import {
     MutationType,
@@ -197,6 +202,71 @@ export class HoverMotionHandler {
                 ) {
                     this.init(childElement);
                 }
+            });
+    }
+}
+
+export class InputContextMenuHandler {
+    init(inputElement: HTMLInputElement): void {
+        inputElement.oncontextmenu = async (event: MouseEvent) => {
+            const copiedText = (await navigator.clipboard.readText()).trim();
+            const contextMenuItems: ContextMenuItemType[] = [];
+            if (copiedText) {
+                contextMenuItems.push({
+                    childBefore: genContextMenuItemIcon('clipboard'),
+                    menuElement: '`Paste',
+                    onSelect: () => {
+                        inputElement.focus();
+                        const value = inputElement.value;
+                        inputElement.setRangeText(
+                            copiedText,
+                            inputElement.selectionStart ?? value.length,
+                            inputElement.selectionEnd ?? value.length,
+                            'end',
+                        );
+                        inputElement.dispatchEvent(
+                            new Event('input', {
+                                bubbles: true,
+                                composed: true,
+                            }),
+                        );
+                    },
+                });
+            }
+            if (inputElement.value.length > 0) {
+                contextMenuItems.push({
+                    childBefore: genContextMenuItemIcon('x'),
+                    menuElement: '`Clear',
+                    onSelect: () => {
+                        inputElement.focus();
+                        inputElement.value = '';
+                        inputElement.dispatchEvent(
+                            new Event('input', {
+                                bubbles: true,
+                                composed: true,
+                            }),
+                        );
+                    },
+                });
+            }
+            if (contextMenuItems.length === 0) {
+                return;
+            }
+            showAppContextMenu(event, contextMenuItems);
+        };
+    }
+    listenForInputContextMenu(element: Node): void {
+        if (element instanceof HTMLElement === false) {
+            return;
+        }
+        element
+            .querySelectorAll(
+                'input[type="text"], input[type="search"], ' +
+                    'input[type="email"], input[type="password"],' +
+                    ' input[type="number"], input[type="tel"]',
+            )
+            .forEach((childElement) => {
+                this.init(childElement as HTMLInputElement);
             });
     }
 }

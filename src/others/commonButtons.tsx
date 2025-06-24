@@ -52,7 +52,7 @@ export function SettingButtonComp() {
     );
 }
 
-export const BibleLookupShowingContext = createContext<{
+export const BibleLookupTogglePopupContext = createContext<{
     isShowing: boolean;
     setIsShowing: (isShowing: boolean) => void;
 } | null>(null);
@@ -61,8 +61,8 @@ const openBibleEventMap: EventMapper = {
     key: 'b',
 };
 
-export function useBibleLookupShowingContext() {
-    const context = use(BibleLookupShowingContext);
+export function useIsBibleLookupShowingContext() {
+    const context = use(BibleLookupTogglePopupContext);
     if (context === null) {
         throw new Error(
             'useBibleLookupShowingContext must be used within a ' +
@@ -72,8 +72,8 @@ export function useBibleLookupShowingContext() {
     return context;
 }
 
-export function useShowBibleLookupContext(isShowing = true) {
-    const context = use(BibleLookupShowingContext);
+export function useToggleBibleLookupPopupContext(isShowing = true) {
+    const context = use(BibleLookupTogglePopupContext);
     if (context === null) {
         return null;
     }
@@ -82,7 +82,7 @@ export function useShowBibleLookupContext(isShowing = true) {
 
 export function BibleLookupButtonComp() {
     const { setIsShowing: setIsBibleLookupShowing } =
-        useBibleLookupShowingContext();
+        useIsBibleLookupShowingContext();
     useKeyboardRegistering(
         [openBibleEventMap],
         () => {

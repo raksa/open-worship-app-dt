@@ -42,11 +42,12 @@ export default function RenderActionButtonsComp({
                         className="btn btn-sm btn-info"
                         title={'Save bible item'}
                         onClick={() => {
-                            saveBibleItem(bibleItem, () => {
-                                const lookupViewController =
-                                    viewController as LookupBibleItemController;
-                                lookupViewController.onLookupSaveBibleItem();
-                            });
+                            const lookupViewController =
+                                viewController as LookupBibleItemController;
+                            saveBibleItem(
+                                bibleItem,
+                                lookupViewController.onLookupSaveBibleItem,
+                            );
                         }}
                     >
                         <i className="bi bi-floppy" />
@@ -57,11 +58,13 @@ export default function RenderActionButtonsComp({
                             className="btn btn-sm btn-info"
                             title={'`Save bible item and show on screen'}
                             onClick={(event) => {
-                                addBibleItemAndPresent(event, bibleItem, () => {
-                                    const lookupViewController =
-                                        viewController as LookupBibleItemController;
-                                    lookupViewController.onLookupSaveBibleItem();
-                                });
+                                const lookupViewController =
+                                    viewController as LookupBibleItemController;
+                                addBibleItemAndPresent(
+                                    event,
+                                    bibleItem,
+                                    lookupViewController.onLookupSaveBibleItem,
+                                );
                             }}
                         >
                             <i className="bi bi-cast" />

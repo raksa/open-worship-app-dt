@@ -84,11 +84,19 @@ async function onBibleSelect(
             ? [
                   {
                       childBefore: (
-                          <i className="bi bi-x-lg" style={{ color: 'red' }} />
+                          <i
+                              className="bi bi-x-lg"
+                              style={{ color: 'red' }}
+                          />
                       ),
-                      title: 'Remove',
+                      title: '`Remove',
                       menuElement: (
-                          <span style={{ color: 'red' }}>
+                          <span
+                              style={{ color: 'red' }}
+                              data-bible-key={
+                                  bibleRenderingList[index].bibleKey
+                              }
+                          >
                               {bibleRenderingList[index].bibleKey}
                           </span>
                       ),

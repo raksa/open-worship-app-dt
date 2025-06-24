@@ -40,7 +40,7 @@ export default function RenderBibleEditingHeader() {
                 {foundBibleItem === null ? null : (
                     <div
                         className={`${HoverMotionHandler.lowClassname}-1`}
-                        data-min-parent-width="600"
+                        data-min-parent-width="550"
                     >
                         <RenderEditingActionButtonsComp
                             bibleItem={foundBibleItem}
@@ -49,7 +49,7 @@ export default function RenderBibleEditingHeader() {
                 )}
                 <div
                     className={`${HoverMotionHandler.lowClassname}-0`}
-                    data-min-parent-width="600"
+                    data-min-parent-width="550"
                 >
                     {viewController.isAlone ? null : (
                         <button
