@@ -64,7 +64,7 @@ function genContextMenu(
 
 export function genTrashContextMenu(
     filePath: string,
-    onTrashed: () => void,
+    onTrashed?: () => void,
 ): ContextMenuItemType[] {
     return [
         {
@@ -79,7 +79,7 @@ export function genTrashContextMenu(
                 if (isOk) {
                     const fileSource = FileSource.getInstance(filePath);
                     await fileSource.trashFile();
-                    onTrashed();
+                    onTrashed?.();
                 }
             },
         },
