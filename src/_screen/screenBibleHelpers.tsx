@@ -84,10 +84,7 @@ async function onBibleSelect(
             ? [
                   {
                       childBefore: (
-                          <i
-                              className="bi bi-x-lg"
-                              style={{ color: 'red' }}
-                          />
+                          <i className="bi bi-x-lg" style={{ color: 'red' }} />
                       ),
                       title: '`Remove',
                       menuElement: (

@@ -153,8 +153,8 @@ export default function BibleFileComp({
         setData(null);
     };
     useFileSourceEvents(['update'], handleReloading, [data], filePath);
-    const handleDataDropping = async (event: any) => {
-        const droppedData = await extractDropData(event);
+    const handleDataDropping = (event: any) => {
+        const droppedData = extractDropData(event);
         if (droppedData?.type === DragTypeEnum.BIBLE_ITEM) {
             stopDraggingState(event);
             const bibleItem = droppedData.item as BibleItem;

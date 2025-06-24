@@ -61,9 +61,9 @@ export default function ScreenPreviewerItemComp({
                 event.preventDefault();
                 event.currentTarget.classList.remove(RECEIVING_DROP_CLASSNAME);
             }}
-            onDrop={async (event) => {
+            onDrop={(event) => {
                 event.currentTarget.classList.remove(RECEIVING_DROP_CLASSNAME);
-                const droppedData = await extractDropData(event);
+                const droppedData = extractDropData(event);
                 if (droppedData === null) {
                     return;
                 }

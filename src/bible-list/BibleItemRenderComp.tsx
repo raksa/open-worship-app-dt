@@ -120,7 +120,8 @@ export default function BibleItemRenderComp({
         return <ItemReadErrorComp onContextMenu={handleContextMenuOpening} />;
     }
     const handleDataDropping = async (event: any) => {
-        const droppedData = await extractDropData(event);
+        changeDragEventStyle(event, 'opacity', '1');
+        const droppedData = extractDropData(event);
         if (droppedData?.type === DragTypeEnum.BIBLE_ITEM) {
             const bible = await Bible.fromFilePath(filePath);
             if (bible === null) {
@@ -131,8 +132,8 @@ export default function BibleItemRenderComp({
                 if (droppedBibleItem.filePath === bibleItem.filePath) {
                     const toIndex = bible.getItemIndex(bibleItem);
                     bible.moveItemToIndex(droppedBibleItem, toIndex);
-                    await bible.save();
                     stopDraggingState(event);
+                    bible.save();
                 }
             }
         } else {

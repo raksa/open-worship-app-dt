@@ -69,35 +69,39 @@ export default class AttachBackgroundManager {
         const imageDirSource = await getBackgroundSelectedDirSource('image');
         const videoDirSource = await getBackgroundSelectedDirSource('video');
         const newData = Object.fromEntries(
-            Object.entries(data).map(([key, value]) => {
-                if (value.type !== DragTypeEnum.BACKGROUND_COLOR) {
-                    let filePath = value.item as string;
-                    if (value.isFileFullNameOnly) {
-                        if (
-                            value.type === DragTypeEnum.BACKGROUND_IMAGE &&
-                            imageDirSource?.dirPath
-                        ) {
-                            filePath = pathJoin(
-                                imageDirSource.dirPath,
-                                filePath,
-                            );
-                        } else if (
-                            value.type === DragTypeEnum.BACKGROUND_VIDEO &&
-                            videoDirSource?.dirPath
-                        ) {
-                            filePath = pathJoin(
-                                videoDirSource.dirPath,
-                                filePath,
-                            );
+            Object.entries(data)
+                .filter(([_, value]) => {
+                    return typeof value.item === 'string';
+                })
+                .map(([key, value]) => {
+                    if (value.type !== DragTypeEnum.BACKGROUND_COLOR) {
+                        let filePath = value.item as string;
+                        if (value.isFileFullNameOnly) {
+                            if (
+                                value.type === DragTypeEnum.BACKGROUND_IMAGE &&
+                                imageDirSource?.dirPath
+                            ) {
+                                filePath = pathJoin(
+                                    imageDirSource.dirPath,
+                                    filePath,
+                                );
+                            } else if (
+                                value.type === DragTypeEnum.BACKGROUND_VIDEO &&
+                                videoDirSource?.dirPath
+                            ) {
+                                filePath = pathJoin(
+                                    videoDirSource.dirPath,
+                                    filePath,
+                                );
+                            }
                         }
+                        value = {
+                            ...value,
+                            item: FileSource.getInstance(filePath),
+                        };
                     }
-                    value = {
-                        ...value,
-                        item: FileSource.getInstance(filePath),
-                    };
-                }
-                return [key, value];
-            }),
+                    return [key, value];
+                }),
         );
         return newData;
     }

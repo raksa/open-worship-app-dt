@@ -223,7 +223,7 @@ export default function SlideItemRenderComp({
     };
     const handleDataDropping = async (event: any) => {
         changeDragEventStyle(event, 'opacity', '1');
-        const droppedData = await extractDropData(event);
+        const droppedData = extractDropData(event);
         if (droppedData?.type === DragTypeEnum.SLIDE) {
             if (droppedData.item.filePath !== slide.filePath) {
                 return;
