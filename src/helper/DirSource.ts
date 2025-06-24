@@ -6,6 +6,7 @@ import {
     getAppMimetype,
     fsListFiles,
     fsCheckDirExist,
+    pathResolve,
 } from '../server/fileHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { handleError } from './errorHelpers';
@@ -71,6 +72,16 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
         const fileSource = this.getFileSourceInstance(fileFullName);
         fileSource.fireUpdateEvent();
     }
+
+    checkIsSameDirPath(dirPath: string) {
+        if (!this.dirPath) {
+            return false;
+        }
+        const resolvedDirPath = pathResolve(this.dirPath);
+        const targetResolvedDirPath = pathResolve(dirPath);
+        return resolvedDirPath === targetResolvedDirPath;
+    }
+
     async getFilePaths(mimetypeName: MimetypeNameType) {
         if (!this.dirPath) {
             return [];

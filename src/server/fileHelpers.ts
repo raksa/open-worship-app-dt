@@ -90,6 +90,14 @@ export function pathJoin(filePath: string, fileFullName: string) {
     return appProvider.pathUtils.join(filePath, fileFullName);
 }
 
+export function pathResolve(...paths: string[]): string {
+    const path = appProvider.pathUtils.resolve(...paths);
+    if (path.endsWith(pathSeparator)) {
+        return path.slice(0, -1);
+    }
+    return path;
+}
+
 export function pathBasename(filePath: string) {
     return appProvider.pathUtils.basename(filePath);
 }
