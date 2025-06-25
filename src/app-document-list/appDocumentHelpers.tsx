@@ -445,6 +445,7 @@ async function checkSelectedFilePathExist(filePath: string) {
 
 export async function getSelectedVaryAppDocumentFilePath() {
     const selectedFilePath = getSetting(SELECTED_APP_DOCUMENT_SETTING_NAME, '');
+    // TODO: join with AppDocument directory path to support portable app
     const isValid = await checkSelectedFilePathExist(selectedFilePath);
     if (!isValid) {
         return null;
@@ -453,6 +454,7 @@ export async function getSelectedVaryAppDocumentFilePath() {
 }
 
 export function setSelectedVaryAppDocumentFilePath(filePath: string | null) {
+    // TODO: set fileFullName only to support portable app
     setSetting(SELECTED_APP_DOCUMENT_SETTING_NAME, filePath ?? '');
 }
 

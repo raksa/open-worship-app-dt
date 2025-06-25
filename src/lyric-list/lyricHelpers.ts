@@ -15,6 +15,7 @@ async function checkSelectedFilePathExist(filePath: string) {
 
 export async function getSelectedLyricFilePath() {
     const selectedFilePath = getSetting(SELECTED_LYRIC_SETTING_NAME, '');
+    // TODO: join with AppDocument directory path to support portable app
     const isValid = await checkSelectedFilePathExist(selectedFilePath);
     if (!isValid) {
         return null;
@@ -23,6 +24,7 @@ export async function getSelectedLyricFilePath() {
 }
 
 export function setSelectedLyricFilePath(filePath: string | null) {
+    // TODO: set fileFullName only to support portable app
     setSetting(SELECTED_LYRIC_SETTING_NAME, filePath ?? '');
 }
 

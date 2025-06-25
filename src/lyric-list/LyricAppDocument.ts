@@ -19,12 +19,14 @@ import { CanvasItemTextPropsType } from '../slide-editor/canvas/CanvasItemText';
 
 export type LyricEditingPropsType = {
     fontFamily: string;
+    fontWeight: string;
 };
 
 export default class LyricAppDocument extends AppDocument {
     static readonly mimetypeName: MimetypeNameType = 'appDocument';
     lyricEditingProps: LyricEditingPropsType = {
         fontFamily: '',
+        fontWeight: '',
     };
     isEditable = false;
     isPreRender = false;
@@ -44,7 +46,6 @@ export default class LyricAppDocument extends AppDocument {
                 return [text, text, undefined];
             },
         );
-        const metadata = await lyric.getMetadata();
         if (this.isPreRender) {
             textList = await Promise.all(
                 textList.map(async ([text, htmlText]) => {
@@ -55,10 +56,7 @@ export default class LyricAppDocument extends AppDocument {
                         isJustifyCenter: true,
                         isDisablePointerEvents: true,
                         theme: 'dark',
-                        // TODO: set font family on UI
-                        fontFamily:
-                            metadata.renderProps?.['fontFamily'] ??
-                            'Kh Battambang',
+                        fontFamily: this.lyricEditingProps.fontFamily,
                     });
                     return [text, htmlData.html, htmlData.id];
                 }),

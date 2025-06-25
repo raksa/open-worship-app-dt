@@ -5,6 +5,7 @@ import { SelectedLyricContext } from './lyricHelpers';
 import LyricEditingManager, {
     LyricEditingManagerContext,
 } from './LyricEditingManager';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
 const LazyLyricPreviewerTopComp = lazy(() => {
     return import('./LyricPreviewerTopComp');
@@ -14,11 +15,14 @@ const LazyLyricSlidesPreviewerComp = lazy(() => {
 });
 
 export default function LyricHandlerComp() {
-    const lyricEditingManager = useMemo(() => {
-        return new LyricEditingManager();
-    }, []);
     const context = use(SelectedLyricContext);
     const selectedLyric = context?.selectedLyric ?? null;
+    const lyricEditingManager = useMemo(() => {
+        return new LyricEditingManager('');
+    }, []);
+    useAppEffect(() => {
+        lyricEditingManager.filePath = selectedLyric?.filePath ?? null;
+    }, [lyricEditingManager, selectedLyric]);
     if (selectedLyric === null) {
         return (
             <div

@@ -98,7 +98,7 @@ export type HTMLDataType = {
     html: string;
 };
 
-const cacher = new CacheManager<HTMLDataType>(10); // 10 second
+export const markdownCacheManager = new CacheManager<HTMLDataType>(10); // 10 second
 export async function renderMarkdown(
     text: string,
     options?: RenderMarkdownOptions,
@@ -111,7 +111,7 @@ export async function renderMarkdown(
     }
     const hashKey = appProvider.systemUtils.generateMD5(text);
     return unlocking(`markdown-${hashKey}`, async () => {
-        const cached = await cacher.get(hashKey);
+        const cached = await markdownCacheManager.get(hashKey);
         if (cached) {
             return cached;
         }
@@ -136,7 +136,7 @@ export async function renderMarkdown(
             });
         }
         const data = { id: hashKey, html };
-        await cacher.set(hashKey, data);
+        await markdownCacheManager.set(hashKey, data);
         return data;
     });
 }

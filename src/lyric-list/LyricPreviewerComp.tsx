@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import { useAppStateAsync } from '../helper/debuggerHelpers';
 import { useSelectedLyricContext } from './lyricHelpers';
@@ -9,6 +9,7 @@ import LoadingComp from '../others/LoadingComp';
 import LyricEditingManager, {
     useLyricEditingManagerContext,
 } from './LyricEditingManager';
+import FontFamilyControlComp from '../others/FontFamilyControlComp';
 
 function genOptions(lyricEditingManager: LyricEditingManager) {
     return {
@@ -17,7 +18,39 @@ function genOptions(lyricEditingManager: LyricEditingManager) {
     };
 }
 
-export default function LyricPreviewerComp() {
+function RenderHeaderComp() {
+    const lyricEditingManager = useLyricEditingManagerContext();
+    const [localFontFamily, setLocalFontFamily] = useState(
+        lyricEditingManager.fontFamily,
+    );
+    const setLocalFontFamily1 = (fontFamily: string) => {
+        setLocalFontFamily(fontFamily);
+        lyricEditingManager.fontFamily = fontFamily;
+    };
+    const [localFontWeight, setLocalFontWeight] = useState(
+        lyricEditingManager.fontWeight,
+    );
+    const setLocalFontWeight1 = (fontWeight: string) => {
+        setLocalFontWeight(fontWeight);
+        lyricEditingManager.fontWeight = fontWeight;
+    };
+    return (
+        <div className="card-header d-flex justify-content-between align-items-center">
+            <div className="d-flex">
+                <strong>Font Family:</strong>
+                <FontFamilyControlComp
+                    fontFamily={localFontFamily}
+                    setFontFamily={setLocalFontFamily1}
+                    fontWeight={localFontWeight}
+                    setFontWeight={setLocalFontWeight1}
+                    isShowingLabel={false}
+                />
+            </div>
+        </div>
+    );
+}
+
+function RenderBodyComp() {
     const selectedLyric = useSelectedLyricContext();
     const lyricEditingManager = useLyricEditingManagerContext();
     const [htmlData, setHtmlData] = useAppStateAsync<HTMLDataType>(() => {
@@ -55,8 +88,19 @@ export default function LyricPreviewerComp() {
     }
     return (
         <div
-            className="card w-100 h-100 p-3"
+            className="w-100 h-100 p-3"
             dangerouslySetInnerHTML={{ __html: htmlData.html }}
         />
+    );
+}
+
+export default function LyricPreviewerComp() {
+    return (
+        <div className="card w-100 h-100 ">
+            <RenderHeaderComp />
+            <div className="card-body overflow-hidden">
+                <RenderBodyComp />
+            </div>
+        </div>
     );
 }
