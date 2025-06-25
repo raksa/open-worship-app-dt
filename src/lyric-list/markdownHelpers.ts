@@ -10,6 +10,8 @@ type RenderMarkdownOptions = {
     isDisablePointerEvents?: boolean;
     theme?: string;
     fontFamily?: string;
+    fontWeight?: string;
+    scale?: number;
 };
 function wrapHTML({
     html,
@@ -59,17 +61,19 @@ function wrapHTML({
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
-                transform: scale(3);
                 user-select: none !important;
                 `
                     : ''
             }
+            ${options.scale ? `transform: scale(${options.scale});` : ''}
             width: 100vw;
             height: 100vh;
             overflow: auto;
         }
         * {
             font-family: ${options.fontFamily}, "Arial", sans-serif;
+            font-weight: ${options.fontWeight};
+            margin: 0.05em !important;
         }
         ${
             options.isDisablePointerEvents

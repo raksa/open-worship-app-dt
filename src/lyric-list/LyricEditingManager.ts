@@ -1,5 +1,8 @@
 import { createContext, use } from 'react';
-import { LyricEditingPropsType } from './LyricAppDocument';
+import {
+    defaultLyricEditingProps,
+    LyricEditingPropsType,
+} from './LyricAppDocument';
 import { handleError } from '../helper/errorHelpers';
 import { appLocalStorage } from '../setting/directory-setting/appLocalStorage';
 import FileSource from '../helper/FileSource';
@@ -9,10 +12,7 @@ class LyricEditingManager {
     settingPrefix = '';
     settingName = 'lyric-editing-props';
     filePath: string | null = null;
-    lyricEditingProps: LyricEditingPropsType = {
-        fontFamily: '',
-        fontWeight: '',
-    };
+    lyricEditingProps: LyricEditingPropsType = defaultLyricEditingProps;
 
     constructor(settingPrefix: string) {
         this.settingPrefix = settingPrefix;
@@ -58,6 +58,14 @@ class LyricEditingManager {
     }
     set fontWeight(fontWeight: string) {
         this.lyricEditingProps.fontWeight = fontWeight;
+        this.saveSettings();
+    }
+
+    get scale() {
+        return this.lyricEditingProps.scale;
+    }
+    set scale(scale: number) {
+        this.lyricEditingProps.scale = scale;
         this.saveSettings();
     }
 }

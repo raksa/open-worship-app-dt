@@ -10,11 +10,13 @@ import LyricEditingManager, {
     useLyricEditingManagerContext,
 } from './LyricEditingManager';
 import FontFamilyControlComp from '../others/FontFamilyControlComp';
+import AppRangeComp from '../others/AppRangeComp';
 
 function genOptions(lyricEditingManager: LyricEditingManager) {
     return {
         theme: 'dark',
         fontFamily: lyricEditingManager.lyricEditingProps.fontFamily,
+        fontWeight: lyricEditingManager.lyricEditingProps.fontWeight,
     };
 }
 
@@ -34,8 +36,18 @@ function RenderHeaderComp() {
         setLocalFontWeight(fontWeight);
         lyricEditingManager.fontWeight = fontWeight;
     };
+    const [localScale, setLocalScale] = useState(lyricEditingManager.scale);
+    const attemptTimeout = useMemo(() => {
+        return genTimeoutAttempt(500);
+    }, []);
+    const setLocalScale1 = (scale: number) => {
+        attemptTimeout(() => {
+            setLocalScale(scale);
+            lyricEditingManager.scale = scale;
+        });
+    };
     return (
-        <div className="card-header d-flex justify-content-between align-items-center">
+        <div className="card-header" style={{ height: '70px' }}>
             <div className="d-flex">
                 <strong>Font Family:</strong>
                 <FontFamilyControlComp
@@ -45,6 +57,22 @@ function RenderHeaderComp() {
                     setFontWeight={setLocalFontWeight1}
                     isShowingLabel={false}
                 />
+            </div>
+            <div className="d-flex w-100">
+                <strong>Scale:</strong>
+                <div className="flex-grow-1">
+                    <AppRangeComp
+                        value={localScale}
+                        title="Font Size"
+                        setValue={setLocalScale1}
+                        defaultSize={{
+                            size: localScale,
+                            min: 5,
+                            max: 100,
+                            step: 1,
+                        }}
+                    />
+                </div>
             </div>
         </div>
     );

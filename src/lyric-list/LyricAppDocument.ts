@@ -20,14 +20,17 @@ import { CanvasItemTextPropsType } from '../slide-editor/canvas/CanvasItemText';
 export type LyricEditingPropsType = {
     fontFamily: string;
     fontWeight: string;
+    scale: number;
+};
+export const defaultLyricEditingProps: LyricEditingPropsType = {
+    fontFamily: '',
+    fontWeight: '',
+    scale: 30,
 };
 
 export default class LyricAppDocument extends AppDocument {
     static readonly mimetypeName: MimetypeNameType = 'appDocument';
-    lyricEditingProps: LyricEditingPropsType = {
-        fontFamily: '',
-        fontWeight: '',
-    };
+    lyricEditingProps: LyricEditingPropsType = defaultLyricEditingProps;
     isEditable = false;
     isPreRender = false;
 
@@ -57,6 +60,8 @@ export default class LyricAppDocument extends AppDocument {
                         isDisablePointerEvents: true,
                         theme: 'dark',
                         fontFamily: this.lyricEditingProps.fontFamily,
+                        fontWeight: this.lyricEditingProps.fontWeight,
+                        scale: this.lyricEditingProps.scale / 10,
                     });
                     return [text, htmlData.html, htmlData.id];
                 }),
