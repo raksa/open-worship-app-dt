@@ -6,12 +6,23 @@ import { HTMLDataType, renderLyricSlide } from './markdownHelpers';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { genTimeoutAttempt } from '../helper/helpers';
 import LoadingComp from '../others/LoadingComp';
+import LyricEditingManager, {
+    useLyricEditingManagerContext,
+} from './LyricEditingManager';
+
+function genOptions(lyricEditingManager: LyricEditingManager) {
+    return {
+        theme: 'dark',
+        fontFamily: lyricEditingManager.lyricEditingProps.fontFamily,
+    };
+}
 
 export default function LyricPreviewerComp() {
     const selectedLyric = useSelectedLyricContext();
+    const lyricEditingManager = useLyricEditingManagerContext();
     const [htmlData, setHtmlData] = useAppStateAsync<HTMLDataType>(() => {
-        return renderLyricSlide(selectedLyric);
-    }, [selectedLyric]);
+        return renderLyricSlide(selectedLyric, genOptions(lyricEditingManager));
+    }, [selectedLyric, lyricEditingManager]);
     const attemptTimeout = useMemo(() => {
         return genTimeoutAttempt(500);
     }, []);
@@ -19,7 +30,12 @@ export default function LyricPreviewerComp() {
         ['update'],
         async () => {
             attemptTimeout(async () => {
-                setHtmlData(await renderLyricSlide(selectedLyric));
+                setHtmlData(
+                    await renderLyricSlide(
+                        selectedLyric,
+                        genOptions(lyricEditingManager),
+                    ),
+                );
             });
         },
         [],

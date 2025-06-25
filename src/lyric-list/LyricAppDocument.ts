@@ -17,8 +17,15 @@ import {
 } from './markdownHelpers';
 import { CanvasItemTextPropsType } from '../slide-editor/canvas/CanvasItemText';
 
+export type LyricEditingPropsType = {
+    fontFamily: string;
+};
+
 export default class LyricAppDocument extends AppDocument {
     static readonly mimetypeName: MimetypeNameType = 'appDocument';
+    lyricEditingProps: LyricEditingPropsType = {
+        fontFamily: '',
+    };
     isEditable = false;
     isPreRender = false;
 
@@ -67,7 +74,7 @@ export default class LyricAppDocument extends AppDocument {
                               htmlText,
                               color: '#FFFFFFFF',
                               fontSize: 90,
-                              fontFamily: 'Battambang',
+                              fontFamily: this.lyricEditingProps.fontFamily,
                               fontWeight: null,
                               textHorizontalAlignment: 'center',
                               textVerticalAlignment: 'center',

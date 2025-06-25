@@ -149,11 +149,12 @@ export async function renderLyricSlideMarkdownTextList(lyric: Lyric) {
     return contentList;
 }
 
-export async function renderLyricSlide(lyric: Lyric) {
+export async function renderLyricSlide(
+    lyric: Lyric,
+    options?: RenderMarkdownOptions,
+) {
     return unlocking(`lyric-slides-${lyric.filePath}`, async () => {
         const content = await lyric.getContent();
-        return await renderMarkdown(content, {
-            theme: 'dark',
-        });
+        return await renderMarkdown(content, options);
     });
 }
