@@ -32,7 +32,7 @@ $ npm run dev
 ## Package
 
 ```bash
-# for Windows x86_64
+# for Windows x86_64 (need Developer mode enabled: "https://learn.microsoft.com/en-us/windows/apps/get-started/enable-your-device-for-development")
 > npm run pack:win
 
 # for Apple Mac
