@@ -20,8 +20,7 @@ export type StyleAnimType = {
 };
 
 export const transitionEffect = {
-    none: ['bi bi-asterisk'],
-    fade: ['bi bi-fullscreen-exit'],
+    fade: ['bi bi-shadows'],
     move: ['bi bi-align-end'],
     zoom: ['bi bi-arrows-fullscreen'],
 } as const;
@@ -53,20 +52,6 @@ export type GenAnimPropsType = {
     width?: number;
     height?: number;
 };
-
-function none(): StyleAnimType {
-    return {
-        style: '',
-        animIn: (targetElement: HTMLElement, parentElement: HTMLElement) => {
-            parentElement.appendChild(targetElement);
-            return Promise.resolve();
-        },
-        animOut: () => {
-            return Promise.resolve();
-        },
-        duration: 0,
-    };
-}
 
 function genCssProps(duration: number) {
     const cssProps: React.CSSProperties = {
@@ -282,7 +267,6 @@ function zoom(target: TargetType): StyleAnimType {
 export const styleAnimList: {
     [key: string]: (_: TargetType) => StyleAnimType;
 } = {
-    none,
     fade,
     move,
     zoom,

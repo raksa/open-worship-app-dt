@@ -22,7 +22,7 @@ class ScreenEffectManager extends EventHandler<PTFEventType> {
         const effectType = getSetting(this.settingName, '');
         this._effectType = Object.keys(transitionEffect).includes(effectType)
             ? (effectType as ScreenTransitionEffectType)
-            : 'none';
+            : 'fade';
         cache.set(this.toCacheKey(), this);
     }
 
