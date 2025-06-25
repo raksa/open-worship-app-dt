@@ -23,7 +23,7 @@ const LazyAppDocumentPreviewerComp = lazy(() => {
 const LazyBiblePreviewerRenderComp = lazy(() => {
     return import('../bible-reader/BiblePreviewerRenderComp');
 });
-const LazyLyricPreviewerComp = lazy(() => {
+const LazyLyricHandlerComp = lazy(() => {
     return import('../lyric-list/LyricHandlerComp');
 });
 const LazyPresenterOthersControllerComp = lazy(() => {
@@ -97,7 +97,7 @@ function RenderToggleFullViewComp({
 
 const tabTypeList = [
     ['d', 'Documents', LazyAppDocumentPreviewerComp],
-    ['l', 'Lyrics', LazyLyricPreviewerComp],
+    ['l', 'Lyrics', LazyLyricHandlerComp],
     ['b', 'Bibles', LazyBiblePreviewerRenderComp],
     ['a', 'Others', LazyPresenterOthersControllerComp],
 ] as const;
