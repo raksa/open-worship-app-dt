@@ -39,7 +39,7 @@ export function useAppDocumentItemSelecting(
 
 export function useAppDocumentItemThumbnailSizeScale(
     settingName = THUMBNAIL_WIDTH_SETTING_NAME,
-    defaultSize = DEFAULT_THUMBNAIL_SIZE_FACTOR,
+    defaultSize = Math.fround(DEFAULT_THUMBNAIL_SIZE_FACTOR / 30),
 ): [number, (newScale: number) => void] {
     const getDefaultSize = () => {
         return parseInt(getSetting(settingName, defaultSize.toString()));
