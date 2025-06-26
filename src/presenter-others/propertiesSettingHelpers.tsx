@@ -7,18 +7,28 @@ import SlideEditorToolAlignComp from '../slide-editor/canvas/tools/SlideEditorTo
 import AppRangeComp from '../others/AppRangeComp';
 
 const DEFAULT_FONT_SIZE = 100;
+const DEFAULT_WIDGET_WIDTH_PERCENTAGE = 50;
+const DEFAULT_WIDGET_OPACITY_PERCENTAGE = 100;
+const DEFAULT_ROUND_PERCENTAGE = 50;
+const DEFAULT_ROUND_SIZE_PIXEL = 5;
+const DEFAULT_WIDGET_OFFSET_X = 0;
+const DEFAULT_WIDGET_OFFSET_Y = 0;
 
 function getWidgetRoundExtraStyle(
-    settingNamePX: string,
+    settingNamePixel: string,
     settingNamePercentage: string,
 ): React.CSSProperties {
-    const roundSizePX = parseInt(getSetting(settingNamePX, '0'));
-    if (roundSizePX > 0) {
+    const roundSizePixel = parseInt(
+        getSetting(settingNamePixel, DEFAULT_ROUND_SIZE_PIXEL.toString()),
+    );
+    if (roundSizePixel > 0) {
         return {
-            borderRadius: `${roundSizePX}px`,
+            borderRadius: `${roundSizePixel}px`,
         };
     }
-    const percentage = parseInt(getSetting(settingNamePercentage, '50'));
+    const percentage = parseInt(
+        getSetting(settingNamePercentage, DEFAULT_ROUND_PERCENTAGE.toString()),
+    );
     const roundPercentage = Math.ceil(
         Math.max(0, Math.min(100, percentage)) / 2,
     );
@@ -28,7 +38,9 @@ function getWidgetRoundExtraStyle(
 }
 
 function genWidgetWidthExtraStyle(settingName: string): React.CSSProperties {
-    const widthScale = parseInt(getSetting(settingName, '50'));
+    const widthScale = parseInt(
+        getSetting(settingName, DEFAULT_WIDGET_WIDTH_PERCENTAGE.toString()),
+    );
     return {
         width: `${Math.max(1, Math.min(100, widthScale))}%`,
         height: 'auto',
@@ -36,7 +48,9 @@ function genWidgetWidthExtraStyle(settingName: string): React.CSSProperties {
 }
 
 function genWidgetOpacityExtraStyle(settingName: string): React.CSSProperties {
-    const opacityScale = parseInt(getSetting(settingName, '50'));
+    const opacityScale = parseInt(
+        getSetting(settingName, DEFAULT_WIDGET_OPACITY_PERCENTAGE.toString()),
+    );
     return {
         opacity: Math.max(0, Math.min(100, opacityScale)) / 100,
     };
@@ -56,8 +70,12 @@ function genAlignmentExtraStyle(
     offsetXSettingName: string,
     offsetYSettingName: string,
 ): React.CSSProperties {
-    const widgetOffsetX = parseInt(getSetting(offsetXSettingName, '0'));
-    const widgetOffsetY = parseInt(getSetting(offsetYSettingName, '0'));
+    const widgetOffsetX = parseInt(
+        getSetting(offsetXSettingName, DEFAULT_WIDGET_OFFSET_X.toString()),
+    );
+    const widgetOffsetY = parseInt(
+        getSetting(offsetYSettingName, DEFAULT_WIDGET_OFFSET_Y.toString()),
+    );
     const alignmentData = JSON.parse(getSetting(alignSettingName, '{}'));
     const { horizontalAlignment = 'center', verticalAlignment = 'center' } =
         alignmentData;
@@ -122,8 +140,8 @@ function PropertiesSettingComp({
     isFontSize,
     fontSize,
     setFontSize,
-    roundSizePX,
-    setRoundSizePX,
+    roundSizePixel,
+    setRoundSizePixel,
 }: Readonly<{
     alignmentData: string;
     setAlignmentData: (data: string) => void;
@@ -140,8 +158,8 @@ function PropertiesSettingComp({
     isFontSize: boolean;
     fontSize: number;
     setFontSize: (value: number) => void;
-    roundSizePX: number;
-    setRoundSizePX: (value: number) => void;
+    roundSizePixel: number;
+    setRoundSizePixel: (value: number) => void;
 }>) {
     return (
         <div className="d-flex flex-wrap p-1 align-items-center">
@@ -215,14 +233,14 @@ function PropertiesSettingComp({
             <div
                 className="d-flex app-border-white-round m-1"
                 style={{
-                    opacity: roundSizePX > 0 ? 0.5 : 1,
+                    opacity: roundSizePixel > 0 ? 0.5 : 1,
                 }}
             >
                 `Round Size %:
                 <AppRangeComp
                     value={roundPercentage}
                     title={
-                        roundSizePX > 0
+                        roundSizePixel > 0
                             ? 'Set round size pixel to 0 to use this'
                             : '`Round (%)'
                     }
@@ -244,9 +262,9 @@ function PropertiesSettingComp({
                 <input
                     type="number"
                     className="form-control"
-                    value={roundSizePX}
+                    value={roundSizePixel}
                     onChange={(event) => {
-                        setRoundSizePX(parseInt(event.target.value) || 0);
+                        setRoundSizePixel(parseInt(event.target.value) || 0);
                     }}
                 />
                 <div className="input-group-text">px</div>
@@ -291,14 +309,14 @@ export function useOtherPropsSetting({
     const offsetXSettingName = `${prefix}-setting-show-widget-offset-x`;
     const offsetYSettingName = `${prefix}-setting-show-widget-offset-y`;
     const fontSizeSettingName = `${prefix}-setting-show-widget-font-size`;
-    const roundSizePXSettingName = `${prefix}-setting-show-widget-round-size-px`;
+    const roundSizePixelSettingName = `${prefix}-setting-show-widget-round-size-px`;
 
     const genStyle = () => {
         return {
             position: 'absolute',
             height: 'auto',
             ...getWidgetRoundExtraStyle(
-                roundSizePXSettingName,
+                roundSizePixelSettingName,
                 widgetRoundPercentageSettingName,
             ),
             ...genWidgetWidthExtraStyle(widgetWidthPercentageSettingName),
@@ -318,7 +336,7 @@ export function useOtherPropsSetting({
 
     const [widgetOffsetX, setWidgetOffsetX] = useStateSettingNumber(
         offsetXSettingName,
-        0,
+        DEFAULT_WIDGET_OFFSET_X,
     );
     const setWidgetOffsetX1 = (value: number) => {
         setWidgetOffsetX(value);
@@ -326,7 +344,7 @@ export function useOtherPropsSetting({
     };
     const [widgetOffsetY, setWidgetOffsetY] = useStateSettingNumber(
         offsetYSettingName,
-        0,
+        DEFAULT_WIDGET_OFFSET_Y,
     );
     const setWidgetOffsetY1 = (value: number) => {
         setWidgetOffsetY(value);
@@ -335,21 +353,24 @@ export function useOtherPropsSetting({
 
     const [roundPercentage, setRoundPercentage] = useStateSettingNumber(
         widgetRoundPercentageSettingName,
-        50,
+        DEFAULT_ROUND_PERCENTAGE,
     );
     const setRoundPercentage1 = (value: number) => {
         setRoundPercentage(value);
         onChange1();
     };
     const [widgetWidthPercentage, setWidgetWidthPercentage] =
-        useStateSettingNumber(widgetWidthPercentageSettingName, 50);
+        useStateSettingNumber(
+            widgetWidthPercentageSettingName,
+            DEFAULT_WIDGET_WIDTH_PERCENTAGE,
+        );
     const setWidgetWidthPercentage1 = (value: number) => {
         setWidgetWidthPercentage(value);
         onChange1();
     };
     const [opacityPercentage, setOpacityPercentage] = useStateSettingNumber(
         opacityPercentageSettingName,
-        100,
+        DEFAULT_WIDGET_OPACITY_PERCENTAGE,
     );
     const setOpacityPercentage1 = (value: number) => {
         setOpacityPercentage(value);
@@ -374,12 +395,12 @@ export function useOtherPropsSetting({
         setFontSize(value);
         onChange1();
     };
-    const [roundSizePX, setRoundSizePX] = useStateSettingNumber(
-        roundSizePXSettingName,
-        0,
+    const [roundSizePixel, setRoundSizePixel] = useStateSettingNumber(
+        roundSizePixelSettingName,
+        DEFAULT_ROUND_SIZE_PIXEL,
     );
-    const setRoundSizePX1 = (value: number) => {
-        setRoundSizePX(value);
+    const setRoundSizePixel1 = (value: number) => {
+        setRoundSizePixel(value);
         onChange1();
     };
 
@@ -402,8 +423,8 @@ export function useOtherPropsSetting({
                 isFontSize={isFontSize}
                 fontSize={fontSize}
                 setFontSize={setFontSize1}
-                roundSizePX={roundSizePX}
-                setRoundSizePX={setRoundSizePX1}
+                roundSizePixel={roundSizePixel}
+                setRoundSizePixel={setRoundSizePixel1}
             />
         ),
     };

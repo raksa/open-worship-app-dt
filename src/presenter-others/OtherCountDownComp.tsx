@@ -222,7 +222,7 @@ export default function OtherCountDownComp() {
                     isOpened={isOpened}
                     setIsOpened={setIsOpened}
                 >
-                    <h4>Timers</h4>
+                    <h4>Countdown</h4>
                 </OtherRenderHeaderTitleComp>
                 {!isOpened ? (
                     <ScreensRendererComp

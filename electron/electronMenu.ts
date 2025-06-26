@@ -123,7 +123,15 @@ export function initMenu(appController: ElectronAppController) {
                 {
                     label: 'Learn More',
                     click: () => {
-                        shell.openExternal('https://www.openworship.app/');
+                        shell.openExternal('https://www.openworship.app');
+                    },
+                },
+                {
+                    label: 'Check for Updates',
+                    click: () => {
+                        const url = new URL('https://www.openworship.app/download');
+                        url.searchParams.set('mv', app.getVersion());
+                        shell.openExternal(url.toString());
                     },
                 },
                 ...(isMac ? [] : [{ role: 'about' }]),

@@ -279,6 +279,7 @@ export default class ScreenOtherManager extends ScreenEventHandler<ScreenOtherEv
         if (this.alertData.countdownData === null) {
             return;
         }
+        this.moveToTheEnd(this.divCountdown);
         const newDiv = genHtmlAlertCountdown(this.alertData.countdownData);
         this.divCountdown.appendChild(newDiv);
     }
@@ -288,6 +289,7 @@ export default class ScreenOtherManager extends ScreenEventHandler<ScreenOtherEv
         if (this.alertData.marqueeData === null) {
             return;
         }
+        this.moveToTheEnd(this.divMarquee);
         const newDiv = genHtmlAlertMarquee(
             this.alertData.marqueeData,
             this.screenManagerBase,
@@ -305,6 +307,7 @@ export default class ScreenOtherManager extends ScreenEventHandler<ScreenOtherEv
         if (this.alertData.cameraData === null) {
             return;
         }
+        this.moveToTheEnd(this.divCamera);
         const cameraId = this.alertData.cameraData.id;
         getAndShowMedia({
             id: cameraId,
@@ -330,6 +333,14 @@ export default class ScreenOtherManager extends ScreenEventHandler<ScreenOtherEv
         childList.forEach((child) => {
             removeAlert(child);
         });
+    }
+
+    moveToTheEnd(divContainer: HTMLDivElement) {
+        const parent = divContainer.parentElement;
+        if (parent !== null) {
+            parent.removeChild(divContainer);
+            parent.appendChild(divContainer);
+        }
     }
 
     get containerStyle(): CSSProperties {

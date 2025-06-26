@@ -20,7 +20,7 @@
         "pack:mac:uni": "npm run build && electron-builder build --mac --x64 --universal",
         "pack:linux": "npm run build && electron-builder build --linux",
         "pack:win": "npm run build && electron-builder build --win --x64",
-        "pack:win32": "electron-builder build --win --ia32",
+        "pack:win:32": "electron-builder build --win --ia32",
         "vite:dev": "vite",
         "vite:build": "vite build",
         "react-devtools": "react-devtools",
