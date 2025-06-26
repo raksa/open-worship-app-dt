@@ -44,6 +44,11 @@ import PdfSlide, { PdfSlideType } from './PdfSlide';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { useScreenVaryAppDocumentManagerEvents } from '../_screen/managers/screenEventHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
+import {
+    checkSelectedFilePathExist,
+    getSelectedFilePath,
+    setSelectedFilePath,
+} from '../others/selectedHelpers';
 
 export const MIN_THUMBNAIL_SCALE = 1;
 export const THUMBNAIL_SCALE_STEP = 1;
@@ -288,7 +293,7 @@ export async function convertOfficeFile(
 
 export async function selectSlide(event: any, currentFilePath: string) {
     const dirSource = await DirSource.getInstance(
-        dirSourceSettingNames.DOCUMENT,
+        dirSourceSettingNames.APP_DOCUMENT,
     );
     const newFilePaths = await dirSource.getFilePaths('appDocument');
     if (!newFilePaths?.length) {
@@ -435,27 +440,19 @@ const SELECTED_APP_DOCUMENT_SETTING_NAME = 'selected-vary-app-document';
 const SELECTED_APP_DOCUMENT_ITEM_SETTING_NAME =
     SELECTED_APP_DOCUMENT_SETTING_NAME + '-item';
 
-async function checkSelectedFilePathExist(filePath: string) {
-    if (!filePath || !(await fsCheckFileExist(filePath))) {
-        setSelectedVaryAppDocumentFilePath(null);
-        return false;
-    }
-    return true;
-}
-
 export async function getSelectedVaryAppDocumentFilePath() {
-    const selectedFilePath = getSetting(SELECTED_APP_DOCUMENT_SETTING_NAME, '');
-    // TODO: join with AppDocument directory path to support portable app
-    const isValid = await checkSelectedFilePathExist(selectedFilePath);
-    if (!isValid) {
-        return null;
-    }
-    return selectedFilePath;
+    return await getSelectedFilePath(
+        SELECTED_APP_DOCUMENT_SETTING_NAME,
+        dirSourceSettingNames.APP_DOCUMENT,
+    );
 }
 
 export function setSelectedVaryAppDocumentFilePath(filePath: string | null) {
-    // TODO: set fileFullName only to support portable app
-    setSetting(SELECTED_APP_DOCUMENT_SETTING_NAME, filePath ?? '');
+    setSelectedFilePath(
+        SELECTED_APP_DOCUMENT_SETTING_NAME,
+        dirSourceSettingNames.APP_DOCUMENT,
+        filePath,
+    );
 }
 
 export async function getSelectedVaryAppDocument() {
@@ -479,7 +476,11 @@ export async function getSelectedEditingSlideFilePath() {
     const selectedAppDocument = await getSelectedVaryAppDocument();
     const isValid =
         AppDocument.checkIsThisType(selectedAppDocument) &&
-        (await checkSelectedFilePathExist(filePath)) &&
+        (await checkSelectedFilePathExist(
+            SELECTED_APP_DOCUMENT_ITEM_SETTING_NAME,
+            dirSourceSettingNames.APP_DOCUMENT,
+            filePath,
+        )) &&
         selectedAppDocument.filePath === filePath;
     if (!isValid) {
         return null;

@@ -6,6 +6,7 @@ import FileSource from '../helper/FileSource';
 import { MimetypeNameType } from '../server/fileHelpers';
 import LoadingComp from './LoadingComp';
 import { useFileSourceIsOnScreen } from './otherHelpers';
+import { GotoSettingDirectoryPathComp } from './NoDirSelectedComp';
 
 const UNKNOWN_COLOR_NOTE = 'unknown';
 
@@ -69,6 +70,7 @@ export default function RenderListComp({
                 }}
             >
                 Fail To Get File List
+                <GotoSettingDirectoryPathComp />
             </div>
         );
     }

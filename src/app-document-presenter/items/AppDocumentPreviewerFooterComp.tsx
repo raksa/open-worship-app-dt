@@ -118,6 +118,7 @@ export default function AppDocumentPreviewerFooterComp({
                         onClick={
                             isDisableChanging ? undefined : handleSlideChoosing
                         }
+                        shouldNotValidate
                     />
                 </div>
                 {appProvider.isPagePresenter ? (

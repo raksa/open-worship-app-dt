@@ -1,7 +1,7 @@
 import { clearWidgetSizeSetting } from '../resize-actor/flexSizeHelpers';
 import SettingGeneralLanguageComp from './SettingGeneralLanguageComp';
 import appProvider from '../server/appProvider';
-import SettingGeneralPath from './directory-setting/SettingGeneralPathComp';
+import SettingGeneralPath from './directory-setting/SettingGeneralDirectoryPathComp';
 import { appLocalStorage } from './directory-setting/appLocalStorage';
 
 export default function SettingGeneralComp() {

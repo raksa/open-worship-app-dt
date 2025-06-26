@@ -21,6 +21,22 @@ export function SelectDefaultDirButton({
     );
 }
 
+export function GotoSettingDirectoryPathComp() {
+    return (
+        <div className="m-2">
+            <button
+                className="btn btn-sm btn-warning"
+                onClick={() => {
+                    goToGeneralSetting();
+                }}
+            >
+                <span>`Go to Settings </span>
+                <i className="bi bi-gear-wide-connected" />
+            </button>
+        </div>
+    );
+}
+
 export default function NoDirSelectedComp({
     dirSource,
     defaultFolderName,
@@ -48,15 +64,7 @@ export default function NoDirSelectedComp({
                         />
                     </div>
                     <div className="m-2">
-                        <button
-                            className="btn btn-sm btn-warning"
-                            onClick={() => {
-                                goToGeneralSetting();
-                            }}
-                        >
-                            <span>`Go to Settings </span>
-                            <i className="bi bi-gear-wide-connected" />
-                        </button>
+                        <GotoSettingDirectoryPathComp />
                     </div>
                 </div>
             </div>

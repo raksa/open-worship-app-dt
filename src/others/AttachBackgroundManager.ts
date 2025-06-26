@@ -1,13 +1,13 @@
-import { getBackgroundSelectedDirSource } from '../background/backgroundHelpers';
+import { dirSourceSettingNames } from '../helper/constants';
 import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
 import FileSource from '../helper/FileSource';
 import {
     fsCheckFileExist,
     fsDeleteFile,
     fsWriteFile,
-    pathJoin,
 } from '../server/fileHelpers';
 import { unlocking } from '../server/unlockingHelpers';
+import { BaseDirFileSource } from '../setting/directory-setting/directoryHelpers';
 import CacheManager from './CacheManager';
 
 export type AttachBackgroundType = { [key: string]: DroppedDataType };
@@ -18,36 +18,42 @@ export default class AttachBackgroundManager {
         return `${filePath}.bg.json`;
     }
 
-    async getDirSource(droppedData: DroppedDataType) {
-        let imageOrVideoType: 'image' | 'video' | null = null;
+    getBaseDirSettingName(droppedData: DroppedDataType) {
         if (droppedData.type === DragTypeEnum.BACKGROUND_IMAGE) {
-            imageOrVideoType = 'image';
+            return dirSourceSettingNames.BACKGROUND_IMAGE;
         } else if (droppedData.type === DragTypeEnum.BACKGROUND_VIDEO) {
-            imageOrVideoType = 'video';
+            return dirSourceSettingNames.BACKGROUND_VIDEO;
         }
-        const dirSource =
-            imageOrVideoType !== null
-                ? await getBackgroundSelectedDirSource(imageOrVideoType)
-                : null;
-        return dirSource;
+        throw new Error(`Unsupported dropped data type: ${droppedData.type}`);
     }
 
     async saveData(filePath: string, data: AttachBackgroundType) {
         const metaDataFilePath =
             AttachBackgroundManager.genMetaDataFilePath(filePath);
         const newData = Object.fromEntries(
-            Object.entries(data).map(([key, value]) => {
-                if (value.type !== DragTypeEnum.BACKGROUND_COLOR) {
-                    const fileSource = value.item as FileSource;
-                    value = {
-                        ...value,
-                        item: (value as any).isFileFullNameOnly
-                            ? fileSource.fileFullName
-                            : fileSource.filePath,
-                    };
-                }
-                return [key, value];
-            }),
+            Object.entries(data)
+                .map(([key, value]) => {
+                    if (value.type !== DragTypeEnum.BACKGROUND_COLOR) {
+                        const fileSource = value.item as FileSource;
+                        const baseDirFileSource = new BaseDirFileSource(
+                            this.getBaseDirSettingName(value),
+                            fileSource.filePath,
+                        );
+                        const fileFullNameOrFilePath =
+                            baseDirFileSource.fileFullNameOrFilePath;
+                        if (fileFullNameOrFilePath === null) {
+                            return [key, null];
+                        }
+                        value = {
+                            ...value,
+                            item: fileFullNameOrFilePath,
+                        };
+                    }
+                    return [key, value];
+                })
+                .filter(([_, value]) => {
+                    return value !== null;
+                }),
         );
         await FileSource.getInstance(metaDataFilePath).writeFileData(
             JSON.stringify(newData),
@@ -66,8 +72,6 @@ export default class AttachBackgroundManager {
         if (data === null) {
             return {};
         }
-        const imageDirSource = await getBackgroundSelectedDirSource('image');
-        const videoDirSource = await getBackgroundSelectedDirSource('video');
         const newData = Object.fromEntries(
             Object.entries(data)
                 .filter(([_, value]) => {
@@ -75,32 +79,23 @@ export default class AttachBackgroundManager {
                 })
                 .map(([key, value]) => {
                     if (value.type !== DragTypeEnum.BACKGROUND_COLOR) {
-                        let filePath = value.item as string;
-                        if (value.isFileFullNameOnly) {
-                            if (
-                                value.type === DragTypeEnum.BACKGROUND_IMAGE &&
-                                imageDirSource?.dirPath
-                            ) {
-                                filePath = pathJoin(
-                                    imageDirSource.dirPath,
-                                    filePath,
-                                );
-                            } else if (
-                                value.type === DragTypeEnum.BACKGROUND_VIDEO &&
-                                videoDirSource?.dirPath
-                            ) {
-                                filePath = pathJoin(
-                                    videoDirSource.dirPath,
-                                    filePath,
-                                );
-                            }
+                        const baseDirFileSource = new BaseDirFileSource(
+                            this.getBaseDirSettingName(value),
+                            value.item,
+                        );
+                        const fileSource = baseDirFileSource.fileSource;
+                        if (fileSource === null) {
+                            return [key, null];
                         }
                         value = {
                             ...value,
-                            item: FileSource.getInstance(filePath),
+                            item: fileSource,
                         };
                     }
                     return [key, value];
+                })
+                .filter(([_, value]) => {
+                    return value !== null;
                 }),
         );
         return newData;
@@ -136,13 +131,6 @@ export default class AttachBackgroundManager {
     ) {
         await unlocking(this.toLockingKey(filePath), async () => {
             const data = await this.readData(filePath);
-            if (droppedData.type !== DragTypeEnum.BACKGROUND_COLOR) {
-                const fileSource = droppedData.item as FileSource;
-                const dirSource = await this.getDirSource(droppedData);
-                (droppedData as any).isFileFullNameOnly =
-                    dirSource?.dirPath &&
-                    dirSource?.checkIsSameDirPath(fileSource.basePath);
-            }
             data[this.toKey(id)] = droppedData;
             await cached.set(filePath, data);
             await this.saveData(filePath, data);

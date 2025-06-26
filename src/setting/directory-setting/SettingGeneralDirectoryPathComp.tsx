@@ -1,5 +1,8 @@
 import PathSelectorComp from '../../others/PathSelectorComp';
-import { useAppEffect, useAppStateAsync } from '../../helper/debuggerHelpers';
+import {
+    useAppEffectAsync,
+    useAppStateAsync,
+} from '../../helper/debuggerHelpers';
 import {
     defaultDataDirNames,
     dirSourceSettingNames,
@@ -10,7 +13,7 @@ import {
     getDefaultDataDir,
     selectPathForChildDir,
 } from './directoryHelpers';
-import { fsCreateDir } from '../../server/fileHelpers';
+import { fsCheckDirExist, fsCreateDir } from '../../server/fileHelpers';
 import { OptionalPromise } from '../../others/otherHelpers';
 import {
     appLocalStorage,
@@ -48,20 +51,24 @@ function RenderPathElementComp({
     defaultFolderName: string;
 }>) {
     const dirSource = useGenDirSource(settingName);
+    const [isValidDirPath] = useAppStateAsync(() => {
+        return fsCheckDirExist(dirSource?.dirPath ?? '');
+    }, [dirSource]);
     if (!dirSource) {
         return null;
     }
     return (
         <div className="d-flex w-100 flex-column">
             <div>{title}:</div>
-            <div className="d-flex">
+            <div className="d-flex flex-column">
                 <div className="flex-grow-1">
                     <PathSelectorComp
                         prefix={`path-${settingName}`}
                         dirSource={dirSource}
+                        isForceShowEditor={!isValidDirPath}
                     />
                 </div>
-                {!dirSource.dirPath ? (
+                {!isValidDirPath ? (
                     <div className="m-1">
                         <SelectDefaultDirButton
                             dirSource={dirSource}
@@ -97,8 +104,8 @@ function RenderParentDirectoryComp({
                         className="btn btn-sm btn-info ms-2"
                         onClick={async () => {
                             await fsCreateDir(defaultPath);
-                            selectPathForChildDir(defaultPath);
                             dirSource.dirPath = defaultPath;
+                            await selectPathForChildDir(defaultPath);
                         }}
                     >
                         Set Default Data ({defaultPath})
@@ -110,7 +117,10 @@ function RenderParentDirectoryComp({
 }
 
 const titleSettingNames = {
-    Documents: [dirSourceSettingNames.DOCUMENT, defaultDataDirNames.DOCUMENT],
+    Documents: [
+        dirSourceSettingNames.APP_DOCUMENT,
+        defaultDataDirNames.APP_DOCUMENT,
+    ],
     Lyrics: [dirSourceSettingNames.LYRIC, defaultDataDirNames.LYRIC],
     Playlists: [dirSourceSettingNames.PLAYLIST, defaultDataDirNames.PLAYLIST],
     'Background Images': [
@@ -134,9 +144,43 @@ const titleSettingNames = {
         defaultDataDirNames.BIBLE_READ,
     ],
 };
+
+function RenderChildDirectoriesComp({
+    parentDirPath,
+}: Readonly<{ parentDirPath: string }>) {
+    return (
+        <>
+            <div className="card-header">
+                <button
+                    className="btn btn-sm btn-warning"
+                    onClick={() => {
+                        selectPathForChildDir(parentDirPath);
+                    }}
+                >
+                    `Reset All Child Directories
+                </button>
+            </div>
+            <div className="card-body">
+                {Object.entries(titleSettingNames).map(
+                    ([title, [settingName, defaultFolderName]]) => {
+                        return (
+                            <RenderPathElementComp
+                                key={title}
+                                title={title}
+                                settingName={settingName}
+                                defaultFolderName={defaultFolderName}
+                            />
+                        );
+                    },
+                )}
+            </div>
+        </>
+    );
+}
+
 function RenderBodyComp({ dirSource }: Readonly<{ dirSource: DirSource }>) {
-    useAppEffect(() => {
-        if (dirSource.dirPath && checkShouldSelectChildDir()) {
+    useAppEffectAsync(async () => {
+        if (dirSource.dirPath && (await checkShouldSelectChildDir())) {
             selectPathForChildDir(dirSource.dirPath);
         }
     }, [dirSource]);
@@ -145,28 +189,19 @@ function RenderBodyComp({ dirSource }: Readonly<{ dirSource: DirSource }>) {
             <div className="card-header">`Path Settings</div>
             <div className="card-body w-100 p-2">
                 <RenderParentDirectoryComp dirSource={dirSource} />
-                <div className="app-border-white-round p-1">
-                    {dirSource.dirPath
-                        ? Object.entries(titleSettingNames).map(
-                              ([title, [settingName, defaultFolderName]]) => {
-                                  return (
-                                      <RenderPathElementComp
-                                          key={title}
-                                          title={title}
-                                          settingName={settingName}
-                                          defaultFolderName={defaultFolderName}
-                                      />
-                                  );
-                              },
-                          )
-                        : null}
+                <div className="card app-border-white-round p-1">
+                    {dirSource.dirPath ? (
+                        <RenderChildDirectoriesComp
+                            parentDirPath={dirSource.dirPath}
+                        />
+                    ) : null}
                 </div>
             </div>
         </div>
     );
 }
 
-export default function SettingGeneralPathComp() {
+export default function SettingGeneralDirectoryPathComp() {
     const [dirSource, setDirSource] = useAppStateAsync(async () => {
         const selectedParentDir =
             await appLocalStorage.getSelectedParentDirectory();

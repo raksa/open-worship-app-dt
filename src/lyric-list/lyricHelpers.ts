@@ -1,31 +1,27 @@
 import { createContext, use } from 'react';
-import { fsCheckFileExist, getMimetypeExtensions } from '../server/fileHelpers';
+import { getMimetypeExtensions } from '../server/fileHelpers';
 import Lyric from './Lyric';
-import { getSetting, setSetting } from '../helper/settingHelpers';
+import { dirSourceSettingNames } from '../helper/constants';
+import {
+    getSelectedFilePath,
+    setSelectedFilePath,
+} from '../others/selectedHelpers';
 
 const SELECTED_LYRIC_SETTING_NAME = 'selected-lyric';
 
-async function checkSelectedFilePathExist(filePath: string) {
-    if (!filePath || !(await fsCheckFileExist(filePath))) {
-        setSelectedLyricFilePath(null);
-        return false;
-    }
-    return true;
-}
-
 export async function getSelectedLyricFilePath() {
-    const selectedFilePath = getSetting(SELECTED_LYRIC_SETTING_NAME, '');
-    // TODO: join with AppDocument directory path to support portable app
-    const isValid = await checkSelectedFilePathExist(selectedFilePath);
-    if (!isValid) {
-        return null;
-    }
-    return selectedFilePath;
+    return await getSelectedFilePath(
+        SELECTED_LYRIC_SETTING_NAME,
+        dirSourceSettingNames.LYRIC,
+    );
 }
 
 export function setSelectedLyricFilePath(filePath: string | null) {
-    // TODO: set fileFullName only to support portable app
-    setSetting(SELECTED_LYRIC_SETTING_NAME, filePath ?? '');
+    setSelectedFilePath(
+        SELECTED_LYRIC_SETTING_NAME,
+        dirSourceSettingNames.LYRIC,
+        filePath,
+    );
 }
 
 export async function getSelectedLyric() {
