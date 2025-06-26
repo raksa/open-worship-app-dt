@@ -2,7 +2,7 @@ import electron, { FileFilter, shell } from 'electron';
 import fontList from 'font-list';
 
 import ElectronAppController from './ElectronAppController';
-import { attemptClosing, tarExtract } from './electronHelpers';
+import { attemptClosing, goDownload, tarExtract } from './electronHelpers';
 import ElectronScreenController from './ElectronScreenController';
 import { officeFileToPdf } from './electronOfficeHelpers';
 import { getPagesCount, pdfToImages } from './pdfToImagesHelpers';
@@ -325,4 +325,8 @@ export function initEventOther(appController: ElectronAppController) {
             appController.mainController.sendData(replyEventName, data);
         },
     );
+
+    ipcMain.on('main:app:go-download', () => {
+        goDownload();
+    });
 }

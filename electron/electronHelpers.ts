@@ -1,4 +1,7 @@
+import { app, shell } from 'electron';
 import { x as tarX } from 'tar';
+
+import appInfo from '../package.json';
 
 export const isDev = process.env.NODE_ENV === 'development';
 
@@ -89,4 +92,10 @@ export function toShortcutKey(eventMapper: EventMapper) {
         key = `${sorted.join(' + ')} + ${key}`;
     }
     return key;
+}
+
+export function goDownload(){
+    const url = new URL(`${appInfo.homepage}/download`);
+    url.searchParams.set('mv', app.getVersion());
+    shell.openExternal(url.toString());
 }

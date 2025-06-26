@@ -1,7 +1,9 @@
 import { app, Menu, shell } from 'electron';
 
 import ElectronAppController from './ElectronAppController';
-import { toShortcutKey } from './electronHelpers';
+import { goDownload, toShortcutKey } from './electronHelpers';
+
+import appInfo from '../package.json'
 
 const findingShortcut = toShortcutKey({
     wControlKey: ['Ctrl'],
@@ -123,15 +125,13 @@ export function initMenu(appController: ElectronAppController) {
                 {
                     label: 'Learn More',
                     click: () => {
-                        shell.openExternal('https://www.openworship.app');
+                        shell.openExternal(appInfo.homepage);
                     },
                 },
                 {
                     label: 'Check for Updates',
                     click: () => {
-                        const url = new URL('https://www.openworship.app/download');
-                        url.searchParams.set('mv', app.getVersion());
-                        shell.openExternal(url.toString());
+                        goDownload();
                     },
                 },
                 ...(isMac ? [] : [{ role: 'about' }]),

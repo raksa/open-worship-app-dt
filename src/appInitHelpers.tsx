@@ -39,6 +39,7 @@ import {
 } from './helper/domHelpers';
 import { appLocalStorage } from './setting/directory-setting/appLocalStorage';
 import { unlocking } from './server/unlockingHelpers';
+import { checkForUpdateSilently } from './server/appHelpers';
 
 const ERROR_DATETIME_SETTING_NAME = 'error-datetime-setting';
 const ERROR_DURATION = 1000 * 10; // 10 seconds;
@@ -194,4 +195,6 @@ export async function main(children: React.ReactNode) {
     const root = createRoot(container);
 
     root.render(<RenderApp>{children}</RenderApp>);
+
+    setTimeout(checkForUpdateSilently, 3e3);
 }
