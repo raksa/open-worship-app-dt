@@ -94,7 +94,7 @@ export function toShortcutKey(eventMapper: EventMapper) {
     return key;
 }
 
-export function goDownload(){
+export function goDownload() {
     const url = new URL(`${appInfo.homepage}/download`);
     url.searchParams.set('mv', app.getVersion());
     shell.openExternal(url.toString());

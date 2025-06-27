@@ -3,7 +3,7 @@ import { app, Menu, shell } from 'electron';
 import ElectronAppController from './ElectronAppController';
 import { goDownload, toShortcutKey } from './electronHelpers';
 
-import appInfo from '../package.json'
+import appInfo from '../package.json';
 
 const findingShortcut = toShortcutKey({
     wControlKey: ['Ctrl'],
