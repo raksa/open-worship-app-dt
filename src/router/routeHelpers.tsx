@@ -1,8 +1,5 @@
 import { OptionalPromise } from '../others/otherHelpers';
-import { showAppAlert } from '../popup-widget/popupWidgetHelpers';
 import appProvider from '../server/appProvider';
-import { getSelectedVaryAppDocument } from '../app-document-list/appDocumentHelpers';
-import AppDocument from '../app-document-list/AppDocument';
 
 export type TabOptionType = {
     title: React.ReactNode;
@@ -16,7 +13,7 @@ export enum WindowModEnum {
     reader = 2,
 }
 
-function toTitleExternal(title: string, style?: React.CSSProperties) {
+export function toTitleExternal(title: string, style?: React.CSSProperties) {
     return (
         <span style={style}>
             {title + ' '}
@@ -25,21 +22,6 @@ function toTitleExternal(title: string, style?: React.CSSProperties) {
     );
 }
 
-export const editorTab: TabOptionType = {
-    title: toTitleExternal('Editor'),
-    routePath: appProvider.editorHomePage,
-    preCheck: async () => {
-        const varyAppDocument = await getSelectedVaryAppDocument();
-        if (!AppDocument.checkIsThisType(varyAppDocument)) {
-            showAppAlert(
-                'No slide selected',
-                'Please select an Open Worship slide first',
-            );
-            return false;
-        }
-        return true;
-    },
-};
 export const presenterTab: TabOptionType = {
     title: toTitleExternal('Presenter', {
         color: 'var(--app-color-presenter)',

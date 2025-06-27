@@ -106,7 +106,7 @@ export default function OtherCameraShowComp() {
     const [cameraInfoList, setCameraInfoList] = useState<CameraInfoType[]>([]);
     const [isOpened, setIsOpened] = useStateSettingBoolean(
         'other-camera-show-opened',
-        true,
+        false,
     );
     useAppEffectAsync(
         async (contextMethods) => {

@@ -11,8 +11,8 @@ import {
 } from '../context-menu/appContextMenuHelpers';
 import { menuTitleRealFile } from '../helper/helpers';
 import { copyToClipboard, showExplorer } from '../server/appHelpers';
-import { goToGeneralSetting } from '../setting/SettingComp';
 import appProvider from '../server/appProvider';
+import { goToGeneralSetting } from '../setting/settingHelpers';
 
 const LazyPathEditorComp = lazy(() => {
     return import('./PathEditorComp');

@@ -203,7 +203,7 @@ export default function OtherCountDownComp() {
     });
     const [isOpened, setIsOpened] = useStateSettingBoolean(
         'other-countdown-opened',
-        true,
+        false,
     );
     const handleCountdownHiding = (screenId: number) => {
         getScreenManagerInstances(screenId, (screenOtherManager) => {

@@ -1,3 +1,5 @@
+import { createContext } from 'react';
+
 import { showSimpleToast } from '../toast/toastHelpers';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 import { closeCurrentEditingBibleItem } from './readBibleHelpers';
@@ -25,7 +27,6 @@ import {
     bibleRenderHelper,
     BibleTargetType,
 } from '../bible-list/bibleRenderHelpers';
-import { createContext } from 'react';
 import CacheManager from '../others/CacheManager';
 import { AnyObjectType } from '../helper/helpers';
 import { OptionalPromise } from '../others/otherHelpers';

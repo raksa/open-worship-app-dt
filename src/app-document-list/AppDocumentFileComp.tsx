@@ -8,7 +8,7 @@ import { previewingEventListener } from '../event/PreviewingEventListener';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
-import { editorTab, goToPath } from '../router/routeHelpers';
+import { goToPath } from '../router/routeHelpers';
 import { previewPdf } from '../server/appHelpers';
 import { removePdfImagesPreview } from '../helper/pdfHelpers';
 import EditingHistoryManager from '../editing-manager/EditingHistoryManager';
@@ -23,6 +23,7 @@ import {
 import PdfAppDocument from './PdfAppDocument';
 import { AppDocumentSourceAbs } from '../helper/AppEditableDocumentSourceAbs';
 import { useEditingHistoryStatus } from '../editing-manager/editingHelpers';
+import { editorTab } from '../router/routeCompHelpers';
 
 function genContextMenuItems(
     varyAppDocument: VaryAppDocumentDynamicType,

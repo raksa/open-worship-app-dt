@@ -15,8 +15,21 @@ export default function PresenterOthersControllerComp() {
             <OtherMessageComp />
             <hr />
             <OtherCountDownComp />
+            {appProvider.systemUtils.isDev ? (
+                <>
+                    <hr />
+                    <div>TODO: Time</div>
+                </>
+            ) : null}
             <hr />
             <OtherImagesSlideShowComp />
+            <hr />
+            {appProvider.systemUtils.isDev ? (
+                <>
+                    <hr />
+                    <div>TODO: Stopwatch</div>
+                </>
+            ) : null}
             <hr />
             <OtherCameraShowComp />
             {appProvider.systemUtils.isDev ? (

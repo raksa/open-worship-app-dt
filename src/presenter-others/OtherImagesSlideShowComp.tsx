@@ -185,7 +185,7 @@ function useAnyItemSelected(filePaths: string[] | undefined) {
 export default function OtherImagesSlideShowComp() {
     const [isOpened, setIsOpened] = useStateSettingBoolean(
         'other-image-slide-show-opened',
-        true,
+        false,
     );
     const [filePaths, setFilePaths] = useState<string[] | undefined>();
     const isAnyItemSelected = useAnyItemSelected(filePaths);

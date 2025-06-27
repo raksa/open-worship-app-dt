@@ -24,6 +24,8 @@ import {
     applyToTheTop,
 } from '../scrolling/scrollingHandlerHelpers';
 import { unlocking } from '../server/unlockingHelpers';
+import { useAppStateAsync } from '../helper/debuggerHelpers';
+import { useScreenUpdateEvents } from './managers/screenManagerHooks';
 
 export const bibleDataTypeList = ['bible-item', 'lyric'] as const;
 export type BibleDataType = (typeof bibleDataTypeList)[number];
@@ -369,4 +371,23 @@ export function addPlayToBottom(div: HTMLDivElement) {
     target.style.bottom = '0px';
     div.appendChild(target);
     applyPlayToBottom(target);
+}
+
+
+export function useFileSourceIsOnScreen(
+    filePaths: string[],
+    checkIsOnScreen: (filePaths: string[]) => Promise<boolean>,
+    onUpdate?: (isOnScreen: boolean) => void,
+) {
+    const [isOnScreen, setIsOnScreen] = useAppStateAsync(async () => {
+        const isOnScreen = await checkIsOnScreen(filePaths);
+        onUpdate?.(isOnScreen);
+        return isOnScreen;
+    }, [filePaths]);
+    useScreenUpdateEvents(undefined, async () => {
+        const isOnScreen = await checkIsOnScreen(filePaths);
+        onUpdate?.(isOnScreen);
+        setIsOnScreen(isOnScreen);
+    });
+    return isOnScreen ?? false;
 }

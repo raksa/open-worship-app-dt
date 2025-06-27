@@ -16,9 +16,9 @@ import { useAppEffectAsync } from '../../helper/debuggerHelpers';
 import DirSource from '../../helper/DirSource';
 import { handleError } from '../../helper/errorHelpers';
 import { getSetting, setSetting } from '../../helper/settingHelpers';
-import { goToGeneralSetting } from '../SettingComp';
 import { appLocalStorage } from './appLocalStorage';
 import FileSource from '../../helper/FileSource';
+import { goToGeneralSetting } from '../settingHelpers';
 
 export function getDefaultDataDir() {
     const desktopPath = getDesktopPath();

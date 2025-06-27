@@ -11,7 +11,7 @@ import OtherRenderHeaderTitleComp from './OtherRenderHeaderTitleComp';
 export default function OtherMessageComp() {
     const [isOpened, setIsOpened] = useStateSettingBoolean(
         'other-message-opened',
-        true,
+        false,
     );
     useScreenOtherManagerEvents(['update']);
     const [text, setText] = useStateSettingString<string>(
@@ -57,6 +57,27 @@ export default function OtherMessageComp() {
             </div>
             {isOpened ? (
                 <div className="card-body">
+                    <div>
+                        <button
+                            className="btn btn-sm btn-info"
+                            onClick={() => {
+                                // Sunday September 24, 2023
+                                const date = new Date();
+                                const formattedDate = date.toLocaleString(
+                                    'en-US',
+                                    {
+                                        weekday: 'long',
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric',
+                                    },
+                                );
+                                setText(formattedDate);
+                            }}
+                        >
+                            Date
+                        </button>
+                    </div>
                     <div className="form-floating">
                         <textarea
                             id="marquee-textarea"

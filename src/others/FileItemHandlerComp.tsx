@@ -13,7 +13,7 @@ import {
     ContextMenuItemType,
     showAppContextMenu,
 } from '../context-menu/appContextMenuHelpers';
-import { useFileSourceIsOnScreen } from './otherHelpers';
+import { useFileSourceIsOnScreen } from '../_screen/screenHelpers';
 const LazyRenderRenamingComp = lazy(() => {
     return import('./RenderRenamingComp');
 });

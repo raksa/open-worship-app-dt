@@ -1,6 +1,6 @@
 import DirSource from '../helper/DirSource';
 import { selectDefaultDataDirName } from '../setting/directory-setting/directoryHelpers';
-import { goToGeneralSetting } from '../setting/SettingComp';
+import { goToGeneralSetting } from '../setting/settingHelpers';
 
 export function SelectDefaultDirButton({
     dirSource,

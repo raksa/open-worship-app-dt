@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react';
 
 import {
     TabOptionType,
-    editorTab,
     experimentTab,
     goToPath,
     presenterTab,
@@ -11,6 +10,7 @@ import {
 import {
     BibleLookupButtonComp,
     BibleLookupTogglePopupContext,
+    HelpButtonComp,
     SettingButtonComp,
 } from '../others/commonButtons';
 import appProvider from '../server/appProvider';
@@ -39,6 +39,7 @@ import {
     setSelectedLyric,
 } from '../lyric-list/lyricHelpers';
 import Lyric from '../lyric-list/Lyric';
+import { editorTab } from './routeCompHelpers';
 
 const tabs: TabOptionType[] = [];
 if (!appProvider.isPagePresenter) {
@@ -254,6 +255,9 @@ export default function AppLayoutComp({
                 </div>
                 <div className="app-highlight-border-bottom">
                     <SettingButtonComp />
+                </div>
+                <div className="app-highlight-border-bottom">
+                    <HelpButtonComp />
                 </div>
             </div>
             <div id="app-body" className="app-border-white-round">

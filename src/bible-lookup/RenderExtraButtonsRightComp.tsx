@@ -1,5 +1,6 @@
 import { getSetting, useStateSettingBoolean } from '../helper/settingHelpers';
 import {
+    HelpButtonComp,
     QuickOrBackButtonComp,
     SettingButtonComp,
 } from '../others/commonButtons';
@@ -62,6 +63,7 @@ export default function RenderExtraButtonsRightComp({
                 <>
                     <QuickOrBackButtonComp title="Quit Reader" />
                     <SettingButtonComp />
+                    <HelpButtonComp />
                 </>
             )}
         </div>

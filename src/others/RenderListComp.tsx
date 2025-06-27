@@ -5,8 +5,8 @@ import DirSource from '../helper/DirSource';
 import FileSource from '../helper/FileSource';
 import { MimetypeNameType } from '../server/fileHelpers';
 import LoadingComp from './LoadingComp';
-import { useFileSourceIsOnScreen } from './otherHelpers';
 import { GotoSettingDirectoryPathComp } from './NoDirSelectedComp';
+import { useFileSourceIsOnScreen } from '../_screen/screenHelpers';
 
 const UNKNOWN_COLOR_NOTE = 'unknown';
 

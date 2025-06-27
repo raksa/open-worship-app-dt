@@ -42,12 +42,26 @@ export function SettingButtonComp() {
     return (
         <button
             className="btn btn-outline-success rotating-hover"
-            title="Setting"
+            title="`Setting"
             onClick={() => {
                 goToPath(appProvider.settingHomePage);
             }}
         >
             <i className="bi bi-gear-wide-connected" />
+        </button>
+    );
+}
+
+export function HelpButtonComp() {
+    return (
+        <button
+            className="btn btn-outline-info"
+            title="`Help"
+            onClick={() => {
+                console.log('Help button clicked');
+            }}
+        >
+            <i className="bi bi-question-circle" />
         </button>
     );
 }
