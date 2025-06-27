@@ -1,4 +1,4 @@
-import { OptionalPromise } from '../others/otherHelpers';
+import { OptionalPromise } from '../helper/typeHelpers';
 import appProvider from '../server/appProvider';
 
 export type TabOptionType = {

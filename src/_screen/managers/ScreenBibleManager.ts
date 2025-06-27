@@ -3,7 +3,6 @@ import { CSSProperties } from 'react';
 import BibleItem from '../../bible-list/BibleItem';
 import { DroppedDataType, DragTypeEnum } from '../../helper/DragInf';
 import {
-    AnyObjectType,
     bringDomToNearestView,
     bringDomToTopView,
     cloneJson,
@@ -19,11 +18,8 @@ import {
     onSelectKey,
 } from '../screenBibleHelpers';
 import {
-    BasicScreenMessageType,
-    BibleItemDataType,
     genScreenMouseEvent,
     getBibleListOnScreenSetting,
-    ScreenMessageType,
 } from '../screenHelpers';
 import * as loggerHelpers from '../../helper/loggerHelpers';
 import { handleError } from '../../helper/errorHelpers';
@@ -36,6 +32,12 @@ import { applyAttachBackground } from './screenBackgroundHelpers';
 import { BibleItemType } from '../../bible-list/bibleItemHelpers';
 import { unlocking } from '../../server/unlockingHelpers';
 import Bible from '../../bible-list/Bible';
+import { AnyObjectType } from '../../helper/typeHelpers';
+import {
+    BasicScreenMessageType,
+    BibleItemDataType,
+    ScreenMessageType,
+} from '../screenTypeHelpers';
 
 let textStyle: AnyObjectType = {};
 class ScreenBibleManager extends ScreenEventHandler<ScreenBibleManagerEventType> {

@@ -4,7 +4,7 @@ import {
     MimetypeNameType,
 } from '../server/fileHelpers';
 import FileSource from '../helper/FileSource';
-import { AnyObjectType, cloneJson, toMaxId } from '../helper/helpers';
+import { cloneJson, toMaxId } from '../helper/helpers';
 import { AppDocumentSourceAbs } from '../helper/AppEditableDocumentSourceAbs';
 import { getSetting } from '../helper/settingHelpers';
 import BibleItem from './BibleItem';
@@ -15,6 +15,7 @@ import appProvider from '../server/appProvider';
 import DocumentInf from '../others/DocumentInf';
 import { handleError } from '../helper/errorHelpers';
 import { ItemSourceInfBasic } from '../others/ItemSourceInf';
+import { AnyObjectType } from '../helper/typeHelpers';
 
 export type BibleType = {
     items: BibleItemType[];

@@ -26,7 +26,8 @@
         "lint:pre": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\" \"electron/**/*.ts\"",
         "lint:es": "eslint src/**/*.ts* electron/**/*.ts",
         "lint": "npm run lint:pre && npm run lint:es && npm run build",
-        "dc:err": "depcruise src --include-only \"^src\" --output-type err-html > dc-dependency-graph/errors.html"
+        "dc:err": "depcruise src --include-only \"^src\" --output-type err-html > dc-dependency-graph/errors.html",
+        "ts:err:check": "tsc --noEmit --skipLibCheck"
     },
     "browserslist": {
         "production": [
@@ -101,7 +102,7 @@
         "node": ">=18.16.0"
     },
     "devDependencies": {
-        "@types/diff": "^7.0.1",
+        "@types/diff": "^8.0.0",
         "@types/markdown-it": "^14.1.2",
         "@types/node": "^22.13.10",
         "@types/react": "^19.1.8",

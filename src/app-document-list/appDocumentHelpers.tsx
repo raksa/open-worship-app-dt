@@ -26,7 +26,7 @@ import {
 import { openSlideQuickEdit } from '../app-document-presenter/SlideEditHandlerComp';
 import { showSimpleToast } from '../toast/toastHelpers';
 import AppDocument, { WrongDimensionType } from './AppDocument';
-import Slide, { SlideType } from './Slide';
+import Slide from './Slide';
 import { DroppedFileType } from '../others/droppingFileHelpers';
 import {
     hideProgressBard,
@@ -38,9 +38,8 @@ import { genShowOnScreensContextMenu } from '../others/FileItemHandlerComp';
 import ScreenVaryAppDocumentManager from '../_screen/managers/ScreenVaryAppDocumentManager';
 import PdfAppDocument from './PdfAppDocument';
 import { createContext, use, useState } from 'react';
-import { DisplayType } from '../_screen/screenHelpers';
 import { getSetting, setSetting } from '../helper/settingHelpers';
-import PdfSlide, { PdfSlideType } from './PdfSlide';
+import PdfSlide from './PdfSlide';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { useScreenVaryAppDocumentManagerEvents } from '../_screen/managers/screenEventHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
@@ -49,17 +48,11 @@ import {
     getSelectedFilePath,
     setSelectedFilePath,
 } from '../others/selectedHelpers';
-
-export const MIN_THUMBNAIL_SCALE = 1;
-export const THUMBNAIL_SCALE_STEP = 1;
-export const MAX_THUMBNAIL_SCALE = 10;
-export const DEFAULT_THUMBNAIL_SIZE_FACTOR = 1000 / MAX_THUMBNAIL_SCALE;
-export const THUMBNAIL_WIDTH_SETTING_NAME = 'presenter-item-thumbnail-size';
-
-export type VaryAppDocumentType = AppDocument | PdfAppDocument;
-export type VaryAppDocumentItemType = Slide | PdfSlide;
-export type VaryAppDocumentItemDataType = SlideType | PdfSlideType;
-export type VaryAppDocumentDynamicType = VaryAppDocumentType | null | undefined;
+import { DisplayType } from '../_screen/screenTypeHelpers';
+import {
+    VaryAppDocumentType,
+    VaryAppDocumentItemType,
+} from './appDocumentTypeHelpers';
 
 export function showPdfDocumentContextMenu(
     event: any,

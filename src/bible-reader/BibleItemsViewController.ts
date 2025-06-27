@@ -20,7 +20,7 @@ import {
     BIBLE_VIEW_TEXT_CLASS,
     VERSE_TEXT_CLASS,
 } from '../helper/bibleViewHelpers';
-import { getLangAsync } from '../lang';
+import { getLangAsync } from '../lang/langHelpers';
 import { getBibleLocale } from '../helper/bible-helpers/serverBibleHelpers2';
 import { BibleTargetType } from '../bible-list/bibleRenderHelpers';
 import {

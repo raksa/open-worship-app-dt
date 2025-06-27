@@ -2,8 +2,8 @@ import ScreenVaryAppDocumentManager from '../../_screen/managers/ScreenVaryAppDo
 import appProvider from '../../server/appProvider';
 import { getScreenManagerBase } from '../../_screen/managers/screenManagerBaseHelpers';
 import { screenManagerFromBase } from '../../_screen/managers/screenManagerHelpers';
-import { VaryAppDocumentItemType } from '../../app-document-list/appDocumentHelpers';
 import { slidePreviewerMethods } from './AppDocumentPreviewerFooterComp';
+import { VaryAppDocumentItemType } from '../../app-document-list/appDocumentTypeHelpers';
 
 export function handleAppDocumentItemSelecting(
     event: any,

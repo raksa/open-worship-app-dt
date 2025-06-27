@@ -2,32 +2,13 @@ import { useState } from 'react';
 
 import { useAppEffect } from '../helper/debuggerHelpers';
 import ScreenEffectManager from './managers/ScreenEffectManager';
+import { TargetType, StyleAnimType, PTFEventType } from './screenTypeHelpers';
 
 const ZOOM_CONTAINER_CLASS = 'zoom-container';
 
 function checkIsZoomContainer(targetElement: HTMLElement): boolean {
     return targetElement.classList.contains(ZOOM_CONTAINER_CLASS);
 }
-
-export type StyleAnimType = {
-    style: string;
-    animIn: (
-        targetElement: HTMLElement,
-        parentElement: HTMLElement,
-    ) => Promise<void>;
-    animOut: (targetElement: HTMLElement) => Promise<void>;
-    duration: number;
-};
-
-export const transitionEffect = {
-    fade: ['bi bi-shadows'],
-    move: ['bi bi-align-end'],
-    zoom: ['bi bi-arrows-fullscreen'],
-} as const;
-export type ScreenTransitionEffectType = keyof typeof transitionEffect;
-export type PTFEventType = 'update';
-export const targetList = ['background', 'vary-app-document'] as const;
-export type TargetType = (typeof targetList)[number];
 
 const easingFunctions = {
     linear: (k: number) => {

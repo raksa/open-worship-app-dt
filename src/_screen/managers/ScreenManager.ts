@@ -13,8 +13,8 @@ import {
 } from './screenManagerBaseHelpers';
 import ScreenManagerBase from './ScreenManagerBase';
 import { RegisteredEventType } from '../../event/EventHandler';
-import { ScreenMessageType } from '../screenHelpers';
 import appProvider from '../../server/appProvider';
+import { ScreenMessageType } from '../screenTypeHelpers';
 
 export default class ScreenManager extends ScreenManagerBase {
     readonly screenBackgroundManager: ScreenBackgroundManager;

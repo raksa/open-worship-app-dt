@@ -3,8 +3,8 @@ import ScreenEffectManager from './managers/ScreenEffectManager';
 import {
     ScreenTransitionEffectType,
     transitionEffect,
-    useScreenEffectEvents,
-} from './transitionEffectHelpers';
+} from './screenTypeHelpers';
+import { useScreenEffectEvents } from './transitionEffectHelpers';
 
 function openContextMenu(event: any, screenEffectManager: ScreenEffectManager) {
     const transitionEffectList = Object.entries(transitionEffect);

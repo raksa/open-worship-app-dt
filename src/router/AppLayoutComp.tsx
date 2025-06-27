@@ -28,7 +28,6 @@ import {
     SelectedEditingSlideContext,
     SelectedVaryAppDocumentContext,
     getSelectedVaryAppDocument,
-    VaryAppDocumentType,
     getSelectedEditingSlide,
     setSelectedVaryAppDocument,
     setSelectedEditingSlide,
@@ -40,6 +39,7 @@ import {
 } from '../lyric-list/lyricHelpers';
 import Lyric from '../lyric-list/Lyric';
 import { editorTab } from './routeCompHelpers';
+import { VaryAppDocumentType } from '../app-document-list/appDocumentTypeHelpers';
 
 const tabs: TabOptionType[] = [];
 if (!appProvider.isPagePresenter) {

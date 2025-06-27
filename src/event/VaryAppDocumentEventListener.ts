@@ -1,10 +1,10 @@
+import {
+    VaryAppDocumentItemType,
+    THUMBNAIL_WIDTH_SETTING_NAME,
+    DEFAULT_THUMBNAIL_SIZE_FACTOR,
+} from '../app-document-list/appDocumentTypeHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { getSetting, useStateSettingNumber } from '../helper/settingHelpers';
-import {
-    DEFAULT_THUMBNAIL_SIZE_FACTOR,
-    THUMBNAIL_WIDTH_SETTING_NAME,
-    VaryAppDocumentItemType,
-} from '../app-document-list/appDocumentHelpers';
 import EventHandler, { ListenerType } from './EventHandler';
 
 export type AppDocumentListEventType =

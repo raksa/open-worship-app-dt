@@ -28,8 +28,7 @@ import {
     BibleTargetType,
 } from '../bible-list/bibleRenderHelpers';
 import CacheManager from '../others/CacheManager';
-import { AnyObjectType } from '../helper/helpers';
-import { OptionalPromise } from '../others/otherHelpers';
+import { AnyObjectType, OptionalPromise } from '../helper/typeHelpers';
 import { unlocking } from '../server/unlockingHelpers';
 import { genFoundBibleItemContextMenu } from '../bible-lookup/bibleActionHelpers';
 import { setBibleSearchingTabType } from '../bible-search/BibleSearchPreviewerComp';

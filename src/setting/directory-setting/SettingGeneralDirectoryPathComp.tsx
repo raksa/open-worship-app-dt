@@ -14,13 +14,13 @@ import {
     selectPathForChildDir,
 } from './directoryHelpers';
 import { fsCheckDirExist, fsCreateDir } from '../../server/fileHelpers';
-import { OptionalPromise } from '../../others/otherHelpers';
 import {
     appLocalStorage,
     SELECTED_PARENT_DIR_SETTING_NAME,
 } from './appLocalStorage';
 import { SelectDefaultDirButton } from '../../others/NoDirSelectedComp';
 import { useGenDirSource } from '../../helper/dirSourceHelpers';
+import { OptionalPromise } from '../../helper/typeHelpers';
 
 class ParentDirSource extends DirSource {
     _dirPath: string;

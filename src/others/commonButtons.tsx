@@ -5,7 +5,7 @@ import {
     toShortcutKey,
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
-import { tran } from '../lang';
+import { tran } from '../lang/langHelpers';
 import { goToPath } from '../router/routeHelpers';
 import appProvider from '../server/appProvider';
 import { getAllLocalBibleInfoList } from '../helper/bible-helpers/bibleDownloadHelpers';

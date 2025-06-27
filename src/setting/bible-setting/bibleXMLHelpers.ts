@@ -4,7 +4,7 @@ import appProvider from '../../server/appProvider';
 import { writeStreamToFile } from '../../helper/bible-helpers/downloadHelpers';
 import { showExplorer } from '../../server/appHelpers';
 import { fsDeleteFile, pathJoin } from '../../server/fileHelpers';
-import { allLocalesMap, LocaleType } from '../../lang';
+import { allLocalesMap, LocaleType } from '../../lang/langHelpers';
 import { showAppInput } from '../../popup-widget/popupWidgetHelpers';
 import {
     genBibleBooksMapXMLInput,

@@ -5,26 +5,26 @@ import { getSetting, setSetting } from '../../helper/settingHelpers';
 import { SlideType } from '../../app-document-list/Slide';
 import { genPdfSlide } from '../../app-document-presenter/items/PdfSlideRenderComp';
 import { genSlideHtml } from '../../app-document-presenter/items/SlideRendererComp';
-import {
-    BasicScreenMessageType,
-    ScreenMessageType,
-    VaryAppDocumentItemScreenDataType,
-} from '../screenHelpers';
 import { screenManagerSettingNames } from '../../helper/constants';
 import ScreenEventHandler from './ScreenEventHandler';
 import ScreenManagerBase from './ScreenManagerBase';
 import ScreenEffectManager from './ScreenEffectManager';
 import { getAppDocumentListOnScreenSetting } from '../preview/screenPreviewerHelpers';
-import {
-    toKeyByFilePath,
-    VaryAppDocumentItemDataType,
-    VaryAppDocumentItemType,
-} from '../../app-document-list/appDocumentHelpers';
+import { toKeyByFilePath } from '../../app-document-list/appDocumentHelpers';
 import PdfSlide, { PdfSlideType } from '../../app-document-list/PdfSlide';
 import appProvider from '../../server/appProvider';
 import { applyAttachBackground } from './screenBackgroundHelpers';
 import { unlocking } from '../../server/unlockingHelpers';
 import { checkAreObjectsEqual } from '../../server/comparisonHelpers';
+import {
+    VaryAppDocumentItemDataType,
+    VaryAppDocumentItemType,
+} from '../../app-document-list/appDocumentTypeHelpers';
+import {
+    BasicScreenMessageType,
+    ScreenMessageType,
+} from '../screenTypeHelpers';
+import { VaryAppDocumentItemScreenDataType } from '../screenAppDocumentTypeHelpers';
 
 export type ScreenVaryAppDocumentManagerEventType = 'update';
 

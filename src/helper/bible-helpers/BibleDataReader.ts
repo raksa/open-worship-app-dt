@@ -1,6 +1,6 @@
 import appProvider from '../../server/appProvider';
 import { fsCreateDir, pathJoin } from '../../server/fileHelpers';
-import { LocaleType } from '../../lang';
+import { LocaleType } from '../../lang/langHelpers';
 import { is_dev, decrypt } from '../../_owa-crypto';
 import { handleError } from '../errorHelpers';
 import {

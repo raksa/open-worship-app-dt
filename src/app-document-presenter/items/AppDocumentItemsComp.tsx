@@ -19,12 +19,14 @@ import {
 import { useFileSourceEvents } from '../../helper/dirSourceHelpers';
 import LoadingComp from '../../others/LoadingComp';
 import {
-    DEFAULT_THUMBNAIL_SIZE_FACTOR,
     useAnyItemSelected,
     useVaryAppDocumentContext,
-    VaryAppDocumentItemType,
 } from '../../app-document-list/appDocumentHelpers';
 import SlideAutoPlayComp from '../../slide-auto-play/SlideAutoPlayComp';
+import {
+    VaryAppDocumentItemType,
+    DEFAULT_THUMBNAIL_SIZE_FACTOR,
+} from '../../app-document-list/appDocumentTypeHelpers';
 
 const varyAppDocumentItemsToView: { [key: string]: VaryAppDocumentItemType } =
     {};

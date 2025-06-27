@@ -8,7 +8,6 @@ import ScreenBibleManager from './ScreenBibleManager';
 import {
     getAllShowingScreenIds,
     hideScreen,
-    ScreenMessageType,
     setDisplay,
     showScreen,
 } from '../screenHelpers';
@@ -22,6 +21,7 @@ import {
 } from './screenHelpers';
 import appProvider from '../../server/appProvider';
 import { showSimpleToast } from '../../toast/toastHelpers';
+import { ScreenMessageType } from '../screenTypeHelpers';
 
 export type ScreenManagerEventType =
     | 'instance'

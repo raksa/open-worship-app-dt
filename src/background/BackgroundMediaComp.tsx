@@ -11,9 +11,9 @@ import { DragTypeEnum } from '../helper/DragInf';
 import ItemColorNoteComp from '../others/ItemColorNoteComp';
 import { handleDragStart } from '../helper/dragHelpers';
 import { useGenDirSource } from '../helper/dirSourceHelpers';
-import { BackgroundSrcType } from '../_screen/screenHelpers';
 import { getMimetypeExtensions } from '../server/fileHelpers';
 import { showAppContextMenu } from '../context-menu/appContextMenuHelpers';
+import { BackgroundSrcType } from '../_screen/screenTypeHelpers';
 
 export type RenderChildType = (
     filePath: string,

@@ -7,7 +7,6 @@ import {
     defaultDataDirNames,
     dirSourceSettingNames,
 } from '../helper/constants';
-import { BackgroundSrcType } from '../_screen/screenHelpers';
 import {
     handleAudioPlaying,
     handleAudioPausing,
@@ -15,6 +14,7 @@ import {
 } from './audioBackgroundHelpers';
 import { useState } from 'react';
 import { showSimpleToast } from '../toast/toastHelpers';
+import { BackgroundSrcType } from '../_screen/screenTypeHelpers';
 
 function rendChild(
     activeMap: { [key: string]: boolean },

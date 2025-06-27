@@ -1,18 +1,8 @@
-import Bible from './Bible';
-import {
-    ContextMenuItemType,
-    showAppContextMenu,
-} from '../context-menu/appContextMenuHelpers';
-import { moveBibleItemTo } from './bibleHelpers';
+import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 import BibleItem from './BibleItem';
-import { showSimpleToast } from '../toast/toastHelpers';
-import { AnyObjectType } from '../helper/helpers';
 import { BibleTargetType } from './bibleRenderHelpers';
-import { genShowOnScreensContextMenu } from '../others/FileItemHandlerComp';
-import ScreenBibleManager from '../_screen/managers/ScreenBibleManager';
-import LookupBibleItemController from '../bible-reader/LookupBibleItemController';
 import { genContextMenuItemIcon } from '../context-menu/AppContextMenuComp';
-import { attachBackgroundManager } from '../others/AttachBackgroundManager';
+import { AnyObjectType } from '../helper/typeHelpers';
 
 export type BibleItemType = {
     id: number;
@@ -53,92 +43,6 @@ export function genDefaultBibleItemContextMenu(
             },
         },
     ];
-}
-
-export async function openBibleItemContextMenu(
-    event: any,
-    bibleItem: BibleItem,
-    index: number,
-    openBibleLookup: (() => void) | null,
-    extraMenuItems: ContextMenuItemType[],
-) {
-    const bible = bibleItem.filePath
-        ? await Bible.fromFilePath(bibleItem.filePath)
-        : null;
-    if (bible === null) {
-        showSimpleToast('Open Bible Item Context Menu', 'Unable to get bible');
-        return;
-    }
-    const menuItem: ContextMenuItemType[] = [
-        ...genDefaultBibleItemContextMenu(bibleItem),
-        ...(openBibleLookup !== null
-            ? [
-                  {
-                      menuElement: '`Lookup',
-                      onSelect: async () => {
-                          const viewController =
-                              new LookupBibleItemController();
-                          viewController.applyTargetOrBibleKey(
-                              viewController.selectedBibleItem,
-                              {
-                                  bibleKey: bibleItem.bibleKey,
-                              },
-                          );
-                          await viewController.setLookupContentFromBibleItem(
-                              bibleItem,
-                          );
-                      },
-                  },
-              ]
-            : []),
-        {
-            menuElement: '`Duplicate',
-            onSelect: () => {
-                bible.duplicate(index);
-                bible.save();
-            },
-        },
-        ...genShowOnScreensContextMenu((event) => {
-            ScreenBibleManager.handleBibleItemSelecting(event, bibleItem, true);
-        }),
-        {
-            menuElement: '`Move To',
-            onSelect: (event1: any) => {
-                moveBibleItemTo(event1, bible, bibleItem);
-            },
-        },
-        {
-            menuElement: '`Delete',
-            onSelect: async () => {
-                await bible.deleteBibleItem(bibleItem);
-                if (bibleItem.filePath !== undefined) {
-                    attachBackgroundManager.detachBackground(
-                        bibleItem.filePath,
-                        bibleItem.id,
-                    );
-                }
-            },
-        },
-    ];
-    if (index !== 0) {
-        menuItem.push({
-            menuElement: '`Move up',
-            onSelect: () => {
-                bible.swapItems(index, index - 1);
-                bible.save();
-            },
-        });
-    }
-    if (index !== bible.itemsLength - 1) {
-        menuItem.push({
-            menuElement: '`Move down',
-            onSelect: () => {
-                bible.swapItems(index, index + 1);
-                bible.save();
-            },
-        });
-    }
-    showAppContextMenu(event, [...extraMenuItems, ...menuItem]);
 }
 
 export function genDuplicatedMessage(

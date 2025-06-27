@@ -3,11 +3,6 @@ import '../background/BackgroundImagesComp.scss';
 import { useState } from 'react';
 
 import ScreenBackgroundManager from '../_screen/managers/ScreenBackgroundManager';
-import {
-    BackgroundSrcType,
-    ImageScaleType,
-    scaleTypeList,
-} from '../_screen/screenHelpers';
 import { RenderScreenIds } from '../background/BackgroundComp';
 import BackgroundMediaComp from '../background/BackgroundMediaComp';
 import { DragTypeEnum } from '../helper/DragInf';
@@ -25,6 +20,11 @@ import { FilePathLoadedContext } from '../others/RenderListComp';
 import ScreenManagerBase from '../_screen/managers/ScreenManagerBase';
 import OtherRenderHeaderTitleComp from './OtherRenderHeaderTitleComp';
 import { showAppContextMenu } from '../context-menu/appContextMenuHelpers';
+import {
+    BackgroundSrcType,
+    ImageScaleType,
+    scaleTypeList,
+} from '../_screen/screenTypeHelpers';
 
 const DIR_SOURCE_SETTING_NAME = 'images-slide-show';
 const extraStyle: React.CSSProperties = {

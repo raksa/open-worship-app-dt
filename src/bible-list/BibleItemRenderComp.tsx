@@ -11,7 +11,6 @@ import {
 import ItemColorNoteComp from '../others/ItemColorNoteComp';
 import { BibleSelectionMiniComp } from '../bible-lookup/BibleSelectionComp';
 import ScreenBibleManager from '../_screen/managers/ScreenBibleManager';
-import { openBibleItemContextMenu } from './bibleItemHelpers';
 import { useToggleBibleLookupPopupContext } from '../others/commonButtons';
 import appProvider from '../server/appProvider';
 import { DragTypeEnum } from '../helper/DragInf';
@@ -24,6 +23,7 @@ import BibleItemsViewController, {
 } from '../bible-reader/BibleItemsViewController';
 import { attachBackgroundManager } from '../others/AttachBackgroundManager';
 import AttachBackgroundIconComponent from '../others/AttachBackgroundIconComponent';
+import { openBibleItemContextMenu } from './bibleHelpers';
 
 async function getBible(bibleItem: BibleItem) {
     return bibleItem.filePath

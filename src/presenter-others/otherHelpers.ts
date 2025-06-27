@@ -1,11 +1,9 @@
 import ScreenOtherManager from '../_screen/managers/ScreenOtherManager';
-import {
-    AlertDataType,
-    getAlertDataListOnScreenSetting,
-} from '../_screen/screenHelpers';
+import { getAlertDataListOnScreenSetting } from '../_screen/screenHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { getScreenManagerBaseByKey } from '../_screen/managers/screenManagerBaseHelpers';
 import { screenManagerFromBase } from '../_screen/managers/screenManagerHelpers';
+import { AlertDataType } from '../_screen/screenTypeHelpers';
 
 export function getShowingScreenIds(
     filterFunc: (data: AlertDataType) => boolean,

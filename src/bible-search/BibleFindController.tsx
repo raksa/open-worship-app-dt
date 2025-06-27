@@ -8,7 +8,7 @@ import {
     quickEndWord,
     quickTrimText,
     sanitizeFindingText,
-} from '../lang';
+} from '../lang/langHelpers';
 import appProvider, { SQLiteDatabaseType } from '../server/appProvider';
 import { fsCheckFileExist, pathJoin } from '../server/fileHelpers';
 import { getBibleXMLDataFromKey } from '../setting/bible-setting/bibleXMLHelpers';

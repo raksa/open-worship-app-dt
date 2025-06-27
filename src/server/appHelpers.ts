@@ -1,9 +1,8 @@
 import appProvider, { FontListType } from './appProvider';
 import { showSimpleToast } from '../toast/toastHelpers';
-import { AnyObjectType } from '../helper/helpers';
-import { OptionalPromise } from '../others/otherHelpers';
 import { handleError } from '../helper/errorHelpers';
 import { showAppConfirm } from '../popup-widget/popupWidgetHelpers';
+import { AnyObjectType, OptionalPromise } from '../helper/typeHelpers';
 
 export function getFontListByNodeFont() {
     appProvider.messageUtils.sendData('main:app:get-font-list');

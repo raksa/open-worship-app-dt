@@ -11,10 +11,7 @@ import {
 } from '../../helper/dragHelpers';
 import ShowingScreenIcon from '../../_screen/preview/ShowingScreenIcon';
 import appProvider from '../../server/appProvider';
-import {
-    checkIsAppDocumentItemOnScreen,
-    VaryAppDocumentItemType,
-} from '../../app-document-list/appDocumentHelpers';
+import { checkIsAppDocumentItemOnScreen } from '../../app-document-list/appDocumentHelpers';
 import { changeDragEventStyle } from '../../helper/helpers';
 import { DragTypeEnum, DroppedDataType } from '../../helper/DragInf';
 import { ContextMenuItemType } from '../../context-menu/appContextMenuHelpers';
@@ -23,6 +20,7 @@ import { useAppEffect } from '../../helper/debuggerHelpers';
 import ScreenVaryAppDocumentManager from '../../_screen/managers/ScreenVaryAppDocumentManager';
 import AppDocument from '../../app-document-list/AppDocument';
 import AttachBackgroundIconComponent from '../../others/AttachBackgroundIconComponent';
+import { VaryAppDocumentItemType } from '../../app-document-list/appDocumentTypeHelpers';
 
 function RenderScreenInfoComp({
     varyAppDocumentItem,

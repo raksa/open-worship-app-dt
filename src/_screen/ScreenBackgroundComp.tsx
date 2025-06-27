@@ -6,13 +6,13 @@ import ScreenBackgroundImageComp from './ScreenBackgroundImageComp';
 import ScreenBackgroundVideoComp from './ScreenBackgroundVideoComp';
 import { AppColorType } from '../others/color/colorHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
-import { BackgroundSrcType } from './screenHelpers';
 import { getScreenManagerBase } from './managers/screenManagerBaseHelpers';
 import {
     useScreenManagerContext,
     ScreenManagerBaseContext,
     useScreenManagerEvents,
 } from './managers/screenManagerHooks';
+import { BackgroundSrcType } from './screenTypeHelpers';
 
 export default function ScreenBackgroundComp() {
     const screenManager = useScreenManagerContext();

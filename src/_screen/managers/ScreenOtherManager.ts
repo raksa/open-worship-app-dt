@@ -9,16 +9,16 @@ import {
     getAndShowMedia,
     removeAlert,
 } from '../screenOtherHelpers';
-import {
-    AlertDataType,
-    BasicScreenMessageType,
-    getAlertDataListOnScreenSetting,
-    ScreenMessageType,
-} from '../screenHelpers';
+import { getAlertDataListOnScreenSetting } from '../screenHelpers';
 import { screenManagerSettingNames } from '../../helper/constants';
 import ScreenEventHandler from './ScreenEventHandler';
 import ScreenManagerBase from './ScreenManagerBase';
 import { unlocking } from '../../server/unlockingHelpers';
+import {
+    AlertDataType,
+    BasicScreenMessageType,
+    ScreenMessageType,
+} from '../screenTypeHelpers';
 
 export type ScreenOtherEventType = 'update';
 

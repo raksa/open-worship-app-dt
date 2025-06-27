@@ -13,17 +13,19 @@ import { previewPdf } from '../server/appHelpers';
 import { removePdfImagesPreview } from '../helper/pdfHelpers';
 import EditingHistoryManager from '../editing-manager/EditingHistoryManager';
 import {
-    VaryAppDocumentDynamicType,
     varyAppDocumentFromFilePath,
     useSelectedAppDocumentSetterContext,
     SelectedVaryAppDocumentContext,
-    VaryAppDocumentType,
     checkIsVaryAppDocumentOnScreen,
 } from './appDocumentHelpers';
 import PdfAppDocument from './PdfAppDocument';
 import { AppDocumentSourceAbs } from '../helper/AppEditableDocumentSourceAbs';
 import { useEditingHistoryStatus } from '../editing-manager/editingHelpers';
 import { editorTab } from '../router/routeCompHelpers';
+import {
+    VaryAppDocumentDynamicType,
+    VaryAppDocumentType,
+} from './appDocumentTypeHelpers';
 
 function genContextMenuItems(
     varyAppDocument: VaryAppDocumentDynamicType,

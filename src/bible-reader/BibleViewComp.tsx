@@ -22,13 +22,13 @@ import { useBibleViewFontSizeContext } from '../helper/bibleViewHelpers';
 import {
     bringDomToNearestView,
     checkIsVerticalPartialInvisible,
-    getSelectedText,
 } from '../helper/helpers';
 import {
     ContextMenuItemType,
     showAppContextMenu,
 } from '../context-menu/appContextMenuHelpers';
 import { genContextMenuItemIcon } from '../context-menu/AppContextMenuComp';
+import { getSelectedText } from '../helper/textSelectionHelpers';
 
 function handMovedChecking(
     viewController: BibleItemsViewController,

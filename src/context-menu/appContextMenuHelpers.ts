@@ -5,10 +5,11 @@ import { ReactElement, useState } from 'react';
 import KeyboardEventListener, {
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
-import { getWindowDim, genSelectedTextContextMenus } from '../helper/helpers';
+import { getWindowDim } from '../helper/helpers';
 import WindowEventListener from '../event/WindowEventListener';
 import { useAppEffect } from '../helper/debuggerHelpers';
-import { OptionalPromise } from '../others/otherHelpers';
+import { OptionalPromise } from '../helper/typeHelpers';
+import { genSelectedTextContextMenus } from '../helper/textSelectionHelpers';
 
 export type ContextMenuEventType = MouseEvent;
 export type ContextMenuItemType = {

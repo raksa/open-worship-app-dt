@@ -1,8 +1,8 @@
-import AppDocument from "../app-document-list/AppDocument";
-import { getSelectedVaryAppDocument } from "../app-document-list/appDocumentHelpers";
-import { showAppAlert } from "../popup-widget/popupWidgetHelpers";
-import appProvider from "../server/appProvider";
-import { TabOptionType, toTitleExternal } from "./routeHelpers";
+import AppDocument from '../app-document-list/AppDocument';
+import { getSelectedVaryAppDocument } from '../app-document-list/appDocumentHelpers';
+import { showAppAlert } from '../popup-widget/popupWidgetHelpers';
+import appProvider from '../server/appProvider';
+import { TabOptionType, toTitleExternal } from './routeHelpers';
 
 export const editorTab: TabOptionType = {
     title: toTitleExternal('Editor'),

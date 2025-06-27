@@ -12,7 +12,7 @@ import {
 } from './bibleScreenComps';
 import { getHTMLChild } from '../helper/helpers';
 import appProvider from '../server/appProvider';
-import { getLangAsync } from '../lang';
+import { getLangAsync } from '../lang/langHelpers';
 import { bibleRenderHelper } from '../bible-list/bibleRenderHelpers';
 
 const bibleScreenHelper = {

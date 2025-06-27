@@ -120,6 +120,7 @@ export async function renderMarkdown(
             return cached;
         }
         const MarkdownIt = (await import('markdown-it')).default;
+        // @ts-expect-error: ts(7016)
         const MarkdownItMusic = (await import('markdown-it-music')).default;
         const markdown = new MarkdownIt({ html: true }).use(MarkdownItMusic);
         if (options?.theme) {

@@ -9,15 +9,15 @@ import {
 import TabRenderComp, { genTabBody } from '../others/TabRenderComp';
 import { useScreenBackgroundManagerEvents } from '../_screen/managers/screenEventHelpers';
 import ShowingScreenIcon from '../_screen/preview/ShowingScreenIcon';
+import { getBackgroundSrcListOnScreenSetting } from '../_screen/screenHelpers';
+import ResizeActorComp from '../resize-actor/ResizeActorComp';
+import { tran } from '../lang/langHelpers';
+import { useAppEffect } from '../helper/debuggerHelpers';
+import { audioEvent } from './audioBackgroundHelpers';
 import {
     BackgroundSrcListType,
     BackgroundType,
-    getBackgroundSrcListOnScreenSetting,
-} from '../_screen/screenHelpers';
-import ResizeActorComp from '../resize-actor/ResizeActorComp';
-import { tran } from '../lang';
-import { useAppEffect } from '../helper/debuggerHelpers';
-import { audioEvent } from './audioBackgroundHelpers';
+} from '../_screen/screenTypeHelpers';
 
 const LazyBackgroundColorsComp = lazy(() => {
     return import('./BackgroundColorsComp');

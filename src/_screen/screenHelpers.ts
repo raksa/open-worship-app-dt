@@ -1,20 +1,13 @@
 import * as loggerHelpers from '../helper/loggerHelpers';
 import BibleItem from '../bible-list/BibleItem';
-import { BibleItemType } from '../bible-list/bibleItemHelpers';
 import { screenManagerSettingNames } from '../helper/constants';
 import { handleError } from '../helper/errorHelpers';
 import { isValidJson } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelpers';
-import { checkIsValidLocale } from '../lang';
+import { checkIsValidLocale } from '../lang/langHelpers';
 import { createMouseEvent } from '../context-menu/appContextMenuHelpers';
-import { BibleItemRenderingType } from './bibleScreenComps';
-import {
-    ScreenTransitionEffectType,
-    TargetType,
-} from './transitionEffectHelpers';
 import { electronSendAsync } from '../server/appHelpers';
 import { getValidOnScreen } from './managers/screenManagerBaseHelpers';
-import { VaryAppDocumentItemDataType } from '../app-document-list/appDocumentHelpers';
 import appProvider from '../server/appProvider';
 import {
     PLAY_TO_BOTTOM_CLASSNAME,
@@ -26,113 +19,18 @@ import {
 import { unlocking } from '../server/unlockingHelpers';
 import { useAppStateAsync } from '../helper/debuggerHelpers';
 import { useScreenUpdateEvents } from './managers/screenManagerHooks';
-
-export const bibleDataTypeList = ['bible-item', 'lyric'] as const;
-export type BibleDataType = (typeof bibleDataTypeList)[number];
-export type BibleItemDataType = {
-    locale: string;
-    type: BibleDataType;
-    bibleItemData?: {
-        renderedList: BibleItemRenderingType[];
-        bibleItem: BibleItemType;
-    };
-    scroll: number;
-    selectedKJVVerseKey: string | null;
-};
-export type BibleListType = {
-    [key: string]: BibleItemDataType;
-};
-
-export const scaleTypeList = [
-    'fill',
-    'fit',
-    'stretch',
-    'tile',
-    'center',
-    'span',
-] as const;
-export type ImageScaleType = (typeof scaleTypeList)[number];
-
-const _backgroundTypeList = ['color', 'image', 'video', 'sound'] as const;
-export type BackgroundType = (typeof _backgroundTypeList)[number];
-export type BackgroundDataType = {
-    src: string | null;
-    scaleType?: ImageScaleType;
-    extraStyle?: React.CSSProperties;
-};
-export type BackgroundSrcType = {
-    type: BackgroundType;
-    src: string;
-    width?: number;
-    height?: number;
-    scaleType?: ImageScaleType;
-    extraStyle?: React.CSSProperties;
-};
-export type BackgroundSrcListType = {
-    [key: string]: BackgroundSrcType;
-};
-
-export type AlertDataType = {
-    marqueeData: {
-        text: string;
-    } | null;
-    countdownData: {
-        dateTime: Date;
-        extraStyle: React.CSSProperties;
-    } | null;
-    cameraData: {
-        id: string;
-        extraStyle: React.CSSProperties;
-    } | null;
-};
-export type AlertSrcListType = {
-    [key: string]: AlertDataType;
-};
-
-export type VaryAppDocumentItemScreenDataType = {
-    filePath: string;
-    itemJson: VaryAppDocumentItemDataType;
-};
-export type AppDocumentListType = {
-    [key: string]: VaryAppDocumentItemScreenDataType;
-};
-
-export type BoundsType = {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-};
-export type DisplayType = {
-    id: number;
-    bounds: BoundsType;
-};
-export type AllDisplayType = {
-    primaryDisplay: DisplayType;
-    displays: DisplayType[];
-};
-
-export const screenTypeList = [
-    'background',
-    'vary-app-document',
-    'bible-screen-view',
-    'bible-screen-view-scroll',
-    'bible-screen-view-text-style',
-    'alert',
-    'bible-screen-view-selected-index',
-    'display-change',
-    'visible',
-    'init',
-    'effect',
-] as const;
-export type ScreenType = (typeof screenTypeList)[number];
-export type BasicScreenMessageType = {
-    type: ScreenType;
-    data: any;
-};
-export type ScreenMessageType = BasicScreenMessageType & {
-    screenId: number;
-};
+import {
+    ImageScaleType,
+    AllDisplayType,
+    AlertSrcListType,
+    BackgroundSrcListType,
+    BibleListType,
+    bibleDataTypeList,
+    ScreenTransitionEffectType,
+    TargetType,
+    SetDisplayType,
+    ShowScreenDataType,
+} from './screenTypeHelpers';
 
 const messageUtils = appProvider.messageUtils;
 
@@ -186,10 +84,6 @@ export function calMediaSizes(
     };
 }
 
-type SetDisplayType = {
-    screenId: number;
-    displayId: number;
-};
 export function setDisplay({ screenId, displayId }: SetDisplayType) {
     messageUtils.sendData('main:app:set-screen-display', {
         screenId,
@@ -204,10 +98,6 @@ export function getAllDisplays(): AllDisplayType {
     return messageUtils.sendDataSync('main:app:get-displays');
 }
 
-type ShowScreenDataType = {
-    screenId: number;
-    displayId: number;
-};
 export function showScreen({ screenId, displayId }: SetDisplayType) {
     return electronSendAsync<void>('main:app:show-screen', {
         screenId,
@@ -372,7 +262,6 @@ export function addPlayToBottom(div: HTMLDivElement) {
     div.appendChild(target);
     applyPlayToBottom(target);
 }
-
 
 export function useFileSourceIsOnScreen(
     filePaths: string[],

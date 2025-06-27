@@ -4,23 +4,23 @@ import { DragTypeEnum, DroppedDataType } from '../../helper/DragInf';
 import { getImageDim, getVideoDim } from '../../helper/helpers';
 import { setSetting } from '../../helper/settingHelpers';
 import { genHtmlBackground } from '../ScreenBackgroundComp';
-import {
-    BackgroundDataType,
-    BackgroundSrcType,
-    BackgroundType,
-    BasicScreenMessageType,
-    getBackgroundSrcListOnScreenSetting,
-    ScreenMessageType,
-} from '../screenHelpers';
+import { getBackgroundSrcListOnScreenSetting } from '../screenHelpers';
 import { handleError } from '../../helper/errorHelpers';
 import { screenManagerSettingNames } from '../../helper/constants';
 import ScreenEventHandler from './ScreenEventHandler';
 import ScreenManagerBase from './ScreenManagerBase';
 import ScreenEffectManager from './ScreenEffectManager';
 import appProvider from '../../server/appProvider';
-import { StyleAnimType } from '../transitionEffectHelpers';
 import { unlocking } from '../../server/unlockingHelpers';
 import { checkAreObjectsEqual } from '../../server/comparisonHelpers';
+import {
+    BackgroundDataType,
+    BackgroundSrcType,
+    BackgroundType,
+    BasicScreenMessageType,
+    ScreenMessageType,
+    StyleAnimType,
+} from '../screenTypeHelpers';
 
 export type ScreenBackgroundManagerEventType = 'update';
 

@@ -1,13 +1,14 @@
 import EventHandler from '../../event/EventHandler';
 import { getSetting, setSetting } from '../../helper/settingHelpers';
-import { ScreenMessageType, PTEffectDataType } from '../screenHelpers';
 import {
-    ScreenTransitionEffectType,
+    PTEffectDataType,
     PTFEventType,
-    styleAnimList,
+    ScreenMessageType,
+    ScreenTransitionEffectType,
     TargetType,
     transitionEffect,
-} from '../transitionEffectHelpers';
+} from '../screenTypeHelpers';
+import { styleAnimList } from '../transitionEffectHelpers';
 import ScreenManagerBase from './ScreenManagerBase';
 
 const cache = new Map<string, ScreenEffectManager>();

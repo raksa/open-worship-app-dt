@@ -1,11 +1,12 @@
 import { ItemBase } from '../helper/ItemBase';
-import { AnyObjectType, cloneJson } from '../helper/helpers';
+import { cloneJson } from '../helper/helpers';
 import { CanvasItemPropsType } from '../slide-editor/canvas/CanvasItem';
-import { DisplayType } from '../_screen/screenHelpers';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
 import { getDefaultScreenDisplay } from '../_screen/managers/screenHelpers';
 import { ClipboardInf } from '../server/appHelpers';
 import { handleError } from '../helper/errorHelpers';
+import { AnyObjectType } from '../helper/typeHelpers';
+import { DisplayType } from '../_screen/screenTypeHelpers';
 
 export type SlideType = {
     id: number;

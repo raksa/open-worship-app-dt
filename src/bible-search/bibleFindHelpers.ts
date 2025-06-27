@@ -6,7 +6,7 @@ import {
     BibleItemType,
     genDefaultBibleItemContextMenu,
 } from '../bible-list/bibleItemHelpers';
-import { LocaleType, sanitizeFindingText } from '../lang';
+import { LocaleType, sanitizeFindingText } from '../lang/langHelpers';
 import LookupBibleItemController from '../bible-reader/LookupBibleItemController';
 import {
     ContextMenuItemType,

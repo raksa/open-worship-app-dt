@@ -1,4 +1,4 @@
-import { AnyObjectType, cloneJson, isValidJson } from '../helper/helpers';
+import { cloneJson, isValidJson } from '../helper/helpers';
 import { ItemBase } from '../helper/ItemBase';
 import { setSetting, getSetting } from '../helper/settingHelpers';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
@@ -9,6 +9,7 @@ import { BibleItemType } from './bibleItemHelpers';
 import { copyToClipboard } from '../server/appHelpers';
 import { ItemSourceInfBasic } from '../others/ItemSourceInf';
 import DocumentInf from '../others/DocumentInf';
+import { AnyObjectType } from '../helper/typeHelpers';
 
 const BIBLE_PRESENT_SETTING_NAME = 'bible-presenter';
 

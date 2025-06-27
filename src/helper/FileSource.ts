@@ -13,7 +13,7 @@ import {
     pathSeparator,
     getFileName,
 } from '../server/fileHelpers';
-import { AnyObjectType, isValidJson } from './helpers';
+import { isValidJson } from './helpers';
 import { pathToFileURL } from '../server/helpers';
 import EventHandler from '../event/EventHandler';
 import appProvider from '../server/appProvider';
@@ -24,6 +24,7 @@ import FileSourceMetaManager from './FileSourceMetaManager';
 import ColorNoteInf from './ColorNoteInf';
 import { electronSendAsync } from '../server/appHelpers';
 import { unlocking } from '../server/unlockingHelpers';
+import { AnyObjectType } from './typeHelpers';
 
 export type SrcData = `data:${string}`;
 

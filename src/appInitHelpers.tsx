@@ -18,7 +18,7 @@ import {
     defaultLocale,
     getCurrentLocale,
     getFontFamily,
-} from './lang';
+} from './lang/langHelpers';
 import appProvider from './server/appProvider';
 import initCrypto from './_owa-crypto';
 import { useCheckSelectedDir } from './setting/directory-setting/directoryHelpers';
