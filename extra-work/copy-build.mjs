@@ -1,3 +1,5 @@
+'use strict';
+/* eslint-disable */
 import { copyFileSync, existsSync, mkdirSync, unlinkSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import process from 'node:process';
@@ -11,11 +13,14 @@ const systemUtils = {
 };
 
 function genFileName(baseName) {
-  const ext = systemUtils.isWindows
-    ? 'dll'
-    : systemUtils.isMac
-      ? 'dylib'
-      : 'so';
+  let ext;
+  if (systemUtils.isWindows) {
+    ext = 'dll';
+  } else if (systemUtils.isMac) {
+    ext = 'dylib';
+  } else {
+    ext = 'so';
+  }
   let suffix = '';
   if (systemUtils.isMac) {
     if (!systemUtils.isArm64) {
