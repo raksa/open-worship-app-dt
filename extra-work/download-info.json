@@ -1,0 +1,10 @@
+{
+    "win": {
+        "isWindows": true,
+        "is64System": true
+    },
+    "win-ia32": {
+        "isWindows": true,
+        "is64System": false
+    }
+}

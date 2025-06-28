@@ -102,6 +102,8 @@
         "node": ">=18.16.0"
     },
     "devDependencies": {
+        "@aws-sdk/client-s3": "^3.839.0",
+        "@aws-sdk/credential-providers": "^3.839.0",
         "@types/diff": "^8.0.0",
         "@types/markdown-it": "^14.1.2",
         "@types/node": "^22.13.10",
