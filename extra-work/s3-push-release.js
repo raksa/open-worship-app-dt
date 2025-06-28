@@ -136,7 +136,9 @@ function getUploadList() {
         if (isWindows && value.isWindows) {
             uploadList.push(...getWindowsBinFilePath(key, value));
         } else if (isMac && value.isMac) {
-            uploadList.push(...getMacBinFilePath(key, value));
+            if ((isArm64 && value.isArm64) || (!isArm64 && !value.isArm64)) {
+                uploadList.push(...getMacBinFilePath(key, value));
+            }
         }
     }
     return uploadList;
