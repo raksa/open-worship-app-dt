@@ -14,7 +14,7 @@ const isWindows = process.platform === 'win32';
 const isMac = process.platform === 'darwin';
 const isLinux = process.platform === 'linux';
 
-function filterWindowsBinFileInfo(prefix, data, ext) {
+function filterBinFileInfo(prefix, data, ext) {
     return data
         .filter((item) => {
             return item.fileFullName.endsWith(ext);
@@ -79,11 +79,63 @@ function getWindowsBinFilePath(prefix, systemInfo) {
     ];
 }
 
+function getMacBinFilePath(prefix, systemInfo) {
+    const filePath = resolve(
+        process.env.RELEASE_STORAGE_DIR,
+        prefix,
+        process.env.RELEASE_BIN_FILE_INFO,
+    );
+    const fileContext = readFileSync(filePath, 'utf-8');
+    const data = fileContext
+        .split('\n')
+        .map((line) => line.trim())
+        .filter((line) => line)
+        .map((line) => {
+            const [fileFullName, checksum, releaseDate, version] = line.split(
+                process.env.RELEASE_BIN_FILE_SEPARATOR,
+            );
+            return {
+                fileFullName,
+                checksum,
+                releaseDate,
+                version,
+            };
+        });
+    const info = {
+        version: data[0].version,
+        isMac: true,
+        isArm64: !!systemInfo.isArm64,
+        isUniversal: !!systemInfo.isUniversal,
+        portable: filterBinFileInfo(prefix, data, '.zip'),
+        installer: filterBinFileInfo(prefix, data, '.dmg'),
+    };
+    const s3Key = `${BASE_KEY_PREFIX}/${prefix}`;
+    return [
+        {
+            key: s3Key,
+            body: JSON.stringify(info, null, 2),
+            fileFullName: 'info.json',
+        },
+        ...data.map((item) => {
+            return {
+                key: `${s3Key}/${item.fileFullName}`,
+                filePath: resolve(
+                    process.env.RELEASE_STORAGE_DIR,
+                    prefix,
+                    item.fileFullName,
+                ),
+            };
+        }),
+    ];
+}
+
 function getUploadList() {
     const uploadList = [];
     for (const [key, value] of Object.entries(downloadInfo)) {
         if (isWindows && value.isWindows) {
             uploadList.push(...getWindowsBinFilePath(key, value));
+        } else if (isMac && value.isMac) {
+            uploadList.push(...getMacBinFilePath(key, value));
         }
     }
     return uploadList;

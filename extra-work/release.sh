@@ -1,19 +1,20 @@
 #!/bin/bash
-set -x
 
 current_script_dir=$(dirname "$0")
 cd "$current_script_dir/.."
 
-rm -rf ./release
-tmp_dir=$(realpath ./extra-work/tmp)
-rm -rf $tmp_dir
-mkdir $tmp_dir
+release_dir="./release"
+rm -rf $release_dir
+tmp_dir="./extra-work/tmp"
+rm -rf "$tmp_dir"
+mkdir -p "$tmp_dir"
 bin_file_info="files.txt"
 sep="|"
 
 win_prep() {
-    mv ./release $1
+    mv $release_dir $1
     target_file="$1/$bin_file_info"
+    rm -f "$target_file"
     ls "$1" | grep -E '\.exe$|\.zip$' | while read -r file; do
         file_name=$(basename "$file")
         checksum=$(sha512sum "$1/$file" | awk '{print $1}')
@@ -23,15 +24,34 @@ win_prep() {
     done
 }
 
+mac_prep() {
+    mv $release_dir $1
+    target_file="$1/$bin_file_info"
+    rm -f "$target_file"
+    ls "$1" | grep -E "$2\.dmg$|$2\.zip$" | while read -r file; do
+        file_name=$(basename "$file")
+        checksum=$(shasum -a 512 "$1/$file" | awk '{print $1}')
+        version=$(grep 'version:' "$1/latest-mac.yml" | awk '{print $2}' | tr -d "'")
+        release_date=$(grep 'releaseDate:' "$1/latest-mac.yml" | awk '{print $2}' | tr -d "'")
+        echo "${file_name}${sep}${checksum}${sep}${release_date}${sep}${version}" >> "$target_file"
+    done
+}
+
 if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]]; then
     npm run pack:win:32
-    win_prep ./extra-work/tmp/win-ia32
+    win_prep "$tmp_dir/win-ia32"
     npm run pack:win
-    win_prep ./extra-work/tmp/win
+    win_prep "$tmp_dir/win"
 elif [[ "$OSTYPE" == "darwin"* ]]; then
-    npm run pack:all
+    if [[ "$(uname -m)" == "arm64" ]]; then
+        npm run pack:mac
+        mac_prep "$tmp_dir/mac"
+        npm run pack:mac:uni
+        mac_prep "$tmp_dir/mac-uni" universal
+    fi
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    npm run pack:all
+    echo "Not implemented for Linux yet."
+    exit 1
 else
     echo "Unsupported OS: $OSTYPE"
     exit 1
