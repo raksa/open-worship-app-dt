@@ -12,6 +12,7 @@ const BASE_KEY_PREFIX = 'www/download';
 
 const isWindows = process.platform === 'win32';
 const isMac = process.platform === 'darwin';
+const isArm64 = process.arch === 'arm64';
 const isLinux = process.platform === 'linux';
 
 function filterBinFileInfo(prefix, data, ext) {
