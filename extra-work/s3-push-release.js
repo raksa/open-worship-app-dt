@@ -2,7 +2,20 @@
 /* eslint-disable */
 
 const { createReadStream, readFileSync } = require('node:fs');
+const {
+    CloudFrontClient,
+    CreateInvalidationCommand,
+} = require('@aws-sdk/client-cloudfront');
 const { PutObjectCommand, S3Client } = require('@aws-sdk/client-s3');
+
+const instanceInitData = {
+    apiVersion: 'latest',
+    region: process.env.RELEASE_AWS_REGION,
+    credentials: {
+        accessKeyId: process.env.RELEASE_AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.RELEASE_AWS_SECRET_ACCESS_KEY,
+    },
+};
 
 const downloadInfo = require('./download-info.json');
 const { resolve } = require('node:path');
@@ -144,17 +157,6 @@ function getUploadList() {
     return uploadList;
 }
 
-function genClient() {
-    const client = new S3Client({
-        region: process.env.RELEASE_AWS_REGION,
-        credentials: {
-            accessKeyId: process.env.RELEASE_AWS_ACCESS_KEY_ID,
-            secretAccessKey: process.env.RELEASE_AWS_SECRET_ACCESS_KEY,
-        },
-    });
-    return client;
-}
-
 async function uploadToS3(client, baseKey, body, optionalFileFullName) {
     const key = `${baseKey}${optionalFileFullName ? `/${optionalFileFullName}` : ''}`;
     const bucketName = process.env.RELEASE_AWS_BUCKET_NAME;
@@ -169,8 +171,25 @@ async function uploadToS3(client, baseKey, body, optionalFileFullName) {
     console.log(`*Uploaded to "${url}"`);
 }
 
+async function clearCache(key) {
+    const item = `/${key}`;
+    const cloudfront = new CloudFrontClient(instanceInitData);
+    const command = new CreateInvalidationCommand({
+        DistributionId: process.env.RELEASE_AWS_DISTRIBUTION_ID,
+        InvalidationBatch: {
+            CallerReference: `caller-reference-${new Date().getTime()}`,
+            Paths: {
+                Quantity: 1,
+                Items: [item],
+            },
+        },
+    });
+    await cloudfront.send(command);
+    console.log('Clear cache done for', item);
+}
+
 async function main() {
-    const s3Client = genClient();
+    const s3Client = new S3Client(instanceInitData);
     await uploadToS3(
         s3Client,
         BASE_KEY_PREFIX,
@@ -196,6 +215,7 @@ async function main() {
             }
         }),
     );
+    await clearCache('download/*');
 }
 
 console.log('Pushing to S3...');
