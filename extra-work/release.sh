@@ -48,6 +48,9 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
         mac_prep "$tmp_dir/mac"
         npm run pack:mac:uni
         mac_prep "$tmp_dir/mac-uni" universal
+    else
+        npm run pack:mac
+        mac_prep "$tmp_dir/mac-intel"
     fi
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
     echo "Not implemented for Linux yet."

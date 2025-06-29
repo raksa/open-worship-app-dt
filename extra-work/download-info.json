@@ -15,5 +15,10 @@
         "isMac": true,
         "isArm64": true,
         "isUniversal": true
+    },
+    "mac-intel": {
+        "isMac": true,
+        "isArm64": false,
+        "isUniversal": false
     }
 }
