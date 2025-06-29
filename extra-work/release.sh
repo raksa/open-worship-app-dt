@@ -4,10 +4,7 @@ current_script_dir=$(dirname "$0")
 cd "$current_script_dir/.."
 
 release_dir="./release"
-rm -rf $release_dir
 tmp_dir="./extra-work/tmp"
-rm -rf "$tmp_dir"
-mkdir -p "$tmp_dir"
 bin_file_info="files.txt"
 sep="|"
 
@@ -37,35 +34,47 @@ mac_prep() {
     done
 }
 
-if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]]; then
-    npm run pack:win:32
-    win_prep "$tmp_dir/win-ia32"
-    npm run pack:win
-    win_prep "$tmp_dir/win"
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-    if [[ "$(uname -m)" == "arm64" ]]; then
-        npm run pack:mac
-        mac_prep "$tmp_dir/mac"
-        npm run pack:mac:uni
-        mac_prep "$tmp_dir/mac-uni" universal
+build_release() {
+    if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]]; then
+        npm run pack:win:32
+        win_prep "$tmp_dir/win-ia32"
+        npm run pack:win
+        win_prep "$tmp_dir/win"
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        if [[ "$(uname -m)" == "arm64" ]]; then
+            npm run pack:mac
+            mac_prep "$tmp_dir/mac"
+            npm run pack:mac:uni
+            mac_prep "$tmp_dir/mac-uni" universal
+        else
+            npm run pack:mac
+            mac_prep "$tmp_dir/mac-intel"
+        fi
+    elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        echo "Not implemented for Linux yet."
+        exit 1
     else
-        npm run pack:mac
-        mac_prep "$tmp_dir/mac-intel"
+        echo "Unsupported OS: $OSTYPE"
+        exit 1
     fi
-elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    echo "Not implemented for Linux yet."
-    exit 1
-else
-    echo "Unsupported OS: $OSTYPE"
-    exit 1
-fi
 
-if [[ -f ./extra-work/.env ]]; then
-    source ./extra-work/.env
-else
-    echo "Error: .env file not found."
-    exit 1
-fi
+    if [[ -f ./extra-work/.env ]]; then
+        source ./extra-work/.env
+    else
+        echo "Error: .env file not found."
+        exit 1
+    fi
+}
+
+rm -rf "$tmp_dir"
+mkdir -p "$tmp_dir"
+
+mkdir -p "$release_dir"
+mv "$release_dir" "$tmp_dir/backup-release"
+
+build_release
+
+mv "$tmp_dir/backup-release" "$release_dir"
 
 export RELEASE_AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}"
 export RELEASE_AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}"
