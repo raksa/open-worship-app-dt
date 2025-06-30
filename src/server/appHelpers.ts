@@ -123,7 +123,10 @@ async function getDownloadTargetUrl() {
         Object.entries(downloadInfo).find(([_key, item]: [string, any]) => {
             return (
                 (systemUtils.isWindows && item.isWindows) ||
-                (systemUtils.isMac && item.isMac) ||
+                (systemUtils.isMac &&
+                    item.isMac &&
+                    ((systemUtils.isArm64 && item.isArm64) ||
+                        (!systemUtils.is64System && !item.isArm64))) ||
                 (systemUtils.isLinux && item.isLinux)
             );
         }) ?? null;
@@ -159,6 +162,11 @@ export async function checkForUpdateSilently() {
     }
     try {
         const version = updateData.version as string;
+        console.log(
+            `Current version: ${appProvider.appInfo.version}, ` +
+                `Latest version: ${version}`,
+        );
+
         if (checkIsVersionOutdated(appProvider.appInfo.version, version)) {
             const isOk = await showAppConfirm(
                 'Update Available',
