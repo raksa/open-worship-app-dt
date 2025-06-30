@@ -20,5 +20,13 @@
         "isMac": true,
         "isArm64": false,
         "isUniversal": false
+    },
+    "linux-ubuntu": {
+        "isLinux": true,
+        "isUbuntu": true
+    },
+    "linux-fedora": {
+        "isLinux": true,
+        "isFedora": true
     }
 }

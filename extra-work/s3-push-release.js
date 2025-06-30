@@ -27,6 +27,8 @@ const isWindows = process.platform === 'win32';
 const isMac = process.platform === 'darwin';
 const isArm64 = process.arch === 'arm64';
 const isLinux = process.platform === 'linux';
+const isUbuntu = process.env.RELEASE_LINUX_IS_UBUNTU === 'true';
+const isFedora = process.env.RELEASE_LINUX_IS_FEDORA === 'true';
 
 function filterBinFileInfo(prefix, data, ext) {
     return data
@@ -44,7 +46,7 @@ function filterBinFileInfo(prefix, data, ext) {
         });
 }
 
-function getWindowsBinFilePath(prefix, systemInfo) {
+function readDataFile(prefix) {
     const filePath = resolve(
         process.env.RELEASE_STORAGE_DIR,
         prefix,
@@ -54,18 +56,23 @@ function getWindowsBinFilePath(prefix, systemInfo) {
     const data = fileContext
         .split('\n')
         .map((line) => line.trim())
-        .filter((line) => line)
-        .map((line) => {
-            const [fileFullName, checksum, releaseDate, version] = line.split(
-                process.env.RELEASE_BIN_FILE_SEPARATOR,
-            );
-            return {
-                fileFullName,
-                checksum,
-                releaseDate,
-                version,
-            };
-        });
+        .filter((line) => line);
+    return data;
+}
+
+function getWindowsBinFilePath(prefix, systemInfo) {
+    const fileContextData = readDataFile(prefix);
+    const data = fileContextData.map((line) => {
+        const [fileFullName, checksum, releaseDate, version] = line.split(
+            process.env.RELEASE_BIN_FILE_SEPARATOR,
+        );
+        return {
+            fileFullName,
+            checksum,
+            releaseDate,
+            version,
+        };
+    });
     const info = {
         version: data[0].version,
         isWindows: true,
@@ -94,27 +101,18 @@ function getWindowsBinFilePath(prefix, systemInfo) {
 }
 
 function getMacBinFilePath(prefix, systemInfo) {
-    const filePath = resolve(
-        process.env.RELEASE_STORAGE_DIR,
-        prefix,
-        process.env.RELEASE_BIN_FILE_INFO,
-    );
-    const fileContext = readFileSync(filePath, 'utf-8');
-    const data = fileContext
-        .split('\n')
-        .map((line) => line.trim())
-        .filter((line) => line)
-        .map((line) => {
-            const [fileFullName, checksum, releaseDate, version] = line.split(
-                process.env.RELEASE_BIN_FILE_SEPARATOR,
-            );
-            return {
-                fileFullName,
-                checksum,
-                releaseDate,
-                version,
-            };
-        });
+    const fileContextData = readDataFile(prefix);
+    const data = fileContextData.map((line) => {
+        const [fileFullName, checksum, releaseDate, version] = line.split(
+            process.env.RELEASE_BIN_FILE_SEPARATOR,
+        );
+        return {
+            fileFullName,
+            checksum,
+            releaseDate,
+            version,
+        };
+    });
     const info = {
         version: data[0].version,
         isMac: true,
@@ -122,6 +120,49 @@ function getMacBinFilePath(prefix, systemInfo) {
         isUniversal: !!systemInfo.isUniversal,
         portable: filterBinFileInfo(prefix, data, '.zip'),
         installer: filterBinFileInfo(prefix, data, '.dmg'),
+    };
+    const s3Key = `${BASE_KEY_PREFIX}/${prefix}`;
+    return [
+        {
+            key: s3Key,
+            body: JSON.stringify(info, null, 2),
+            fileFullName: 'info.json',
+        },
+        ...data.map((item) => {
+            return {
+                key: `${s3Key}/${item.fileFullName}`,
+                filePath: resolve(
+                    process.env.RELEASE_STORAGE_DIR,
+                    prefix,
+                    item.fileFullName,
+                ),
+            };
+        }),
+    ];
+}
+
+function getLinuxBinFilePath(prefix, systemInfo) {
+    const fileContextData = readDataFile(prefix);
+    const data = fileContextData.map((line) => {
+        const [fileFullName, checksum, releaseDate, version] = line.split(
+            process.env.RELEASE_BIN_FILE_SEPARATOR,
+        );
+        return {
+            fileFullName,
+            checksum,
+            releaseDate,
+            version,
+        };
+    });
+    const info = {
+        version: data[0].version,
+        isLinux: true,
+        isUbuntu: !!systemInfo.isUbuntu,
+        isFedora: !!systemInfo.isFedora,
+        installer: [
+            ...filterBinFileInfo(prefix, data, '.deb'),
+            ...filterBinFileInfo(prefix, data, '.rpm'),
+        ],
     };
     const s3Key = `${BASE_KEY_PREFIX}/${prefix}`;
     return [
@@ -151,6 +192,10 @@ function getUploadList() {
         } else if (isMac && value.isMac) {
             if ((isArm64 && value.isArm64) || (!isArm64 && !value.isArm64)) {
                 uploadList.push(...getMacBinFilePath(key, value));
+            }
+        } else if (isLinux && value.isLinux) {
+            if ((isUbuntu && value.isUbuntu) || (isFedora && value.isFedora)) {
+                uploadList.push(...getLinuxBinFilePath(key, value));
             }
         }
     }

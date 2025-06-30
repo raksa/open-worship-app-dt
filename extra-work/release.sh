@@ -8,6 +8,26 @@ tmp_dir="./extra-work/tmp"
 bin_file_info="files.txt"
 sep="|"
 
+is_linux_ubuntu() {
+    if command -v lsb_release &> /dev/null; then
+        if [[ "$(lsb_release -is)" == "Ubuntu" ]]; then
+            return 0
+        fi
+    fi
+}
+
+is_linux_fedora() {
+    if command -v lsb_release &> /dev/null; then
+        if [[ "$(lsb_release -is)" == "Fedora" ]]; then
+            return 0
+        fi
+    fi
+    return 1
+}
+
+export RELEASE_LINUX_IS_UBUNTU=$(is_linux_ubuntu && echo "true" || echo "false")
+export RELEASE_LINUX_IS_FEDORA=$(is_linux_fedora && echo "true" || echo "false")
+
 win_prep() {
     mv $release_dir $1
     target_file="$1/$bin_file_info"
@@ -34,6 +54,19 @@ mac_prep() {
     done
 }
 
+linux_prep() {
+    mv $release_dir $1
+    target_file="$1/$bin_file_info"
+    rm -f "$target_file"
+    ls "$1" | grep -E '\.deb$|\.rpm$' | while read -r file; do
+        file_name=$(basename "$file")
+        checksum=$(sha512sum "$1/$file" | awk '{print $1}')
+        version=$(grep 'version:' "$1/latest-linux.yml" | awk '{print $2}' | tr -d "'")
+        release_date=$(grep 'releaseDate:' "$1/latest-linux.yml" | awk '{print $2}' | tr -d "'")
+        echo "${file_name}${sep}${checksum}${sep}${release_date}${sep}${version}" >> "$target_file"
+    done
+}
+
 build_release() {
     if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]]; then
         npm run pack:win:32
@@ -51,17 +84,17 @@ build_release() {
             mac_prep "$tmp_dir/mac-intel"
         fi
     elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        echo "Not implemented for Linux yet."
-        exit 1
+        npm run pack:linux
+        if [[ "$RELEASE_LINUX_IS_UBUNTU" == "true" ]]; then
+            linux_prep "$tmp_dir/linux-ubuntu"
+        elif [[ "$RELEASE_LINUX_IS_FEDORA" == "true" ]]; then
+            linux_prep "$tmp_dir/linux-fedora"
+        else
+            echo "Unsupported Linux distribution"
+            exit 1
+        fi
     else
         echo "Unsupported OS: $OSTYPE"
-        exit 1
-    fi
-
-    if [[ -f ./extra-work/.env ]]; then
-        source ./extra-work/.env
-    else
-        echo "Error: .env file not found."
         exit 1
     fi
 }
@@ -75,6 +108,13 @@ mv "$release_dir" "$tmp_dir/backup-release"
 build_release
 
 mv "$tmp_dir/backup-release" "$release_dir"
+
+if [[ -f ./extra-work/.env ]]; then
+    source ./extra-work/.env
+else
+    echo "Error: .env file not found."
+    exit 1
+fi
 
 export RELEASE_AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}"
 export RELEASE_AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}"
