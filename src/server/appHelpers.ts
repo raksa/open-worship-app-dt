@@ -94,23 +94,51 @@ function checkIsVersionOutdated(
     }
     return false; // Versions are equal
 }
-export async function checkForUpdateSilently() {
-    // TODO: check info from /download/info.json instead
-    const { systemUtils } = appProvider;
-    let urlPath = '';
-    if (systemUtils.isWindows) {
-        urlPath = systemUtils.is64System ? 'win' : 'win-ia32';
-    } else if (systemUtils.isMac) {
-        urlPath = systemUtils.isArm64 ? 'mac' : 'mac-intel';
-    } else if (systemUtils.isLinux) {
-        urlPath = 'linux-ubuntu';
-    } else {
-        throw new Error('Unsupported system');
+
+async function getDownloadTargetUrl() {
+    const downloadInfo = await fetch(
+        `${appProvider.appInfo.homepage}/download/info.json`,
+        {
+            method: 'GET',
+            cache: 'no-cache',
+        },
+    )
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(
+                    `Failed to fetch update download info: ${response.statusText}`,
+                );
+            }
+            return response.json();
+        })
+        .catch((error) => {
+            console.error('Error fetching update download info:', error);
+            return null;
+        });
+    if (downloadInfo === null) {
+        return null;
     }
-    const url = new URL(
-        `${appProvider.appInfo.homepage}/download/${urlPath}/info.json`,
-    );
-    const updateData = await fetch(url.toString(), {
+    const { systemUtils } = appProvider;
+    const targetInfo =
+        Object.entries(downloadInfo).find(([_key, item]: [string, any]) => {
+            return (
+                (systemUtils.isWindows && item.isWindows) ||
+                (systemUtils.isMac && item.isMac) ||
+                (systemUtils.isLinux && item.isLinux)
+            );
+        }) ?? null;
+    if (targetInfo === null) {
+        return null;
+    }
+    return `${appProvider.appInfo.homepage}/download/${targetInfo[0]}/info.json`;
+}
+
+export async function checkForUpdateSilently() {
+    const url = await getDownloadTargetUrl();
+    if (url === null) {
+        return;
+    }
+    const updateData = await fetch(url, {
         method: 'GET',
         cache: 'no-cache',
     })
