@@ -100,9 +100,9 @@ export async function checkForUpdateSilently() {
     if (systemUtils.isWindows) {
         urlPath = systemUtils.is64System ? 'win' : 'win-ia32';
     } else if (systemUtils.isMac) {
-        urlPath = systemUtils.isArm64 ? 'mac-arm64' : 'mac-x64';
+        urlPath = systemUtils.isArm64 ? 'mac' : 'mac-intel';
     } else if (systemUtils.isLinux) {
-        urlPath = systemUtils.isArm64 ? 'linux-arm64' : 'linux-x64';
+        urlPath = 'linux-ubuntu';
     } else {
         throw new Error('Unsupported system');
     }
