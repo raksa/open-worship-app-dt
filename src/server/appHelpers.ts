@@ -95,6 +95,7 @@ function checkIsVersionOutdated(
     return false; // Versions are equal
 }
 export async function checkForUpdateSilently() {
+    // TODO: check info from /download/info.json instead
     const { systemUtils } = appProvider;
     let urlPath = '';
     if (systemUtils.isWindows) {
