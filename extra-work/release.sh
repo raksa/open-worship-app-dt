@@ -3,6 +3,9 @@
 current_script_dir=$(dirname "$0")
 cd "$current_script_dir/.."
 
+git pull
+npm i
+
 release_dir="./release"
 tmp_dir="./extra-work/tmp"
 bin_file_info="files.txt"
