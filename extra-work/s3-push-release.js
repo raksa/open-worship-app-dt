@@ -159,10 +159,8 @@ function getLinuxBinFilePath(prefix, systemInfo) {
         isLinux: true,
         isUbuntu: !!systemInfo.isUbuntu,
         isFedora: !!systemInfo.isFedora,
-        installer: [
-            ...filterBinFileInfo(prefix, data, '.deb'),
-            ...filterBinFileInfo(prefix, data, '.rpm'),
-        ],
+        portable: filterBinFileInfo(prefix, data, '.AppImage'),
+        installer: systemInfo.isUbuntu ? filterBinFileInfo(prefix, data, '.deb') : [],
     };
     const s3Key = `${BASE_KEY_PREFIX}/${prefix}`;
     return [

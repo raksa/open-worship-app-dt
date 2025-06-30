@@ -11,22 +11,21 @@ sep="|"
 is_linux_ubuntu() {
     if command -v lsb_release &> /dev/null; then
         if [[ "$(lsb_release -is)" == "Ubuntu" ]]; then
-            return 0
+            echo "true"
         fi
     fi
 }
 
 is_linux_fedora() {
-    if command -v lsb_release &> /dev/null; then
-        if [[ "$(lsb_release -is)" == "Fedora" ]]; then
-            return 0
+    if [[ -f /etc/os-release ]]; then
+        if grep -q 'Fedora' /etc/os-release; then
+            echo "true"
         fi
     fi
-    return 1
 }
 
-export RELEASE_LINUX_IS_UBUNTU=$(is_linux_ubuntu && echo "true" || echo "false")
-export RELEASE_LINUX_IS_FEDORA=$(is_linux_fedora && echo "true" || echo "false")
+export RELEASE_LINUX_IS_UBUNTU=$(is_linux_ubuntu)
+export RELEASE_LINUX_IS_FEDORA=$(is_linux_fedora)
 
 win_prep() {
     mv $release_dir $1
@@ -58,7 +57,7 @@ linux_prep() {
     mv $release_dir $1
     target_file="$1/$bin_file_info"
     rm -f "$target_file"
-    ls "$1" | grep -E '\.deb$|\.rpm$' | while read -r file; do
+    ls "$1" | grep -E '\.deb$|\.AppImage$' | while read -r file; do
         file_name=$(basename "$file")
         checksum=$(sha512sum "$1/$file" | awk '{print $1}')
         version=$(grep 'version:' "$1/latest-linux.yml" | awk '{print $2}' | tr -d "'")
