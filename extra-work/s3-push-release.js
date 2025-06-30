@@ -29,6 +29,7 @@ const isArm64 = process.arch === 'arm64';
 const isLinux = process.platform === 'linux';
 const isUbuntu = process.env.RELEASE_LINUX_IS_UBUNTU === 'true';
 const isFedora = process.env.RELEASE_LINUX_IS_FEDORA === 'true';
+const contentTypeJson = 'application/json';
 
 function filterBinFileInfo(prefix, data, ext) {
     return data
@@ -56,29 +57,30 @@ function readDataFile(prefix) {
     const data = fileContext
         .split('\n')
         .map((line) => line.trim())
-        .filter((line) => line);
+        .filter((line) => line)
+        .map((line) => {
+            const [fileFullName, checksum, releaseDate, version, commitID] =
+                line.split(process.env.RELEASE_BIN_FILE_SEPARATOR);
+            return {
+                fileFullName,
+                checksum,
+                releaseDate,
+                version,
+                commitID,
+            };
+        });
     return data;
 }
 
 function getWindowsBinFilePath(prefix, systemInfo) {
-    const fileContextData = readDataFile(prefix);
-    const data = fileContextData.map((line) => {
-        const [fileFullName, checksum, releaseDate, version] = line.split(
-            process.env.RELEASE_BIN_FILE_SEPARATOR,
-        );
-        return {
-            fileFullName,
-            checksum,
-            releaseDate,
-            version,
-        };
-    });
+    const data = readDataFile(prefix);
     const info = {
         version: data[0].version,
+        commitID: data[0].commitID,
         isWindows: true,
         is64System: !!systemInfo.is64System,
-        portable: filterWindowsBinFileInfo(prefix, data, '.zip'),
-        installer: filterWindowsBinFileInfo(prefix, data, '.exe'),
+        portable: filterBinFileInfo(prefix, data, '.zip'),
+        installer: filterBinFileInfo(prefix, data, '.exe'),
     };
     const s3Key = `${BASE_KEY_PREFIX}/${prefix}`;
     return [
@@ -101,20 +103,10 @@ function getWindowsBinFilePath(prefix, systemInfo) {
 }
 
 function getMacBinFilePath(prefix, systemInfo) {
-    const fileContextData = readDataFile(prefix);
-    const data = fileContextData.map((line) => {
-        const [fileFullName, checksum, releaseDate, version] = line.split(
-            process.env.RELEASE_BIN_FILE_SEPARATOR,
-        );
-        return {
-            fileFullName,
-            checksum,
-            releaseDate,
-            version,
-        };
-    });
+    const data = readDataFile(prefix);
     const info = {
         version: data[0].version,
+        commitID: data[0].commitID,
         isMac: true,
         isArm64: !!systemInfo.isArm64,
         isUniversal: !!systemInfo.isUniversal,
@@ -142,25 +134,18 @@ function getMacBinFilePath(prefix, systemInfo) {
 }
 
 function getLinuxBinFilePath(prefix, systemInfo) {
-    const fileContextData = readDataFile(prefix);
-    const data = fileContextData.map((line) => {
-        const [fileFullName, checksum, releaseDate, version] = line.split(
-            process.env.RELEASE_BIN_FILE_SEPARATOR,
-        );
-        return {
-            fileFullName,
-            checksum,
-            releaseDate,
-            version,
-        };
-    });
+    const data = readDataFile(prefix);
     const info = {
         version: data[0].version,
+        commitID: data[0].commitID,
         isLinux: true,
         isUbuntu: !!systemInfo.isUbuntu,
         isFedora: !!systemInfo.isFedora,
+        is64System: !!systemInfo.is64System,
         portable: filterBinFileInfo(prefix, data, '.AppImage'),
-        installer: systemInfo.isUbuntu ? filterBinFileInfo(prefix, data, '.deb') : [],
+        installer: systemInfo.isUbuntu
+            ? filterBinFileInfo(prefix, data, '.deb')
+            : [],
     };
     const s3Key = `${BASE_KEY_PREFIX}/${prefix}`;
     return [
@@ -200,14 +185,38 @@ function getUploadList() {
     return uploadList;
 }
 
+function addContentType(putData) {
+    const key = putData.Key;
+    putData.ContentType = 'application/octet-stream';
+    if (key.endsWith('.json')) {
+        putData.ContentType = contentTypeJson;
+    } else if (key.endsWith('.zip')) {
+        putData.ContentType = 'application/zip';
+    } else if (key.endsWith('.exe')) {
+        putData.ContentType = 'application/x-msdownload';
+    } else if (key.endsWith('.dmg')) {
+        putData.ContentType = 'application/x-apple-diskimage';
+    } else if (key.endsWith('.AppImage')) {
+        putData.ContentType = 'application/vnd.appimage';
+    } else if (key.endsWith('.deb')) {
+        putData.ContentType = 'application/vnd.debian.binary-package';
+    } else if (key.endsWith('.tar.gz')) {
+        putData.ContentType = 'application/gzip';
+    } else if (key.endsWith('.tar')) {
+        putData.ContentType = 'application/x-tar';
+    }
+}
+
 async function uploadToS3(client, baseKey, body, optionalFileFullName) {
     const key = `${baseKey}${optionalFileFullName ? `/${optionalFileFullName}` : ''}`;
     const bucketName = process.env.RELEASE_AWS_BUCKET_NAME;
-    const command = new PutObjectCommand({
+    const putData = {
         Bucket: bucketName,
         Key: key,
         Body: body,
-    });
+    };
+    addContentType(putData);
+    const command = new PutObjectCommand(putData);
     const url = `s3://${bucketName}/${key}`;
     console.log(`Uploading to "${url}"`);
     await client.send(command);

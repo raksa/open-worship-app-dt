@@ -7,6 +7,7 @@ release_dir="./release"
 tmp_dir="./extra-work/tmp"
 bin_file_info="files.txt"
 sep="|"
+latest_commit=$(git rev-parse HEAD)
 
 is_linux_ubuntu() {
     if command -v lsb_release &> /dev/null; then
@@ -27,42 +28,42 @@ is_linux_fedora() {
 export RELEASE_LINUX_IS_UBUNTU=$(is_linux_ubuntu)
 export RELEASE_LINUX_IS_FEDORA=$(is_linux_fedora)
 
-win_prep() {
+start_prep() {
     mv $release_dir $1
     target_file="$1/$bin_file_info"
     rm -f "$target_file"
+    touch "$target_file"
+}
+
+append_file_info() {
+    target_file="$1/$bin_file_info"
+    file_name=$(basename "$2")
+    version=$(grep 'version:' "$4" | awk '{print $2}' | tr -d "'")
+    release_date=$(grep 'releaseDate:' "$4" | awk '{print $2}' | tr -d "'")
+    echo "${file_name}${sep}$3${sep}${release_date}${sep}${version}${sep}${latest_commit}" >> "$target_file"
+}
+
+win_prep() {
+    start_prep "$1"
     ls "$1" | grep -E '\.exe$|\.zip$' | while read -r file; do
-        file_name=$(basename "$file")
         checksum=$(sha512sum "$1/$file" | awk '{print $1}')
-        version=$(grep 'version:' "$1/latest.yml" | awk '{print $2}' | tr -d "'")
-        release_date=$(grep 'releaseDate:' "$1/latest.yml" | awk '{print $2}' | tr -d "'")
-        echo "${file_name}${sep}${checksum}${sep}${release_date}${sep}${version}" >> "$target_file"
+        append_file_info "$1" "$file" "$checksum" "$1/latest.yml"
     done
 }
 
 mac_prep() {
-    mv $release_dir $1
-    target_file="$1/$bin_file_info"
-    rm -f "$target_file"
+    start_prep "$1"
     ls "$1" | grep -E "$2\.dmg$|$2\.zip$" | while read -r file; do
-        file_name=$(basename "$file")
         checksum=$(shasum -a 512 "$1/$file" | awk '{print $1}')
-        version=$(grep 'version:' "$1/latest-mac.yml" | awk '{print $2}' | tr -d "'")
-        release_date=$(grep 'releaseDate:' "$1/latest-mac.yml" | awk '{print $2}' | tr -d "'")
-        echo "${file_name}${sep}${checksum}${sep}${release_date}${sep}${version}" >> "$target_file"
+        append_file_info "$1" "$file" "$checksum" "$1/latest-mac.yml"
     done
 }
 
 linux_prep() {
-    mv $release_dir $1
-    target_file="$1/$bin_file_info"
-    rm -f "$target_file"
+    start_prep "$1"
     ls "$1" | grep -E '\.deb$|\.AppImage$' | while read -r file; do
-        file_name=$(basename "$file")
         checksum=$(sha512sum "$1/$file" | awk '{print $1}')
-        version=$(grep 'version:' "$1/latest-linux.yml" | awk '{print $2}' | tr -d "'")
-        release_date=$(grep 'releaseDate:' "$1/latest-linux.yml" | awk '{print $2}' | tr -d "'")
-        echo "${file_name}${sep}${checksum}${sep}${release_date}${sep}${version}" >> "$target_file"
+        append_file_info "$1" "$file" "$checksum" "$1/latest-linux.yml"
     done
 }
 

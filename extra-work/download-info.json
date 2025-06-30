@@ -23,10 +23,12 @@
     },
     "linux-ubuntu": {
         "isLinux": true,
-        "isUbuntu": true
+        "isUbuntu": true,
+        "is64System": true
     },
     "linux-fedora": {
         "isLinux": true,
-        "isFedora": true
+        "isFedora": true,
+        "is64System": true
     }
 }
