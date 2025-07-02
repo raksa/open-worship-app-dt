@@ -1,0 +1,6 @@
+Mac
+> system_profiler -xml SPFontsDataType > fonts.xml
+Linux
+> fc-list or fc-list2
+Windows
+>
