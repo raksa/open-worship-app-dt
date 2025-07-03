@@ -85,65 +85,80 @@ function Get-FontMetadata {
             # Also check regular style - even though not used directly, checking helps determine available styles
             $fontFamily.IsStyleAvailable([System.Drawing.FontStyle]::Regular)
 
-            # Try to infer style from font availability
-            if ($isBoldItalic) {
-                $styleName = "Bold Italic"
-            }
-            elseif ($isBold) {
-                $styleName = "Bold"
-            }
-            elseif ($isItalic) {
-                $styleName = "Italic"
-            }
-
-            # Also check filename for style hints
+            # Also check filename for style hints - this helps override incorrect font metadata
             $baseName = [System.IO.Path]::GetFileNameWithoutExtension($FontPath).ToLower()
 
-            # Guess style based on filename patterns as a fallback
+            # First check filename patterns for style - this is more reliable for many fonts
+            $fileStyleName = "Regular"
             if ($baseName.EndsWith("bd") -or $baseName -match "bold") {
                 if ($baseName.EndsWith("bi") -or $baseName -match "italic") {
-                    $styleName = "Bold Italic"
+                    $fileStyleName = "Bold Italic"
                 }
                 else {
-                    $styleName = "Bold"
+                    $fileStyleName = "Bold"
                 }
             }
             elseif ($baseName.EndsWith("bi") -or ($baseName -match "bold" -and $baseName -match "italic")) {
-                $styleName = "Bold Italic"
+                $fileStyleName = "Bold Italic"
             }
             elseif ($baseName.EndsWith("i") -or $baseName -match "italic") {
-                $styleName = "Italic"
+                $fileStyleName = "Italic"
+            }
+            elseif ($baseName -match "regular") {
+                $fileStyleName = "Regular"
             }
             elseif ($baseName -match "light") {
-                $styleName = "Light"
+                $fileStyleName = "Light"
             }
             elseif ($baseName -match "thin") {
-                $styleName = "Thin"
+                $fileStyleName = "Thin"
             }
             elseif ($baseName -match "medium") {
-                $styleName = "Medium"
+                $fileStyleName = "Medium"
             }
             elseif ($baseName -match "black") {
-                $styleName = "Black"
+                $fileStyleName = "Black"
             }
             elseif ($baseName -match "semibold") {
-                $styleName = "Semibold"
+                $fileStyleName = "Semibold"
             }
             elseif ($baseName -match "semilight") {
-                $styleName = "Semilight"
+                $fileStyleName = "Semilight"
             }
             elseif ($baseName -match "condensed") {
-                $styleName = "Condensed"
+                $fileStyleName = "Condensed"
             }
             elseif ($baseName -match "expanded") {
-                $styleName = "Expanded"
+                $fileStyleName = "Expanded"
+            }
+
+            # Use filename-based style detection, prioritizing filename over font metadata
+            # This is more reliable for many fonts where metadata is incorrect
+            if ($fileStyleName -ne "Regular") {
+                $styleName = $fileStyleName
+            }
+            else {
+                # For files marked as "Regular" by filename, force the style to be Regular
+                # Don't trust font metadata that says otherwise
+                $styleName = "Regular"
             }
 
             # Map family names for consistency with VBScript version
             $mappedFamily = Get-ProperFamilyName $familyName
 
+            # Clean up family name by removing style suffixes that sometimes appear in font metadata
+            $cleanedFamily = $mappedFamily
+            $styleKeywords = @("Black", "Light", "Thin", "Medium", "Bold", "Italic", "Semibold", "Semilight", "Condensed", "Expanded", "Regular")
+            foreach ($keyword in $styleKeywords) {
+                # Remove style keyword if it appears at the end of the family name
+                if ($cleanedFamily.EndsWith(" $keyword")) {
+                    $cleanedFamily = $cleanedFamily.Substring(0, $cleanedFamily.Length - $keyword.Length - 1).Trim()
+                    break  # Only remove one style keyword to avoid over-cleaning
+                }
+            }
+
             return @{
-                Family  = $mappedFamily
+                Family  = $cleanedFamily
                 Style   = $styleName
                 Success = $true
             }
@@ -190,12 +205,17 @@ function Get-FallbackFontInfo {
     else {
         # For longer names, remove common style indicators
         # Using a more compatibility-friendly approach with explicit checks
-        $commonStyles = @("Bold", "Italic", "Light", "Regular", "Medium", "Thin",
+        $commonStyles = @("-Bold", "-Italic", "-Light", "-Regular", "-Medium", "-Thin",
+            "-Black", "-Semibold", "-Semilight", "-Condensed", "-Expanded",
+            "Bold", "Italic", "Light", "Regular", "Medium", "Thin",
             "Black", "Semibold", "Semilight", "Condensed", "Expanded")
 
         foreach ($style in $commonStyles) {
             # Simple string replacement without regex
-            $familyName = $familyName.Replace($style, "")
+            if ($familyName.EndsWith($style)) {
+                $familyName = $familyName.Substring(0, $familyName.Length - $style.Length).Trim()
+                break  # Only remove one style to avoid over-cleaning
+            }
         }
 
         $familyName = $familyName.Trim()
@@ -221,6 +241,9 @@ function Get-FallbackFontInfo {
         }
         elseif ($lowerName -match "italic" -or $lowerName -match "\bit\b") {
             $styleName = "Italic"
+        }
+        elseif ($lowerName -match "regular") {
+            $styleName = "Regular"
         }
         elseif ($lowerName -match "light") {
             $styleName = "Light"

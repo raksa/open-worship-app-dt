@@ -403,7 +403,24 @@ Function GetFontMetadata(fontPath, fileName)
 
             ' If we found a font name, use it
             If fontName <> "" And fontName <> justFileName Then
-                fontInfo("Family") = fontName
+                ' Clean up family name by removing style suffixes that sometimes appear in font metadata
+                Dim cleanedFamily
+                cleanedFamily = fontName
+                Dim styleKeywords
+                styleKeywords = Array("Black", "Light", "Thin", "Medium", "Bold", "Italic", "Semibold", "Semilight", "Condensed", "Expanded", "Regular")
+                
+                Dim j, keyword
+                For j = 0 To UBound(styleKeywords)
+                    keyword = styleKeywords(j)
+                    ' Remove style keyword if it appears at the end of the family name
+                    If Right(cleanedFamily, Len(" " & keyword)) = " " & keyword Then
+                        cleanedFamily = Left(cleanedFamily, Len(cleanedFamily) - Len(keyword) - 1)
+                        cleanedFamily = Trim(cleanedFamily)
+                        Exit For ' Only remove one style keyword to avoid over-cleaning
+                    End If
+                Next
+                
+                fontInfo("Family") = cleanedFamily
                 fontInfo("Style") = GetStyleFromMetadata(fontName, fileName)
                 fontInfo("Success") = True
                 On Error GoTo 0
@@ -426,11 +443,12 @@ End Function
 
 Function GetStyleFromMetadata(fontName, fileName)
     ' Extract style information from filename since metadata often doesn't include style
+    ' Prioritize filename-based detection over font metadata for accuracy
     Dim baseName, lowerName
     baseName = fso.GetBaseName(fileName)
     lowerName = LCase(baseName)
 
-    ' Check filename patterns for style
+    ' Check filename patterns for style - this is more reliable than metadata
     If Len(baseName) <= 10 Then
         If Right(lowerName, 2) = "bd" Then
             GetStyleFromMetadata = "Bold"
@@ -449,6 +467,8 @@ Function GetStyleFromMetadata(fontName, fileName)
             GetStyleFromMetadata = "Bold"
         ElseIf InStr(lowerName, "italic") > 0 Or InStr(lowerName, "it") > 0 Then
             GetStyleFromMetadata = "Italic"
+        ElseIf InStr(lowerName, "regular") > 0 Then
+            GetStyleFromMetadata = "Regular"
         ElseIf InStr(lowerName, "light") > 0 Then
             GetStyleFromMetadata = "Light"
         ElseIf InStr(lowerName, "thin") > 0 Then
@@ -484,11 +504,19 @@ Function GetFallbackFontInfo(fileName)
         End If
     Else
         familyName = baseName
-        ' Remove common style suffixes
-        familyName = Replace(familyName, "Bold", "")
-        familyName = Replace(familyName, "Italic", "")
-        familyName = Replace(familyName, "Light", "")
-        familyName = Replace(familyName, "Regular", "")
+        ' Remove common style suffixes with hyphens first, then without
+        Dim styleSuffixes
+        styleSuffixes = Array("-Bold", "-Italic", "-Light", "-Regular", "-Medium", "-Thin", "-Black", "-Semibold", "-Semilight", "-Condensed", "-Expanded", "Bold", "Italic", "Light", "Regular", "Medium", "Thin", "Black", "Semibold", "Semilight", "Condensed", "Expanded")
+        
+        Dim i, suffix
+        For i = 0 To UBound(styleSuffixes)
+            suffix = styleSuffixes(i)
+            If Right(familyName, Len(suffix)) = suffix Then
+                familyName = Left(familyName, Len(familyName) - Len(suffix))
+                Exit For ' Only remove one suffix to avoid over-cleaning
+            End If
+        Next
+        
         familyName = Trim(familyName)
     End If
 
