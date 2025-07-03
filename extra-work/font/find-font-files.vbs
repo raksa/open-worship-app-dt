@@ -55,7 +55,7 @@ Sub BuildFontFolders()
     Dim systemFontFolder, userLocalFonts, userRoamingFonts
     Dim adobeFonts, officeFonts
     Dim commonLocations(7)
-    
+
     ' System fonts
     systemFontFolder = shell.ExpandEnvironmentStrings("%WINDIR%") & "\Fonts"
     If fso.FolderExists(systemFontFolder) Then
@@ -63,7 +63,7 @@ Sub BuildFontFolders()
             fontFolders.Add systemFontFolder, True
         End If
     End If
-    
+
     ' User fonts
     userLocalFonts = shell.ExpandEnvironmentStrings("%LOCALAPPDATA%") & "\Microsoft\Windows\Fonts"
     If fso.FolderExists(userLocalFonts) Then
@@ -71,14 +71,14 @@ Sub BuildFontFolders()
             fontFolders.Add userLocalFonts, True
         End If
     End If
-    
+
     userRoamingFonts = shell.ExpandEnvironmentStrings("%APPDATA%") & "\Microsoft\Windows\Fonts"
     If fso.FolderExists(userRoamingFonts) Then
         If Not fontFolders.Exists(userRoamingFonts) Then
             fontFolders.Add userRoamingFonts, True
         End If
     End If
-    
+
     ' Adobe fonts
     adobeFonts = shell.ExpandEnvironmentStrings("%LOCALAPPDATA%") & "\Adobe\CoreSync\plugins\livetype\r"
     If fso.FolderExists(adobeFonts) Then
@@ -86,7 +86,7 @@ Sub BuildFontFolders()
             fontFolders.Add adobeFonts, True
         End If
     End If
-    
+
     ' Office fonts
     officeFonts = shell.ExpandEnvironmentStrings("%PROGRAMFILES%") & "\Microsoft Office\root\VFS\Fonts\private"
     If fso.FolderExists(officeFonts) Then
@@ -94,13 +94,13 @@ Sub BuildFontFolders()
             fontFolders.Add officeFonts, True
         End If
     End If
-    
+
     ' Common third-party locations
     commonLocations(0) = shell.ExpandEnvironmentStrings("%PROGRAMFILES%") & "\Common Files\Microsoft Shared\Fonts"
     commonLocations(1) = shell.ExpandEnvironmentStrings("%PROGRAMFILES(X86)%") & "\Common Files\Microsoft Shared\Fonts"
     commonLocations(2) = shell.ExpandEnvironmentStrings("%USERPROFILE%") & "\AppData\Local\Microsoft\Windows\Fonts"
     commonLocations(3) = shell.ExpandEnvironmentStrings("%USERPROFILE%") & "\Documents\My Fonts"
-    
+
     For i = 0 To UBound(commonLocations)
         If fso.FolderExists(commonLocations(i)) Then
             If Not fontFolders.Exists(commonLocations(i)) Then
@@ -115,19 +115,19 @@ Sub ScanFontFiles()
     Dim currentFolder, currentExt
     Dim folderObj, fileObj
     Dim fileName, baseName
-    
+
     folderKeys = fontFolders.Keys
     extKeys = fileExtensions.Keys
-    
+
     For i = 0 To UBound(folderKeys)
         currentFolder = folderKeys(i)
-        
+
         If fso.FolderExists(currentFolder) Then
             Set folderObj = fso.GetFolder(currentFolder)
-            
+
             For Each fileObj In folderObj.Files
                 fileName = fileObj.Name
-                
+
                 ' Check if file has one of our target extensions
                 For j = 0 To UBound(extKeys)
                     currentExt = extKeys(j)
@@ -135,10 +135,10 @@ Sub ScanFontFiles()
                         ' Skip if we've already processed this file
                         If Not seenFiles.Exists(fileObj.Path) Then
                             seenFiles.Add fileObj.Path, True
-                            
+
                             family = GetFamilyFromFilename(fileName)
                             face = GetFaceFromFilename(fileName)
-                            
+
                             ' Store result
                             results.Add results.Count, fileObj.Path & "|" & family & "|" & face
                         End If
@@ -152,17 +152,17 @@ End Sub
 
 Function GetFamilyFromFilename(fileName)
     Dim baseName, normalizedName, familyName, lowerName
-    
+
     ' Remove file extension
     baseName = fso.GetBaseName(fileName)
     lowerName = LCase(baseName)
-    
+
     ' Convert hyphens and underscores to spaces
     normalizedName = Replace(Replace(baseName, "-", " "), "_", " ")
-    
+
     ' Remove version numbers in brackets and dates
     normalizedName = RegexReplace(normalizedName, "\s*\[Version\s+[\d\.]+\]\s*\d*", "")
-    
+
     ' For short names like "arialbd", "timesi", extract family differently
     If Len(baseName) <= 10 Then
         If Right(lowerName, 2) = "bd" Then
@@ -178,11 +178,11 @@ Function GetFamilyFromFilename(fileName)
         ' Remove common style suffixes for longer names
         familyName = RegexReplace(normalizedName, "\s+(bold|italic|light|regular|medium|thin|black|condensed|expanded|oblique)(\s|$)", "")
     End If
-    
+
     ' Clean up spaces
     familyName = Trim(familyName)
     familyName = RegexReplace(familyName, "\s+", " ")
-    
+
     If Len(familyName) = 0 Then
         GetFamilyFromFilename = normalizedName
     Else
@@ -194,7 +194,7 @@ Function GetFaceFromFilename(fileName)
     Dim baseName, lowerName
     baseName = fso.GetBaseName(fileName)
     lowerName = LCase(baseName)
-    
+
     ' Handle short font names like arialbd, timesi, etc.
     If Len(baseName) <= 10 Then
         If Right(lowerName, 2) = "bd" Then
@@ -208,7 +208,7 @@ Function GetFaceFromFilename(fileName)
         End If
         Exit Function
     End If
-    
+
     ' Check for combinations first (longer names)
     If (InStr(lowerName, "bold") > 0 And InStr(lowerName, "italic") > 0) Or _
        (InStr(lowerName, "bd") > 0 And InStr(lowerName, "i") > 0) Or _
@@ -242,7 +242,7 @@ Function RegexReplace(inputString, pattern, replacement)
     ' Simple regex replacement for common patterns
     Dim result
     result = inputString
-    
+
     ' Handle version pattern: [Version X.XX] XXXXXX
     If pattern = "\s*\[Version\s+[\d\.]+\]\s*\d*" Then
         Dim pos
@@ -262,7 +262,7 @@ Function RegexReplace(inputString, pattern, replacement)
                         Exit For
                     End If
                 Next
-                
+
                 ' Remove the version string and trailing content
                 If pos > 1 And Mid(result, pos - 1, 1) = " " Then
                     result = Left(result, pos - 2) & Mid(result, i)
@@ -272,7 +272,7 @@ Function RegexReplace(inputString, pattern, replacement)
             End If
         End If
     End If
-    
+
     ' Handle style suffixes pattern
     If pattern = "\s+(bold|italic|light|regular|medium|thin|black|condensed|expanded|oblique)(\s|$)" Then
         ' Simple approach: find and remove style words at the end
@@ -280,7 +280,7 @@ Function RegexReplace(inputString, pattern, replacement)
         lowerResult = LCase(result)
         Dim styles
         styles = Array(" bold", " italic", " light", " regular", " medium", " thin", " black", " condensed", " expanded", " oblique")
-        
+
         Dim j
         For j = 0 To UBound(styles)
             If Right(lowerResult, Len(styles(j))) = styles(j) Then
@@ -289,14 +289,14 @@ Function RegexReplace(inputString, pattern, replacement)
             End If
         Next
     End If
-    
+
     ' Handle multiple spaces
     If pattern = "\s+" Then
         Do While InStr(result, "  ") > 0
             result = Replace(result, "  ", " ")
         Loop
     End If
-    
+
     RegexReplace = result
 End Function
 
@@ -311,16 +311,16 @@ End Function
 
 Sub OutputCSV()
     Dim resultKeys, fontData, parts
-    
+
     ' Output header
     WScript.Echo "FullPath,Family,Face"
-    
+
     ' Output each font
     resultKeys = results.Keys
     For i = 0 To UBound(resultKeys)
         fontData = results(resultKeys(i))
         parts = Split(fontData, "|")
-        
+
         If UBound(parts) >= 2 Then
             WScript.Echo EscapeCSV(parts(0)) & "," & EscapeCSV(parts(1)) & "," & EscapeCSV(parts(2))
         End If

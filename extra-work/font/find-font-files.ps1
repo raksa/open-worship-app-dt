@@ -45,12 +45,12 @@ function Get-FamilyFromFilename {
     param([string]$FileName)
     $baseName = [System.IO.Path]::GetFileNameWithoutExtension($FileName)
     $lowerName = $baseName.ToLower()
-    
+
     # Convert hyphens and underscores to spaces for better matching
     $normalizedName = $baseName -replace '[-_]', ' '
     # Remove version numbers in brackets and dates
     $familyName = $normalizedName -replace '\s*\[Version\s+[\d\.]+\]\s*\d*', ''
-    
+
     # For short names like "arialbd", "timesi", extract family differently
     if ($baseName.Length -le 10) {
         if ($lowerName.EndsWith("bd")) {
@@ -70,7 +70,7 @@ function Get-FamilyFromFilename {
         # Remove common style suffixes for longer names
         $familyName = $familyName -replace '(?i)\s+(bold|italic|light|regular|medium|thin|black|condensed|expanded|oblique)(\s|$)', ''
     }
-    
+
     $familyName = $familyName -replace '\s+$', ''  # Remove trailing spaces
     $familyName = $familyName -replace '\s+', ' '  # Normalize multiple spaces to single space
     if ([string]::IsNullOrEmpty($familyName)) { return $normalizedName } else { return $familyName }
@@ -79,7 +79,7 @@ function Get-FaceFromFilename {
     param([string]$FileName)
     $baseName = [System.IO.Path]::GetFileNameWithoutExtension($FileName)
     $lowerName = $baseName.ToLower()
-    
+
     # Handle short font names like arialbd, timesi, etc.
     if ($baseName.Length -le 10) {
         if ($lowerName.EndsWith("bd")) { return 'Bold' }
@@ -87,7 +87,7 @@ function Get-FaceFromFilename {
         elseif ($lowerName.EndsWith("i") -and $lowerName -ne "i") { return 'Italic' }
         else { return 'Regular' }
     }
-    
+
     # Use if-elseif structure for longer names
     if ($baseName -match '(?i).*bold.*italic.*|.*bi\b') { return 'Bold Italic' }
     elseif ($baseName -match '(?i).*italic.*bold.*|.*ib\b') { return 'Bold Italic' }
@@ -116,16 +116,16 @@ foreach ($fontFolder in $FontFolders) {
                 continue
             }
             $seenFiles[$file.FullName] = $true
-            
+
             $family = Get-FamilyFromFilename -FileName $file.Name
             $face = Get-FaceFromFilename -FileName $file.Name
-            
+
             # Create object compatible with older PowerShell versions
             $fontObject = New-Object PSObject
             $fontObject | Add-Member -MemberType NoteProperty -Name "FullPath" -Value $file.FullName
             $fontObject | Add-Member -MemberType NoteProperty -Name "Family" -Value $family
             $fontObject | Add-Member -MemberType NoteProperty -Name "Face" -Value $face
-            
+
             $results += $fontObject
         }
     }
@@ -140,11 +140,11 @@ foreach ($font in $results) {
     $fullPath = $font.FullPath -replace '"', '""'
     $family = $font.Family -replace '"', '""'
     $face = $font.Face -replace '"', '""'
-    
+
     # Quote values that contain commas (compatible with older PowerShell versions)
     if ($fullPath -match ',') { $fullPath = '"' + $fullPath + '"' }
     if ($family -match ',') { $family = '"' + $family + '"' }
     if ($face -match ',') { $face = '"' + $face + '"' }
-    
+
     Write-Output "$fullPath,$family,$face"
 }
