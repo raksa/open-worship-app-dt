@@ -26,8 +26,8 @@ const LazyBiblePreviewerRenderComp = lazy(() => {
 const LazyLyricHandlerComp = lazy(() => {
     return import('../lyric-list/LyricHandlerComp');
 });
-const LazyPresenterOthersControllerComp = lazy(() => {
-    return import('../presenter-others/PresenterOthersControllerComp');
+const LazyPresenterForegroundControllerComp = lazy(() => {
+    return import('../presenter-others/PresenterForegroundControllerComp');
 });
 
 const PRESENT_TAB_SETTING_NAME = 'presenter-tab';
@@ -99,7 +99,7 @@ const tabTypeList = [
     ['d', 'Documents', LazyAppDocumentPreviewerComp],
     ['l', 'Lyrics', LazyLyricHandlerComp],
     ['b', 'Bibles', LazyBiblePreviewerRenderComp],
-    ['a', 'Others', LazyPresenterOthersControllerComp],
+    ['a', 'Foreground', LazyPresenterForegroundControllerComp],
 ] as const;
 type TabKeyType = (typeof tabTypeList)[number][0];
 export default function PresenterComp() {

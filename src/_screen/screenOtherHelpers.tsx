@@ -4,9 +4,6 @@ import { getHTMLChild } from '../helper/helpers';
 import ScreenManagerBase from './managers/ScreenManagerBase';
 import { handleError } from '../helper/errorHelpers';
 
-const _alertTypeList = ['countdown', 'marquee', 'camera', 'toast'] as const;
-export type AlertType = (typeof _alertTypeList)[number];
-
 const classNameMapper = {
     countdown: 'countdown-actor',
     marquee: 'marquee-actor',
@@ -14,7 +11,7 @@ const classNameMapper = {
     toast: 'toast-actor',
 };
 
-export function genHtmlAlertMarquee(
+export function genHtmlForegroundMarquee(
     marqueeData: { text: string },
     screenManagerBase: ScreenManagerBase,
 ) {
@@ -87,10 +84,16 @@ export function genHtmlAlertMarquee(
     );
     const div = document.createElement('div');
     div.innerHTML = htmlString;
-    return getHTMLChild<HTMLDivElement>(div, 'div');
+    const marqueeDiv = getHTMLChild<HTMLDivElement>(div, 'div');
+    marqueeDiv.querySelectorAll('.marquee').forEach((element: any) => {
+        if (element.offsetWidth < element.scrollWidth) {
+            element.classList.add('moving');
+        }
+    });
+    return marqueeDiv;
 }
 
-export function genHtmlAlertCountdown(countdownData: {
+export function genHtmlForegroundCountdown(countdownData: {
     dateTime: Date;
     extraStyle?: React.CSSProperties;
 }) {
@@ -132,39 +135,6 @@ export function genHtmlAlertCountdown(countdownData: {
     const divContainer = getHTMLChild<HTMLDivElement>(div, 'div');
     CountdownController.init(divContainer, dateTime);
     return divContainer;
-}
-
-export function removeAlert(div: ChildNode) {
-    const remove = () => div.remove();
-    if (div instanceof HTMLDivElement && div.dataset['alertCn'] !== undefined) {
-        const actorClassName = div.dataset['alertCn'];
-        const targets = div.getElementsByClassName(actorClassName);
-        Array.from(targets).forEach((target) => {
-            target.classList.add('out');
-        });
-        setTimeout(remove, 600);
-    } else {
-        remove();
-    }
-}
-
-export function checkIsCountdownDatesEq(
-    date1: Date | null,
-    date2: Date | null,
-) {
-    if (date1 === null || date2 === null) {
-        return false;
-    }
-    const toDateArr = (date: Date) => {
-        return date.toISOString().split('T');
-    };
-    const toString = (date: Date) => {
-        const dateStr = toDateArr(date)[0];
-        const timeStrFull = toDateArr(date)[1];
-        const timeStr = timeStrFull.substring(0, timeStrFull.lastIndexOf(':'));
-        return `${dateStr} ${timeStr}`;
-    };
-    return toString(date1) === toString(date2);
 }
 
 export async function getAndShowMedia({

@@ -27,7 +27,7 @@ export const fontSizeSettingNames = {
 
 export const screenManagerSettingNames = {
     VARY_APP_DOCUMENT: 'screen-vary-app-document-manager',
-    ALERT: 'screen-alert-manager',
+    FOREGROUND: 'screen-foreground-manager',
     BACKGROUND: 'screen-bg-manager',
     FULL_TEXT: 'screen-ft-manager',
     MANAGERS: 'screen-managers',

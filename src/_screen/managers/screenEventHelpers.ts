@@ -10,7 +10,7 @@ import ScreenVaryAppDocumentManager, {
     ScreenVaryAppDocumentManagerEventType,
 } from './ScreenVaryAppDocumentManager';
 import EventHandler from '../../event/EventHandler';
-import ScreenOtherManager, { ScreenOtherEventType } from './ScreenOtherManager';
+import ScreenForegroundManager, { ScreenOtherEventType } from './ScreenForegroundManager';
 
 export function useScreenEvents<T extends string>(
     events: T[],
@@ -81,12 +81,12 @@ export function useScreenBibleManagerEvents(
 
 export function useScreenOtherManagerEvents(
     events: ScreenOtherEventType[],
-    screenOtherManager?: ScreenOtherManager,
+    screenOtherManager?: ScreenForegroundManager,
     callback?: () => void,
 ) {
     useScreenEvents(
         events,
-        ScreenOtherManager as any,
+        ScreenForegroundManager as any,
         screenOtherManager,
         callback,
     );

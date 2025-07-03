@@ -2,7 +2,7 @@ import {
     useStateSettingBoolean,
     useStateSettingString,
 } from '../helper/settingHelpers';
-import ScreenOtherManager from '../_screen/managers/ScreenOtherManager';
+import ScreenForegroundManager from '../_screen/managers/ScreenForegroundManager';
 import { useScreenOtherManagerEvents } from '../_screen/managers/screenEventHelpers';
 import { getShowingScreenIds, getScreenManagerInstances } from './otherHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
@@ -27,7 +27,7 @@ export default function OtherMessageComp() {
         });
     };
     const handleMarqueeShowing = (event: any, isForceChoosing = false) => {
-        ScreenOtherManager.setMarquee(event, text, isForceChoosing);
+        ScreenForegroundManager.setMarquee(event, text, isForceChoosing);
     };
     const handleContextMenuOpening = (event: any) => {
         handleMarqueeShowing(event, true);

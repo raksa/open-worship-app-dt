@@ -130,8 +130,8 @@ export function genScreenMouseEvent(event?: any): MouseEvent {
     return createMouseEvent(0, 0);
 }
 
-export function getAlertDataListOnScreenSetting(): AlertSrcListType {
-    const string = getSetting(screenManagerSettingNames.ALERT, '');
+export function getForegroundDataListOnScreenSetting(): AlertSrcListType {
+    const string = getSetting(screenManagerSettingNames.FOREGROUND, '');
     try {
         if (!isValidJson(string, true)) {
             return {};

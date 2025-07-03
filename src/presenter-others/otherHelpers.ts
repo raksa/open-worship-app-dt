@@ -1,14 +1,14 @@
-import ScreenOtherManager from '../_screen/managers/ScreenOtherManager';
-import { getAlertDataListOnScreenSetting } from '../_screen/screenHelpers';
+import ScreenForegroundManager from '../_screen/managers/ScreenForegroundManager';
+import { getForegroundDataListOnScreenSetting } from '../_screen/screenHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { getScreenManagerBaseByKey } from '../_screen/managers/screenManagerBaseHelpers';
 import { screenManagerFromBase } from '../_screen/managers/screenManagerHelpers';
-import { AlertDataType } from '../_screen/screenTypeHelpers';
+import { ForegroundDataType } from '../_screen/screenTypeHelpers';
 
 export function getShowingScreenIds(
-    filterFunc: (data: AlertDataType) => boolean,
+    filterFunc: (data: ForegroundDataType) => boolean,
 ) {
-    const allAlertDataList = getAlertDataListOnScreenSetting();
+    const allAlertDataList = getForegroundDataListOnScreenSetting();
     const showingScreenIds = Object.entries(allAlertDataList)
         .filter(([_, data]) => {
             return filterFunc(data);
@@ -21,7 +21,7 @@ export function getShowingScreenIds(
 
 export function getScreenManagerInstances(
     screenId: number,
-    hidingFunc: (screenOtherManager: ScreenOtherManager) => void,
+    hidingFunc: (screenOtherManager: ScreenForegroundManager) => void,
 ) {
     const screenManager = screenManagerFromBase(
         getScreenManagerBaseByKey(screenId.toString()),

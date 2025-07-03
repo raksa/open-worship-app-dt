@@ -2,7 +2,7 @@ import EventHandler from '../../event/EventHandler';
 import { DroppedDataType } from '../../helper/DragInf';
 import { getWindowDim } from '../../helper/helpers';
 import { setSetting } from '../../helper/settingHelpers';
-import ScreenOtherManager from './ScreenOtherManager';
+import ScreenForegroundManager from './ScreenForegroundManager';
 import ScreenBackgroundManager from './ScreenBackgroundManager';
 import ScreenBibleManager from './ScreenBibleManager';
 import {
@@ -123,7 +123,7 @@ export default class ScreenManagerBase
         ScreenBackgroundManager.enableSyncGroup(this.screenId);
         ScreenVaryAppDocumentManager.enableSyncGroup(this.screenId);
         ScreenBibleManager.enableSyncGroup(this.screenId);
-        ScreenOtherManager.enableSyncGroup(this.screenId);
+        ScreenForegroundManager.enableSyncGroup(this.screenId);
         this.sendSyncScreen();
     }
 

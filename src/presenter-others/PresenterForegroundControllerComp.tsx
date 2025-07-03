@@ -4,7 +4,7 @@ import OtherCountDownComp from './OtherCountDownComp';
 import OtherImagesSlideShowComp from './OtherImagesSlideShowComp';
 import OtherMessageComp from './OtherMessageComp';
 
-export default function PresenterOthersControllerComp() {
+export default function PresenterForegroundControllerComp() {
     return (
         <div
             className="w-100 h-100 app-border-white-round"

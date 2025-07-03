@@ -77,21 +77,24 @@ export type BackgroundSrcListType = {
     [key: string]: BackgroundSrcType;
 };
 
-export type AlertDataType = {
-    marqueeData: {
-        text: string;
-    } | null;
-    countdownData: {
-        dateTime: Date;
-        extraStyle: React.CSSProperties;
-    } | null;
-    cameraData: {
-        id: string;
-        extraStyle: React.CSSProperties;
-    } | null;
+export type ForegroundMarqueDataType = {
+    text: string;
+};
+export type ForegroundCountdownDataType = {
+    dateTime: Date;
+    extraStyle?: React.CSSProperties;
+};
+export type ForegroundCameraDataType = {
+    id: string;
+    extraStyle?: React.CSSProperties;
+};
+export type ForegroundDataType = {
+    marqueeData: ForegroundMarqueDataType | null;
+    countdownData: ForegroundCountdownDataType | null;
+    cameraData: ForegroundCameraDataType | null;
 };
 export type AlertSrcListType = {
-    [key: string]: AlertDataType;
+    [key: string]: ForegroundDataType;
 };
 
 export type BoundsType = {

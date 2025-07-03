@@ -1,6 +1,6 @@
 import { DragTypeEnum, DroppedDataType } from '../../helper/DragInf';
 import { log } from '../../helper/loggerHelpers';
-import ScreenOtherManager from './ScreenOtherManager';
+import ScreenForegroundManager from './ScreenForegroundManager';
 import ScreenBackgroundManager from './ScreenBackgroundManager';
 import ScreenBibleManager from './ScreenBibleManager';
 import ScreenVaryAppDocumentManager from './ScreenVaryAppDocumentManager';
@@ -20,7 +20,7 @@ export default class ScreenManager extends ScreenManagerBase {
     readonly screenBackgroundManager: ScreenBackgroundManager;
     readonly screenVaryAppDocumentManager: ScreenVaryAppDocumentManager;
     readonly screenBibleManager: ScreenBibleManager;
-    readonly screenOtherManager: ScreenOtherManager;
+    readonly screenOtherManager: ScreenForegroundManager;
     readonly varyAppDocumentEffectManager: ScreenEffectManager;
     readonly backgroundEffectManager: ScreenEffectManager;
     private readonly registeredEventListeners: RegisteredEventType<any, any>[];
@@ -44,7 +44,7 @@ export default class ScreenManager extends ScreenManagerBase {
             this.varyAppDocumentEffectManager,
         );
         this.screenBibleManager = new ScreenBibleManager(this);
-        this.screenOtherManager = new ScreenOtherManager(this);
+        this.screenOtherManager = new ScreenForegroundManager(this);
         this.registeredEventListeners = [];
         this.registeredEventListeners.push(
             ...this.screenVaryAppDocumentManager.registerEventListener(
@@ -162,7 +162,7 @@ export default class ScreenManager extends ScreenManagerBase {
         } else if (type === 'bible-screen-view') {
             return ScreenBibleManager;
         } else if (type === 'alert') {
-            return ScreenOtherManager;
+            return ScreenForegroundManager;
         }
         return null;
     }

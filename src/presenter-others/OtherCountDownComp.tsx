@@ -2,7 +2,7 @@ import {
     useStateSettingBoolean,
     useStateSettingString,
 } from '../helper/settingHelpers';
-import ScreenOtherManager from '../_screen/managers/ScreenOtherManager';
+import ScreenForegroundManager from '../_screen/managers/ScreenForegroundManager';
 import { getShowingScreenIds, getScreenManagerInstances } from './otherHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
 import { useScreenOtherManagerEvents } from '../_screen/managers/screenEventHelpers';
@@ -40,7 +40,7 @@ function CountDownOnDatetimeComp({
     const { date, setDate, time, setTime, nowString, todayString } =
         useTiming();
     const handleDateTimeShowing = (event: any, isForceChoosing = false) => {
-        ScreenOtherManager.setCountdown(
+        ScreenForegroundManager.setCountdown(
             event,
             new Date(date + ' ' + time),
             genStyle(),
@@ -108,7 +108,7 @@ function CountDownTimerComp({
                 3600 * parseInt(hours) +
                 1,
         );
-        ScreenOtherManager.setCountdown(
+        ScreenForegroundManager.setCountdown(
             event,
             targetDatetime,
             genStyle(),
@@ -175,7 +175,7 @@ function refreshAllCountdowns(
         showingScreenIds.forEach((screenId) => {
             getScreenManagerInstances(screenId, (screenOtherManager) => {
                 const countdownData =
-                    screenOtherManager.alertData?.countdownData;
+                    screenOtherManager.foregroundData?.countdownData;
                 if (countdownData === null) {
                     return;
                 }

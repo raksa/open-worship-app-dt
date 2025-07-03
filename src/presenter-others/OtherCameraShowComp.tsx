@@ -3,7 +3,7 @@ import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { useStateSettingBoolean } from '../helper/settingHelpers';
 import OtherRenderHeaderTitleComp from './OtherRenderHeaderTitleComp';
 import LoadingComp from '../others/LoadingComp';
-import ScreenOtherManager from '../_screen/managers/ScreenOtherManager';
+import ScreenForegroundManager from '../_screen/managers/ScreenForegroundManager';
 import { getAndShowMedia } from '../_screen/screenOtherHelpers';
 import { getShowingScreenIds, getScreenManagerInstances } from './otherHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
@@ -38,7 +38,7 @@ function RenderCameraInfoComp({
         });
     }, [containerRef.current]);
     const handleCameraShowing = (event: any, isForceChoosing = false) => {
-        ScreenOtherManager.setCamera(
+        ScreenForegroundManager.setCamera(
             event,
             cameraInfo.deviceId,
             genStyle(),
@@ -78,7 +78,7 @@ function refreshAllCameras(
     attemptTimeout(() => {
         showingScreenIds.forEach((screenId) => {
             getScreenManagerInstances(screenId, (screenOtherManager) => {
-                const cameraData = screenOtherManager.alertData?.cameraData;
+                const cameraData = screenOtherManager.foregroundData?.cameraData;
                 if (cameraData === null) {
                     return;
                 }

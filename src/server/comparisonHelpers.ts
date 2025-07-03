@@ -55,12 +55,7 @@ export function checkAreArraysEqual(arr1: any, arr2: any) {
 }
 
 export function checkAreObjectsEqual(obj1: any, obj2: any) {
-    if (
-        typeof obj1 !== 'object' ||
-        typeof obj2 !== 'object' ||
-        obj1 === null ||
-        obj2 === null
-    ) {
+    if (typeof obj1 !== 'object' || typeof obj2 !== 'object') {
         return false;
     }
     if (obj1 === obj2) {
