@@ -12,7 +12,11 @@ import { genTimeoutAttempt } from '../helper/helpers';
 
 function useTiming() {
     const nowArray = () => {
-        return new Date().toISOString().split('T');
+        const date = new Date();
+        const localISOString = date.toISOString();
+        const iosDate = new Date(localISOString);
+        iosDate.setMinutes(iosDate.getMinutes() - iosDate.getTimezoneOffset());
+        return iosDate.toISOString().split('T');
     };
     const todayString = () => {
         return nowArray()[0];
@@ -47,11 +51,24 @@ function CountDownOnDatetimeComp({
             isForceChoosing,
         );
     };
+    const handleResetting = () => {
+        setDate(todayString());
+        setTime(nowString());
+    };
     const handleContextMenuOpening = (event: any) => {
         handleDateTimeShowing(event, true);
     };
     return (
         <div className="d-flex">
+            <div>
+                <button
+                    title="Reset Date and Time to Now"
+                    className="btn btn-outline-warning"
+                    onClick={handleResetting}
+                >
+                    `Reset
+                </button>
+            </div>
             <div>
                 <input
                     type="date"
@@ -80,7 +97,7 @@ function CountDownOnDatetimeComp({
                     onClick={handleDateTimeShowing}
                     onContextMenu={handleContextMenuOpening}
                 >
-                    Show On DateTime
+                    `Show On DateTime
                 </button>
             </div>
         </div>
@@ -159,7 +176,7 @@ function CountDownTimerComp({
                     onClick={handleTimerShowing}
                     onContextMenu={handleContextMenuOpening}
                 >
-                    Show Timer
+                    `Show Timer
                 </button>
             </div>
         </div>

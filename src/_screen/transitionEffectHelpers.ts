@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { useAppEffect } from '../helper/debuggerHelpers';
 import ScreenEffectManager from './managers/ScreenEffectManager';
-import { TargetType, StyleAnimType, PTFEventType } from './screenTypeHelpers';
+import { StyleAnimType, PTFEventType } from './screenTypeHelpers';
 
 const ZOOM_CONTAINER_CLASS = 'zoom-container';
 
@@ -42,9 +42,9 @@ function genCssProps(duration: number) {
     return cssProps;
 }
 
-function fade(target: TargetType) {
-    const animationNameIn = `${target}-animation-fade-in`;
-    const animationNameOut = `${target}animation-fade-out`;
+function fade(prefix: string) {
+    const animationNameIn = `${prefix}-animation-fade-in`;
+    const animationNameOut = `${prefix}-animation-fade-out`;
     const anim: StyleAnimType = {
         duration: 1000,
         style: `
@@ -176,9 +176,9 @@ function move() {
     return anim;
 }
 
-function zoom(target: TargetType): StyleAnimType {
-    const animationNameIn = `${target}-animation-zoom-in`;
-    const animationNameOut = `${target}animation-zoom-out`;
+function zoom(prefix: string): StyleAnimType {
+    const animationNameIn = `${prefix}-animation-zoom-in`;
+    const animationNameOut = `${prefix}-animation-zoom-out`;
     const createDiv = (targetElement: HTMLElement) => {
         const div = document.createElement('div');
         div.classList.add('zoom-container');
@@ -245,9 +245,7 @@ function zoom(target: TargetType): StyleAnimType {
     return anim;
 }
 
-export const styleAnimList: {
-    [key: string]: (_: TargetType) => StyleAnimType;
-} = {
+export const styleAnimList = {
     fade,
     move,
     zoom,

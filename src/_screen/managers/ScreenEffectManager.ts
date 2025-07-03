@@ -5,7 +5,6 @@ import {
     PTFEventType,
     ScreenMessageType,
     ScreenTransitionEffectType,
-    TargetType,
     transitionEffect,
 } from '../screenTypeHelpers';
 import { styleAnimList } from '../transitionEffectHelpers';
@@ -14,9 +13,9 @@ import ScreenManagerBase from './ScreenManagerBase';
 const cache = new Map<string, ScreenEffectManager>();
 class ScreenEffectManager extends EventHandler<PTFEventType> {
     screenManagerBase: ScreenManagerBase;
-    readonly target: TargetType;
+    readonly target: string;
     private _effectType: ScreenTransitionEffectType;
-    constructor(screenManagerBase: ScreenManagerBase, target: TargetType) {
+    constructor(screenManagerBase: ScreenManagerBase, target: string) {
         super();
         this.screenManagerBase = screenManagerBase;
         this.target = target;
@@ -85,7 +84,7 @@ class ScreenEffectManager extends EventHandler<PTFEventType> {
             this.screenManagerBase.createScreenManagerBaseGhost(this.screenId);
     }
 
-    static getInstance(screenId: number, target: TargetType) {
+    static getInstance(screenId: number, target: string) {
         const instance = cache.get(`${screenId}-${target}`);
         if (instance === undefined) {
             throw new Error('instance is not found.');

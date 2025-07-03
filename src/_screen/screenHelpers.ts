@@ -26,8 +26,6 @@ import {
     BackgroundSrcListType,
     BibleListType,
     bibleDataTypeList,
-    ScreenTransitionEffectType,
-    TargetType,
     SetDisplayType,
     ShowScreenDataType,
 } from './screenTypeHelpers';
@@ -112,11 +110,6 @@ export function hideScreen(screenId: number) {
 export function hideAllScreens() {
     messageUtils.sendData('app:hide-all-screens');
 }
-
-export type PTEffectDataType = {
-    target: TargetType;
-    effect: ScreenTransitionEffectType;
-};
 
 export function genScreenMouseEvent(event?: any): MouseEvent {
     if (event) {

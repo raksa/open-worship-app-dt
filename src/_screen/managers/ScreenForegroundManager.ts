@@ -2,103 +2,165 @@ import { CSSProperties } from 'react';
 
 import { setSetting } from '../../helper/settingHelpers';
 import {
-    AlertType,
-    checkIsCountdownDatesEq,
-    genHtmlAlertCountdown,
-    genHtmlAlertMarquee,
+    genHtmlForegroundCountdown,
+    genHtmlForegroundMarquee,
     getAndShowMedia,
-    removeAlert,
 } from '../screenOtherHelpers';
-import { getAlertDataListOnScreenSetting } from '../screenHelpers';
+import { getForegroundDataListOnScreenSetting } from '../screenHelpers';
 import { screenManagerSettingNames } from '../../helper/constants';
 import ScreenEventHandler from './ScreenEventHandler';
 import ScreenManagerBase from './ScreenManagerBase';
 import { unlocking } from '../../server/unlockingHelpers';
 import {
-    AlertDataType,
+    ForegroundDataType,
     BasicScreenMessageType,
     ScreenMessageType,
+    ForegroundMarqueDataType,
+    ForegroundCameraDataType,
+    ForegroundCountdownDataType,
 } from '../screenTypeHelpers';
+import { checkAreObjectsEqual } from '../../server/comparisonHelpers';
 
 export type ScreenOtherEventType = 'update';
 
-export default class ScreenOtherManager extends ScreenEventHandler<ScreenOtherEventType> {
+const containerMapper = new WeakMap<
+    object,
+    {
+        container: HTMLElement;
+        removeHandler: () => void;
+    }
+>();
+export default class ScreenForegroundManager extends ScreenEventHandler<ScreenOtherEventType> {
     static readonly eventNamePrefix: string = 'screen-alert-m';
     private _div: HTMLDivElement | null = null;
-    alertData: AlertDataType;
-    clearCameraTracks: () => void = () => {};
+    foregroundData: ForegroundDataType;
+    rendererMap: Map<string, (data: any) => void>;
 
     constructor(screenManagerBase: ScreenManagerBase) {
         super(screenManagerBase);
-        const allAlertDataList = getAlertDataListOnScreenSetting();
+        const allAlertDataList = getForegroundDataListOnScreenSetting();
         const alertData = allAlertDataList[this.key] ?? {};
-        this.alertData = {
+        this.foregroundData = {
             countdownData: alertData['countdownData'] ?? null,
             marqueeData: alertData['marqueeData'] ?? null,
             cameraData: alertData['cameraData'] ?? null,
         };
-    }
-
-    getDivChild(divId: string) {
-        if (this._div === null) {
-            return document.createElement('div');
-        }
-        return this._div.querySelector(`#${divId}`) as HTMLDivElement;
-    }
-
-    get isCountdownShowing() {
-        return this.alertData.countdownData !== null;
-    }
-
-    get isMarqueeShowing() {
-        return this.alertData.marqueeData !== null;
-    }
-
-    get isCameraShowing() {
-        return this.alertData.cameraData !== null;
+        this.rendererMap = new Map<string, (data: any) => void>([
+            ['countdownData', this.renderCountdown.bind(this)],
+            ['marqueeData', this.renderMarquee.bind(this)],
+            ['cameraData', this.renderCamera.bind(this)],
+        ]);
     }
 
     get isShowing() {
-        return (
-            this.isCountdownShowing ||
-            this.isMarqueeShowing ||
-            this.isCameraShowing
-        );
+        return Object.values(this.foregroundData).some((data) => {
+            return data !== null;
+        });
     }
 
-    get divCountdown() {
-        return this.getDivChild('countdown');
-    }
-
-    get divMarquee() {
-        return this.getDivChild('marquee');
-    }
-
-    get divCamera() {
-        return this.getDivChild('camera');
+    get div(): HTMLDivElement {
+        return this._div ?? document.createElement('div');
     }
 
     set div(div: HTMLDivElement | null) {
         this._div = div;
-        this.renderAll();
+        this.render();
     }
 
-    applyAlertDataWithSyncGroup(
-        alertData: AlertDataType,
+    removeDivContainer(data: any) {
+        if (data === null || !containerMapper.has(data)) {
+            return;
+        }
+        const { removeHandler } = containerMapper.get(data)!;
+        removeHandler();
+    }
+
+    createDivContainer(
+        data: any,
+        removingHandler?: (container: HTMLElement) => Promise<void> | void,
+    ): HTMLElement | null {
+        if (data === null) {
+            return null;
+        }
+        this.removeDivContainer(data);
+        const container = document.createElement('div');
+        containerMapper.set(data, {
+            container,
+            removeHandler: async () => {
+                containerMapper.delete(data);
+                if (removingHandler !== undefined) {
+                    await removingHandler(container);
+                }
+                if (container.parentNode) {
+                    container.parentNode.removeChild(container);
+                }
+            },
+        });
+        // TODO: apply with transition
+        this.div.appendChild(container);
+        return container;
+    }
+
+    compareAndRender(oldData: any, newData: any, render: (data: any) => void) {
+        if (oldData === null && newData !== null) {
+            render(newData);
+            return newData;
+        } else if (oldData !== null && newData === null) {
+            this.removeDivContainer(oldData);
+            return null;
+        } else if (!checkAreObjectsEqual(oldData, newData)) {
+            this.removeDivContainer(oldData);
+            render(newData);
+            return newData;
+        }
+        return oldData;
+    }
+
+    applyForegroundDataWithSyncGroup(
+        { countdownData, marqueeData, cameraData }: ForegroundDataType,
         isNoSyncGroup = false,
     ) {
-        if (!isNoSyncGroup) {
-            ScreenOtherManager.enableSyncGroup(this.screenId);
+        if (this.screenManagerBase.checkIsLockedWithMessage()) {
+            return;
         }
-        Object.assign(this.alertData, alertData);
+        if (!isNoSyncGroup) {
+            ScreenForegroundManager.enableSyncGroup(this.screenId);
+        }
+        const {
+            countdownData: oldCountdownData,
+            marqueeData: oldMarqueeData,
+            cameraData: oldCameraData,
+        } = this.foregroundData;
+        countdownData = this.compareAndRender(
+            oldCountdownData,
+            countdownData,
+            this.renderCountdown.bind(this),
+        );
+        marqueeData = this.compareAndRender(
+            oldMarqueeData,
+            marqueeData,
+            this.renderMarquee.bind(this),
+        );
+        cameraData = this.compareAndRender(
+            oldCameraData,
+            cameraData,
+            this.renderCamera.bind(this),
+        );
+        Object.assign(this.foregroundData, {
+            countdownData,
+            marqueeData,
+            cameraData,
+        });
+        this.saveForegroundData();
     }
 
-    saveAlertData() {
-        unlocking(screenManagerSettingNames.ALERT, () => {
-            const allAlertDataList = getAlertDataListOnScreenSetting();
-            allAlertDataList[this.key] = this.alertData;
-            const string = JSON.stringify(allAlertDataList);
-            setSetting(screenManagerSettingNames.ALERT, string);
+    saveForegroundData() {
+        unlocking(screenManagerSettingNames.FOREGROUND, () => {
+            const allForegroundDataList =
+                getForegroundDataListOnScreenSetting();
+            allForegroundDataList[this.key] = this.foregroundData;
+            const string = JSON.stringify(allForegroundDataList);
+            setSetting(screenManagerSettingNames.FOREGROUND, string);
             this.fireUpdateEvent();
         });
         this.sendSyncScreen();
@@ -107,84 +169,51 @@ export default class ScreenOtherManager extends ScreenEventHandler<ScreenOtherEv
     toSyncMessage(): BasicScreenMessageType {
         return {
             type: 'alert',
-            data: this.alertData,
+            data: this.foregroundData,
         };
     }
 
     setCountdownData(
-        countdownData: {
-            dateTime: Date;
-            extraStyle: React.CSSProperties;
-        } | null,
+        countdownData: ForegroundCountdownDataType | null,
         isNoSyncGroup = false,
     ) {
-        if (
-            this.screenManagerBase.checkIsLockedWithMessage() ||
-            checkIsCountdownDatesEq(
-                countdownData?.dateTime ?? null,
-                this.alertData.countdownData?.dateTime ?? null,
-            )
-        ) {
-            return;
-        }
-        this.cleanRender(this.divCountdown);
-        this.applyAlertDataWithSyncGroup(
+        this.applyForegroundDataWithSyncGroup(
             {
-                ...this.alertData,
+                ...this.foregroundData,
                 countdownData,
             },
             isNoSyncGroup,
         );
-        this.renderCountdown();
-        this.saveAlertData();
     }
 
     setMarqueeData(
-        marqueeData: { text: string } | null,
+        marqueeData: ForegroundMarqueDataType | null,
         isNoSyncGroup = false,
     ) {
-        if (
-            this.screenManagerBase.checkIsLockedWithMessage() ||
-            marqueeData?.text === this.alertData.marqueeData?.text
-        ) {
-            return;
-        }
-        this.cleanRender(this.divMarquee);
-        this.applyAlertDataWithSyncGroup(
+        this.applyForegroundDataWithSyncGroup(
             {
-                ...this.alertData,
+                ...this.foregroundData,
                 marqueeData,
             },
             isNoSyncGroup,
         );
-        this.renderMarquee();
-        this.saveAlertData();
     }
 
     setCameraData(
-        cameraData: { id: string; extraStyle: React.CSSProperties } | null,
+        cameraData: ForegroundCameraDataType | null,
         isNoSyncGroup = false,
     ) {
-        if (
-            this.screenManagerBase.checkIsLockedWithMessage() ||
-            cameraData?.id === this.alertData.cameraData?.id
-        ) {
-            return;
-        }
-        this.cleanRender(this.divCamera);
-        this.applyAlertDataWithSyncGroup(
+        this.applyForegroundDataWithSyncGroup(
             {
-                ...this.alertData,
+                ...this.foregroundData,
                 cameraData,
             },
             isNoSyncGroup,
         );
-        this.renderCamera();
-        this.saveAlertData();
     }
 
     receiveSyncScreen(message: ScreenMessageType) {
-        const data: AlertDataType = message.data;
+        const data: ForegroundDataType = message.data;
         this.setCountdownData(data.countdownData, true);
         this.setMarqueeData(data.marqueeData, true);
         this.setCameraData(data.cameraData, true);
@@ -193,32 +222,19 @@ export default class ScreenOtherManager extends ScreenEventHandler<ScreenOtherEv
 
     fireUpdateEvent() {
         super.fireUpdateEvent();
-        ScreenOtherManager.fireUpdateEvent();
-    }
-
-    static getAlertDataListByType(alertType: AlertType) {
-        const alertDataList = getAlertDataListOnScreenSetting();
-        return Object.entries(alertDataList).filter(([_, backgroundSrc]) => {
-            if (alertType === 'countdown') {
-                return backgroundSrc.countdownData !== null;
-            }
-            if (alertType === 'marquee') {
-                return backgroundSrc.marqueeData !== null;
-            }
-            if (alertType === 'camera') {
-                return backgroundSrc.countdownData !== null;
-            }
-        });
+        ScreenForegroundManager.fireUpdateEvent();
     }
 
     static async setData(
         event: React.MouseEvent<HTMLElement, MouseEvent>,
-        callback: (screenOtherManager: ScreenOtherManager) => void,
+        callback: (screenOtherManager: ScreenForegroundManager) => void,
         isForceChoosing: boolean,
     ) {
-        const callbackSave = async (screenOtherManager: ScreenOtherManager) => {
+        const callbackSave = async (
+            screenOtherManager: ScreenForegroundManager,
+        ) => {
             callback(screenOtherManager);
-            screenOtherManager.saveAlertData();
+            screenOtherManager.saveForegroundData();
         };
         const screenIds = await this.chooseScreenIds(event, isForceChoosing);
         screenIds.forEach((screenId) => {
@@ -274,73 +290,52 @@ export default class ScreenOtherManager extends ScreenEventHandler<ScreenOtherEv
         );
     }
 
-    renderCountdown() {
-        this.cleanRender(this.divCountdown);
-        if (this.alertData.countdownData === null) {
-            return;
-        }
-        this.moveToTheEnd(this.divCountdown);
-        const newDiv = genHtmlAlertCountdown(this.alertData.countdownData);
-        this.divCountdown.appendChild(newDiv);
+    renderCountdown(data: ForegroundCountdownDataType) {
+        const { element, handleRemoving } = genHtmlForegroundCountdown(data);
+        const divCountdown = this.createDivContainer(data, handleRemoving);
+        divCountdown!.appendChild(element);
     }
 
-    renderMarquee() {
-        this.cleanRender(this.divMarquee);
-        if (this.alertData.marqueeData === null) {
-            return;
-        }
-        this.moveToTheEnd(this.divMarquee);
-        const newDiv = genHtmlAlertMarquee(
-            this.alertData.marqueeData,
+    renderMarquee(data: ForegroundMarqueDataType) {
+        const { element, handleRemoving } = genHtmlForegroundMarquee(
+            data,
             this.screenManagerBase,
         );
-        this.divMarquee.appendChild(newDiv);
-        newDiv.querySelectorAll('.marquee').forEach((element: any) => {
-            if (element.offsetWidth < element.scrollWidth) {
-                element.classList.add('moving');
-            }
-        });
+        const divMarquee = this.createDivContainer(data, handleRemoving);
+        divMarquee!.appendChild(element);
     }
 
-    renderCamera() {
-        this.cleanRender(this.divCamera);
-        if (this.alertData.cameraData === null) {
-            return;
-        }
-        this.moveToTheEnd(this.divCamera);
-        const cameraId = this.alertData.cameraData.id;
+    renderCamera(data: ForegroundCameraDataType) {
+        const store = { clearCameraTracks: () => {} };
+        const divMarquee = this.createDivContainer(data, () => {
+            store.clearCameraTracks();
+        });
         getAndShowMedia({
-            id: cameraId,
-            container: this.divCamera,
-            extraStyle: this.alertData.cameraData.extraStyle,
+            id: data.id,
+            container: divMarquee!,
+            extraStyle: data.extraStyle,
         }).then((clearTracks) => {
-            this.clearCameraTracks = clearTracks ?? (() => {});
+            store.clearCameraTracks = clearTracks ?? (() => {});
         });
     }
 
-    renderAll() {
-        this.renderCountdown();
-        this.renderMarquee();
-        this.renderCamera();
+    render() {
+        for (const [key, render] of this.rendererMap.entries()) {
+            const data = this.foregroundData[key as keyof ForegroundDataType];
+            if (data !== null) {
+                render(data);
+            }
+        }
     }
 
-    cleanRender(divContainer: HTMLDivElement) {
-        if (divContainer === this.divCamera) {
-            this.clearCameraTracks();
-            this.clearCameraTracks = () => {};
-        }
-        const childList = Array.from(divContainer.children);
-        childList.forEach((child) => {
-            removeAlert(child);
-        });
-    }
-
-    moveToTheEnd(divContainer: HTMLDivElement) {
-        const parent = divContainer.parentElement;
-        if (parent !== null) {
-            parent.removeChild(divContainer);
-            parent.appendChild(divContainer);
-        }
+    clear() {
+        this.applyForegroundDataWithSyncGroup(
+            Object.fromEntries(
+                Object.keys(this.foregroundData).map((key) => [key, null]),
+            ) as ForegroundDataType,
+            true,
+        );
+        this.div.innerHTML = '';
     }
 
     get containerStyle(): CSSProperties {
@@ -359,18 +354,7 @@ export default class ScreenOtherManager extends ScreenEventHandler<ScreenOtherEv
         screenOtherManager.receiveSyncScreen(message);
     }
 
-    render() {
-        throw new Error('Method not implemented.');
-    }
-
-    clear() {
-        this.setCameraData(null);
-        this.setMarqueeData(null);
-        this.setCountdownData(null);
-        this.saveAlertData();
-    }
-
     static getInstance(screenId: number) {
-        return super.getInstanceBase<ScreenOtherManager>(screenId);
+        return super.getInstanceBase<ScreenForegroundManager>(screenId);
     }
 }

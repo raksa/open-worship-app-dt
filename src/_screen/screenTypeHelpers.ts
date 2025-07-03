@@ -29,8 +29,6 @@ export const transitionEffect = {
 } as const;
 export type ScreenTransitionEffectType = keyof typeof transitionEffect;
 export type PTFEventType = 'update';
-export const targetList = ['background', 'vary-app-document'] as const;
-export type TargetType = (typeof targetList)[number];
 
 export const bibleDataTypeList = ['bible-item', 'lyric'] as const;
 export type BibleDataType = (typeof bibleDataTypeList)[number];
@@ -145,6 +143,6 @@ export type ShowScreenDataType = {
 };
 
 export type PTEffectDataType = {
-    target: TargetType;
+    target: string;
     effect: ScreenTransitionEffectType;
 };

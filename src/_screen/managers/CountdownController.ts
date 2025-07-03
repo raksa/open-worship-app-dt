@@ -79,10 +79,14 @@ export default class CountdownController {
         this.divSecond.innerHTML = isReset ? '00' : this.secondStr;
     }
 
-    stop() {
+    pause() {
         const countdownInterval = this.countdownInterval;
         this.countdownInterval = null;
         clearInterval(countdownInterval);
+    }
+
+    stop() {
+        this.pause();
         this.setHtml(true);
     }
 

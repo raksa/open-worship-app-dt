@@ -3,13 +3,7 @@ import CountdownController from './managers/CountdownController';
 import { getHTMLChild } from '../helper/helpers';
 import ScreenManagerBase from './managers/ScreenManagerBase';
 import { handleError } from '../helper/errorHelpers';
-
-const classNameMapper = {
-    countdown: 'countdown-actor',
-    marquee: 'marquee-actor',
-    camera: 'camera-actor',
-    toast: 'toast-actor',
-};
+import { styleAnimList } from './transitionEffectHelpers';
 
 export function genHtmlForegroundMarquee(
     marqueeData: { text: string },
@@ -19,10 +13,9 @@ export function genHtmlForegroundMarquee(
     const duration = text.length / 6;
     const scale = screenManagerBase.height / 768;
     const fontSize = 75 * scale;
-    const actorClass = classNameMapper.marquee;
+    const uniqueClassname = `m-${crypto.randomUUID()}`;
     const htmlString = ReactDOMServer.renderToStaticMarkup(
         <div
-            data-alert-cn={actorClass}
             style={{
                 position: 'absolute',
                 width: '100%',
@@ -31,7 +24,7 @@ export function genHtmlForegroundMarquee(
             }}
         >
             <style>{`
-                .${actorClass} {
+                .${uniqueClassname} {
                     width: 100%;
                     padding: 3px 0px;
                     margin: 0 auto;
@@ -45,15 +38,15 @@ export function genHtmlForegroundMarquee(
                     transform: translateY(100%);
                     animation: from-bottom 500ms ease-in forwards;
                 }
-                .${actorClass}.out {
+                .${uniqueClassname}.out {
                     animation: to-bottom 500ms ease-out forwards;
                 }
-                .${actorClass} span {
+                .${uniqueClassname} span {
                     display: inline-block;
                     will-change: transform;
                     width: max-content;
                 }
-                .${actorClass}.moving span {
+                .${uniqueClassname}.moving span {
                     padding-left: 100%;
                     animation-duration: ${duration}s;
                     animation-timing-function: linear;
@@ -63,6 +56,9 @@ export function genHtmlForegroundMarquee(
                     animation-fill-mode: none;
                     animation-play-state: running;
                     animation-name: moving;
+                }
+                .${uniqueClassname}.out span {
+                    animation-play-state: paused;
                 }
                 @keyframes moving {
                     0% { transform: translateX(0); }
@@ -77,7 +73,7 @@ export function genHtmlForegroundMarquee(
                     100% { transform: translateY(100%); }
                 }
             `}</style>
-            <p className={`marquee ${actorClass}`}>
+            <p className={uniqueClassname}>
                 <span>{text}</span>
             </p>
         </div>,
@@ -85,12 +81,32 @@ export function genHtmlForegroundMarquee(
     const div = document.createElement('div');
     div.innerHTML = htmlString;
     const marqueeDiv = getHTMLChild<HTMLDivElement>(div, 'div');
-    marqueeDiv.querySelectorAll('.marquee').forEach((element: any) => {
-        if (element.offsetWidth < element.scrollWidth) {
-            element.classList.add('moving');
-        }
-    });
-    return marqueeDiv;
+    marqueeDiv
+        .querySelectorAll(`.${uniqueClassname}`)
+        .forEach((element: any) => {
+            const resizeObserver = new ResizeObserver(() => {
+                if (element.offsetWidth < element.scrollWidth) {
+                    element.classList.add('moving');
+                } else {
+                    element.classList.remove('moving');
+                }
+                resizeObserver.disconnect();
+            });
+            resizeObserver.observe(element);
+        });
+    return {
+        element: marqueeDiv,
+        handleRemoving: () => {
+            return new Promise<void>((resolve) => {
+                marqueeDiv
+                    .querySelectorAll(`.${uniqueClassname}`)
+                    .forEach((element: any) => {
+                        element.classList.add('out');
+                    });
+                setTimeout(resolve, duration * 1000 + 500);
+            });
+        },
+    };
 }
 
 export function genHtmlForegroundCountdown(countdownData: {
@@ -98,10 +114,9 @@ export function genHtmlForegroundCountdown(countdownData: {
     extraStyle?: React.CSSProperties;
 }) {
     const { dateTime } = countdownData;
-    const actorClass = classNameMapper.countdown;
+    const uniqueClassname = `m-${crypto.randomUUID()}`;
     const htmlString = ReactDOMServer.renderToStaticMarkup(
         <div
-            data-alert-cn={actorClass}
             style={{
                 color: 'white',
                 backgroundColor: 'rgba(0, 12, 100, 0.7)',
@@ -110,21 +125,18 @@ export function genHtmlForegroundCountdown(countdownData: {
             }}
         >
             <style>{`
-                .${actorClass} {
+                .${uniqueClassname} {
                     display: flex;
                     justify-content: center;
                 }
-                .${actorClass} div {
+                .${uniqueClassname} div {
                     text-align: center;
                 }
-                .${actorClass} #second {
+                .${uniqueClassname} #second {
                     text-align: left;
                 }
-                .${actorClass}.out {
-                    display: none;
-                }
             `}</style>
-            <div className={`countdown ${actorClass}`}>
+            <div className={`countdown ${uniqueClassname}`}>
                 <div id="hour">00</div>:<div id="minute">00</div>:
                 <div id="second">00</div>
             </div>
@@ -132,9 +144,20 @@ export function genHtmlForegroundCountdown(countdownData: {
     );
     const div = document.createElement('div');
     div.innerHTML = htmlString;
-    const divContainer = getHTMLChild<HTMLDivElement>(div, 'div');
-    CountdownController.init(divContainer, dateTime);
-    return divContainer;
+    const element = getHTMLChild<HTMLDivElement>(div, 'div');
+    const countDownHandler = CountdownController.init(element, dateTime);
+    const animData = styleAnimList.fade('countdown');
+    return {
+        element,
+        handleRemoving: async () => {
+            countDownHandler.pause();
+            const style = document.createElement('style');
+            style.innerHTML = animData.style;
+            element.parentElement?.appendChild(style);
+            await animData.animOut(element);
+            style.remove();
+        },
+    };
 }
 
 export async function getAndShowMedia({
