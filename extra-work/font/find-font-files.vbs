@@ -215,13 +215,13 @@ Function GetFaceFromFilename(fileName)
        InStr(lowerName, "bi") > 0 Or InStr(lowerName, "ib") > 0 Then
         GetFaceFromFilename = "Bold Italic"
     ElseIf (InStr(lowerName, "light") > 0 And InStr(lowerName, "italic") > 0) Or _
-           (InStr(lowerName, "lt") > 0 And InStr(lowerName, "i") > 0) Then
+           (InStr(lowerName, " li") > 0 Or Right(lowerName, 2) = "li") Then
         GetFaceFromFilename = "Light Italic"
     ElseIf InStr(lowerName, "bold") > 0 Or InStr(lowerName, "bd") > 0 Then
         GetFaceFromFilename = "Bold"
     ElseIf InStr(lowerName, "italic") > 0 Or InStr(lowerName, "it") > 0 Then
         GetFaceFromFilename = "Italic"
-    ElseIf InStr(lowerName, "light") > 0 And Not (InStr(lowerName, "freehand") > 0 Or InStr(lowerName, "highlight") > 0) Then
+    ElseIf InStr(lowerName, "light") > 0 And Not (InStr(lowerName, "freehand") > 0 Or InStr(lowerName, "highlight") > 0 Or InStr(lowerName, "moonlight") > 0) Then
         GetFaceFromFilename = "Light"
     ElseIf InStr(lowerName, "thin") > 0 Then
         GetFaceFromFilename = "Thin"

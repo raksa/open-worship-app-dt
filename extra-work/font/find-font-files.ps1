@@ -44,12 +44,33 @@ if ($FontFolders.Count -eq 0) {
 function Get-FamilyFromFilename {
     param([string]$FileName)
     $baseName = [System.IO.Path]::GetFileNameWithoutExtension($FileName)
+    $lowerName = $baseName.ToLower()
+    
     # Convert hyphens and underscores to spaces for better matching
     $normalizedName = $baseName -replace '[-_]', ' '
     # Remove version numbers in brackets and dates
     $familyName = $normalizedName -replace '\s*\[Version\s+[\d\.]+\]\s*\d*', ''
-    # Remove common style suffixes to get family name
-    $familyName = $familyName -replace '(?i)(bold|italic|light|regular|medium|thin|black|condensed|expanded|oblique|bd|bi|it|rg).*$', ''
+    
+    # For short names like "arialbd", "timesi", extract family differently
+    if ($baseName.Length -le 10) {
+        if ($lowerName.EndsWith("bd")) {
+            $familyName = $baseName.Substring(0, $baseName.Length - 2)
+        }
+        elseif ($lowerName.EndsWith("bi")) {
+            $familyName = $baseName.Substring(0, $baseName.Length - 2)
+        }
+        elseif ($lowerName.EndsWith("i") -and $lowerName -ne "i") {
+            $familyName = $baseName.Substring(0, $baseName.Length - 1)
+        }
+        else {
+            $familyName = $familyName
+        }
+    }
+    else {
+        # Remove common style suffixes for longer names
+        $familyName = $familyName -replace '(?i)\s+(bold|italic|light|regular|medium|thin|black|condensed|expanded|oblique)(\s|$)', ''
+    }
+    
     $familyName = $familyName -replace '\s+$', ''  # Remove trailing spaces
     $familyName = $familyName -replace '\s+', ' '  # Normalize multiple spaces to single space
     if ([string]::IsNullOrEmpty($familyName)) { return $normalizedName } else { return $familyName }
@@ -57,13 +78,23 @@ function Get-FamilyFromFilename {
 function Get-FaceFromFilename {
     param([string]$FileName)
     $baseName = [System.IO.Path]::GetFileNameWithoutExtension($FileName)
-    # Use if-elseif structure for better compatibility with older PowerShell versions
+    $lowerName = $baseName.ToLower()
+    
+    # Handle short font names like arialbd, timesi, etc.
+    if ($baseName.Length -le 10) {
+        if ($lowerName.EndsWith("bd")) { return 'Bold' }
+        elseif ($lowerName.EndsWith("bi")) { return 'Bold Italic' }
+        elseif ($lowerName.EndsWith("i") -and $lowerName -ne "i") { return 'Italic' }
+        else { return 'Regular' }
+    }
+    
+    # Use if-elseif structure for longer names
     if ($baseName -match '(?i).*bold.*italic.*|.*bi\b') { return 'Bold Italic' }
     elseif ($baseName -match '(?i).*italic.*bold.*|.*ib\b') { return 'Bold Italic' }
     elseif ($baseName -match '(?i).*bold.*|.*bd\b') { return 'Bold' }
     elseif ($baseName -match '(?i).*italic.*|.*it\b') { return 'Italic' }
     elseif ($baseName -match '(?i).*light.*italic.*|.*li\b') { return 'Light Italic' }
-    elseif ($baseName -match '(?i).*light.*|.*lt\b') { return 'Light' }
+    elseif ($baseName -match '(?i).*light.*' -and $baseName -notmatch '(?i).*(freehand|highlight).*') { return 'Light' }
     elseif ($baseName -match '(?i).*thin.*') { return 'Thin' }
     elseif ($baseName -match '(?i).*medium.*') { return 'Medium' }
     elseif ($baseName -match '(?i).*black.*') { return 'Black' }
