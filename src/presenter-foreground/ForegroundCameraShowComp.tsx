@@ -1,15 +1,18 @@
 import { useRef, useState } from 'react';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { useStateSettingBoolean } from '../helper/settingHelpers';
-import OtherRenderHeaderTitleComp from './OtherRenderHeaderTitleComp';
+import ForegroundRenderHeaderTitleComp from './ForegroundRenderHeaderTitleComp';
 import LoadingComp from '../others/LoadingComp';
 import ScreenForegroundManager from '../_screen/managers/ScreenForegroundManager';
-import { getAndShowMedia } from '../_screen/screenOtherHelpers';
-import { getShowingScreenIds, getScreenManagerInstances } from './otherHelpers';
+import { getAndShowMedia } from '../_screen/screenForegroundHelpers';
+import {
+    getShowingScreenIds,
+    getScreenManagerInstances,
+} from './foregroundHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
-import { useScreenOtherManagerEvents } from '../_screen/managers/screenEventHelpers';
+import { useScreenForegroundManagerEvents } from '../_screen/managers/screenEventHelpers';
 import { genTimeoutAttempt } from '../helper/helpers';
-import { useOtherPropsSetting } from './propertiesSettingHelpers';
+import { useForegroundPropsSetting } from './propertiesSettingHelpers';
 
 type CameraInfoType = {
     deviceId: string;
@@ -77,13 +80,14 @@ function refreshAllCameras(
 ) {
     attemptTimeout(() => {
         showingScreenIds.forEach((screenId) => {
-            getScreenManagerInstances(screenId, (screenOtherManager) => {
-                const cameraData = screenOtherManager.foregroundData?.cameraData;
+            getScreenManagerInstances(screenId, (screenForegroundManager) => {
+                const cameraData =
+                    screenForegroundManager.foregroundData?.cameraData;
                 if (cameraData === null) {
                     return;
                 }
-                screenOtherManager.setCameraData(null);
-                screenOtherManager.setCameraData({
+                screenForegroundManager.setCameraData(null);
+                screenForegroundManager.setCameraData({
                     ...cameraData,
                     extraStyle,
                 });
@@ -92,12 +96,12 @@ function refreshAllCameras(
     });
 }
 
-export default function OtherCameraShowComp() {
-    useScreenOtherManagerEvents(['update']);
+export default function ForegroundCameraShowComp() {
+    useScreenForegroundManagerEvents(['update']);
     const showingScreenIds = getShowingScreenIds((data) => {
         return data.cameraData !== null;
     });
-    const { genStyle, element: propsSetting } = useOtherPropsSetting({
+    const { genStyle, element: propsSetting } = useForegroundPropsSetting({
         prefix: 'camera',
         onChange: (extraStyle) => {
             refreshAllCameras(showingScreenIds, extraStyle);
@@ -123,8 +127,8 @@ export default function OtherCameraShowComp() {
         { setCameraInfoList },
     );
     const handleCameraHiding = (screenId: number) => {
-        getScreenManagerInstances(screenId, (screenOtherManager) => {
-            screenOtherManager.setCameraData(null);
+        getScreenManagerInstances(screenId, (screenForegroundManager) => {
+            screenForegroundManager.setCameraData(null);
         });
     };
     return (
@@ -135,17 +139,17 @@ export default function OtherCameraShowComp() {
                     ' align-items-center'
                 }
             >
-                <OtherRenderHeaderTitleComp
+                <ForegroundRenderHeaderTitleComp
                     isOpened={isOpened}
                     setIsOpened={setIsOpened}
                 >
                     <h4>Camera Show</h4>
-                </OtherRenderHeaderTitleComp>
+                </ForegroundRenderHeaderTitleComp>
                 {!isOpened ? (
                     <ScreensRendererComp
                         showingScreenIds={showingScreenIds}
                         buttonTitle="Hide Camera"
-                        handleOtherHiding={handleCameraHiding}
+                        handleForegroundHiding={handleCameraHiding}
                         isMini={true}
                     />
                 ) : null}
@@ -177,7 +181,7 @@ export default function OtherCameraShowComp() {
                     <ScreensRendererComp
                         showingScreenIds={showingScreenIds}
                         buttonTitle="Hide Camera"
-                        handleOtherHiding={handleCameraHiding}
+                        handleForegroundHiding={handleCameraHiding}
                     />
                 </div>
             ) : null}

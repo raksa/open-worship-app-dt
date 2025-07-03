@@ -1,4 +1,4 @@
-import ScreenOtherComp from '../ScreenOtherComp';
+import ScreenForegroundComp from '../ScreenForegroundComp';
 import ScreenBackgroundComp from '../ScreenBackgroundComp';
 import ScreenSlideComp from '../ScreenVaryAppDocumentComp';
 import ScreenBibleComp from '../ScreenBibleComp';
@@ -43,7 +43,7 @@ export default function MiniScreenAppComp({
             <ScreenBackgroundComp />
             <ScreenSlideComp />
             <ScreenBibleComp />
-            <ScreenOtherComp />
+            <ScreenForegroundComp />
         </ScreenManagerBaseContext>
     );
 }

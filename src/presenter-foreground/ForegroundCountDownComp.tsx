@@ -3,11 +3,14 @@ import {
     useStateSettingString,
 } from '../helper/settingHelpers';
 import ScreenForegroundManager from '../_screen/managers/ScreenForegroundManager';
-import { getShowingScreenIds, getScreenManagerInstances } from './otherHelpers';
+import {
+    getShowingScreenIds,
+    getScreenManagerInstances,
+} from './foregroundHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
-import { useScreenOtherManagerEvents } from '../_screen/managers/screenEventHelpers';
-import OtherRenderHeaderTitleComp from './OtherRenderHeaderTitleComp';
-import { useOtherPropsSetting } from './propertiesSettingHelpers';
+import { useScreenForegroundManagerEvents } from '../_screen/managers/screenEventHelpers';
+import ForegroundRenderHeaderTitleComp from './ForegroundRenderHeaderTitleComp';
+import { useForegroundPropsSetting } from './propertiesSettingHelpers';
 import { genTimeoutAttempt } from '../helper/helpers';
 
 function useTiming() {
@@ -190,14 +193,14 @@ function refreshAllCountdowns(
 ) {
     attemptTimeout(() => {
         showingScreenIds.forEach((screenId) => {
-            getScreenManagerInstances(screenId, (screenOtherManager) => {
+            getScreenManagerInstances(screenId, (screenForegroundManager) => {
                 const countdownData =
-                    screenOtherManager.foregroundData?.countdownData;
+                    screenForegroundManager.foregroundData?.countdownData;
                 if (countdownData === null) {
                     return;
                 }
-                screenOtherManager.setCountdownData(null);
-                screenOtherManager.setCountdownData({
+                screenForegroundManager.setCountdownData(null);
+                screenForegroundManager.setCountdownData({
                     ...countdownData,
                     extraStyle,
                 });
@@ -206,12 +209,12 @@ function refreshAllCountdowns(
     });
 }
 
-export default function OtherCountDownComp() {
-    useScreenOtherManagerEvents(['update']);
+export default function ForegroundCountDownComp() {
+    useScreenForegroundManagerEvents(['update']);
     const showingScreenIds = getShowingScreenIds((data) => {
         return data.countdownData !== null;
     });
-    const { genStyle, element: propsSetting } = useOtherPropsSetting({
+    const { genStyle, element: propsSetting } = useForegroundPropsSetting({
         prefix: 'countdown',
         onChange: (extraStyle) => {
             refreshAllCountdowns(showingScreenIds, extraStyle);
@@ -223,8 +226,8 @@ export default function OtherCountDownComp() {
         false,
     );
     const handleCountdownHiding = (screenId: number) => {
-        getScreenManagerInstances(screenId, (screenOtherManager) => {
-            screenOtherManager.setCountdownData(null);
+        getScreenManagerInstances(screenId, (screenForegroundManager) => {
+            screenForegroundManager.setCountdownData(null);
         });
     };
     return (
@@ -235,17 +238,17 @@ export default function OtherCountDownComp() {
                     ' align-items-center'
                 }
             >
-                <OtherRenderHeaderTitleComp
+                <ForegroundRenderHeaderTitleComp
                     isOpened={isOpened}
                     setIsOpened={setIsOpened}
                 >
                     <h4>Countdown</h4>
-                </OtherRenderHeaderTitleComp>
+                </ForegroundRenderHeaderTitleComp>
                 {!isOpened ? (
                     <ScreensRendererComp
                         showingScreenIds={showingScreenIds}
                         buttonTitle="Hide Camera"
-                        handleOtherHiding={handleCountdownHiding}
+                        handleForegroundHiding={handleCountdownHiding}
                         isMini={true}
                     />
                 ) : null}
@@ -264,7 +267,7 @@ export default function OtherCountDownComp() {
                         <ScreensRendererComp
                             showingScreenIds={showingScreenIds}
                             buttonTitle="Hide Timer"
-                            handleOtherHiding={handleCountdownHiding}
+                            handleForegroundHiding={handleCountdownHiding}
                         />
                     </div>
                 </div>

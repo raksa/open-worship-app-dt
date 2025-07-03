@@ -20,7 +20,7 @@ export default class ScreenManager extends ScreenManagerBase {
     readonly screenBackgroundManager: ScreenBackgroundManager;
     readonly screenVaryAppDocumentManager: ScreenVaryAppDocumentManager;
     readonly screenBibleManager: ScreenBibleManager;
-    readonly screenOtherManager: ScreenForegroundManager;
+    readonly screenForegroundManager: ScreenForegroundManager;
     readonly varyAppDocumentEffectManager: ScreenEffectManager;
     readonly backgroundEffectManager: ScreenEffectManager;
     private readonly registeredEventListeners: RegisteredEventType<any, any>[];
@@ -44,7 +44,7 @@ export default class ScreenManager extends ScreenManagerBase {
             this.varyAppDocumentEffectManager,
         );
         this.screenBibleManager = new ScreenBibleManager(this);
-        this.screenOtherManager = new ScreenForegroundManager(this);
+        this.screenForegroundManager = new ScreenForegroundManager(this);
         this.registeredEventListeners = [];
         this.registeredEventListeners.push(
             ...this.screenVaryAppDocumentManager.registerEventListener(
@@ -95,7 +95,7 @@ export default class ScreenManager extends ScreenManagerBase {
         ScreenBibleManager.sendSynTextStyle();
         this.backgroundEffectManager.sendSyncScreen();
         this.screenBackgroundManager.sendSyncScreen();
-        this.screenOtherManager.sendSyncScreen();
+        this.screenForegroundManager.sendSyncScreen();
         this.screenVaryAppDocumentManager.sendSyncScreen();
         this.varyAppDocumentEffectManager.sendSyncScreen();
         this.screenBibleManager.sendSyncScreen();
@@ -104,7 +104,7 @@ export default class ScreenManager extends ScreenManagerBase {
     clear() {
         this.screenBibleManager.clear();
         this.screenVaryAppDocumentManager.clear();
-        this.screenOtherManager.clear();
+        this.screenForegroundManager.clear();
         this.screenBackgroundManager.clear();
         this.fireUpdateEvent();
     }
@@ -121,7 +121,7 @@ export default class ScreenManager extends ScreenManagerBase {
         this.screenBackgroundManager.delete();
         this.screenVaryAppDocumentManager.delete();
         this.screenBibleManager.delete();
-        this.screenOtherManager.delete();
+        this.screenForegroundManager.delete();
         deleteScreenManagerBaseCache(this.key);
         await saveScreenManagersSetting(this.screenId);
         this.fireInstanceEvent();

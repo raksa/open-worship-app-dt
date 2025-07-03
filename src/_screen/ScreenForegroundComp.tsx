@@ -1,4 +1,4 @@
-import './ScreenOtherComp.scss';
+import './ScreenForegroundComp.scss';
 
 import { useRef } from 'react';
 
@@ -8,19 +8,23 @@ import {
     useScreenManagerEvents,
 } from './managers/screenManagerHooks';
 
-export default function ScreenOtherComp() {
+export default function ScreenForegroundComp() {
     const screenManager = useScreenManagerContext();
     useScreenManagerEvents(['refresh'], screenManager, () => {
-        screenManager.screenOtherManager.render();
+        screenManager.screenForegroundManager.render();
     });
     const div = useRef<HTMLDivElement>(null);
-    const { screenOtherManager } = screenManager;
+    const { screenForegroundManager } = screenManager;
     useAppEffect(() => {
         if (div.current) {
-            screenOtherManager.div = div.current;
+            screenForegroundManager.div = div.current;
         }
     }, [div.current]);
     return (
-        <div id="alert" ref={div} style={screenOtherManager.containerStyle} />
+        <div
+            id="alert"
+            ref={div}
+            style={screenForegroundManager.containerStyle}
+        />
     );
 }

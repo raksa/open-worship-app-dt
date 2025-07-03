@@ -1,4 +1,4 @@
-export default function OtherRenderHeaderTitleComp({
+export default function ForegroundRenderHeaderTitleComp({
     isOpened,
     setIsOpened,
     children,

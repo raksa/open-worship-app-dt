@@ -293,7 +293,7 @@ function PropertiesSettingComp({
     );
 }
 
-export function useOtherPropsSetting({
+export function useForegroundPropsSetting({
     prefix,
     onChange,
     isFontSize = false,

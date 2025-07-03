@@ -1,8 +1,8 @@
 import appProvider from '../server/appProvider';
-import OtherCameraShowComp from './OtherCameraShowComp';
-import OtherCountDownComp from './OtherCountDownComp';
-import OtherImagesSlideShowComp from './OtherImagesSlideShowComp';
-import OtherMessageComp from './OtherMessageComp';
+import ForegroundCameraShowComp from './ForegroundCameraShowComp';
+import ForegroundCountDownComp from './ForegroundCountDownComp';
+import ForegroundImagesSlideShowComp from './ForegroundImagesSlideShowComp';
+import ForegroundMessageComp from './ForegroundMessageComp';
 
 export default function PresenterForegroundControllerComp() {
     return (
@@ -12,9 +12,9 @@ export default function PresenterForegroundControllerComp() {
                 overflowY: 'auto',
             }}
         >
-            <OtherMessageComp />
+            <ForegroundMessageComp />
             <hr />
-            <OtherCountDownComp />
+            <ForegroundCountDownComp />
             {appProvider.systemUtils.isDev ? (
                 <>
                     <hr />
@@ -22,7 +22,7 @@ export default function PresenterForegroundControllerComp() {
                 </>
             ) : null}
             <hr />
-            <OtherImagesSlideShowComp />
+            <ForegroundImagesSlideShowComp />
             <hr />
             {appProvider.systemUtils.isDev ? (
                 <>
@@ -31,7 +31,7 @@ export default function PresenterForegroundControllerComp() {
                 </>
             ) : null}
             <hr />
-            <OtherCameraShowComp />
+            <ForegroundCameraShowComp />
             {appProvider.systemUtils.isDev ? (
                 <>
                     <hr />

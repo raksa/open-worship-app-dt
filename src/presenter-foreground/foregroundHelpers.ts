@@ -21,7 +21,7 @@ export function getShowingScreenIds(
 
 export function getScreenManagerInstances(
     screenId: number,
-    hidingFunc: (screenOtherManager: ScreenForegroundManager) => void,
+    hidingFunc: (screenForegroundManager: ScreenForegroundManager) => void,
 ) {
     const screenManager = screenManagerFromBase(
         getScreenManagerBaseByKey(screenId.toString()),
@@ -30,6 +30,6 @@ export function getScreenManagerInstances(
         showSimpleToast('ScreenManager not found', 'error');
         return;
     }
-    const { screenOtherManager } = screenManager;
-    hidingFunc(screenOtherManager);
+    const { screenForegroundManager } = screenManager;
+    hidingFunc(screenForegroundManager);
 }

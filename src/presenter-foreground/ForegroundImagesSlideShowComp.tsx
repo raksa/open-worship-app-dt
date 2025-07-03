@@ -18,7 +18,7 @@ import { useScreenBackgroundManagerEvents } from '../_screen/managers/screenEven
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { FilePathLoadedContext } from '../others/RenderListComp';
 import ScreenManagerBase from '../_screen/managers/ScreenManagerBase';
-import OtherRenderHeaderTitleComp from './OtherRenderHeaderTitleComp';
+import ForegroundRenderHeaderTitleComp from './ForegroundRenderHeaderTitleComp';
 import { showAppContextMenu } from '../context-menu/appContextMenuHelpers';
 import {
     BackgroundSrcType,
@@ -182,7 +182,7 @@ function useAnyItemSelected(filePaths: string[] | undefined) {
     return isAnyItemSelected;
 }
 
-export default function OtherImagesSlideShowComp() {
+export default function ForegroundImagesSlideShowComp() {
     const [isOpened, setIsOpened] = useStateSettingBoolean(
         'other-image-slide-show-opened',
         false,
@@ -214,12 +214,12 @@ export default function OtherImagesSlideShowComp() {
         >
             <div className="card-header d-flex">
                 <div className="flex-grow-1">
-                    <OtherRenderHeaderTitleComp
+                    <ForegroundRenderHeaderTitleComp
                         isOpened={isOpened}
                         setIsOpened={setIsOpened}
                     >
                         <h4>Images Slide Show</h4>
-                    </OtherRenderHeaderTitleComp>
+                    </ForegroundRenderHeaderTitleComp>
                 </div>
                 <HeaderElements
                     scaleType={scaleType}

@@ -5,7 +5,7 @@ import {
     genHtmlForegroundCountdown,
     genHtmlForegroundMarquee,
     getAndShowMedia,
-} from '../screenOtherHelpers';
+} from '../screenForegroundHelpers';
 import { getForegroundDataListOnScreenSetting } from '../screenHelpers';
 import { screenManagerSettingNames } from '../../helper/constants';
 import ScreenEventHandler from './ScreenEventHandler';
@@ -21,7 +21,7 @@ import {
 } from '../screenTypeHelpers';
 import { checkAreObjectsEqual } from '../../server/comparisonHelpers';
 
-export type ScreenOtherEventType = 'update';
+export type ScreenForegroundEventType = 'update';
 
 const containerMapper = new WeakMap<
     object,
@@ -30,7 +30,7 @@ const containerMapper = new WeakMap<
         removeHandler: () => void;
     }
 >();
-export default class ScreenForegroundManager extends ScreenEventHandler<ScreenOtherEventType> {
+export default class ScreenForegroundManager extends ScreenEventHandler<ScreenForegroundEventType> {
     static readonly eventNamePrefix: string = 'screen-alert-m';
     private _div: HTMLDivElement | null = null;
     foregroundData: ForegroundDataType;
@@ -227,14 +227,14 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenOt
 
     static async setData(
         event: React.MouseEvent<HTMLElement, MouseEvent>,
-        callback: (screenOtherManager: ScreenForegroundManager) => void,
+        callback: (screenForegroundManager: ScreenForegroundManager) => void,
         isForceChoosing: boolean,
     ) {
         const callbackSave = async (
-            screenOtherManager: ScreenForegroundManager,
+            screenForegroundManager: ScreenForegroundManager,
         ) => {
-            callback(screenOtherManager);
-            screenOtherManager.saveForegroundData();
+            callback(screenForegroundManager);
+            screenForegroundManager.saveForegroundData();
         };
         const screenIds = await this.chooseScreenIds(event, isForceChoosing);
         screenIds.forEach((screenId) => {
@@ -250,10 +250,10 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenOt
     ) {
         this.setData(
             event,
-            (screenOtherManager) => {
+            (screenForegroundManager) => {
                 const countdownData =
                     dateTime !== null ? { dateTime, extraStyle } : null;
-                screenOtherManager.setCountdownData(countdownData);
+                screenForegroundManager.setCountdownData(countdownData);
             },
             isForceChoosing,
         );
@@ -266,9 +266,9 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenOt
     ) {
         this.setData(
             event,
-            (screenOtherManager) => {
+            (screenForegroundManager) => {
                 const marqueeData = text !== null ? { text } : null;
-                screenOtherManager.setMarqueeData(marqueeData);
+                screenForegroundManager.setMarqueeData(marqueeData);
             },
             isForceChoosing,
         );
@@ -282,9 +282,9 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenOt
     ) {
         this.setData(
             event,
-            (screenOtherManager) => {
+            (screenForegroundManager) => {
                 const cameraData = id !== null ? { id, extraStyle } : null;
-                screenOtherManager.setCameraData(cameraData);
+                screenForegroundManager.setCameraData(cameraData);
             },
             isForceChoosing,
         );
@@ -350,8 +350,8 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenOt
 
     static receiveSyncScreen(message: ScreenMessageType) {
         const { screenId } = message;
-        const screenOtherManager = this.getInstance(screenId);
-        screenOtherManager.receiveSyncScreen(message);
+        const screenForegroundManager = this.getInstance(screenId);
+        screenForegroundManager.receiveSyncScreen(message);
     }
 
     static getInstance(screenId: number) {

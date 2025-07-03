@@ -3,17 +3,20 @@ import {
     useStateSettingString,
 } from '../helper/settingHelpers';
 import ScreenForegroundManager from '../_screen/managers/ScreenForegroundManager';
-import { useScreenOtherManagerEvents } from '../_screen/managers/screenEventHelpers';
-import { getShowingScreenIds, getScreenManagerInstances } from './otherHelpers';
+import { useScreenForegroundManagerEvents } from '../_screen/managers/screenEventHelpers';
+import {
+    getShowingScreenIds,
+    getScreenManagerInstances,
+} from './foregroundHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
-import OtherRenderHeaderTitleComp from './OtherRenderHeaderTitleComp';
+import ForegroundRenderHeaderTitleComp from './ForegroundRenderHeaderTitleComp';
 
-export default function OtherMessageComp() {
+export default function ForegroundMessageComp() {
     const [isOpened, setIsOpened] = useStateSettingBoolean(
         'other-message-opened',
         false,
     );
-    useScreenOtherManagerEvents(['update']);
+    useScreenForegroundManagerEvents(['update']);
     const [text, setText] = useStateSettingString<string>(
         'marquee-setting',
         '',
@@ -22,8 +25,8 @@ export default function OtherMessageComp() {
         return data.marqueeData !== null;
     });
     const handleMarqueeHiding = (screenId: number) => {
-        getScreenManagerInstances(screenId, (screenOtherManager) => {
-            screenOtherManager.setMarqueeData(null);
+        getScreenManagerInstances(screenId, (screenForegroundManager) => {
+            screenForegroundManager.setMarqueeData(null);
         });
     };
     const handleMarqueeShowing = (event: any, isForceChoosing = false) => {
@@ -40,17 +43,17 @@ export default function OtherMessageComp() {
                     ' align-items-center'
                 }
             >
-                <OtherRenderHeaderTitleComp
+                <ForegroundRenderHeaderTitleComp
                     isOpened={isOpened}
                     setIsOpened={setIsOpened}
                 >
                     <h4>Message</h4>
-                </OtherRenderHeaderTitleComp>
+                </ForegroundRenderHeaderTitleComp>
                 {!isOpened ? (
                     <ScreensRendererComp
                         showingScreenIds={showingScreenIds}
                         buttonTitle="Hide Camera"
-                        handleOtherHiding={handleMarqueeHiding}
+                        handleForegroundHiding={handleMarqueeHiding}
                         isMini={true}
                     />
                 ) : null}
@@ -102,7 +105,7 @@ export default function OtherMessageComp() {
                     <ScreensRendererComp
                         showingScreenIds={showingScreenIds}
                         buttonTitle="Hide Marquee"
-                        handleOtherHiding={handleMarqueeHiding}
+                        handleForegroundHiding={handleMarqueeHiding}
                     />
                 </div>
             ) : null}

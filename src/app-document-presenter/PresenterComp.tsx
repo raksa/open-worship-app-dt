@@ -27,7 +27,7 @@ const LazyLyricHandlerComp = lazy(() => {
     return import('../lyric-list/LyricHandlerComp');
 });
 const LazyPresenterForegroundControllerComp = lazy(() => {
-    return import('../presenter-others/PresenterForegroundControllerComp');
+    return import('../presenter-foreground/PresenterForegroundControllerComp');
 });
 
 const PRESENT_TAB_SETTING_NAME = 'presenter-tab';
