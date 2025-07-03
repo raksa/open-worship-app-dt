@@ -1,7 +1,7 @@
 # powershell.exe .\extra-work\font\list-fonts1.ps1 | code -
 # https://forums.powershell.org/t/listing-font-details/9230/3
-$folder = "C:\Windows\fonts\"
 
+$folder = "C:\Windows\fonts\"
 $objShell = New-Object -ComObject Shell.Application
 
 $fileList = @()
