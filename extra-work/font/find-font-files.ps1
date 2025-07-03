@@ -1,5 +1,14 @@
 # PowerShell script to list all available fonts and output as CSV
 # Enhanced version with compatibility for all PowerShell versions (including PS 2.0/3.0)
+# Optimized for maximum compatibility across all PowerShell versions
+# Uses only basic language features and avoids modern cmdlets/operators
+#
+# Compatibility features:
+# - Uses hashtable literals (@{}) instead of New-Object Hashtable
+# - Uses .Contains() and .Replace() instead of -match and -replace
+# - Uses LoadWithPartialName for assembly loading fallback
+# - Uses custom Test-StringEmpty function instead of [string]::IsNullOrEmpty
+# - Enhanced error handling for older .NET Framework versions
 #
 # Usage examples:
 #   .\find-font-files.ps1
@@ -49,22 +58,38 @@ if ($FontFolders.Count -eq 0) {
     $FontFolders = $defaultFolders.ToArray()
 }
 
-# Load required assemblies for font metadata reading
+# Load required assemblies for font metadata reading with enhanced compatibility
+$assembliesLoaded = $false
 try {
-    Add-Type -AssemblyName System.Drawing
-    Add-Type -AssemblyName System.Windows.Forms
+    Add-Type -AssemblyName System.Drawing -ErrorAction Stop
+    Add-Type -AssemblyName System.Windows.Forms -ErrorAction Stop
+    $assembliesLoaded = $true
 }
 catch {
-    Write-Warning "Failed to load one or more assemblies: $($_.Exception.Message)"
-    Write-Warning "Some font metadata features may not be available"
+    Write-Warning "Failed to load System.Drawing assemblies: $($_.Exception.Message)"
+    Write-Warning "Font metadata features will not be available - falling back to filename parsing only"
+    $assembliesLoaded = $false
 }
 
-# Don't load PresentationCore here - we'll attempt it when needed
-# This improves compatibility with systems without WPF
+# Helper function for PS 2.0 compatibility
+function Test-StringEmpty {
+    param([string]$InputString)
+    return ($InputString -eq $null -or $InputString -eq "" -or $InputString.Trim() -eq "")
+}
 
 # Helper functions
 function Get-FontMetadata {
     param([string]$FontPath)
+
+    # Check if assemblies are loaded before attempting metadata reading
+    if (-not $assembliesLoaded) {
+        return @{
+            Family  = $null
+            Style   = $null
+            Success = $false
+            Error   = "System.Drawing assemblies not available"
+        }
+    }
 
     try {
         # Create a PrivateFontCollection to load the font file
@@ -78,12 +103,20 @@ function Get-FontMetadata {
             # Try to determine style by checking available styles
             $styleName = "Regular"
 
-            # Check which styles are available for this font family
-            $isBold = $fontFamily.IsStyleAvailable([System.Drawing.FontStyle]::Bold)
-            $isItalic = $fontFamily.IsStyleAvailable([System.Drawing.FontStyle]::Italic)
-            $isBoldItalic = $fontFamily.IsStyleAvailable([System.Drawing.FontStyle]::Bold -bor [System.Drawing.FontStyle]::Italic)
-            # Also check regular style - even though not used directly, checking helps determine available styles
-            $fontFamily.IsStyleAvailable([System.Drawing.FontStyle]::Regular)
+            # Check which styles are available for this font family - with error handling for PS 2.0
+            try {
+                $isBold = $fontFamily.IsStyleAvailable([System.Drawing.FontStyle]::Bold)
+                $isItalic = $fontFamily.IsStyleAvailable([System.Drawing.FontStyle]::Italic)
+                $isBoldItalic = $fontFamily.IsStyleAvailable([System.Drawing.FontStyle]::Bold -bor [System.Drawing.FontStyle]::Italic)
+                $isRegular = $fontFamily.IsStyleAvailable([System.Drawing.FontStyle]::Regular)
+            }
+            catch {
+                # If style checking fails, continue with filename-based detection
+                $isBold = $false
+                $isItalic = $false
+                $isBoldItalic = $false
+                $isRegular = $true
+            }
 
             # Also check filename for style hints - this helps override incorrect font metadata
             $baseName = [System.IO.Path]::GetFileNameWithoutExtension($FontPath).ToLower()
@@ -164,8 +197,13 @@ function Get-FontMetadata {
             }
         }
 
-        # Dispose of the font collection
-        $fontCollection.Dispose()
+        # Dispose of the font collection safely
+        try {
+            $fontCollection.Dispose()
+        }
+        catch {
+            # Ignore disposal errors in older PowerShell versions
+        }
     }
     catch {
         # If font metadata reading fails, fall back to filename parsing
@@ -346,19 +384,13 @@ function Get-FontsFromRegistry {
             Write-Verbose "Could not check MS Shell Dlg mappings: $($_.Exception.Message)"
         }
 
-        # Additional common system fonts that might be missed
-        $additionalFonts = @(
+        # Keep only essential system virtual fonts that can't be detected otherwise
+        $essentialFonts = @(
             'MS Shell Dlg',
-            'MS Shell Dlg 2',
-            'Microsoft Sans Serif',
-            'System',
-            'Terminal',
-            'Marlett',
-            'Webdings',
-            'Wingdings'
+            'MS Shell Dlg 2'
         )
 
-        foreach ($font in $additionalFonts) {
+        foreach ($font in $essentialFonts) {
             if (-not $fontDict.ContainsKey($font)) {
                 $fontDict[$font] = $true
             }
@@ -372,101 +404,29 @@ function Get-FontsFromRegistry {
     }
 }
 
-function Get-SystemFontNames {
-    return @(
-        'Arial Unicode MS', 'Bahnschrift', 'Cambria Math', 'DengXian', 'Franklin Gothic',
-        'Gabriola', 'Global Monospace', 'Global Sans Serif', 'Global Serif',
-        'Global User Interface', 'HoloLens MDL2 Assets', 'Khmer UI', 'Lao UI',
-        'Leelawadee UI', 'Leelawadee UI Semilight', 'Microsoft JhengHei UI',
-        'Microsoft JhengHei UI Light', 'Microsoft YaHei UI', 'Microsoft YaHei UI Light',
-        'MingLiU-ExtB', 'MingLiU_HKSCS-ExtB', 'MingLiU_MSCS-ExtB', 'MS Gothic',
-        'MS PGothic', 'MS UI Gothic', 'Myanmar Text', 'Nirmala UI', 'Nirmala UI Semilight',
-        'Segoe Fluent Icons', 'Segoe MDL2 Assets', 'Segoe Print', 'Segoe Script',
-        'Segoe UI Emoji', 'Segoe UI Historic', 'Segoe UI Light', 'Segoe UI Semibold',
-        'Segoe UI Semilight', 'Segoe UI Symbol', 'Sitka Banner', 'Sitka Display',
-        'Sitka Heading', 'Sitka Small', 'Sitka Subheading', 'Sitka Text', 'Yu Gothic UI',
-        'Yu Gothic UI Light', 'Yu Gothic UI Semibold', 'Yu Gothic UI Semilight'
-    )
-}
+
 
 function Get-ProperFamilyName {
     param([string]$ExtractedFamily)
 
-    # This function mirrors the VBScript GetProperFamilyName function
-    # for consistency between the two implementations, adapted for maximum PowerShell version compatibility
+    # Simplified function that returns the family name as-is from font metadata or filename parsing
+    # No hardcoded mappings - rely purely on font metadata and dynamic detection
+    # Enhanced for PS 2.0 compatibility
 
-    if ([string]::IsNullOrEmpty($ExtractedFamily)) {
+    if (Test-StringEmpty $ExtractedFamily) {
         return ""
     }
 
-    $lowerFamily = $ExtractedFamily.ToLower()
-
-    # Map common filename patterns to proper font family names - using simple if statements
-    # instead of switch -regex for better compatibility with older PowerShell versions
-
-    # Exact matches
-    if ($lowerFamily -eq "times") { return "Times New Roman" }
-    if ($lowerFamily -eq "arial") { return "Arial" }
-    if ($lowerFamily -eq "tahoma") { return "Tahoma" }
-    if ($lowerFamily -eq "verdana") { return "Verdana" }
-    if ($lowerFamily -eq "trebuc") { return "Trebuchet MS" }
-    if ($lowerFamily -eq "cour") { return "Courier New" }
-    if ($lowerFamily -eq "georgia") { return "Georgia" }
-    if ($lowerFamily -eq "comic") { return "Comic Sans MS" }
-    if ($lowerFamily -eq "impact") { return "Impact" }
-    if ($lowerFamily -eq "lucon") { return "Lucida Console" }
-    if ($lowerFamily -eq "pala") { return "Palatino Linotype" }
-    if ($lowerFamily -eq "symbol") { return "Symbol" }
-    if ($lowerFamily -eq "webdings") { return "Webdings" }
-    if ($lowerFamily -eq "wingding") { return "Wingdings" }
-
-    # Calibri patterns
-    if ($lowerFamily -eq "calibr" -or $lowerFamily -eq "calibri" -or
-        $lowerFamily -eq "calibrib" -or $lowerFamily -eq "calibril" -or
-        $lowerFamily -eq "calibriz") {
-        return "Calibri"
-    }
-
-    # Segoe UI patterns
-    if ($lowerFamily -eq "segoeuib" -or $lowerFamily -eq "segoeui") {
-        return "Segoe UI"
-    }
-
-    # Check if it starts with a known font family prefix
-    if ($lowerFamily.StartsWith("calibri") -or $lowerFamily.StartsWith("calibr")) {
-        return "Calibri"
-    }
-    if ($lowerFamily.StartsWith("arial")) {
-        return "Arial"
-    }
-    if ($lowerFamily.StartsWith("times")) {
-        return "Times New Roman"
-    }
-    if ($lowerFamily.StartsWith("tahoma")) {
-        return "Tahoma"
-    }
-    if ($lowerFamily.StartsWith("verdana")) {
-        return "Verdana"
-    }
-    if ($lowerFamily.StartsWith("cour")) {
-        return "Courier New"
-    }
-    if ($lowerFamily.StartsWith("georgia")) {
-        return "Georgia"
-    }
-    if ($lowerFamily.StartsWith("comic")) {
-        return "Comic Sans MS"
-    }
-
-    # If no mapping found, return the original
+    # Just return the extracted family name without any hardcoded mappings
+    # This ensures we rely completely on font metadata and system detection
     return $ExtractedFamily
 }
 
 # Scan for all font files
-# Use ArrayList instead of arrays for better compatibility and performance in older PowerShell
+# Enhanced for maximum PowerShell version compatibility
 $results = New-Object System.Collections.ArrayList
-$seenFiles = New-Object System.Collections.Hashtable  # Track files we've already added to prevent duplicates
-$seenFamilies = New-Object System.Collections.Hashtable  # Track font families we've already added
+$seenFiles = @{}  # Use hashtable literal for PS 2.0 compatibility
+$seenFamilies = @{}  # Use hashtable literal for PS 2.0 compatibility
 
 foreach ($fontFolder in $FontFolders) {
     foreach ($ext in $FileExtensions) {
@@ -508,81 +468,105 @@ foreach ($fontFolder in $FontFolders) {
 }
 
 # Add system font families that weren't found in file scan
+# Enhanced compatibility for all PowerShell versions
 try {
-    # First try to load WPF assembly (may not be available in older PowerShell versions)
+    # First try to load WPF assembly with better error handling
     $wpfAssemblyLoaded = $false
 
     try {
         # Check if WPF is available by attempting to load required assemblies
-        Add-Type -AssemblyName PresentationFramework -ErrorAction Stop
+        # Use more defensive approach for older PowerShell versions
+        [void][System.Reflection.Assembly]::LoadWithPartialName("PresentationFramework")
+        [void][System.Reflection.Assembly]::LoadWithPartialName("PresentationCore")
+
+        # Test if the WPF types are actually available
+        $testType = [System.Windows.Media.Fonts]
         $wpfAssemblyLoaded = $true
     }
     catch {
-        # WPF isn't available - this is normal on older PowerShell versions
+        # WPF isn't available - this is normal on older PowerShell versions or Server Core
         $wpfAssemblyLoaded = $false
     }
 
     if ($wpfAssemblyLoaded) {
         # First method: Using WPF (most comprehensive)
-        $systemFamilies = [System.Windows.Media.Fonts]::SystemFontFamilies
+        try {
+            $systemFamilies = [System.Windows.Media.Fonts]::SystemFontFamilies
 
-        foreach ($family in $systemFamilies) {
-            $name = $null
-            # Try different ways to get the name, compatible with older PowerShell
-            try {
-                # Method 1: Try to get the English name directly
-                $langObj = [System.Windows.Markup.XmlLanguage]::GetLanguage('en-us')
-                $name = ""
-                $gotName = $family.FamilyNames.TryGetValue($langObj, ([ref]$name))
-                if (-not $gotName -or [string]::IsNullOrEmpty($name)) {
-                    # Method 2: Try to get any name
-                    if ($family.FamilyNames.Keys.Count -gt 0) {
-                        $firstKey = $family.FamilyNames.Keys | Select-Object -First 1
-                        if ($firstKey) {
-                            $name = $family.FamilyNames[$firstKey]
+            foreach ($family in $systemFamilies) {
+                $name = $null
+                # Try different ways to get the name, with enhanced compatibility
+                try {
+                    # Method 1: Try to get the English name directly
+                    $langObj = [System.Windows.Markup.XmlLanguage]::GetLanguage('en-us')
+                    $name = ""
+
+                    # Use more compatible approach for TryGetValue
+                    $tempName = $null
+                    $gotName = $family.FamilyNames.TryGetValue($langObj, [ref]$tempName)
+                    if ($gotName -and -not (Test-StringEmpty $tempName)) {
+                        $name = $tempName
+                    }
+                    else {
+                        # Method 2: Try to get any name
+                        if ($family.FamilyNames.Keys.Count -gt 0) {
+                            # More compatible way to get first key
+                            $keys = @($family.FamilyNames.Keys)
+                            if ($keys.Count -gt 0) {
+                                $firstKey = $keys[0]
+                                if ($firstKey) {
+                                    $name = $family.FamilyNames[$firstKey]
+                                }
+                            }
+                        }
+
+                        # Method 3: Last resort - get name through Source property if available
+                        if ((Test-StringEmpty $name) -and $family.Source) {
+                            $name = $family.Source
                         }
                     }
-
-                    # Method 3: Last resort - get name through Source property if available
-                    if ([string]::IsNullOrEmpty($name) -and $family.Source) {
-                        $name = $family.Source
-                    }
-                }
-            }
-            catch {
-                # If all structured approaches fail, try one more direct method
-                try {
-                    $name = $family.ToString()
                 }
                 catch {
-                    # Nothing more we can do
-                    $name = $null
+                    # If all structured approaches fail, try one more direct method
+                    try {
+                        $name = $family.ToString()
+                    }
+                    catch {
+                        # Nothing more we can do
+                        $name = $null
+                    }
+                }
+
+                # Only add if we got a valid name and haven't seen this family before
+                if (-not (Test-StringEmpty $name) -and -not $seenFamilies.ContainsKey($name)) {
+                    $seenFamilies[$name] = $true
+
+                    # Create object for system font family (no physical file)
+                    $fontObject = New-Object PSObject
+                    $fontObject | Add-Member -MemberType NoteProperty -Name "FullPath" -Value ""
+                    $fontObject | Add-Member -MemberType NoteProperty -Name "Family" -Value $name
+                    $fontObject | Add-Member -MemberType NoteProperty -Name "Face" -Value "Regular"
+
+                    # Using ArrayList's Add method instead of += for better performance and compatibility
+                    [void]$results.Add($fontObject)
                 }
             }
-
-            # Only add if we got a valid name and haven't seen this family before
-            if (-not [string]::IsNullOrEmpty($name) -and -not $seenFamilies.ContainsKey($name)) {
-                $seenFamilies[$name] = $true
-
-                # Create object for system font family (no physical file)
-                $fontObject = New-Object PSObject
-                $fontObject | Add-Member -MemberType NoteProperty -Name "FullPath" -Value ""
-                $fontObject | Add-Member -MemberType NoteProperty -Name "Family" -Value $name
-                $fontObject | Add-Member -MemberType NoteProperty -Name "Face" -Value "Regular"
-
-                # Using ArrayList's Add method instead of += for better performance and compatibility
-                [void]$results.Add($fontObject)
-            }
+        }
+        catch {
+            # If WPF enumeration fails for any reason, fall through to registry method
+            Write-Warning "WPF font enumeration failed: $($_.Exception.Message)"
+            $wpfAssemblyLoaded = $false
         }
     }
-    else {
-        Write-Warning "WPF is not available in this PowerShell version, using fallback methods"
+
+    if (-not $wpfAssemblyLoaded) {
+        Write-Warning "WPF is not available in this PowerShell version, using registry-based fallback"
         throw "WPF not available"  # Force using fallback methods
     }
 }
 catch {
     # If WPF font enumeration fails, fall back to registry-based approach
-    Write-Warning "Could not enumerate system fonts with WPF: $($_.Exception.Message)"
+    # Enhanced error handling for all PowerShell versions
     try {
         # Second method: Registry-based font detection (fallback)
         $registryFonts = Get-FontsFromRegistry
@@ -601,56 +585,50 @@ catch {
                 [void]$results.Add($fontObject)
             }
         }
-
-        # Third method: Use dynamically generated system font list as last resort
-        $systemFontNames = Get-SystemFontNames
-
-        foreach ($fontName in $systemFontNames) {
-            # Only add if we haven't seen this family name before
-            if (-not $seenFamilies.ContainsKey($fontName)) {
-                $seenFamilies[$fontName] = $true
-
-                # Create object for system font family (no physical file)
-                $fontObject = New-Object PSObject
-                $fontObject | Add-Member -MemberType NoteProperty -Name "FullPath" -Value ""
-                $fontObject | Add-Member -MemberType NoteProperty -Name "Family" -Value $fontName
-                $fontObject | Add-Member -MemberType NoteProperty -Name "Face" -Value "Regular"
-
-                # Using ArrayList's Add method instead of += for better performance and compatibility
-                [void]$results.Add($fontObject)
-            }
-        }
     }
     catch {
         # If all methods fail, continue with file-based results only
-        Write-Warning "Could not enumerate system fonts from registry: $($_.Exception.Message)"
+        # More descriptive warning for troubleshooting
+        Write-Warning "Could not enumerate system fonts from any source: $($_.Exception.Message)"
+        Write-Warning "Continuing with file-based font detection only"
     }
 }
 
 # Output CSV header and process fonts to remove duplicates
+# Enhanced compatibility for all PowerShell versions
 Write-Output "FullPath,Family,Face"
 
-# First pass: identify all fonts with full paths
-$fontFamilyWithPath = New-Object System.Collections.Hashtable
+# First pass: identify all fonts with full paths - optimized for PS 2.0
+$fontFamilyWithPath = @{}
 foreach ($font in $results) {
-    if ($font.FullPath -ne "") {
-        # Normalize by removing trailing spaces - using String methods for compatibility
-        $normalizedFamily = $font.Family.TrimEnd()
-        if (-not $fontFamilyWithPath.ContainsKey($normalizedFamily)) {
-            $fontFamilyWithPath[$normalizedFamily] = $true
+    if ($font.FullPath -ne $null -and $font.FullPath -ne "") {
+        # Normalize by removing trailing spaces - PS 2.0 compatible
+        $normalizedFamily = $font.Family
+        if ($normalizedFamily -ne $null) {
+            $normalizedFamily = $normalizedFamily.TrimEnd()
+            if (-not $fontFamilyWithPath.ContainsKey($normalizedFamily)) {
+                $fontFamilyWithPath[$normalizedFamily] = $true
+            }
         }
     }
 }
 
 # Second pass: output fonts, skipping virtual fonts when a physical file exists
 foreach ($font in $results) {
-    # Normalize family name by removing trailing spaces - using String methods for compatibility
-    $normalizedFamily = $font.Family.TrimEnd()
+    # Normalize family name by removing trailing spaces - PS 2.0 compatible
+    $normalizedFamily = $font.Family
+    if ($normalizedFamily -ne $null) {
+        $normalizedFamily = $normalizedFamily.TrimEnd()
+    }
+    else {
+        $normalizedFamily = ""
+    }
 
     # Skip this font if:
     # 1. It has no path (virtual font)
     # 2. The same font family exists with a full path
-    if ($font.FullPath -eq "" -and $fontFamilyWithPath.ContainsKey($normalizedFamily)) {
+    $hasNoPath = ($font.FullPath -eq $null -or $font.FullPath -eq "")
+    if ($hasNoPath -and $fontFamilyWithPath.ContainsKey($normalizedFamily)) {
         # Skip this virtual font as we have a physical file for this family
         continue
     }
@@ -658,15 +636,20 @@ foreach ($font in $results) {
     # For fonts we're keeping, ensure the family name has no trailing spaces
     $font.Family = $normalizedFamily
 
-    # Escape commas and quotes in CSV values
-    $fullPath = $font.FullPath -replace '"', '""'
-    $family = $font.Family -replace '"', '""'
-    $face = $font.Face -replace '"', '""'
+    # Escape commas and quotes in CSV values - PS 2.0 compatible approach
+    $fullPath = $font.FullPath
+    $family = $font.Family
+    $face = $font.Face
 
-    # Quote values that contain commas (compatible with older PowerShell versions)
-    if ($fullPath -match ',') { $fullPath = '"' + $fullPath + '"' }
-    if ($family -match ',') { $family = '"' + $family + '"' }
-    if ($face -match ',') { $face = '"' + $face + '"' }
+    # Replace quotes with double quotes for CSV escaping
+    if ($fullPath.Contains('"')) { $fullPath = $fullPath.Replace('"', '""') }
+    if ($family.Contains('"')) { $family = $family.Replace('"', '""') }
+    if ($face.Contains('"')) { $face = $face.Replace('"', '""') }
+
+    # Quote values that contain commas - PS 2.0 compatible
+    if ($fullPath.Contains(',')) { $fullPath = '"' + $fullPath + '"' }
+    if ($family.Contains(',')) { $family = '"' + $family + '"' }
+    if ($face.Contains(',')) { $face = '"' + $face + '"' }
 
     Write-Output "$fullPath,$family,$face"
 }
