@@ -7,7 +7,6 @@ export default class CountdownController {
         this.divContainer = divContainer;
         this.targetDateTime = targetDateTime;
         this.setHtml(false);
-        this.count();
     }
 
     get timeDiff() {
@@ -60,7 +59,7 @@ export default class CountdownController {
         return this.toTimeString(this.seconds);
     }
 
-    count() {
+    start() {
         this.countdownInterval = setInterval(() => {
             if (this.countdownInterval === null) {
                 return;

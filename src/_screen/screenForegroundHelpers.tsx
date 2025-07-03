@@ -148,14 +148,16 @@ export function genHtmlForegroundCountdown(countdownData: {
     const countDownHandler = CountdownController.init(element, dateTime);
     const animData = styleAnimList.fade('countdown');
     return {
-        element,
-        handleRemoving: async () => {
-            countDownHandler.pause();
+        handleAdding: async (parentContainer: HTMLElement) => {
+            countDownHandler.start();
             const style = document.createElement('style');
             style.innerHTML = animData.style;
-            element.parentElement?.appendChild(style);
+            parentContainer.appendChild(style);
+            await animData.animIn(element, parentContainer);
+        },
+        handleRemoving: async () => {
+            countDownHandler.pause();
             await animData.animOut(element);
-            style.remove();
         },
     };
 }
