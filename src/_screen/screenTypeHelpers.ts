@@ -91,7 +91,7 @@ export type ForegroundDataType = {
     countdownData: ForegroundCountdownDataType | null;
     cameraData: ForegroundCameraDataType | null;
 };
-export type AlertSrcListType = {
+export type ForegroundSrcListType = {
     [key: string]: ForegroundDataType;
 };
 
@@ -116,7 +116,7 @@ export const screenTypeList = [
     'bible-screen-view',
     'bible-screen-view-scroll',
     'bible-screen-view-text-style',
-    'alert',
+    'foreground',
     'bible-screen-view-selected-index',
     'display-change',
     'visible',

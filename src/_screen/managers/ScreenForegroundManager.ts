@@ -31,19 +31,19 @@ const containerMapper = new WeakMap<
     }
 >();
 export default class ScreenForegroundManager extends ScreenEventHandler<ScreenForegroundEventType> {
-    static readonly eventNamePrefix: string = 'screen-alert-m';
+    static readonly eventNamePrefix: string = 'screen-foreground-m';
     private _div: HTMLDivElement | null = null;
     foregroundData: ForegroundDataType;
     rendererMap: Map<string, (data: any) => void>;
 
     constructor(screenManagerBase: ScreenManagerBase) {
         super(screenManagerBase);
-        const allAlertDataList = getForegroundDataListOnScreenSetting();
-        const alertData = allAlertDataList[this.key] ?? {};
+        const allForegroundDataList = getForegroundDataListOnScreenSetting();
+        const foregroundData = allForegroundDataList[this.key] ?? {};
         this.foregroundData = {
-            countdownData: alertData['countdownData'] ?? null,
-            marqueeData: alertData['marqueeData'] ?? null,
-            cameraData: alertData['cameraData'] ?? null,
+            countdownData: foregroundData['countdownData'] ?? null,
+            marqueeData: foregroundData['marqueeData'] ?? null,
+            cameraData: foregroundData['cameraData'] ?? null,
         };
         this.rendererMap = new Map<string, (data: any) => void>([
             ['countdownData', this.renderCountdown.bind(this)],
@@ -168,7 +168,7 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
 
     toSyncMessage(): BasicScreenMessageType {
         return {
-            type: 'alert',
+            type: 'foreground',
             data: this.foregroundData,
         };
     }

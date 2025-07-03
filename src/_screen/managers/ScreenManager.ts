@@ -161,7 +161,7 @@ export default class ScreenManager extends ScreenManagerBase {
             return ScreenVaryAppDocumentManager;
         } else if (type === 'bible-screen-view') {
             return ScreenBibleManager;
-        } else if (type === 'alert') {
+        } else if (type === 'foreground') {
             return ScreenForegroundManager;
         }
         return null;

@@ -8,8 +8,8 @@ import { ForegroundDataType } from '../_screen/screenTypeHelpers';
 export function getShowingScreenIds(
     filterFunc: (data: ForegroundDataType) => boolean,
 ) {
-    const allAlertDataList = getForegroundDataListOnScreenSetting();
-    const showingScreenIds = Object.entries(allAlertDataList)
+    const allForegroundDataList = getForegroundDataListOnScreenSetting();
+    const showingScreenIds = Object.entries(allForegroundDataList)
         .filter(([_, data]) => {
             return filterFunc(data);
         })

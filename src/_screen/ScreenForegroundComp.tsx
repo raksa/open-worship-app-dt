@@ -22,7 +22,7 @@ export default function ScreenForegroundComp() {
     }, [div.current]);
     return (
         <div
-            id="alert"
+            id="foreground"
             ref={div}
             style={screenForegroundManager.containerStyle}
         />

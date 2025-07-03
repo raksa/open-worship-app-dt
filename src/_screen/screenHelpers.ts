@@ -22,7 +22,7 @@ import { useScreenUpdateEvents } from './managers/screenManagerHooks';
 import {
     ImageScaleType,
     AllDisplayType,
-    AlertSrcListType,
+    ForegroundSrcListType,
     BackgroundSrcListType,
     BibleListType,
     bibleDataTypeList,
@@ -123,7 +123,7 @@ export function genScreenMouseEvent(event?: any): MouseEvent {
     return createMouseEvent(0, 0);
 }
 
-export function getForegroundDataListOnScreenSetting(): AlertSrcListType {
+export function getForegroundDataListOnScreenSetting(): ForegroundSrcListType {
     const string = getSetting(screenManagerSettingNames.FOREGROUND, '');
     try {
         if (!isValidJson(string, true)) {
@@ -142,7 +142,7 @@ export function getForegroundDataListOnScreenSetting(): AlertSrcListType {
                     typeof countdownData.dateTime === 'string'
                 )
             ) {
-                throw new Error('Invalid alert data');
+                throw new Error('Invalid foreground data');
             }
             if (countdownData?.dateTime) {
                 countdownData.dateTime = new Date(countdownData.dateTime);

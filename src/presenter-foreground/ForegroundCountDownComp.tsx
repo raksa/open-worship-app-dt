@@ -29,11 +29,11 @@ function useTiming() {
         return timeStr.substring(0, timeStr.lastIndexOf(':'));
     };
     const [date, setDate] = useStateSettingString<string>(
-        'alert-date-setting',
+        'foreground-date-setting',
         todayString(),
     );
     const [time, setTime] = useStateSettingString<string>(
-        'alert-time-setting',
+        'foreground-time-setting',
         nowString(),
     );
     return { date, setDate, time, setTime, nowString, todayString };
@@ -113,12 +113,12 @@ function CountDownTimerComp({
     genStyle: () => React.CSSProperties;
 }>) {
     const [hours, setHours] = useStateSettingString<string>(
-        'alert-hours-setting',
+        'foreground-hours-setting',
         '0',
     );
     const [minutes, setMinutes] = useStateSettingString<string>(
-        'alert-minutes-setting',
-        '0',
+        'foreground-minutes-setting',
+        '5',
     );
     const handleTimerShowing = (event: any, isForceChoosing = false) => {
         const targetDatetime = new Date();
