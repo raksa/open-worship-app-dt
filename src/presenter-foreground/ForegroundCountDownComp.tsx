@@ -1,7 +1,4 @@
-import {
-    useStateSettingBoolean,
-    useStateSettingString,
-} from '../helper/settingHelpers';
+import { useStateSettingString } from '../helper/settingHelpers';
 import ScreenForegroundManager from '../_screen/managers/ScreenForegroundManager';
 import {
     getScreenForegroundManagerInstances,
@@ -9,10 +6,10 @@ import {
 } from './foregroundHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
 import { useScreenForegroundManagerEvents } from '../_screen/managers/screenEventHelpers';
-import ForegroundRenderHeaderTitleComp from './ForegroundRenderHeaderTitleComp';
 import { useForegroundPropsSetting } from './propertiesSettingHelpers';
 import { genTimeoutAttempt } from '../helper/helpers';
 import { ForegroundCountdownDataType } from '../_screen/screenTypeHelpers';
+import ForegroundLayoutComp from './ForegroundLayoutComp';
 
 function useTiming() {
     const nowArray = () => {
@@ -101,7 +98,7 @@ function CountDownOnDatetimeComp({
                     onClick={handleDateTimeShowing}
                     onContextMenu={handleContextMenuOpening}
                 >
-                    `Show On DateTime
+                    `Start Countdown to DateTime
                 </button>
             </div>
         </div>
@@ -180,7 +177,7 @@ function CountDownInSetComp({
                     onClick={handleCountdownShowing}
                     onContextMenu={handleContextMenuOpening}
                 >
-                    `Show Countdown
+                    `Start Countdown
                 </button>
             </div>
         </div>
@@ -225,10 +222,6 @@ export default function ForegroundCountDownComp() {
         },
         isFontSize: true,
     });
-    const [isOpened, setIsOpened] = useStateSettingBoolean(
-        'foreground-countdown-opened',
-        false,
-    );
     const handleCountdownHiding = (screenId: number) => {
         getScreenForegroundManagerInstances(
             screenId,
@@ -246,34 +239,20 @@ export default function ForegroundCountDownComp() {
         />
     );
     return (
-        <div className="card m-2">
-            <div
-                className={
-                    'card-header d-flex justify-content-between' +
-                    ' align-items-center'
-                }
-            >
-                <ForegroundRenderHeaderTitleComp
-                    isOpened={isOpened}
-                    setIsOpened={setIsOpened}
-                >
-                    <h4>Countdown</h4>
-                </ForegroundRenderHeaderTitleComp>
-                {!isOpened ? genHidingElement(true) : null}
+        <ForegroundLayoutComp
+            target="countdown"
+            fullChildHeaders={<h4>Countdown</h4>}
+            childHeadersOnHidden={genHidingElement(true)}
+        >
+            {propsSetting}
+            <hr />
+            <div>
+                <CountDownOnDatetimeComp genStyle={genStyle} />
             </div>
-            {isOpened ? (
-                <div className="card-body">
-                    {propsSetting}
-                    <hr />
-                    <div className="m-1">
-                        <CountDownOnDatetimeComp genStyle={genStyle} />
-                    </div>
-                    <div className="m-1">
-                        <CountDownInSetComp genStyle={genStyle} />
-                    </div>
-                    <div className="m-1">{genHidingElement(false)}</div>
-                </div>
-            ) : null}
-        </div>
+            <div>
+                <CountDownInSetComp genStyle={genStyle} />
+            </div>
+            <div>{genHidingElement(false)}</div>
+        </ForegroundLayoutComp>
     );
 }

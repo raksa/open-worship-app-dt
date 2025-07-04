@@ -1,7 +1,5 @@
 import { useRef, useState } from 'react';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
-import { useStateSettingBoolean } from '../helper/settingHelpers';
-import ForegroundRenderHeaderTitleComp from './ForegroundRenderHeaderTitleComp';
 import LoadingComp from '../others/LoadingComp';
 import ScreenForegroundManager from '../_screen/managers/ScreenForegroundManager';
 import { getAndShowMedia } from '../_screen/screenForegroundHelpers';
@@ -14,6 +12,7 @@ import { useScreenForegroundManagerEvents } from '../_screen/managers/screenEven
 import { genTimeoutAttempt } from '../helper/helpers';
 import { useForegroundPropsSetting } from './propertiesSettingHelpers';
 import { ForegroundCameraDataType } from '../_screen/screenTypeHelpers';
+import ForegroundLayoutComp from './ForegroundLayoutComp';
 
 type CameraInfoType = {
     deviceId: string;
@@ -112,10 +111,6 @@ export default function ForegroundCameraShowComp() {
         },
     });
     const [cameraInfoList, setCameraInfoList] = useState<CameraInfoType[]>([]);
-    const [isOpened, setIsOpened] = useStateSettingBoolean(
-        'foreground-camera-show-opened',
-        false,
-    );
     useAppEffectAsync(
         async (contextMethods) => {
             const devices = await navigator.mediaDevices.enumerateDevices();
@@ -147,48 +142,32 @@ export default function ForegroundCameraShowComp() {
         />
     );
     return (
-        <div className="card m-2">
-            <div
-                className={
-                    'card-header d-flex justify-content-between' +
-                    ' align-items-center'
-                }
-            >
-                <ForegroundRenderHeaderTitleComp
-                    isOpened={isOpened}
-                    setIsOpened={setIsOpened}
-                >
-                    <h4>Camera Show</h4>
-                </ForegroundRenderHeaderTitleComp>
-                {!isOpened ? genHidingElement(true) : null}
+        <ForegroundLayoutComp
+            target="camera"
+            fullChildHeaders={<h4>Camera Show</h4>}
+            childHeadersOnHidden={genHidingElement(true)}
+            extraBodyStyle={{
+                maxHeight: '500px',
+                overflowX: 'hidden',
+                overflowY: 'auto',
+            }}
+        >
+            {propsSetting}
+            <hr />
+            <div className="d-flex flex-wrap">
+                {cameraInfoList.map((cameraInfo) => {
+                    return (
+                        <RenderCameraInfoComp
+                            key={cameraInfo.deviceId}
+                            cameraInfo={cameraInfo}
+                            width={300}
+                            genStyle={genStyle}
+                        />
+                    );
+                })}
             </div>
-            {isOpened ? (
-                <div
-                    className="card-body w-100"
-                    style={{
-                        maxHeight: '500px',
-                        overflowX: 'hidden',
-                        overflowY: 'auto',
-                    }}
-                >
-                    {propsSetting}
-                    <hr />
-                    <div className="d-flex flex-wrap">
-                        {cameraInfoList.map((cameraInfo) => {
-                            return (
-                                <RenderCameraInfoComp
-                                    key={cameraInfo.deviceId}
-                                    cameraInfo={cameraInfo}
-                                    width={300}
-                                    genStyle={genStyle}
-                                />
-                            );
-                        })}
-                    </div>
-                    <hr />
-                    {genHidingElement(false)}
-                </div>
-            ) : null}
-        </div>
+            <hr />
+            {genHidingElement(false)}
+        </ForegroundLayoutComp>
     );
 }

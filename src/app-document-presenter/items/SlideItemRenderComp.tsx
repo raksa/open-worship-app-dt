@@ -109,7 +109,9 @@ export function toClassNameHighlight(
             : '';
     const isOnScreen = checkIsAppDocumentItemOnScreen(varyAppDocumentItem);
     const presenterClassname =
-        appProvider.isPageEditor || !isOnScreen ? '' : 'app-highlight-selected';
+        appProvider.isPageEditor || !isOnScreen
+            ? ''
+            : 'app-highlight-selected animation';
     return {
         selectedList: ScreenVaryAppDocumentManager.getDataList(
             varyAppDocumentItem.filePath,

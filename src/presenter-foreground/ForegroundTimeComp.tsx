@@ -1,7 +1,6 @@
 import { tz } from 'moment-timezone';
 
 import {
-    useStateSettingBoolean,
     useStateSettingNumber,
     useStateSettingString,
 } from '../helper/settingHelpers';
@@ -12,11 +11,11 @@ import {
 } from './foregroundHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
 import { useScreenForegroundManagerEvents } from '../_screen/managers/screenEventHelpers';
-import ForegroundRenderHeaderTitleComp from './ForegroundRenderHeaderTitleComp';
 import { useForegroundPropsSetting } from './propertiesSettingHelpers';
 import { genTimeoutAttempt } from '../helper/helpers';
 import { ForegroundTimeDataType } from '../_screen/screenTypeHelpers';
 import { showAppContextMenu } from '../context-menu/appContextMenuHelpers';
+import ForegroundLayoutComp from './ForegroundLayoutComp';
 
 function getSystemTimezoneMinuteOffset() {
     const date = new Date();
@@ -69,18 +68,20 @@ function TimeInSetComp({
             getSystemTimezoneMinuteOffset(),
         );
     const handleTimeShowing = (event: any, isForceChoosing = false) => {
-        getShowingScreenIdDataList((data) => {
-            return (data.timeDataList ?? []).length > 0;
-        }).forEach(([screenId, { timeDataList }]) => {
-            getScreenForegroundManagerInstances(
-                screenId,
-                (screenForegroundManager) => {
-                    for (const timeData of timeDataList ?? []) {
-                        screenForegroundManager.removeTimeData(timeData);
-                    }
-                },
-            );
-        });
+        if (!isForceChoosing) {
+            getShowingScreenIdDataList((data) => {
+                return (data.timeDataList ?? []).length > 0;
+            }).forEach(([screenId, { timeDataList }]) => {
+                getScreenForegroundManagerInstances(
+                    screenId,
+                    (screenForegroundManager) => {
+                        for (const timeData of timeDataList ?? []) {
+                            screenForegroundManager.removeTimeData(timeData);
+                        }
+                    },
+                );
+            });
+        }
         ScreenForegroundManager.addTimeData(
             event,
             {
@@ -206,10 +207,6 @@ export default function ForegroundTimeComp() {
         },
         isFontSize: true,
     });
-    const [isOpened, setIsOpened] = useStateSettingBoolean(
-        'foreground-time-opened',
-        false,
-    );
     const handleTimeHiding = (
         screenId: number,
         timeData: ForegroundTimeDataType,
@@ -230,31 +227,17 @@ export default function ForegroundTimeComp() {
         />
     );
     return (
-        <div className="card m-2">
-            <div
-                className={
-                    'card-header d-flex justify-content-between' +
-                    ' align-items-center'
-                }
-            >
-                <ForegroundRenderHeaderTitleComp
-                    isOpened={isOpened}
-                    setIsOpened={setIsOpened}
-                >
-                    <h4>Time</h4>
-                </ForegroundRenderHeaderTitleComp>
-                {!isOpened ? genHidingElement(true) : null}
+        <ForegroundLayoutComp
+            target="time"
+            fullChildHeaders={<h4>Time</h4>}
+            childHeadersOnHidden={genHidingElement(true)}
+        >
+            {propsSetting}
+            <hr />
+            <div>
+                <TimeInSetComp genStyle={genStyle} />
             </div>
-            {isOpened ? (
-                <div className="card-body">
-                    {propsSetting}
-                    <hr />
-                    <div className="m-1">
-                        <TimeInSetComp genStyle={genStyle} />
-                    </div>
-                    <div className="m-1">{genHidingElement(false)}</div>
-                </div>
-            ) : null}
-        </div>
+            <div>{genHidingElement(false)}</div>
+        </ForegroundLayoutComp>
     );
 }

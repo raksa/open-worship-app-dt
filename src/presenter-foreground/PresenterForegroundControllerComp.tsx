@@ -11,6 +11,7 @@ export default function PresenterForegroundControllerComp() {
             className="w-100 h-100 app-border-white-round"
             style={{
                 overflowY: 'auto',
+                backgroundColor: 'var(--bs-gray-800)',
             }}
         >
             <ForegroundMessageComp />

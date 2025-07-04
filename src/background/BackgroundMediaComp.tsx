@@ -119,7 +119,7 @@ function genBody(
             backgroundType,
         );
     const isInScreen = selectedBackgroundSrcList.length > 0;
-    const selectedCN = isInScreen ? 'app-highlight-selected' : '';
+    const selectedCN = isInScreen ? 'app-highlight-selected animation' : '';
     const screenKeys = selectedBackgroundSrcList.map(([key]) => key);
     const title =
         `${filePath}` +

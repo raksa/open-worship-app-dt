@@ -214,7 +214,40 @@ body {
   }
 
   .app-highlight-selected {
-    border: 1px dashed $hight-light-color;
+    @keyframes highlight-selected-in {
+      0% {
+        border-width: 2px;
+      }
+      50% {
+        border-width: 3px;
+      }
+      100% {
+        border: 2px;
+      }
+    }
+    @keyframes highlight-selected {
+      0% {
+        border-color: $hight-light-color;
+      }
+      80% {
+        border-color: $hight-light-color;
+      }
+      100% {
+        border-color: transparent;
+      }
+    }
+
+    box-sizing: border-box;
+    border: 2px dotted $hight-light-color;
+    animation: highlight-selected-in 0.5s ease-in-out alternate;
+
+    &.animation {
+      animation-delay: 2s;
+      animation-name: highlight-selected;
+      animation-duration: 2s;
+      animation-timing-function: ease-out;
+      animation-iteration-count: infinite;
+    }
   }
 
   .hidden-widget {
@@ -379,5 +412,9 @@ body {
   .app-on-screen::before {
     content: '*';
     color: greenyellow;
+  }
+
+  .app-inner-shadow {
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
   }
 }

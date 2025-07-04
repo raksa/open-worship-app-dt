@@ -7,10 +7,7 @@ import { RenderScreenIds } from '../background/BackgroundComp';
 import BackgroundMediaComp from '../background/BackgroundMediaComp';
 import { DragTypeEnum } from '../helper/DragInf';
 import FileSource from '../helper/FileSource';
-import {
-    useStateSettingBoolean,
-    useStateSettingString,
-} from '../helper/settingHelpers';
+import { useStateSettingString } from '../helper/settingHelpers';
 import SlideAutoPlayComp from '../slide-auto-play/SlideAutoPlayComp';
 import { screenManagerFromBase } from '../_screen/managers/screenManagerHelpers';
 import { getScreenManagerBase } from '../_screen/managers/screenManagerBaseHelpers';
@@ -18,13 +15,13 @@ import { useScreenBackgroundManagerEvents } from '../_screen/managers/screenEven
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { FilePathLoadedContext } from '../others/RenderListComp';
 import ScreenManagerBase from '../_screen/managers/ScreenManagerBase';
-import ForegroundRenderHeaderTitleComp from './ForegroundRenderHeaderTitleComp';
 import { showAppContextMenu } from '../context-menu/appContextMenuHelpers';
 import {
     BackgroundSrcType,
     ImageScaleType,
     scaleTypeList,
 } from '../_screen/screenTypeHelpers';
+import ForegroundLayoutComp from './ForegroundLayoutComp';
 
 const DIR_SOURCE_SETTING_NAME = 'images-slide-show';
 const extraStyle: React.CSSProperties = {
@@ -183,10 +180,6 @@ function useAnyItemSelected(filePaths: string[] | undefined) {
 }
 
 export default function ForegroundImagesSlideShowComp() {
-    const [isOpened, setIsOpened] = useStateSettingBoolean(
-        'foreground-image-slide-show-opened',
-        false,
-    );
     const [filePaths, setFilePaths] = useState<string[] | undefined>();
     const isAnyItemSelected = useAnyItemSelected(filePaths);
     const [scaleType, setScaleType] = useStateSettingString<ImageScaleType>(
@@ -207,70 +200,59 @@ export default function ForegroundImagesSlideShowComp() {
             extraStyle,
         });
     };
+    const scaleTypeElement = (
+        <HeaderElements scaleType={scaleType} setScaleType={setScaleType1} />
+    );
     return (
-        <div
-            className="card m-2 overflow-hidden d-flex flex-column"
-            style={{ maxHeight: '350px' }}
+        <ForegroundLayoutComp
+            target="camera"
+            fullChildHeaders={<h4>Images Slide Show</h4>}
+            childHeadersOnHidden={scaleTypeElement}
+            extraBodyStyle={{ maxHeight: '450px' }}
         >
-            <div className="card-header d-flex">
-                <div className="flex-grow-1">
-                    <ForegroundRenderHeaderTitleComp
-                        isOpened={isOpened}
-                        setIsOpened={setIsOpened}
-                    >
-                        <h4>Images Slide Show</h4>
-                    </ForegroundRenderHeaderTitleComp>
-                </div>
-                <HeaderElements
-                    scaleType={scaleType}
-                    setScaleType={setScaleType1}
-                />
-            </div>
-            {isOpened ? (
-                <>
-                    <div
-                        className="card-body"
-                        style={{
-                            overflowY: 'auto',
+            <div>{scaleTypeElement}</div>
+            <hr />
+            <div
+                className="d-flex flex-column"
+                style={{
+                    overflowY: 'auto',
+                }}
+            >
+                <FilePathLoadedContext
+                    value={{
+                        onLoaded: setFilePaths,
+                    }}
+                >
+                    <BackgroundMediaComp
+                        dragType={DragTypeEnum.BACKGROUND_IMAGE}
+                        rendChild={rendChild.bind(null, scaleType)}
+                        dirSourceSettingName={DIR_SOURCE_SETTING_NAME}
+                        onClick={handleClicking}
+                    />
+                </FilePathLoadedContext>
+                {isAnyItemSelected ? (
+                    <SlideAutoPlayComp
+                        prefix="images"
+                        onNext={(data) => {
+                            if (
+                                filePaths === undefined ||
+                                filePaths.length === 0
+                            ) {
+                                return;
+                            }
+                            handleNextItemSelecting({
+                                srcList: filePaths.map((filePath) => {
+                                    const fileSource =
+                                        FileSource.getInstance(filePath);
+                                    return fileSource.src;
+                                }),
+                                scaleType: scaleType,
+                                isNext: data.isNext,
+                            });
                         }}
-                    >
-                        <FilePathLoadedContext
-                            value={{
-                                onLoaded: setFilePaths,
-                            }}
-                        >
-                            <BackgroundMediaComp
-                                dragType={DragTypeEnum.BACKGROUND_IMAGE}
-                                rendChild={rendChild.bind(null, scaleType)}
-                                dirSourceSettingName={DIR_SOURCE_SETTING_NAME}
-                                onClick={handleClicking}
-                            />
-                        </FilePathLoadedContext>
-                    </div>
-                    {isAnyItemSelected ? (
-                        <SlideAutoPlayComp
-                            prefix="images"
-                            onNext={(data) => {
-                                if (
-                                    filePaths === undefined ||
-                                    filePaths.length === 0
-                                ) {
-                                    return;
-                                }
-                                handleNextItemSelecting({
-                                    srcList: filePaths.map((filePath) => {
-                                        const fileSource =
-                                            FileSource.getInstance(filePath);
-                                        return fileSource.src;
-                                    }),
-                                    scaleType: scaleType,
-                                    isNext: data.isNext,
-                                });
-                            }}
-                        />
-                    ) : null}
-                </>
-            ) : null}
-        </div>
+                    />
+                ) : null}
+            </div>
+        </ForegroundLayoutComp>
     );
 }
