@@ -3,7 +3,7 @@
     "description": "Fully Open-Source and completely free forever for worship service.",
     "author": "Open Worship Dev Team (https://github.com/OpenWorshipApp/open-worship-app-dt/graphs/contributors)",
     "homepage": "https://github.com/OpenWorshipApp/open-worship-app-dt",
-    "version": "2025.06.10",
+    "version": "2025.7.4",
     "type": "commonjs",
     "main": "./electron-build/electron/index.js",
     "scripts": {
@@ -21,6 +21,7 @@
         "pack:linux": "npm run build && electron-builder build --linux",
         "pack:win": "npm run build && electron-builder build --win --x64",
         "pack:win32": "electron-builder build --win --ia32",
+        "pack:ubuntu": "npm run build && electron-builder build --linux",
         "vite:dev": "vite",
         "vite:build": "vite build",
         "react-devtools": "react-devtools",
@@ -124,7 +125,8 @@
         "sass": "^1.85.1",
         "typescript": "^5.8.2",
         "typescript-eslint": "^8.26.1",
-        "vite": "^6.2.1"
+        "vite": "^6.2.1",
+        "@types/reveal.js": "^5.1.0"
     },
     "dependencies": {
         "font-list": "^1.5.1",
