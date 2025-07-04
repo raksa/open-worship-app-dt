@@ -213,37 +213,37 @@ body {
     color: $hight-light-color;
   }
 
-  .app-highlight-selected {
-    @keyframes highlight-selected-in {
-      0% {
-        border-width: 2px;
-      }
-      50% {
-        border-width: 3px;
-      }
-      100% {
-        border: 2px;
-      }
+  @keyframes app-highlight-selected-in {
+    0% {
+      border-width: 2px;
     }
-    @keyframes highlight-selected {
-      0% {
-        border-color: $hight-light-color;
-      }
-      80% {
-        border-color: $hight-light-color;
-      }
-      100% {
-        border-color: transparent;
-      }
+    50% {
+      border-width: 3px;
     }
+    100% {
+      border: 2px;
+    }
+  }
+  @keyframes app-highlight-selected {
+    0% {
+      border-color: $hight-light-color;
+    }
+    80% {
+      border-color: $hight-light-color;
+    }
+    100% {
+      border-color: transparent;
+    }
+  }
 
+  .app-highlight-selected {
     box-sizing: border-box;
     border: 2px dotted $hight-light-color;
-    animation: highlight-selected-in 0.5s ease-in-out alternate;
+    animation: app-highlight-selected-in 0.5s ease-in-out alternate;
 
     &.animation {
       animation-delay: 2s;
-      animation-name: highlight-selected;
+      animation-name: app-highlight-selected;
       animation-duration: 2s;
       animation-timing-function: ease-out;
       animation-iteration-count: infinite;

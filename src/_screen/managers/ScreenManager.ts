@@ -66,9 +66,18 @@ export default class ScreenManager extends ScreenManagerBase {
     get isLocked() {
         return super.isLocked;
     }
-
     set isLocked(isLocked: boolean) {
         super.isLocked = isLocked;
+        saveScreenManagersSetting().then(() => {
+            this.fireInstanceEvent();
+        });
+    }
+
+    get stageNumber() {
+        return super.stageNumber;
+    }
+    set stageNumber(stageNumber: number) {
+        super.stageNumber = stageNumber;
         saveScreenManagersSetting().then(() => {
             this.fireInstanceEvent();
         });
@@ -77,7 +86,6 @@ export default class ScreenManager extends ScreenManagerBase {
     get isSelected() {
         return super.isSelected;
     }
-
     set isSelected(isSelected: boolean) {
         super.isSelected = isSelected;
         saveScreenManagersSetting().then(() => {

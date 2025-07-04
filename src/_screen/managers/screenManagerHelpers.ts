@@ -34,9 +34,10 @@ export function initNewScreenManager(screenId: number) {
         return item.screenId === screenId;
     });
     if (instanceSetting) {
-        screenManager._isSelected = instanceSetting.isSelected;
-        screenManager._isLocked = instanceSetting.isLocked;
-        screenManager.colorNote = instanceSetting.colorNote;
+        screenManager._isSelected = !!instanceSetting.isSelected;
+        screenManager._isLocked = !!instanceSetting.isLocked;
+        screenManager._stageNumber = instanceSetting.stageNumber ?? 0;
+        screenManager.colorNote = instanceSetting.colorNote ?? null;
     }
     return screenManager;
 }

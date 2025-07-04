@@ -41,6 +41,7 @@ export default class ScreenManagerBase
     height = 1;
     _isSelected: boolean = false;
     _isLocked: boolean = false;
+    _stageNumber: number = 0;
     colorNote: string | null = null;
     private _isShowing: boolean;
     noSyncGroupMap: Map<string, boolean>;
@@ -90,6 +91,14 @@ export default class ScreenManagerBase
 
     set isLocked(isLocked: boolean) {
         this._isLocked = isLocked;
+    }
+
+    get stageNumber() {
+        return this._stageNumber;
+    }
+
+    set stageNumber(stageNumber: number) {
+        this._stageNumber = stageNumber;
     }
 
     get isShowing() {
