@@ -28,6 +28,7 @@ export function genHtmlForegroundMarquee(
                 width: '100%',
                 left: '0px',
                 bottom: '0px',
+                ...(marqueeData.extraStyle ?? {}),
             }}
         >
             <style>{`

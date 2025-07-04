@@ -297,12 +297,13 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
     static async setMarquee(
         event: React.MouseEvent<HTMLElement, MouseEvent>,
         text: string | null,
+        extraStyle: CSSProperties = {},
         isForceChoosing = false,
     ) {
         this.setData(
             event,
             (screenForegroundManager) => {
-                const marqueeData = text !== null ? { text } : null;
+                const marqueeData = text !== null ? { text, extraStyle } : null;
                 screenForegroundManager.setMarqueeData(marqueeData);
             },
             isForceChoosing,

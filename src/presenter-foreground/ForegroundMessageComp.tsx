@@ -7,12 +7,14 @@ import {
 } from './foregroundHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
 import ForegroundLayoutComp from './ForegroundLayoutComp';
+import { getForegroundCommonProperties } from './ForegroundCommonPropertiesSettingComp';
 
 export default function ForegroundMessageComp() {
     useScreenForegroundManagerEvents(['update']);
     const [text, setText] = useStateSettingString<string>(
-        'marquee-setting',
-        '',
+        'foreground-marquee-setting',
+        'This is a testing marquee text. It has to be long enough to test ' +
+            'the marquee scrolling effect properly.',
     );
 
     const showingScreenIdDataList = getShowingScreenIdDataList((data) => {
@@ -27,7 +29,13 @@ export default function ForegroundMessageComp() {
         );
     };
     const handleMarqueeShowing = (event: any, isForceChoosing = false) => {
-        ScreenForegroundManager.setMarquee(event, text, isForceChoosing);
+        const extraStyle = getForegroundCommonProperties();
+        ScreenForegroundManager.setMarquee(
+            event,
+            text,
+            extraStyle,
+            isForceChoosing,
+        );
     };
     const handleContextMenuOpening = (event: any) => {
         handleMarqueeShowing(event, true);

@@ -86,6 +86,7 @@ export type ForegroundTimeDataType = {
 };
 export type ForegroundMarqueDataType = {
     text: string;
+    extraStyle?: React.CSSProperties;
 };
 export type ForegroundCameraDataType = {
     id: string;

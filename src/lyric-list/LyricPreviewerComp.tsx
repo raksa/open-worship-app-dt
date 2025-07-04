@@ -49,7 +49,7 @@ function RenderHeaderComp() {
     return (
         <div className="card-header" style={{ height: '70px' }}>
             <div className="d-flex">
-                <strong>Font Family:</strong>
+                <strong>Font:</strong>
                 <FontFamilyControlComp
                     fontFamily={localFontFamily}
                     setFontFamily={setLocalFontFamily1}

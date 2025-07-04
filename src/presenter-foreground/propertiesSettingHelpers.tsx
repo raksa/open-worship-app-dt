@@ -6,6 +6,7 @@ import {
 } from '../helper/settingHelpers';
 import SlideEditorToolAlignComp from '../slide-editor/canvas/tools/SlideEditorToolAlignComp';
 import AppRangeComp from '../others/AppRangeComp';
+import { getForegroundCommonProperties } from './ForegroundCommonPropertiesSettingComp';
 
 const DEFAULT_FONT_SIZE = 100;
 const DEFAULT_WIDGET_WIDTH_PERCENTAGE = 50;
@@ -348,6 +349,7 @@ export function useForegroundPropsSetting({
 
     const genStyle = () => {
         return {
+            ...getForegroundCommonProperties(),
             position: 'absolute',
             height: 'auto',
             ...getWidgetRoundExtraStyle(

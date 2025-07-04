@@ -1,5 +1,6 @@
 import appProvider from '../server/appProvider';
 import ForegroundCameraShowComp from './ForegroundCameraShowComp';
+import ForegroundCommonPropertiesSettingComp from './ForegroundCommonPropertiesSettingComp';
 import ForegroundCountDownComp from './ForegroundCountDownComp';
 import ForegroundImagesSlideShowComp from './ForegroundImagesSlideShowComp';
 import ForegroundMessageComp from './ForegroundMessageComp';
@@ -14,6 +15,8 @@ export default function PresenterForegroundComp() {
                 backgroundColor: 'var(--bs-gray-800)',
             }}
         >
+            <ForegroundCommonPropertiesSettingComp />
+            <hr />
             <ForegroundMessageComp />
             <hr />
             {appProvider.systemUtils.isDev ? (
