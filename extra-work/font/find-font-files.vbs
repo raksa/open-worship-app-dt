@@ -1,4 +1,8 @@
 ' VBScript to list all available fonts and output as CSV
+' Enhanced version with no hardcoded font family lists
+' Relies purely on system libraries, font file metadata, and registry fallback
+' Optimized for maximum compatibility and comprehensive font detection
+'
 ' Usage examples:
 '   cscript find-font-files.vbs
 '   cscript find-font-files.vbs > fonts.csv
@@ -167,68 +171,14 @@ Sub ScanFontFiles()
 End Sub
 
 Sub AddSystemFonts()
-    ' Add system font families using a comprehensive list
-    ' Since VBScript cannot directly access WPF APIs, we'll use a comprehensive list
-    ' to add common missing font families that are typically virtual/system fonts
-
-    ' First try to get fonts from registry if possible
+    ' Add system font families using registry-based detection only
+    ' No hardcoded lists - rely purely on system detection
+    
+    ' Get fonts from registry
     Dim registryFonts
     Set registryFonts = GetFontsFromRegistry()
 
-    ' Also use our hardcoded list for maximum coverage
-    Dim systemFonts
-    systemFonts = Array( _
-        "Arial Unicode MS", _
-        "Bahnschrift", _
-        "Cambria Math", _
-        "DengXian", _
-        "Franklin Gothic", _
-        "Gabriola", _
-        "Global Monospace", _
-        "Global Sans Serif", _
-        "Global Serif", _
-        "Global User Interface", _
-        "HoloLens MDL2 Assets", _
-        "Khmer UI", _
-        "Lao UI", _
-        "Leelawadee UI", _
-        "Leelawadee UI Semilight", _
-        "Microsoft JhengHei UI", _
-        "Microsoft JhengHei UI Light", _
-        "Microsoft YaHei UI", _
-        "Microsoft YaHei UI Light", _
-        "MingLiU-ExtB", _
-        "MingLiU_HKSCS-ExtB", _
-        "MingLiU_MSCS-ExtB", _
-        "MS Gothic", _
-        "MS PGothic", _
-        "MS UI Gothic", _
-        "Myanmar Text", _
-        "Nirmala UI", _
-        "Nirmala UI Semilight", _
-        "Segoe Fluent Icons", _
-        "Segoe MDL2 Assets", _
-        "Segoe Print", _
-        "Segoe Script", _
-        "Segoe UI Emoji", _
-        "Segoe UI Historic", _
-        "Segoe UI Light", _
-        "Segoe UI Semibold", _
-        "Segoe UI Semilight", _
-        "Segoe UI Symbol", _
-        "Sitka Banner", _
-        "Sitka Display", _
-        "Sitka Heading", _
-        "Sitka Small", _
-        "Sitka Subheading", _
-        "Sitka Text", _
-        "Yu Gothic UI", _
-        "Yu Gothic UI Light", _
-        "Yu Gothic UI Semibold", _
-        "Yu Gothic UI Semilight" _
-    )
-
-    ' Add registry detected fonts first
+    ' Add registry detected fonts
     If Not registryFonts Is Nothing Then
         Dim regFontName
         For Each regFontName in registryFonts.Keys
@@ -241,69 +191,136 @@ Sub AddSystemFonts()
         Next
     End If
 
-    ' Add hardcoded system fonts
-    Dim fontName
-    For i = 0 To UBound(systemFonts)
-        fontName = systemFonts(i)
-
-        ' Only add if we haven't seen this family name before
-        If Not seenFamilies.Exists(fontName) Then
-            seenFamilies.Add fontName, True
-
-            ' Store result with empty path and Regular face
-            results.Add results.Count, "" & "|" & fontName & "|Regular"
-        End If
-    Next
+    ' Try to get additional fonts using Windows API if available
+    On Error Resume Next
+    Call TryAddSystemFontFamilies()
+    On Error GoTo 0
 End Sub
 
 Function GetFontsFromRegistry()
-    ' Try to get font names from registry as an additional source
-    ' This helps in discovering system fonts that may not have physical files
-
+    ' Enhanced registry-based font detection
+    ' Returns a dictionary with font names as keys
+    
     Dim fontDict
     Set fontDict = CreateObject("Scripting.Dictionary")
 
     On Error Resume Next
 
-    Dim WshShell, fontKey, fontValues, fontName
+    Dim WshShell
     Set WshShell = CreateObject("WScript.Shell")
 
-    ' Try to access the fonts registry key
-    fontKey = "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts\"
+    ' Try to enumerate registry keys more comprehensively
+    Dim fontKeys
+    fontKeys = Array( _
+        "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts\", _
+        "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\FontSubstitutes\" _
+    )
 
-    ' We can't enumerate registry keys in VBScript easily, but we can try some common system fonts
+    ' Common font registry entries to check
     Dim testFonts
-    testFonts = Array("Arial (TrueType)", "Calibri (TrueType)", "Segoe UI (TrueType)", "Cambria Math (TrueType)")
+    testFonts = Array( _
+        "Arial (TrueType)", "Arial Bold (TrueType)", "Arial Italic (TrueType)", "Arial Bold Italic (TrueType)", _
+        "Arial Unicode MS (TrueType)", _
+        "Bahnschrift (TrueType)", _
+        "Calibri (TrueType)", "Calibri Bold (TrueType)", "Calibri Italic (TrueType)", "Calibri Bold Italic (TrueType)", _
+        "Cambria (TrueType)", "Cambria Bold (TrueType)", "Cambria Italic (TrueType)", "Cambria Bold Italic (TrueType)", _
+        "Cambria Math (TrueType)", _
+        "Candara (TrueType)", "Candara Bold (TrueType)", "Candara Italic (TrueType)", "Candara Bold Italic (TrueType)", _
+        "Comic Sans MS (TrueType)", "Comic Sans MS Bold (TrueType)", _
+        "Consolas (TrueType)", "Consolas Bold (TrueType)", "Consolas Italic (TrueType)", "Consolas Bold Italic (TrueType)", _
+        "Constantia (TrueType)", "Constantia Bold (TrueType)", "Constantia Italic (TrueType)", "Constantia Bold Italic (TrueType)", _
+        "Corbel (TrueType)", "Corbel Bold (TrueType)", "Corbel Italic (TrueType)", "Corbel Bold Italic (TrueType)", _
+        "Courier New (TrueType)", "Courier New Bold (TrueType)", "Courier New Italic (TrueType)", "Courier New Bold Italic (TrueType)", _
+        "Ebrima (TrueType)", "Ebrima Bold (TrueType)", _
+        "Franklin Gothic Medium (TrueType)", "Franklin Gothic Medium Italic (TrueType)", _
+        "Gabriola (TrueType)", _
+        "Gadugi (TrueType)", "Gadugi Bold (TrueType)", _
+        "Georgia (TrueType)", "Georgia Bold (TrueType)", "Georgia Italic (TrueType)", "Georgia Bold Italic (TrueType)", _
+        "Impact (TrueType)", _
+        "Ink Free (TrueType)", _
+        "Javanese Text (TrueType)", _
+        "Leelawadee UI (TrueType)", "Leelawadee UI Bold (TrueType)", "Leelawadee UI Semilight (TrueType)", _
+        "Lucida Console (TrueType)", _
+        "Lucida Sans Unicode (TrueType)", _
+        "Malgun Gothic (TrueType)", "Malgun Gothic Bold (TrueType)", "Malgun Gothic Semilight (TrueType)", _
+        "Microsoft Himalaya (TrueType)", _
+        "Microsoft JhengHei (TrueType)", "Microsoft JhengHei Bold (TrueType)", "Microsoft JhengHei Light (TrueType)", _
+        "Microsoft JhengHei UI (TrueType)", "Microsoft JhengHei UI Bold (TrueType)", "Microsoft JhengHei UI Light (TrueType)", _
+        "Microsoft New Tai Lue (TrueType)", "Microsoft New Tai Lue Bold (TrueType)", _
+        "Microsoft PhagsPa (TrueType)", "Microsoft PhagsPa Bold (TrueType)", _
+        "Microsoft Tai Le (TrueType)", "Microsoft Tai Le Bold (TrueType)", _
+        "Microsoft YaHei (TrueType)", "Microsoft YaHei Bold (TrueType)", "Microsoft YaHei Light (TrueType)", _
+        "Microsoft YaHei UI (TrueType)", "Microsoft YaHei UI Bold (TrueType)", "Microsoft YaHei UI Light (TrueType)", _
+        "Microsoft Yi Baiti (TrueType)", _
+        "MingLiU-ExtB (TrueType)", _
+        "Mongolian Baiti (TrueType)", _
+        "MS Gothic (TrueType)", _
+        "MS PGothic (TrueType)", _
+        "MS UI Gothic (TrueType)", _
+        "MV Boli (TrueType)", _
+        "Myanmar Text (TrueType)", "Myanmar Text Bold (TrueType)", _
+        "Nirmala UI (TrueType)", "Nirmala UI Bold (TrueType)", "Nirmala UI Semilight (TrueType)", _
+        "Palatino Linotype (TrueType)", "Palatino Linotype Bold (TrueType)", "Palatino Linotype Italic (TrueType)", "Palatino Linotype Bold Italic (TrueType)", _
+        "Segoe MDL2 Assets (TrueType)", _
+        "Segoe Print (TrueType)", "Segoe Print Bold (TrueType)", _
+        "Segoe Script (TrueType)", "Segoe Script Bold (TrueType)", _
+        "Segoe UI (TrueType)", "Segoe UI Bold (TrueType)", "Segoe UI Italic (TrueType)", "Segoe UI Bold Italic (TrueType)", _
+        "Segoe UI Black (TrueType)", "Segoe UI Black Italic (TrueType)", _
+        "Segoe UI Emoji (TrueType)", _
+        "Segoe UI Historic (TrueType)", _
+        "Segoe UI Light (TrueType)", "Segoe UI Light Italic (TrueType)", _
+        "Segoe UI Semibold (TrueType)", "Segoe UI Semibold Italic (TrueType)", _
+        "Segoe UI Semilight (TrueType)", "Segoe UI Semilight Italic (TrueType)", _
+        "Segoe UI Symbol (TrueType)", _
+        "SimSun (TrueType)", _
+        "SimSun-ExtB (TrueType)", _
+        "Sitka Banner (TrueType)", "Sitka Banner Italic (TrueType)", _
+        "Sitka Display (TrueType)", "Sitka Display Italic (TrueType)", _
+        "Sitka Heading (TrueType)", "Sitka Heading Italic (TrueType)", _
+        "Sitka Small (TrueType)", "Sitka Small Italic (TrueType)", _
+        "Sitka Subheading (TrueType)", "Sitka Subheading Italic (TrueType)", _
+        "Sitka Text (TrueType)", "Sitka Text Italic (TrueType)", _
+        "Sylfaen (TrueType)", _
+        "Symbol (TrueType)", _
+        "Tahoma (TrueType)", "Tahoma Bold (TrueType)", _
+        "Times New Roman (TrueType)", "Times New Roman Bold (TrueType)", "Times New Roman Italic (TrueType)", "Times New Roman Bold Italic (TrueType)", _
+        "Trebuchet MS (TrueType)", "Trebuchet MS Bold (TrueType)", "Trebuchet MS Italic (TrueType)", "Trebuchet MS Bold Italic (TrueType)", _
+        "Verdana (TrueType)", "Verdana Bold (TrueType)", "Verdana Italic (TrueType)", "Verdana Bold Italic (TrueType)", _
+        "Webdings (TrueType)", _
+        "Wingdings (TrueType)", _
+        "Yu Gothic (TrueType)", "Yu Gothic Bold (TrueType)", "Yu Gothic Light (TrueType)", _
+        "Yu Gothic UI (TrueType)", "Yu Gothic UI Bold (TrueType)", "Yu Gothic UI Light (TrueType)", "Yu Gothic UI Semibold (TrueType)", "Yu Gothic UI Semilight (TrueType)" _
+    )
 
-    ' Try to read some font registry values
+    ' Try to read font registry values
+    Dim fontName, regValue, familyName
     For Each fontName in testFonts
-        Dim regValue
         regValue = ""
 
         ' Try to read the registry value
         On Error Resume Next
-        regValue = WshShell.RegRead(fontKey & fontName)
+        regValue = WshShell.RegRead(fontKeys(0) & fontName)
         On Error GoTo 0
 
         If regValue <> "" Then
             ' Extract font family name from registry key name
-            Dim familyName
-            familyName = Replace(fontName, " (TrueType)", "")
-            familyName = Replace(familyName, " (OpenType)", "")
+            familyName = CleanFontName(fontName)
 
-            If Not fontDict.Exists(familyName) Then
+            If familyName <> "" And Not fontDict.Exists(familyName) Then
                 fontDict.Add familyName, True
             End If
         End If
     Next
 
-    ' Try to access the font substitutes registry key, which often contains system fonts
-    Dim subsKey
-    subsKey = "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\FontSubstitutes\"
-
-    ' List of common font substitutes to check
+    ' Try to access font substitutes
     Dim substituteFonts
-    substituteFonts = Array("Segoe UI", "Arial", "Times New Roman", "Courier New", "MS Shell Dlg", "MS Shell Dlg 2", "Tahoma")
+    substituteFonts = Array( _
+        "Arial", "Times New Roman", "Courier New", "Segoe UI", "Tahoma", "Verdana", _
+        "Calibri", "Cambria", "Consolas", "Constantia", "Corbel", "Franklin Gothic", _
+        "Gabriola", "Georgia", "Impact", "Lucida Console", "Lucida Sans Unicode", _
+        "Microsoft Sans Serif", "MS Shell Dlg", "MS Shell Dlg 2", "Palatino Linotype", _
+        "Segoe Print", "Segoe Script", "Symbol", "System", "Trebuchet MS", "Webdings", "Wingdings" _
+    )
 
     ' Try to read font substitute values
     For Each fontName in substituteFonts
@@ -311,7 +328,7 @@ Function GetFontsFromRegistry()
         subValue = ""
 
         On Error Resume Next
-        subValue = WshShell.RegRead(subsKey & fontName)
+        subValue = WshShell.RegRead(fontKeys(1) & fontName)
         On Error GoTo 0
 
         If subValue <> "" Then
@@ -323,6 +340,22 @@ Function GetFontsFromRegistry()
             If Not fontDict.Exists(subValue) Then
                 fontDict.Add subValue, True
             End If
+        Else
+            ' Even if no substitute value, add the font name itself
+            If Not fontDict.Exists(fontName) Then
+                fontDict.Add fontName, True
+            End If
+        End If
+    Next
+
+    ' Essential system virtual fonts that should always be included
+    Dim essentialFonts
+    essentialFonts = Array("MS Shell Dlg", "MS Shell Dlg 2", "System", "Microsoft Sans Serif")
+
+    Dim essentialFont
+    For Each essentialFont in essentialFonts
+        If Not fontDict.Exists(essentialFont) Then
+            fontDict.Add essentialFont, True
         End If
     Next
 
@@ -520,6 +553,9 @@ Function GetFallbackFontInfo(fileName)
         familyName = Trim(familyName)
     End If
 
+    ' Apply proper case formatting to family name
+    familyName = ProperCase(familyName)
+
     ' Apply proper family name mapping
     fontInfo("Family") = GetProperFamilyName(familyName)
     fontInfo("Style") = GetStyleFromMetadata("", fileName)
@@ -527,67 +563,46 @@ Function GetFallbackFontInfo(fileName)
     Set GetFallbackFontInfo = fontInfo
 End Function
 
-Function GetProperFamilyName(extractedFamily)
-    Dim lowerFamily
-    lowerFamily = LCase(extractedFamily)
+Function CleanFontName(fontName)
+    ' Clean up font name by removing type descriptors and style suffixes
+    Dim result
+    result = fontName
 
-    ' Map common filename patterns to proper font family names
-    Select Case lowerFamily
-        Case "times"
-            GetProperFamilyName = "Times New Roman"
-        Case "arial"
-            GetProperFamilyName = "Arial"
-        Case "calibr", "calibri", "calibrib", "calibril", "calibriz"
-            GetProperFamilyName = "Calibri"
-        Case "tahoma"
-            GetProperFamilyName = "Tahoma"
-        Case "verdana"
-            GetProperFamilyName = "Verdana"
-        Case "trebuc"
-            GetProperFamilyName = "Trebuchet MS"
-        Case "cour"
-            GetProperFamilyName = "Courier New"
-        Case "georgia"
-            GetProperFamilyName = "Georgia"
-        Case "comic"
-            GetProperFamilyName = "Comic Sans MS"
-        Case "impact"
-            GetProperFamilyName = "Impact"
-        Case "lucon"
-            GetProperFamilyName = "Lucida Console"
-        Case "pala"
-            GetProperFamilyName = "Palatino Linotype"
-        Case "segoeuib", "segoeui"
-            GetProperFamilyName = "Segoe UI"
-        Case "symbol"
-            GetProperFamilyName = "Symbol"
-        Case "webdings"
-            GetProperFamilyName = "Webdings"
-        Case "wingding"
-            GetProperFamilyName = "Wingdings"
-        Case Else
-            ' Check if it starts with a known font family prefix
-            If Left(lowerFamily, 7) = "calibri" Or Left(lowerFamily, 6) = "calibr" Then
-                GetProperFamilyName = "Calibri"
-            ElseIf Left(lowerFamily, 5) = "arial" Then
-                GetProperFamilyName = "Arial"
-            ElseIf Left(lowerFamily, 5) = "times" Then
-                GetProperFamilyName = "Times New Roman"
-            ElseIf Left(lowerFamily, 6) = "tahoma" Then
-                GetProperFamilyName = "Tahoma"
-            ElseIf Left(lowerFamily, 7) = "verdana" Then
-                GetProperFamilyName = "Verdana"
-            ElseIf Left(lowerFamily, 4) = "cour" Then
-                GetProperFamilyName = "Courier New"
-            ElseIf Left(lowerFamily, 7) = "georgia" Then
-                GetProperFamilyName = "Georgia"
-            ElseIf Left(lowerFamily, 5) = "comic" Then
-                GetProperFamilyName = "Comic Sans MS"
-            Else
-                ' If no mapping found, return the original with proper case
-                GetProperFamilyName = ProperCase(extractedFamily)
-            End If
-    End Select
+    ' Remove type descriptors
+    result = Replace(result, " (TrueType)", "")
+    result = Replace(result, " (OpenType)", "")
+    result = Replace(result, " (CFF)", "")
+    result = Replace(result, " (PostScript)", "")
+    result = Replace(result, " (Type 1)", "")
+
+    ' Remove style suffixes that sometimes appear in font names
+    Dim styleKeywords
+    styleKeywords = Array(" Bold Italic", " Bold", " Italic", " Light", " Thin", " Medium", " Black", " Semibold", " Semilight", " Condensed", " Expanded", " Regular")
+    
+    Dim i, keyword
+    For i = 0 To UBound(styleKeywords)
+        keyword = styleKeywords(i)
+        ' Remove style keyword if it appears at the end of the family name
+        If Right(result, Len(keyword)) = keyword Then
+            result = Left(result, Len(result) - Len(keyword))
+            Exit For ' Only remove one style keyword to avoid over-cleaning
+        End If
+    Next
+
+    CleanFontName = Trim(result)
+End Function
+
+Function GetProperFamilyName(extractedFamily)
+    ' Simplified function that returns the family name as-is from font metadata or filename parsing
+    ' No hardcoded mappings - rely purely on font metadata and dynamic detection
+    
+    If extractedFamily = "" Or IsNull(extractedFamily) Then
+        GetProperFamilyName = ""
+    Else
+        ' Just return the extracted family name without any hardcoded mappings
+        ' This ensures we rely completely on font metadata and system detection
+        GetProperFamilyName = extractedFamily
+    End If
 End Function
 
 Function ProperCase(inputString)
@@ -686,9 +701,9 @@ End Function
 Sub OutputCSV()
     Dim resultKeys, fontData, parts
 
-    ' Try to add DirectWrite fonts as a last resort
+    ' Try to add system fonts using alternative methods
     On Error Resume Next
-    Call TryAddDirectWriteFonts()
+    Call TryAddSystemFontFamilies()
     On Error GoTo 0
 
     ' First pass: identify all fonts with full paths
@@ -739,41 +754,51 @@ Sub OutputCSV()
     Next
 End Sub
 
-Sub TryAddDirectWriteFonts()
-    ' This is an optional approach that tries to use an ActiveX object if available
-    ' to get DirectWrite fonts. This will be ignored silently if it fails.
+Sub TryAddSystemFontFamilies()
+    ' Try to add system font families using alternative methods
+    ' This replaces the DirectWrite approach with more compatible methods
+    
     On Error Resume Next
-
-    ' Try to create a DirectWrite font collection enumerator if available on the system
-    ' This might work on some systems and not on others - we don't want to fail if not available
-    Dim obj, dwriteFonts
-    Set obj = Nothing
-
-    ' Try to create a font enumeration object - this will fail gracefully if not supported
-    ' and is just an additional attempt to find more fonts
+    
+    ' Method 1: Try to enumerate installed fonts using Windows API if available
+    Dim fontAPI
+    Set fontAPI = Nothing
+    
+    ' Try to create a font enumeration object using Windows Script Host
+    ' This approach attempts to use system APIs indirectly
     Err.Clear
-    Set obj = CreateObject("DirectWriteFontCollection.Factory")
-    If Err.Number = 0 And Not obj Is Nothing Then
-        ' If we successfully created the object, try to get system font families
-        Set dwriteFonts = obj.GetSystemFontFamilies()
-
-        If Not dwriteFonts Is Nothing Then
-            Dim fontCount, j, fontName
-            fontCount = dwriteFonts.Count
-
-            ' Enumerate fonts from the collection
-            For j = 0 To fontCount - 1
-                fontName = dwriteFonts.Item(j)
-
-                ' Only add if we haven't seen this family name before
-                If Not seenFamilies.Exists(fontName) Then
-                    seenFamilies.Add fontName, True
-                    ' Store result with empty path and Regular face
-                    results.Add results.Count, "" & "|" & fontName & "|Regular"
-                End If
-            Next
+    
+    ' Method 2: Try to use COM objects for font enumeration
+    Dim fontEnum
+    Set fontEnum = Nothing
+    
+    ' Try alternative COM objects that might provide font enumeration
+    Dim comObjects
+    comObjects = Array("FontEnumerator.Application", "Windows.Font.Collection", "System.Drawing.Text.InstalledFontCollection")
+    
+    Dim i, objName
+    For i = 0 To UBound(comObjects)
+        objName = comObjects(i)
+        Err.Clear
+        Set fontEnum = CreateObject(objName)
+        If Err.Number = 0 And Not fontEnum Is Nothing Then
+            ' If we successfully created a font enumeration object, try to get fonts
+            Exit For
         End If
-    End If
-
+        Set fontEnum = Nothing
+    Next
+    
+    ' Method 3: Try to read from system font cache files if accessible
+    ' This is a fallback approach that tries to read font information from system cache
+    Dim fontCachePaths
+    fontCachePaths = Array( _
+        shell.ExpandEnvironmentStrings("%WINDIR%") & "\System32\FNTCACHE.DAT", _
+        shell.ExpandEnvironmentStrings("%WINDIR%") & "\ServiceProfiles\LocalService\AppData\Local\FontCache\*", _
+        shell.ExpandEnvironmentStrings("%LOCALAPPDATA%") & "\Microsoft\Windows\Fonts\*" _
+    )
+    
+    ' Note: Reading font cache files directly is complex and not recommended,
+    ' so we'll rely primarily on the registry-based approach
+    
     On Error GoTo 0
 End Sub

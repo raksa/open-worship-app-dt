@@ -1,14 +1,16 @@
 # PowerShell script to list all available fonts and output as CSV
-# Enhanced version with compatibility for all PowerShell versions (including PS 2.0/3.0)
+# Enhanced version with maximum compatibility for all PowerShell versions (including PS 1.0/2.0/3.0)
 # Optimized for maximum compatibility across all PowerShell versions
 # Uses only basic language features and avoids modern cmdlets/operators
 #
-# Compatibility features:
-# - Uses hashtable literals (@{}) instead of New-Object Hashtable
-# - Uses .Contains() and .Replace() instead of -match and -replace
-# - Uses LoadWithPartialName for assembly loading fallback
-# - Uses custom Test-StringEmpty function instead of [string]::IsNullOrEmpty
-# - Enhanced error handling for older .NET Framework versions
+# Enhanced compatibility features for older PowerShell versions:
+# - Uses hashtable literals (@{}) instead of New-Object Hashtable for PS 2.0+
+# - Uses .Contains() and .Replace() instead of -match and -replace for better compatibility
+# - Uses LoadWithPartialName for assembly loading fallback for older .NET versions
+# - Uses custom Test-StringEmpty function instead of [string]::IsNullOrEmpty for PS 1.0 compatibility
+# - Enhanced error handling for older .NET Framework versions (1.1, 2.0, 3.5)
+# - Uses more conservative string and collection operations for PS 1.0/2.0
+# - Avoids advanced PowerShell features that were introduced in PS 3.0+
 #
 # Usage examples:
 #   .\find-font-files.ps1
@@ -58,23 +60,90 @@ if ($FontFolders.Count -eq 0) {
     $FontFolders = $defaultFolders.ToArray()
 }
 
-# Load required assemblies for font metadata reading with enhanced compatibility
+# Load required assemblies for font metadata reading with enhanced compatibility for all PS versions
 $assembliesLoaded = $false
 try {
+    # First try the modern approach (PS 2.0+)
     Add-Type -AssemblyName System.Drawing -ErrorAction Stop
     Add-Type -AssemblyName System.Windows.Forms -ErrorAction Stop
     $assembliesLoaded = $true
 }
 catch {
-    Write-Warning "Failed to load System.Drawing assemblies: $($_.Exception.Message)"
-    Write-Warning "Font metadata features will not be available - falling back to filename parsing only"
-    $assembliesLoaded = $false
+    # Fallback for older PowerShell versions or missing assemblies
+    try {
+        # Try LoadWithPartialName approach for very old PS versions
+        [void][System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
+        [void][System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
+        $assembliesLoaded = $true
+    }
+    catch {
+        # Final fallback - try direct assembly loading for PS 1.0
+        try {
+            [void][System.Reflection.Assembly]::LoadFrom("$env:WINDIR\Microsoft.NET\Framework\v2.0.50727\System.Drawing.dll")
+            [void][System.Reflection.Assembly]::LoadFrom("$env:WINDIR\Microsoft.NET\Framework\v2.0.50727\System.Windows.Forms.dll")
+            $assembliesLoaded = $true
+        }
+        catch {
+            Write-Warning "Failed to load System.Drawing assemblies: $($_.Exception.Message)"
+            Write-Warning "Font metadata features will not be available - falling back to filename parsing only"
+            $assembliesLoaded = $false
+        }
+    }
 }
 
-# Helper function for PS 2.0 compatibility
+# Helper function for all PowerShell version compatibility
 function Test-StringEmpty {
     param([string]$InputString)
-    return ($InputString -eq $null -or $InputString -eq "" -or $InputString.Trim() -eq "")
+    # More conservative approach for PS 1.0/2.0 compatibility
+    if ($InputString -eq $null) { return $true }
+    if ($InputString -eq "") { return $true }
+    if ($InputString.Length -eq 0) { return $true }
+    
+    # Try trim operation safely for older PS versions
+    try {
+        if ($InputString.Trim() -eq "") { return $true }
+    }
+    catch {
+        # If trim fails, just check the original string
+        return $false
+    }
+    
+    return $false
+}
+
+# Helper function for safe string operations in older PowerShell versions
+function Test-StringContains {
+    param([string]$InputString, [string]$SearchString)
+    
+    if (Test-StringEmpty $InputString) { return $false }
+    if (Test-StringEmpty $SearchString) { return $false }
+    
+    # Use IndexOf for maximum compatibility instead of Contains (PS 1.0/2.0 safe)
+    try {
+        return ($InputString.IndexOf($SearchString) -ge 0)
+    }
+    catch {
+        # Fallback for very old versions
+        return ($InputString -like "*$SearchString*")
+    }
+}
+
+# Helper function for safe string replacement in older PowerShell versions
+function Invoke-StringReplace {
+    param([string]$InputString, [string]$OldValue, [string]$NewValue)
+    
+    if (Test-StringEmpty $InputString) { return "" }
+    if (Test-StringEmpty $OldValue) { return $InputString }
+    if ($NewValue -eq $null) { $NewValue = "" }
+    
+    # Use Replace method for maximum compatibility
+    try {
+        return $InputString.Replace($OldValue, $NewValue)
+    }
+    catch {
+        # Fallback for very old versions
+        return $InputString
+    }
 }
 
 # Helper functions
@@ -123,45 +192,56 @@ function Get-FontMetadata {
 
             # First check filename patterns for style - this is more reliable for many fonts
             $fileStyleName = "Regular"
-            if ($baseName.EndsWith("bd") -or $baseName -match "bold") {
-                if ($baseName.EndsWith("bi") -or $baseName -match "italic") {
+            
+            # Use safer string operations for older PowerShell versions
+            if ($baseName.Length -ge 2 -and $baseName.Substring($baseName.Length - 2) -eq "bd") {
+                if ($baseName.Length -ge 2 -and $baseName.Substring($baseName.Length - 2) -eq "bi") {
+                    $fileStyleName = "Bold Italic"
+                }
+                elseif (Test-StringContains $baseName "italic") {
                     $fileStyleName = "Bold Italic"
                 }
                 else {
                     $fileStyleName = "Bold"
                 }
             }
-            elseif ($baseName.EndsWith("bi") -or ($baseName -match "bold" -and $baseName -match "italic")) {
+            elseif ($baseName.Length -ge 2 -and $baseName.Substring($baseName.Length - 2) -eq "bi") {
                 $fileStyleName = "Bold Italic"
             }
-            elseif ($baseName.EndsWith("i") -or $baseName -match "italic") {
+            elseif ((Test-StringContains $baseName "bold") -and (Test-StringContains $baseName "italic")) {
+                $fileStyleName = "Bold Italic"
+            }
+            elseif ($baseName.Length -ge 1 -and $baseName.Substring($baseName.Length - 1) -eq "i" -and $baseName -ne "i") {
                 $fileStyleName = "Italic"
             }
-            elseif ($baseName -match "regular") {
+            elseif (Test-StringContains $baseName "italic") {
+                $fileStyleName = "Italic"
+            }
+            elseif (Test-StringContains $baseName "regular") {
                 $fileStyleName = "Regular"
             }
-            elseif ($baseName -match "light") {
+            elseif (Test-StringContains $baseName "light") {
                 $fileStyleName = "Light"
             }
-            elseif ($baseName -match "thin") {
+            elseif (Test-StringContains $baseName "thin") {
                 $fileStyleName = "Thin"
             }
-            elseif ($baseName -match "medium") {
+            elseif (Test-StringContains $baseName "medium") {
                 $fileStyleName = "Medium"
             }
-            elseif ($baseName -match "black") {
+            elseif (Test-StringContains $baseName "black") {
                 $fileStyleName = "Black"
             }
-            elseif ($baseName -match "semibold") {
+            elseif (Test-StringContains $baseName "semibold") {
                 $fileStyleName = "Semibold"
             }
-            elseif ($baseName -match "semilight") {
+            elseif (Test-StringContains $baseName "semilight") {
                 $fileStyleName = "Semilight"
             }
-            elseif ($baseName -match "condensed") {
+            elseif (Test-StringContains $baseName "condensed") {
                 $fileStyleName = "Condensed"
             }
-            elseif ($baseName -match "expanded") {
+            elseif (Test-StringContains $baseName "expanded") {
                 $fileStyleName = "Expanded"
             }
 
@@ -242,21 +322,35 @@ function Get-FallbackFontInfo {
     }
     else {
         # For longer names, remove common style indicators
-        # Using a more compatibility-friendly approach with explicit checks
+        # Using a more compatibility-friendly approach with explicit checks for older PS versions
         $commonStyles = @("-Bold", "-Italic", "-Light", "-Regular", "-Medium", "-Thin",
             "-Black", "-Semibold", "-Semilight", "-Condensed", "-Expanded",
             "Bold", "Italic", "Light", "Regular", "Medium", "Thin",
             "Black", "Semibold", "Semilight", "Condensed", "Expanded")
 
         foreach ($style in $commonStyles) {
-            # Simple string replacement without regex
-            if ($familyName.EndsWith($style)) {
-                $familyName = $familyName.Substring(0, $familyName.Length - $style.Length).Trim()
-                break  # Only remove one style to avoid over-cleaning
+            # Use safer string operations for older PowerShell versions
+            if ($familyName.Length -ge $style.Length) {
+                $endPortion = $familyName.Substring($familyName.Length - $style.Length)
+                if ($endPortion -eq $style) {
+                    $familyName = $familyName.Substring(0, $familyName.Length - $style.Length)
+                    try {
+                        $familyName = $familyName.Trim()
+                    }
+                    catch {
+                        # If trim fails in old PS versions, just continue
+                    }
+                    break  # Only remove one style to avoid over-cleaning
+                }
             }
         }
 
-        $familyName = $familyName.Trim()
+        try {
+            $familyName = $familyName.Trim()
+        }
+        catch {
+            # If trim fails in older PowerShell versions, continue without trimming
+        }
     }
 
     # Apply proper family name mapping for consistency
@@ -270,35 +364,44 @@ function Get-FallbackFontInfo {
         elseif ($lowerName.EndsWith("i") -and $lowerName -ne "i") { $styleName = 'Italic' }
     }
     else {
-        # For longer names, check for style keywords
-        if (($lowerName -match "bold" -and $lowerName -match "italic") -or $lowerName -match "bi\b") {
+        # For longer names, check for style keywords using safer string operations
+        if ((Test-StringContains $lowerName "bold") -and (Test-StringContains $lowerName "italic")) {
             $styleName = "Bold Italic"
         }
-        elseif ($lowerName -match "bold" -or $lowerName -match "\bbd\b") {
+        elseif (Test-StringContains $lowerName "bi") {
+            $styleName = "Bold Italic"
+        }
+        elseif (Test-StringContains $lowerName "bold") {
             $styleName = "Bold"
         }
-        elseif ($lowerName -match "italic" -or $lowerName -match "\bit\b") {
+        elseif (Test-StringContains $lowerName "bd") {
+            $styleName = "Bold"
+        }
+        elseif (Test-StringContains $lowerName "italic") {
             $styleName = "Italic"
         }
-        elseif ($lowerName -match "regular") {
+        elseif (Test-StringContains $lowerName "it") {
+            $styleName = "Italic"
+        }
+        elseif (Test-StringContains $lowerName "regular") {
             $styleName = "Regular"
         }
-        elseif ($lowerName -match "light") {
+        elseif (Test-StringContains $lowerName "light") {
             $styleName = "Light"
         }
-        elseif ($lowerName -match "thin") {
+        elseif (Test-StringContains $lowerName "thin") {
             $styleName = "Thin"
         }
-        elseif ($lowerName -match "medium") {
+        elseif (Test-StringContains $lowerName "medium") {
             $styleName = "Medium"
         }
-        elseif ($lowerName -match "black") {
+        elseif (Test-StringContains $lowerName "black") {
             $styleName = "Black"
         }
-        elseif ($lowerName -match "semibold") {
+        elseif (Test-StringContains $lowerName "semibold") {
             $styleName = "Semibold"
         }
-        elseif ($lowerName -match "semilight") {
+        elseif (Test-StringContains $lowerName "semilight") {
             $styleName = "Semilight"
         }
     }
@@ -330,20 +433,28 @@ function Get-FontsFromRegistry {
                     # Extract font family name
                     $familyName = $valueName
 
-                    # Clean up font family name - using more compatible regex pattern syntax
-                    if ($familyName -match ' \(TrueType\)$') {
-                        $familyName = $familyName -replace ' \(TrueType\)$', ''
+                    # Clean up font family name - using more compatible string operations for older PS versions
+                    if (Test-StringContains $familyName " (TrueType)") {
+                        $familyName = Invoke-StringReplace $familyName " (TrueType)" ""
                     }
-                    if ($familyName -match ' \(OpenType\)$') {
-                        $familyName = $familyName -replace ' \(OpenType\)$', ''
+                    if (Test-StringContains $familyName " (OpenType)") {
+                        $familyName = Invoke-StringReplace $familyName " (OpenType)" ""
                     }
-                    if ($familyName -match ' \(CFF\)$') {
-                        $familyName = $familyName -replace ' \(CFF\)$', ''
+                    if (Test-StringContains $familyName " (CFF)") {
+                        $familyName = Invoke-StringReplace $familyName " (CFF)" ""
                     }
-                    if ($familyName -match ' Regular$') {
-                        $familyName = $familyName -replace ' Regular$', ''
+                    if (Test-StringContains $familyName " Regular") {
+                        # Only remove if it's at the end
+                        if ($familyName.Length -ge 8 -and $familyName.Substring($familyName.Length - 8) -eq " Regular") {
+                            $familyName = $familyName.Substring(0, $familyName.Length - 8)
+                        }
                     }
-                    $familyName = $familyName.Trim()
+                    try {
+                        $familyName = $familyName.Trim()
+                    }
+                    catch {
+                        # If trim fails in older PowerShell versions, continue
+                    }
 
                     # Add to dictionary if not empty
                     if ($familyName -and -not $fontDict.ContainsKey($familyName)) {
@@ -476,12 +587,31 @@ try {
     try {
         # Check if WPF is available by attempting to load required assemblies
         # Use more defensive approach for older PowerShell versions
-        [void][System.Reflection.Assembly]::LoadWithPartialName("PresentationFramework")
-        [void][System.Reflection.Assembly]::LoadWithPartialName("PresentationCore")
+        try {
+            # Try modern approach first
+            [void][System.Reflection.Assembly]::LoadWithPartialName("PresentationFramework")
+            [void][System.Reflection.Assembly]::LoadWithPartialName("PresentationCore")
+        }
+        catch {
+            # Fallback for very old PowerShell versions
+            try {
+                [void][System.Reflection.Assembly]::LoadFrom("$env:WINDIR\Microsoft.NET\Framework\v3.0\WPF\PresentationFramework.dll")
+                [void][System.Reflection.Assembly]::LoadFrom("$env:WINDIR\Microsoft.NET\Framework\v3.0\WPF\PresentationCore.dll")
+            }
+            catch {
+                # If WPF loading fails, skip this method
+                throw "WPF not available"
+            }
+        }
 
         # Test if the WPF types are actually available
-        $testType = [System.Windows.Media.Fonts]
-        $wpfAssemblyLoaded = $true
+        try {
+            $testType = [System.Windows.Media.Fonts]
+            $wpfAssemblyLoaded = $true
+        }
+        catch {
+            $wpfAssemblyLoaded = $false
+        }
     }
     catch {
         # WPF isn't available - this is normal on older PowerShell versions or Server Core
@@ -501,28 +631,49 @@ try {
                     $langObj = [System.Windows.Markup.XmlLanguage]::GetLanguage('en-us')
                     $name = ""
 
-                    # Use more compatible approach for TryGetValue
+                    # Use more compatible approach for TryGetValue in older PowerShell versions
                     $tempName = $null
-                    $gotName = $family.FamilyNames.TryGetValue($langObj, [ref]$tempName)
-                    if ($gotName -and -not (Test-StringEmpty $tempName)) {
-                        $name = $tempName
+                    try {
+                        $gotName = $family.FamilyNames.TryGetValue($langObj, [ref]$tempName)
+                        if ($gotName -and -not (Test-StringEmpty $tempName)) {
+                            $name = $tempName
+                        }
                     }
-                    else {
+                    catch {
+                        # TryGetValue might not work in very old PowerShell versions
+                        $gotName = $false
+                    }
+                    
+                    if (-not $gotName -or (Test-StringEmpty $name)) {
                         # Method 2: Try to get any name
-                        if ($family.FamilyNames.Keys.Count -gt 0) {
-                            # More compatible way to get first key
-                            $keys = @($family.FamilyNames.Keys)
-                            if ($keys.Count -gt 0) {
-                                $firstKey = $keys[0]
-                                if ($firstKey) {
-                                    $name = $family.FamilyNames[$firstKey]
+                        try {
+                            if ($family.FamilyNames.Keys.Count -gt 0) {
+                                # More compatible way to get first key for older PS versions
+                                $keys = @()
+                                foreach ($key in $family.FamilyNames.Keys) {
+                                    $keys += $key
+                                    break  # Just get the first one
+                                }
+                                if ($keys.Count -gt 0) {
+                                    $firstKey = $keys[0]
+                                    if ($firstKey) {
+                                        $name = $family.FamilyNames[$firstKey]
+                                    }
                                 }
                             }
+                        }
+                        catch {
+                            # If this fails, continue to next method
                         }
 
                         # Method 3: Last resort - get name through Source property if available
                         if ((Test-StringEmpty $name) -and $family.Source) {
-                            $name = $family.Source
+                            try {
+                                $name = $family.Source
+                            }
+                            catch {
+                                # If Source property access fails, continue
+                            }
                         }
                     }
                 }
@@ -636,20 +787,37 @@ foreach ($font in $results) {
     # For fonts we're keeping, ensure the family name has no trailing spaces
     $font.Family = $normalizedFamily
 
-    # Escape commas and quotes in CSV values - PS 2.0 compatible approach
+    # Escape commas and quotes in CSV values - enhanced PS 1.0/2.0 compatible approach
     $fullPath = $font.FullPath
     $family = $font.Family
     $face = $font.Face
 
-    # Replace quotes with double quotes for CSV escaping
-    if ($fullPath.Contains('"')) { $fullPath = $fullPath.Replace('"', '""') }
-    if ($family.Contains('"')) { $family = $family.Replace('"', '""') }
-    if ($face.Contains('"')) { $face = $face.Replace('"', '""') }
+    # Safe null checks for older PowerShell versions
+    if ($fullPath -eq $null) { $fullPath = "" }
+    if ($family -eq $null) { $family = "" }
+    if ($face -eq $null) { $face = "" }
 
-    # Quote values that contain commas - PS 2.0 compatible
-    if ($fullPath.Contains(',')) { $fullPath = '"' + $fullPath + '"' }
-    if ($family.Contains(',')) { $family = '"' + $family + '"' }
-    if ($face.Contains(',')) { $face = '"' + $face + '"' }
+    # Replace quotes with double quotes for CSV escaping using safer methods
+    if (Test-StringContains $fullPath '"') { 
+        $fullPath = Invoke-StringReplace $fullPath '"' '""' 
+    }
+    if (Test-StringContains $family '"') { 
+        $family = Invoke-StringReplace $family '"' '""' 
+    }
+    if (Test-StringContains $face '"') { 
+        $face = Invoke-StringReplace $face '"' '""' 
+    }
+
+    # Quote values that contain commas - PS 1.0/2.0 compatible
+    if (Test-StringContains $fullPath ',') { 
+        $fullPath = '"' + $fullPath + '"' 
+    }
+    if (Test-StringContains $family ',') { 
+        $family = '"' + $family + '"' 
+    }
+    if (Test-StringContains $face ',') { 
+        $face = '"' + $face + '"' 
+    }
 
     Write-Output "$fullPath,$family,$face"
 }
