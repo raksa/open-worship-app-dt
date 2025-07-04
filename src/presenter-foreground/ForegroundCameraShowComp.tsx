@@ -144,7 +144,7 @@ export default function ForegroundCameraShowComp() {
     return (
         <ForegroundLayoutComp
             target="camera"
-            fullChildHeaders={<h4>Camera Show</h4>}
+            fullChildHeaders={<h4>`Camera Show</h4>}
             childHeadersOnHidden={genHidingElement(true)}
             extraBodyStyle={{
                 maxHeight: '500px',

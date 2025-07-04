@@ -8,7 +8,11 @@ import {
     useVaryAppDocumentSelecting,
 } from '../event/PreviewingEventListener';
 import { useAppDocumentItemSelecting } from '../event/VaryAppDocumentEventListener';
-import { getSetting, useStateSettingString } from '../helper/settingHelpers';
+import {
+    getSetting,
+    useStateSettingBoolean,
+    useStateSettingString,
+} from '../helper/settingHelpers';
 import TabRenderComp, { genTabBody } from '../others/TabRenderComp';
 import {
     checkIsVaryAppDocumentOnScreen,
@@ -16,6 +20,8 @@ import {
 } from '../app-document-list/appDocumentHelpers';
 import LyricAppDocument from '../lyric-list/LyricAppDocument';
 import { getSelectedLyric } from '../lyric-list/lyricHelpers';
+import { tran } from '../lang/langHelpers';
+import ResizeActorComp from '../resize-actor/ResizeActorComp';
 
 const LazyAppDocumentPreviewerComp = lazy(() => {
     return import('./items/AppDocumentPreviewerComp');
@@ -26,8 +32,8 @@ const LazyBiblePreviewerRenderComp = lazy(() => {
 const LazyLyricHandlerComp = lazy(() => {
     return import('../lyric-list/LyricHandlerComp');
 });
-const LazyPresenterForegroundControllerComp = lazy(() => {
-    return import('../presenter-foreground/PresenterForegroundControllerComp');
+const LazyPresenterForegroundComp = lazy(() => {
+    return import('../presenter-foreground/PresenterForegroundComp');
 });
 
 const PRESENT_TAB_SETTING_NAME = 'presenter-tab';
@@ -95,23 +101,67 @@ function RenderToggleFullViewComp({
     );
 }
 
+function RenderForegroundTabComp({
+    isActive,
+    setIsActive,
+}: Readonly<{
+    isActive: boolean;
+    setIsActive: (isActive: boolean) => void;
+}>) {
+    return (
+        <ul className={'nav nav-tabs flex-fill d-flex justify-content-end'}>
+            <li className={'nav-item '}>
+                <button
+                    className={
+                        'btn btn-link nav-link' + ` ${isActive ? 'active' : ''}`
+                    }
+                    onClick={() => {
+                        setIsActive(!isActive);
+                    }}
+                >
+                    {tran('Foreground')}
+                </button>
+            </li>
+        </ul>
+    );
+}
+
 const tabTypeList = [
     ['d', 'Documents', LazyAppDocumentPreviewerComp],
     ['l', 'Lyrics', LazyLyricHandlerComp],
     ['b', 'Bibles', LazyBiblePreviewerRenderComp],
-    ['a', 'Foreground', LazyPresenterForegroundControllerComp],
+    ['f', 'Foreground', LazyPresenterForegroundComp],
 ] as const;
 type TabKeyType = (typeof tabTypeList)[number][0];
 export default function PresenterComp() {
-    const [isFullWidget, setIsFullWidget] = useState(false);
     const [tabKey, setTabKey] = useStateSettingString<TabKeyType>(
         PRESENT_TAB_SETTING_NAME,
         'd',
     );
+    const setTabKey1 = (value: TabKeyType) => {
+        if (value === 'f') {
+            setIsForegroundActive(false);
+        }
+        setTabKey(value);
+    };
+    const [isForegroundActive, setIsForegroundActive] = useStateSettingBoolean(
+        'foreground-active',
+        false,
+    );
+    const setIsForegroundActive1 = (value: boolean) => {
+        if (tabKey === 'f') {
+            setTabKey('d');
+        }
+        setIsForegroundActive(value);
+    };
+    const [isFullWidget, setIsFullWidget] = useState(false);
     useLyricSelecting(() => setTabKey('l'), []);
     useBibleItemShowing(() => setTabKey('b'), []);
     useVaryAppDocumentSelecting(() => setTabKey('d'));
     useAppDocumentItemSelecting(() => setTabKey('d'));
+    const normalPresenterChild = tabTypeList.map(([type, _, target]) => {
+        return genTabBody<TabKeyType>(tabKey, [type, target]);
+    });
     return (
         <div
             className={
@@ -129,8 +179,12 @@ export default function PresenterComp() {
                         };
                     })}
                     activeTab={tabKey}
-                    setActiveTab={setTabKey}
+                    setActiveTab={setTabKey1}
                     className="flex-fill"
+                />
+                <RenderForegroundTabComp
+                    isActive={isForegroundActive}
+                    setIsActive={setIsForegroundActive1}
                 />
                 <RenderToggleFullViewComp
                     isFullWidget={isFullWidget}
@@ -138,6 +192,35 @@ export default function PresenterComp() {
                 />
             </div>
             <div className="body flex-fill overflow-hidden">
+                {isForegroundActive ? (
+                    <ResizeActorComp
+                        flexSizeName={'flex-size-background'}
+                        isHorizontal
+                        isDisableQuickResize={true}
+                        flexSizeDefault={{
+                            h1: ['1'],
+                            h2: ['1'],
+                        }}
+                        dataInput={[
+                            {
+                                children: {
+                                    render: () => {
+                                        return normalPresenterChild;
+                                    },
+                                },
+                                key: 'h1',
+                                widgetName: 'Presenter',
+                            },
+                            {
+                                children: LazyPresenterForegroundComp,
+                                key: 'h2',
+                                widgetName: 'Foreground',
+                            },
+                        ]}
+                    />
+                ) : (
+                    normalPresenterChild
+                )}
                 {tabTypeList.map(([type, _, target]) => {
                     return genTabBody<TabKeyType>(tabKey, [type, target]);
                 })}

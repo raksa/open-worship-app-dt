@@ -123,13 +123,15 @@ function rendChild(
 function HeaderElements({
     scaleType,
     setScaleType,
+    isMini = false,
 }: Readonly<{
     scaleType: ImageScaleType;
     setScaleType: (event: any, value: ImageScaleType) => void;
+    isMini?: boolean;
 }>) {
     return (
         <div className="d-flex">
-            <div>Scale Type:</div>
+            {!isMini ? <div>Scale Type:</div> : null}
             <button
                 className="btn btn-sm btn-outline-info mx-1"
                 style={{
@@ -200,17 +202,21 @@ export default function ForegroundImagesSlideShowComp() {
             extraStyle,
         });
     };
-    const scaleTypeElement = (
-        <HeaderElements scaleType={scaleType} setScaleType={setScaleType1} />
+    const genHeaderElements = (isMini: boolean) => (
+        <HeaderElements
+            scaleType={scaleType}
+            setScaleType={setScaleType1}
+            isMini={isMini}
+        />
     );
     return (
         <ForegroundLayoutComp
             target="camera"
-            fullChildHeaders={<h4>Images Slide Show</h4>}
-            childHeadersOnHidden={scaleTypeElement}
+            fullChildHeaders={<h4>`Images Slide Show</h4>}
+            childHeadersOnHidden={genHeaderElements(true)}
             extraBodyStyle={{ maxHeight: '450px' }}
         >
-            <div>{scaleTypeElement}</div>
+            <div>{genHeaderElements(false)}</div>
             <hr />
             <div
                 className="d-flex flex-column"

@@ -34,7 +34,7 @@ export default function ForegroundLayoutComp({
                     setIsOpened(!isOpened);
                 }}
             >
-                <div className="d-flex">
+                <div className="d-flex app-ellipsis">
                     <i
                         className={
                             'app-caught-hover-pointer bi bi-chevron-' +

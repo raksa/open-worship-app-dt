@@ -241,7 +241,7 @@ export default function ForegroundCountDownComp() {
     return (
         <ForegroundLayoutComp
             target="countdown"
-            fullChildHeaders={<h4>Countdown</h4>}
+            fullChildHeaders={<h4>`Countdown</h4>}
             childHeadersOnHidden={genHidingElement(true)}
         >
             {propsSetting}

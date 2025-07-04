@@ -229,7 +229,7 @@ export default function ForegroundTimeComp() {
     return (
         <ForegroundLayoutComp
             target="time"
-            fullChildHeaders={<h4>Time</h4>}
+            fullChildHeaders={<h4>`Time</h4>}
             childHeadersOnHidden={genHidingElement(true)}
         >
             {propsSetting}
