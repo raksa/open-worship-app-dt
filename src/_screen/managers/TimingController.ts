@@ -1,30 +1,33 @@
-export default class CountdownController {
-    countdownInterval: any = null;
+export default class TimingController {
     readonly divContainer: HTMLDivElement;
-    readonly targetDateTime: Date;
+    readonly timezoneMinuteOffset: number;
+    isRendering = true;
 
-    constructor(divContainer: HTMLDivElement, targetDateTime: Date) {
+    constructor(divContainer: HTMLDivElement, timezoneMinuteOffset: number) {
         this.divContainer = divContainer;
-        this.targetDateTime = targetDateTime;
+        this.timezoneMinuteOffset = timezoneMinuteOffset;
         this.setHtml(false);
     }
 
-    get timeDiff() {
-        return Math.max(0, this.targetDateTime.getTime() - Date.now());
+    get date() {
+        const date = new Date();
+        const utcTime = date.getTime() + date.getTimezoneOffset() * 60 * 1000;
+        const localDate = new Date(
+            utcTime + this.timezoneMinuteOffset * 60 * 60 * 1000,
+        );
+        return localDate;
     }
 
     get hours() {
-        return Math.floor(
-            (this.timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
-        );
+        return this.date.getHours();
     }
 
     get minutes() {
-        return Math.floor((this.timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+        return this.date.getMinutes();
     }
 
     get seconds() {
-        return Math.floor((this.timeDiff % (1000 * 60)) / 1000);
+        return this.date.getSeconds();
     }
 
     getDivChild(divId: string) {
@@ -60,16 +63,14 @@ export default class CountdownController {
     }
 
     start() {
-        this.countdownInterval = setInterval(() => {
-            if (this.countdownInterval === null) {
+        const updateTime = () => {
+            if (!this.isRendering) {
                 return;
             }
-            if (this.timeDiff > 0) {
-                this.setHtml(false);
-            } else {
-                this.stop();
-            }
-        }, 1e3);
+            this.setHtml(false);
+            requestAnimationFrame(updateTime);
+        };
+        requestAnimationFrame(updateTime);
     }
 
     setHtml(isReset: boolean) {
@@ -79,9 +80,7 @@ export default class CountdownController {
     }
 
     pause() {
-        const countdownInterval = this.countdownInterval;
-        this.countdownInterval = null;
-        clearInterval(countdownInterval);
+        this.isRendering = false;
     }
 
     stop() {
@@ -89,7 +88,7 @@ export default class CountdownController {
         this.setHtml(true);
     }
 
-    static init(divContainer: HTMLDivElement, targetDate: Date) {
-        return new this(divContainer, targetDate);
+    static init(divContainer: HTMLDivElement, timezoneMinuteOffset: number) {
+        return new this(divContainer, timezoneMinuteOffset);
     }
 }

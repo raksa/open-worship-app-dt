@@ -38,6 +38,7 @@ export type OptionsType = {
 export type PropsType = {
     event: MouseEvent;
     items: ContextMenuItemType[];
+    onClose: () => void;
     options?: OptionsType;
 };
 
@@ -130,17 +131,23 @@ export function showAppContextMenu(
         contextControl.setDataDelegator?.(null);
     };
     const promise = new Promise<void>((resolve) => {
-        contextControl.setDataDelegator?.({ event, items, options });
+        const onClose = () => {
+            closeMenu();
+            KeyboardEventListener.unregisterEventListener(escEvent);
+            resolve();
+        };
+        contextControl.setDataDelegator?.({
+            event,
+            items,
+            onClose,
+            options,
+        });
         const eventName = KeyboardEventListener.toEventMapperKey({
             key: 'Escape',
         });
         const escEvent = KeyboardEventListener.registerEventListener(
             [eventName],
-            () => {
-                closeMenu();
-                KeyboardEventListener.unregisterEventListener(escEvent);
-                resolve();
-            },
+            onClose,
         );
     });
     return { promiseDone: promise, closeMenu };

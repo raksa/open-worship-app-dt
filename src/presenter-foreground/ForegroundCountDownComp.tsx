@@ -4,14 +4,15 @@ import {
 } from '../helper/settingHelpers';
 import ScreenForegroundManager from '../_screen/managers/ScreenForegroundManager';
 import {
-    getShowingScreenIds,
-    getScreenManagerInstances,
+    getScreenForegroundManagerInstances,
+    getShowingScreenIdDataList,
 } from './foregroundHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
 import { useScreenForegroundManagerEvents } from '../_screen/managers/screenEventHelpers';
 import ForegroundRenderHeaderTitleComp from './ForegroundRenderHeaderTitleComp';
 import { useForegroundPropsSetting } from './propertiesSettingHelpers';
 import { genTimeoutAttempt } from '../helper/helpers';
+import { ForegroundCountdownDataType } from '../_screen/screenTypeHelpers';
 
 function useTiming() {
     const nowArray = () => {
@@ -107,7 +108,7 @@ function CountDownOnDatetimeComp({
     );
 }
 
-function CountDownTimerComp({
+function CountDownInSetComp({
     genStyle,
 }: Readonly<{
     genStyle: () => React.CSSProperties;
@@ -120,7 +121,7 @@ function CountDownTimerComp({
         'foreground-minutes-setting',
         '5',
     );
-    const handleTimerShowing = (event: any, isForceChoosing = false) => {
+    const handleCountdownShowing = (event: any, isForceChoosing = false) => {
         const targetDatetime = new Date();
         targetDatetime.setSeconds(
             targetDatetime.getSeconds() +
@@ -136,7 +137,7 @@ function CountDownTimerComp({
         );
     };
     const handleContextMenuOpening = (event: any) => {
-        handleTimerShowing(event, true);
+        handleCountdownShowing(event, true);
     };
     return (
         <div className="d-flex">
@@ -176,10 +177,10 @@ function CountDownTimerComp({
             <div>
                 <button
                     className="btn btn-secondary"
-                    onClick={handleTimerShowing}
+                    onClick={handleCountdownShowing}
                     onContextMenu={handleContextMenuOpening}
                 >
-                    `Show Timer
+                    `Show Countdown
                 </button>
             </div>
         </div>
@@ -188,48 +189,62 @@ function CountDownTimerComp({
 
 const attemptTimeout = genTimeoutAttempt(500);
 function refreshAllCountdowns(
-    showingScreenIds: number[],
+    showingScreenIds: [number, ForegroundCountdownDataType][],
     extraStyle: React.CSSProperties,
 ) {
     attemptTimeout(() => {
-        showingScreenIds.forEach((screenId) => {
-            getScreenManagerInstances(screenId, (screenForegroundManager) => {
-                const countdownData =
-                    screenForegroundManager.foregroundData?.countdownData;
-                if (countdownData === null) {
-                    return;
-                }
-                screenForegroundManager.setCountdownData(null);
-                screenForegroundManager.setCountdownData({
-                    ...countdownData,
-                    extraStyle,
-                });
-            });
+        showingScreenIds.forEach(([screenId, data]) => {
+            getScreenForegroundManagerInstances(
+                screenId,
+                (screenForegroundManager) => {
+                    screenForegroundManager.setCountdownData(null);
+                    screenForegroundManager.setCountdownData({
+                        ...data,
+                        extraStyle,
+                    });
+                },
+            );
         });
     });
 }
 
 export default function ForegroundCountDownComp() {
     useScreenForegroundManagerEvents(['update']);
-    const showingScreenIds = getShowingScreenIds((data) => {
+    const showingScreenIdDataList = getShowingScreenIdDataList((data) => {
         return data.countdownData !== null;
+    }).map(([screenId, data]) => {
+        return [screenId, data.countdownData] as [
+            number,
+            ForegroundCountdownDataType,
+        ];
     });
     const { genStyle, element: propsSetting } = useForegroundPropsSetting({
         prefix: 'countdown',
         onChange: (extraStyle) => {
-            refreshAllCountdowns(showingScreenIds, extraStyle);
+            refreshAllCountdowns(showingScreenIdDataList, extraStyle);
         },
         isFontSize: true,
     });
     const [isOpened, setIsOpened] = useStateSettingBoolean(
-        'other-countdown-opened',
+        'foreground-countdown-opened',
         false,
     );
     const handleCountdownHiding = (screenId: number) => {
-        getScreenManagerInstances(screenId, (screenForegroundManager) => {
-            screenForegroundManager.setCountdownData(null);
-        });
+        getScreenForegroundManagerInstances(
+            screenId,
+            (screenForegroundManager) => {
+                screenForegroundManager.setCountdownData(null);
+            },
+        );
     };
+    const genHidingElement = (isMini: boolean) => (
+        <ScreensRendererComp
+            showingScreenIdDataList={showingScreenIdDataList}
+            buttonTitle="`Hide Countdown"
+            handleForegroundHiding={handleCountdownHiding}
+            isMini={isMini}
+        />
+    );
     return (
         <div className="card m-2">
             <div
@@ -244,14 +259,7 @@ export default function ForegroundCountDownComp() {
                 >
                     <h4>Countdown</h4>
                 </ForegroundRenderHeaderTitleComp>
-                {!isOpened ? (
-                    <ScreensRendererComp
-                        showingScreenIds={showingScreenIds}
-                        buttonTitle="Hide Camera"
-                        handleForegroundHiding={handleCountdownHiding}
-                        isMini={true}
-                    />
-                ) : null}
+                {!isOpened ? genHidingElement(true) : null}
             </div>
             {isOpened ? (
                 <div className="card-body">
@@ -261,15 +269,9 @@ export default function ForegroundCountDownComp() {
                         <CountDownOnDatetimeComp genStyle={genStyle} />
                     </div>
                     <div className="m-1">
-                        <CountDownTimerComp genStyle={genStyle} />
+                        <CountDownInSetComp genStyle={genStyle} />
                     </div>
-                    <div className="m-1">
-                        <ScreensRendererComp
-                            showingScreenIds={showingScreenIds}
-                            buttonTitle="Hide Timer"
-                            handleForegroundHiding={handleCountdownHiding}
-                        />
-                    </div>
+                    <div className="m-1">{genHidingElement(false)}</div>
                 </div>
             ) : null}
         </div>

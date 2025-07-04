@@ -3,6 +3,7 @@ import ForegroundCameraShowComp from './ForegroundCameraShowComp';
 import ForegroundCountDownComp from './ForegroundCountDownComp';
 import ForegroundImagesSlideShowComp from './ForegroundImagesSlideShowComp';
 import ForegroundMessageComp from './ForegroundMessageComp';
+import ForegroundTimeComp from './ForegroundTimeComp';
 
 export default function PresenterForegroundControllerComp() {
     return (
@@ -15,12 +16,8 @@ export default function PresenterForegroundControllerComp() {
             <ForegroundMessageComp />
             <hr />
             <ForegroundCountDownComp />
-            {appProvider.systemUtils.isDev ? (
-                <>
-                    <hr />
-                    <div>TODO: Time</div>
-                </>
-            ) : null}
+            <hr />
+            <ForegroundTimeComp />
             <hr />
             <ForegroundImagesSlideShowComp />
             <hr />

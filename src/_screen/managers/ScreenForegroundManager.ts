@@ -4,6 +4,7 @@ import { setSetting } from '../../helper/settingHelpers';
 import {
     genHtmlForegroundCountdown,
     genHtmlForegroundMarquee,
+    genHtmlForegroundTime,
     getAndShowMedia,
 } from '../screenForegroundHelpers';
 import { getForegroundDataListOnScreenSetting } from '../screenHelpers';
@@ -18,8 +19,12 @@ import {
     ForegroundMarqueDataType,
     ForegroundCameraDataType,
     ForegroundCountdownDataType,
+    ForegroundTimeDataType,
 } from '../screenTypeHelpers';
-import { checkAreObjectsEqual } from '../../server/comparisonHelpers';
+import {
+    checkAreObjectsEqual,
+    checkIsItemInArray,
+} from '../../server/comparisonHelpers';
 import { OptionalPromise } from '../../helper/typeHelpers';
 
 export type ScreenForegroundEventType = 'update';
@@ -40,15 +45,18 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
 
     constructor(screenManagerBase: ScreenManagerBase) {
         super(screenManagerBase);
+
         const allForegroundDataList = getForegroundDataListOnScreenSetting();
         const foregroundData = allForegroundDataList[this.key] ?? {};
         this.foregroundData = {
             countdownData: foregroundData['countdownData'] ?? null,
+            timeDataList: foregroundData['timeDataList'] ?? [],
             marqueeData: foregroundData['marqueeData'] ?? null,
             cameraData: foregroundData['cameraData'] ?? null,
         };
         this.rendererMap = new Map<string, (data: any) => void>([
             ['countdownData', this.renderCountdown.bind(this)],
+            ['timeDataList', this.renderTime.bind(this)],
             ['marqueeData', this.renderMarquee.bind(this)],
             ['cameraData', this.renderCamera.bind(this)],
         ]);
@@ -57,6 +65,7 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
             (data: any, isNoSyncGroup?: boolean) => void
         >([
             ['countdownData', this.setCountdownData.bind(this)],
+            ['timeDataList', this.setTimeDataList.bind(this)],
             ['marqueeData', this.setMarqueeData.bind(this)],
             ['cameraData', this.setCameraData.bind(this)],
         ]);
@@ -165,17 +174,17 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
     renderCountdown(data: ForegroundCountdownDataType) {
         const { handleAdding, handleRemoving } =
             genHtmlForegroundCountdown(data);
-        const divCountdown = this.createDivContainer(data, handleRemoving);
-        handleAdding(divCountdown!);
+        const divContainer = this.createDivContainer(data, handleRemoving);
+        handleAdding(divContainer!);
     }
     setCountdownData(
-        countdownData: ForegroundCountdownDataType | null,
+        data: ForegroundCountdownDataType | null,
         isNoSyncGroup = false,
     ) {
         this.applyForegroundDataWithSyncGroup(
             {
                 ...this.foregroundData,
-                countdownData,
+                countdownData: data,
             },
             isNoSyncGroup,
         );
@@ -197,6 +206,74 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
         );
     }
 
+    renderTime(dataList: ForegroundTimeDataType[]) {
+        for (const oldData of this.foregroundData.timeDataList ?? []) {
+            this.removeDivContainer(oldData);
+        }
+        for (const data of dataList) {
+            const { handleAdding, handleRemoving } =
+                genHtmlForegroundTime(data);
+            const divContainer = this.createDivContainer(data, handleRemoving);
+            handleAdding(divContainer!);
+        }
+    }
+    setTimeDataList(
+        dataList: ForegroundTimeDataType[] | null,
+        isNoSyncGroup = false,
+    ) {
+        this.applyForegroundDataWithSyncGroup(
+            {
+                ...this.foregroundData,
+                timeDataList: dataList,
+            },
+            isNoSyncGroup,
+        );
+    }
+    addTimeData(data: ForegroundTimeDataType, isNoSyncGroup = false) {
+        if (checkIsItemInArray(data, this.foregroundData.timeDataList)) {
+            return;
+        }
+        const timeDataList = [
+            ...(this.foregroundData.timeDataList ?? []),
+            data,
+        ];
+        this.setTimeDataList(timeDataList, isNoSyncGroup);
+    }
+    removeTimeData(data: ForegroundTimeDataType, isNoSyncGroup = false) {
+        const timeDataList = (this.foregroundData.timeDataList ?? []).filter(
+            (item) => {
+                return !checkAreObjectsEqual(item, data);
+            },
+        );
+        this.setTimeDataList(timeDataList, isNoSyncGroup);
+    }
+    static async addTimeData(
+        event: React.MouseEvent<HTMLElement, MouseEvent>,
+        timeData: ForegroundTimeDataType,
+        isForceChoosing = false,
+    ) {
+        this.setData(
+            event,
+            (screenForegroundManager) => {
+                screenForegroundManager.addTimeData(timeData);
+            },
+            isForceChoosing,
+        );
+    }
+    static async removeTimeData(
+        event: React.MouseEvent<HTMLElement, MouseEvent>,
+        timeData: ForegroundTimeDataType,
+        isForceChoosing = false,
+    ) {
+        this.setData(
+            event,
+            (screenForegroundManager) => {
+                screenForegroundManager.removeTimeData(timeData);
+            },
+            isForceChoosing,
+        );
+    }
+
     renderMarquee(data: ForegroundMarqueDataType) {
         const { element, handleRemoving } = genHtmlForegroundMarquee(
             data,
@@ -206,13 +283,13 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
         divMarquee!.appendChild(element);
     }
     setMarqueeData(
-        marqueeData: ForegroundMarqueDataType | null,
+        data: ForegroundMarqueDataType | null,
         isNoSyncGroup = false,
     ) {
         this.applyForegroundDataWithSyncGroup(
             {
                 ...this.foregroundData,
-                marqueeData,
+                marqueeData: data,
             },
             isNoSyncGroup,
         );
@@ -238,21 +315,20 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
             store.clearCameraTracks();
         });
         getAndShowMedia({
-            id: data.id,
             container: divMarquee!,
-            extraStyle: data.extraStyle,
+            ...data,
         }).then((clearTracks) => {
             store.clearCameraTracks = clearTracks ?? (() => {});
         });
     }
     setCameraData(
-        cameraData: ForegroundCameraDataType | null,
+        data: ForegroundCameraDataType | null,
         isNoSyncGroup = false,
     ) {
         this.applyForegroundDataWithSyncGroup(
             {
                 ...this.foregroundData,
-                cameraData,
+                cameraData: data,
             },
             isNoSyncGroup,
         );
@@ -275,7 +351,6 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
 
     receiveSyncScreen(message: ScreenMessageType) {
         const data: ForegroundDataType = message.data;
-        // utilize the setterMap to apply the data
         for (const [key, setter] of this.setterMap.entries()) {
             setter(data[key as keyof ForegroundDataType] ?? null, true);
         }
@@ -292,7 +367,7 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
     }
 
     applyForegroundDataWithSyncGroup(
-        { countdownData, marqueeData, cameraData }: ForegroundDataType,
+        newForegroundData: ForegroundDataType,
         isNoSyncGroup = false,
     ) {
         if (this.screenManagerBase.checkIsLockedWithMessage()) {
@@ -301,31 +376,22 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
         if (!isNoSyncGroup) {
             ScreenForegroundManager.enableSyncGroup(this.screenId);
         }
-        const {
-            countdownData: oldCountdownData,
-            marqueeData: oldMarqueeData,
-            cameraData: oldCameraData,
-        } = this.foregroundData;
-        countdownData = this.compareAndRender(
-            oldCountdownData,
-            countdownData,
-            this.renderCountdown.bind(this),
-        );
-        marqueeData = this.compareAndRender(
-            oldMarqueeData,
-            marqueeData,
-            this.renderMarquee.bind(this),
-        );
-        cameraData = this.compareAndRender(
-            oldCameraData,
-            cameraData,
-            this.renderCamera.bind(this),
-        );
-        Object.assign(this.foregroundData, {
-            countdownData,
-            marqueeData,
-            cameraData,
-        });
+        for (const item of Object.entries(this.foregroundData)) {
+            const key = item[0];
+            let oldData = item[1];
+            const render = this.rendererMap.get(key) ?? null;
+            if (render === null) {
+                continue;
+            }
+            oldData = this.compareAndRender(
+                oldData,
+                newForegroundData[key as keyof ForegroundDataType] ?? null,
+                render,
+            );
+            Object.assign(this.foregroundData, {
+                [key as keyof ForegroundDataType]: oldData,
+            });
+        }
         this.saveForegroundData();
     }
 

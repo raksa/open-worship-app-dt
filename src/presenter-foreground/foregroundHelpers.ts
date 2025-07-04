@@ -5,23 +5,23 @@ import { getScreenManagerBaseByKey } from '../_screen/managers/screenManagerBase
 import { screenManagerFromBase } from '../_screen/managers/screenManagerHelpers';
 import { ForegroundDataType } from '../_screen/screenTypeHelpers';
 
-export function getShowingScreenIds(
+export function getShowingScreenIdDataList(
     filterFunc: (data: ForegroundDataType) => boolean,
 ) {
     const allForegroundDataList = getForegroundDataListOnScreenSetting();
-    const showingScreenIds = Object.entries(allForegroundDataList)
+    const showingScreenIdDataList = Object.entries(allForegroundDataList)
         .filter(([_, data]) => {
             return filterFunc(data);
         })
-        .map(([key]) => {
-            return parseInt(key);
+        .map(([key, data]) => {
+            return [parseInt(key), data] as [number, ForegroundDataType];
         });
-    return showingScreenIds;
+    return showingScreenIdDataList;
 }
 
-export function getScreenManagerInstances(
+export function getScreenForegroundManagerInstances(
     screenId: number,
-    hidingFunc: (screenForegroundManager: ScreenForegroundManager) => void,
+    callback: (screenForegroundManager: ScreenForegroundManager) => void,
 ) {
     const screenManager = screenManagerFromBase(
         getScreenManagerBaseByKey(screenId.toString()),
@@ -31,5 +31,5 @@ export function getScreenManagerInstances(
         return;
     }
     const { screenForegroundManager } = screenManager;
-    hidingFunc(screenForegroundManager);
+    callback(screenForegroundManager);
 }

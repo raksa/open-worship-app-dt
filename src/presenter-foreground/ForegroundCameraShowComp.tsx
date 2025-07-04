@@ -6,13 +6,14 @@ import LoadingComp from '../others/LoadingComp';
 import ScreenForegroundManager from '../_screen/managers/ScreenForegroundManager';
 import { getAndShowMedia } from '../_screen/screenForegroundHelpers';
 import {
-    getShowingScreenIds,
-    getScreenManagerInstances,
+    getScreenForegroundManagerInstances,
+    getShowingScreenIdDataList,
 } from './foregroundHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
 import { useScreenForegroundManagerEvents } from '../_screen/managers/screenEventHelpers';
 import { genTimeoutAttempt } from '../helper/helpers';
 import { useForegroundPropsSetting } from './propertiesSettingHelpers';
+import { ForegroundCameraDataType } from '../_screen/screenTypeHelpers';
 
 type CameraInfoType = {
     deviceId: string;
@@ -75,41 +76,44 @@ function RenderCameraInfoComp({
 
 const attemptTimeout = genTimeoutAttempt(500);
 function refreshAllCameras(
-    showingScreenIds: number[],
+    showingScreenIdDataList: [number, ForegroundCameraDataType][],
     extraStyle: React.CSSProperties,
 ) {
     attemptTimeout(() => {
-        showingScreenIds.forEach((screenId) => {
-            getScreenManagerInstances(screenId, (screenForegroundManager) => {
-                const cameraData =
-                    screenForegroundManager.foregroundData?.cameraData;
-                if (cameraData === null) {
-                    return;
-                }
-                screenForegroundManager.setCameraData(null);
-                screenForegroundManager.setCameraData({
-                    ...cameraData,
-                    extraStyle,
-                });
-            });
+        showingScreenIdDataList.forEach(([screenId, data]) => {
+            getScreenForegroundManagerInstances(
+                screenId,
+                (screenForegroundManager) => {
+                    screenForegroundManager.setCameraData(null);
+                    screenForegroundManager.setCameraData({
+                        ...data,
+                        extraStyle,
+                    });
+                },
+            );
         });
     });
 }
 
 export default function ForegroundCameraShowComp() {
     useScreenForegroundManagerEvents(['update']);
-    const showingScreenIds = getShowingScreenIds((data) => {
+    const showingScreenIdDataList = getShowingScreenIdDataList((data) => {
         return data.cameraData !== null;
+    }).map(([screenId, data]) => {
+        return [screenId, data.cameraData] as [
+            number,
+            ForegroundCameraDataType,
+        ];
     });
     const { genStyle, element: propsSetting } = useForegroundPropsSetting({
         prefix: 'camera',
         onChange: (extraStyle) => {
-            refreshAllCameras(showingScreenIds, extraStyle);
+            refreshAllCameras(showingScreenIdDataList, extraStyle);
         },
     });
     const [cameraInfoList, setCameraInfoList] = useState<CameraInfoType[]>([]);
     const [isOpened, setIsOpened] = useStateSettingBoolean(
-        'other-camera-show-opened',
+        'foreground-camera-show-opened',
         false,
     );
     useAppEffectAsync(
@@ -127,10 +131,21 @@ export default function ForegroundCameraShowComp() {
         { setCameraInfoList },
     );
     const handleCameraHiding = (screenId: number) => {
-        getScreenManagerInstances(screenId, (screenForegroundManager) => {
-            screenForegroundManager.setCameraData(null);
-        });
+        getScreenForegroundManagerInstances(
+            screenId,
+            (screenForegroundManager) => {
+                screenForegroundManager.setCameraData(null);
+            },
+        );
     };
+    const genHidingElement = (isMini: boolean) => (
+        <ScreensRendererComp
+            showingScreenIdDataList={showingScreenIdDataList}
+            buttonTitle="`Hide Camera"
+            handleForegroundHiding={handleCameraHiding}
+            isMini={isMini}
+        />
+    );
     return (
         <div className="card m-2">
             <div
@@ -145,14 +160,7 @@ export default function ForegroundCameraShowComp() {
                 >
                     <h4>Camera Show</h4>
                 </ForegroundRenderHeaderTitleComp>
-                {!isOpened ? (
-                    <ScreensRendererComp
-                        showingScreenIds={showingScreenIds}
-                        buttonTitle="Hide Camera"
-                        handleForegroundHiding={handleCameraHiding}
-                        isMini={true}
-                    />
-                ) : null}
+                {!isOpened ? genHidingElement(true) : null}
             </div>
             {isOpened ? (
                 <div
@@ -178,11 +186,7 @@ export default function ForegroundCameraShowComp() {
                         })}
                     </div>
                     <hr />
-                    <ScreensRendererComp
-                        showingScreenIds={showingScreenIds}
-                        buttonTitle="Hide Camera"
-                        handleForegroundHiding={handleCameraHiding}
-                    />
+                    {genHidingElement(false)}
                 </div>
             ) : null}
         </div>

@@ -5,15 +5,15 @@ import {
 import ScreenForegroundManager from '../_screen/managers/ScreenForegroundManager';
 import { useScreenForegroundManagerEvents } from '../_screen/managers/screenEventHelpers';
 import {
-    getShowingScreenIds,
-    getScreenManagerInstances,
+    getScreenForegroundManagerInstances,
+    getShowingScreenIdDataList,
 } from './foregroundHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
 import ForegroundRenderHeaderTitleComp from './ForegroundRenderHeaderTitleComp';
 
 export default function ForegroundMessageComp() {
     const [isOpened, setIsOpened] = useStateSettingBoolean(
-        'other-message-opened',
+        'foreground-message-opened',
         false,
     );
     useScreenForegroundManagerEvents(['update']);
@@ -21,13 +21,17 @@ export default function ForegroundMessageComp() {
         'marquee-setting',
         '',
     );
-    const showingScreenIds = getShowingScreenIds((data) => {
+
+    const showingScreenIdDataList = getShowingScreenIdDataList((data) => {
         return data.marqueeData !== null;
     });
     const handleMarqueeHiding = (screenId: number) => {
-        getScreenManagerInstances(screenId, (screenForegroundManager) => {
-            screenForegroundManager.setMarqueeData(null);
-        });
+        getScreenForegroundManagerInstances(
+            screenId,
+            (screenForegroundManager) => {
+                screenForegroundManager.setMarqueeData(null);
+            },
+        );
     };
     const handleMarqueeShowing = (event: any, isForceChoosing = false) => {
         ScreenForegroundManager.setMarquee(event, text, isForceChoosing);
@@ -35,6 +39,14 @@ export default function ForegroundMessageComp() {
     const handleContextMenuOpening = (event: any) => {
         handleMarqueeShowing(event, true);
     };
+    const genHidingElement = (isMini: boolean) => (
+        <ScreensRendererComp
+            showingScreenIdDataList={showingScreenIdDataList}
+            buttonTitle="`Hide Marquee"
+            handleForegroundHiding={handleMarqueeHiding}
+            isMini={isMini}
+        />
+    );
     return (
         <div className="card m-2">
             <div
@@ -47,16 +59,9 @@ export default function ForegroundMessageComp() {
                     isOpened={isOpened}
                     setIsOpened={setIsOpened}
                 >
-                    <h4>Message</h4>
+                    <h4>`Message</h4>
                 </ForegroundRenderHeaderTitleComp>
-                {!isOpened ? (
-                    <ScreensRendererComp
-                        showingScreenIds={showingScreenIds}
-                        buttonTitle="Hide Camera"
-                        handleForegroundHiding={handleMarqueeHiding}
-                        isMini={true}
-                    />
-                ) : null}
+                {!isOpened ? genHidingElement(true) : null}
             </div>
             {isOpened ? (
                 <div className="card-body">
@@ -99,14 +104,10 @@ export default function ForegroundMessageComp() {
                             onClick={handleMarqueeShowing}
                             onContextMenu={handleContextMenuOpening}
                         >
-                            Show Marquee
+                            `Show Marquee
                         </button>
                     </div>
-                    <ScreensRendererComp
-                        showingScreenIds={showingScreenIds}
-                        buttonTitle="Hide Marquee"
-                        handleForegroundHiding={handleMarqueeHiding}
-                    />
+                    {genHidingElement(false)}
                 </div>
             ) : null}
         </div>

@@ -75,20 +75,26 @@ export type BackgroundSrcListType = {
     [key: string]: BackgroundSrcType;
 };
 
-export type ForegroundMarqueDataType = {
-    text: string;
-};
 export type ForegroundCountdownDataType = {
     dateTime: Date;
     extraStyle?: React.CSSProperties;
+};
+export type ForegroundTimeDataType = {
+    timezoneMinuteOffset: number;
+    title: string | null;
+    extraStyle?: React.CSSProperties;
+};
+export type ForegroundMarqueDataType = {
+    text: string;
 };
 export type ForegroundCameraDataType = {
     id: string;
     extraStyle?: React.CSSProperties;
 };
 export type ForegroundDataType = {
-    marqueeData: ForegroundMarqueDataType | null;
     countdownData: ForegroundCountdownDataType | null;
+    timeDataList: ForegroundTimeDataType[] | null;
+    marqueeData: ForegroundMarqueDataType | null;
     cameraData: ForegroundCameraDataType | null;
 };
 export type ForegroundSrcListType = {

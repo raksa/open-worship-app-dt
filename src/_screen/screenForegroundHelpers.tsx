@@ -4,9 +4,16 @@ import { getHTMLChild } from '../helper/helpers';
 import ScreenManagerBase from './managers/ScreenManagerBase';
 import { handleError } from '../helper/errorHelpers';
 import { styleAnimList } from './transitionEffectHelpers';
+import {
+    ForegroundCameraDataType,
+    ForegroundCountdownDataType,
+    ForegroundMarqueDataType,
+    ForegroundTimeDataType,
+} from './screenTypeHelpers';
+import TimingController from './managers/TimingController';
 
 export function genHtmlForegroundMarquee(
-    marqueeData: { text: string },
+    marqueeData: ForegroundMarqueDataType,
     screenManagerBase: ScreenManagerBase,
 ) {
     const { text } = marqueeData;
@@ -109,10 +116,9 @@ export function genHtmlForegroundMarquee(
     };
 }
 
-export function genHtmlForegroundCountdown(countdownData: {
-    dateTime: Date;
-    extraStyle?: React.CSSProperties;
-}) {
+export function genHtmlForegroundCountdown(
+    countdownData: ForegroundCountdownDataType,
+) {
     const { dateTime } = countdownData;
     const uniqueClassname = `m-${crypto.randomUUID()}`;
     const htmlString = ReactDOMServer.renderToStaticMarkup(
@@ -137,6 +143,7 @@ export function genHtmlForegroundCountdown(countdownData: {
                 }
             `}</style>
             <div className={`countdown ${uniqueClassname}`}>
+                <span style={{ marginRight: '50px' }}>⏳</span>
                 <div id="hour">00</div>:<div id="minute">00</div>:
                 <div id="second">00</div>
             </div>
@@ -162,16 +169,74 @@ export function genHtmlForegroundCountdown(countdownData: {
     };
 }
 
+export function genHtmlForegroundTime(timeData: ForegroundTimeDataType) {
+    const { timezoneMinuteOffset, title } = timeData;
+    const uniqueClassname = `m-${crypto.randomUUID()}`;
+    const htmlString = ReactDOMServer.renderToStaticMarkup(
+        <div
+            style={{
+                color: 'white',
+                backgroundColor: 'rgba(0, 12, 100, 0.7)',
+                backdropFilter: 'blur(5px)',
+                ...(timeData.extraStyle ?? {}),
+            }}
+        >
+            <style>{`
+                .${uniqueClassname} {
+                    display: flex;
+                    justify-content: center;
+                }
+                .${uniqueClassname} div {
+                    text-align: center;
+                }
+                .${uniqueClassname} #second {
+                    text-align: left;
+                }
+            `}</style>
+            <div className={`countdown ${uniqueClassname}`}>
+                <span style={{ marginRight: '50px' }}>🕗</span>
+                <div id="hour">00</div>:<div id="minute">00</div>:
+                <div id="second">00</div>
+            </div>
+            <div
+                style={{
+                    textAlign: 'center',
+                    padding: '2px',
+                    overflow: 'hidden',
+                }}
+            >
+                <small>{title}</small>
+            </div>
+        </div>,
+    );
+    const div = document.createElement('div');
+    div.innerHTML = htmlString;
+    const element = getHTMLChild<HTMLDivElement>(div, 'div');
+    const timingHandler = TimingController.init(element, timezoneMinuteOffset);
+    const animData = styleAnimList.fade('countdown');
+    return {
+        handleAdding: async (parentContainer: HTMLElement) => {
+            timingHandler.start();
+            const style = document.createElement('style');
+            style.innerHTML = animData.style;
+            parentContainer.appendChild(style);
+            await animData.animIn(element, parentContainer);
+        },
+        handleRemoving: async () => {
+            timingHandler.pause();
+            await animData.animOut(element);
+        },
+    };
+}
+
 export async function getAndShowMedia({
     id,
-    width,
     extraStyle,
+    width,
     container,
-}: {
+}: ForegroundCameraDataType & {
     container: HTMLElement;
     width?: number;
-    extraStyle?: React.CSSProperties;
-    id: string;
 }) {
     const constraints = {
         audio: false,

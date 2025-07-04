@@ -184,7 +184,7 @@ function useAnyItemSelected(filePaths: string[] | undefined) {
 
 export default function ForegroundImagesSlideShowComp() {
     const [isOpened, setIsOpened] = useStateSettingBoolean(
-        'other-image-slide-show-opened',
+        'foreground-image-slide-show-opened',
         false,
     );
     const [filePaths, setFilePaths] = useState<string[] | undefined>();
