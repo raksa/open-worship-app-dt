@@ -221,9 +221,6 @@ export default function PresenterComp() {
                 ) : (
                     normalPresenterChild
                 )}
-                {tabTypeList.map(([type, _, target]) => {
-                    return genTabBody<TabKeyType>(tabKey, [type, target]);
-                })}
             </div>
         </div>
     );
