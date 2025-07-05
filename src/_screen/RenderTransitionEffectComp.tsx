@@ -53,12 +53,3 @@ export default function RenderTransitionEffectComp({
         </button>
     );
 }
-
-export function RendStyle({
-    screenEffectManager,
-}: Readonly<{
-    screenEffectManager: ScreenEffectManager;
-}>) {
-    useScreenEffectEvents(['update'], screenEffectManager);
-    return <style>{screenEffectManager.style}</style>;
-}

@@ -154,8 +154,15 @@ export default function BackgroundMediaComp({
             isNameOnTop,
         );
         return (
-            <div className="d-flex justify-content-start flex-wrap">
-                {filePaths.map(genBodyWithChild)}
+            <div className="">
+                {extraHeaderChild !== undefined ? (
+                    <>
+                        {extraHeaderChild}
+                    </>
+                ) : null}
+                <div className="d-flex justify-content-start flex-wrap">
+                    {filePaths.map(genBodyWithChild)}
+                </div>
             </div>
         );
     };
@@ -164,24 +171,21 @@ export default function BackgroundMediaComp({
         return null;
     }
     return (
-        <>
-            {extraHeaderChild !== undefined ? extraHeaderChild : null}
-            <FileListHandlerComp
-                className={`app-background-${backgroundType}`}
-                mimetypeName={backgroundType}
-                defaultFolderName={defaultFolderName}
-                dirSource={dirSource}
-                bodyHandler={handleBodyRendering}
-                fileSelectionOption={
-                    backgroundType === 'color'
-                        ? undefined
-                        : {
-                              windowTitle: `Select ${backgroundType} files`,
-                              dirPath: dirSource.dirPath,
-                              extensions: getMimetypeExtensions(backgroundType),
-                          }
-                }
-            />
-        </>
+        <FileListHandlerComp
+            className={`app-background-${backgroundType}`}
+            mimetypeName={backgroundType}
+            defaultFolderName={defaultFolderName}
+            dirSource={dirSource}
+            bodyHandler={handleBodyRendering}
+            fileSelectionOption={
+                backgroundType === 'color'
+                    ? undefined
+                    : {
+                          windowTitle: `Select ${backgroundType} files`,
+                          dirPath: dirSource.dirPath,
+                          extensions: getMimetypeExtensions(backgroundType),
+                      }
+            }
+        />
     );
 }

@@ -142,9 +142,6 @@ export function genHtmlForegroundQuickText(
     const animData = styleAnimList.fade('quick-text');
     return {
         handleAdding: async (parentContainer: HTMLElement) => {
-            const style = document.createElement('style');
-            style.innerHTML = animData.style;
-            parentContainer.appendChild(style);
             await new Promise<void>((resolve) => {
                 setTimeout(resolve, timeSecondDelay * 1000);
             });
@@ -203,9 +200,6 @@ export function genHtmlForegroundCountdown({
     return {
         handleAdding: async (parentContainer: HTMLElement) => {
             countDownHandler.start();
-            const style = document.createElement('style');
-            style.innerHTML = animData.style;
-            parentContainer.appendChild(style);
             await animData.animIn(element, parentContainer);
         },
         handleRemoving: async () => {
@@ -258,9 +252,6 @@ export function genHtmlForegroundStopwatch({
     return {
         handleAdding: async (parentContainer: HTMLElement) => {
             stopwatchHandler.start();
-            const style = document.createElement('style');
-            style.innerHTML = animData.style;
-            parentContainer.appendChild(style);
             await animData.animIn(element, parentContainer);
         },
         handleRemoving: async () => {
@@ -321,9 +312,6 @@ export function genHtmlForegroundTime(timeData: ForegroundTimeDataType) {
     return {
         handleAdding: async (parentContainer: HTMLElement) => {
             timingHandler.start();
-            const style = document.createElement('style');
-            style.innerHTML = animData.style;
-            parentContainer.appendChild(style);
             await animData.animIn(element, parentContainer);
         },
         handleRemoving: async () => {
@@ -361,9 +349,6 @@ export async function getCameraAndShowMedia({
         Object.assign(video.style, extraStyle ?? {});
         parentContainer.innerHTML = '';
         const animData = styleAnimList.fade('camera');
-        const style = document.createElement('style');
-        style.innerHTML = animData.style;
-        parentContainer.appendChild(style);
         animData.animIn(video, parentContainer);
         return async () => {
             await animData.animOut(video);

@@ -1,31 +1,23 @@
-import { dirSourceSettingNames } from '../helper/constants';
-import { getSetting, useStateSettingBoolean } from '../helper/settingHelpers';
-
-const SETTING_NAME = dirSourceSettingNames.BACKGROUND_VIDEO + '-fading-at-end';
-
-export function getIsFadingAtEndSetting() {
-    return getSetting(SETTING_NAME) !== 'false';
-}
+import { BACKGROUND_VIDEO_FADING_SETTING_NAME } from '../_screen/managers/ScreenBackgroundManager';
+import { useStateSettingBoolean } from '../helper/settingHelpers';
 
 export default function VideoHeaderSettingComp() {
     const [isFadingAtEnd, setIsFadingAtEnd] = useStateSettingBoolean(
-        SETTING_NAME,
+        BACKGROUND_VIDEO_FADING_SETTING_NAME,
         true,
     );
     return (
-        <div className="app-inner-shadow">
-            <div className="input-group-text">
-                `Fading the End:{' '}
-                <input
-                    className="form-check-input mt-0"
-                    type="checkbox"
-                    checked={isFadingAtEnd}
-                    onChange={(event) => {
-                        const checked = event.target.checked;
-                        setIsFadingAtEnd(checked);
-                    }}
-                />
-            </div>
+        <div className="input-group-text app-inner-shadow p-0">
+            `Fading the End:{' '}
+            <input
+                className="form-check-input mt-0"
+                type="checkbox"
+                checked={isFadingAtEnd}
+                onChange={(event) => {
+                    const checked = event.target.checked;
+                    setIsFadingAtEnd(checked);
+                }}
+            />
         </div>
     );
 }

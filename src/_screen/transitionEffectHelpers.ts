@@ -5,6 +5,7 @@ import ScreenEffectManager from './managers/ScreenEffectManager';
 import { StyleAnimType, PTFEventType } from './screenTypeHelpers';
 
 const ZOOM_CONTAINER_CLASS = 'zoom-container';
+export const ANIM_END_DELAY_MILLISECOND = 500;
 
 function checkIsZoomContainer(targetElement: HTMLElement): boolean {
     return targetElement.classList.contains(ZOOM_CONTAINER_CLASS);
@@ -42,12 +43,33 @@ function genCssProps(duration: number) {
     return cssProps;
 }
 
+function genStyleElement(styleText: string) {
+    const style = document.createElement('style');
+    style.innerHTML = styleText;
+    const removeStyle = (delaySecond?: number) => {
+        if (delaySecond === undefined) {
+            style.parentElement?.removeChild(style);
+        } else {
+            setTimeout(() => {
+                style.parentElement?.removeChild(style);
+            }, delaySecond * 1000);
+        }
+    };
+    const addStyle = (container: HTMLElement) => {
+        if (style.parentElement === container) {
+            return;
+        }
+        style.parentElement?.removeChild(style);
+        container.appendChild(style);
+    };
+    return { style, removeStyle, addStyle };
+}
+
 function fade(prefix: string) {
-    const animationNameIn = `${prefix}-animation-fade-in`;
-    const animationNameOut = `${prefix}-animation-fade-out`;
-    const anim: StyleAnimType = {
-        duration: 1000,
-        style: `
+    const uniqueId = crypto.randomUUID();
+    const animationNameIn = `${prefix}-animation-fade-${uniqueId}-in`;
+    const animationNameOut = `${prefix}-animation-fade-${uniqueId}-out`;
+    const styleText = `
             @keyframes ${animationNameIn} {
                 from {
                     opacity: 0;
@@ -64,16 +86,29 @@ function fade(prefix: string) {
                     opacity: 0;
                 }
             }
-        `,
+        `;
+    const { removeStyle, addStyle } = genStyleElement(styleText);
+    const anim: StyleAnimType = {
+        duration: 1000,
+        removeStyle,
         animIn: (targetElement: HTMLElement, parentElement: HTMLElement) => {
             return new Promise((resolve) => {
+                addStyle(parentElement);
+                const backupAnimationName = targetElement.style.animationName;
                 Object.assign(targetElement.style, {
                     ...genCssProps(anim.duration),
                     animationName: animationNameIn,
                     opacity: 0,
                 });
                 parentElement.appendChild(targetElement);
-                setTimeout(resolve, anim.duration + 100);
+                setTimeout(() => {
+                    Object.assign(targetElement.style, {
+                        ...genCssProps(anim.duration),
+                        animationName: backupAnimationName,
+                        opacity: 1,
+                    });
+                    resolve();
+                }, anim.duration + ANIM_END_DELAY_MILLISECOND);
             });
         },
         animOut: (targetElement: HTMLElement) => {
@@ -81,11 +116,17 @@ function fade(prefix: string) {
                 if (checkIsZoomContainer(targetElement)) {
                     return resolve();
                 }
+                if (targetElement.parentElement !== null) {
+                    addStyle(targetElement.parentElement);
+                }
                 Object.assign(targetElement.style, {
                     ...genCssProps(anim.duration),
                     animationName: animationNameOut,
                 });
-                setTimeout(resolve, anim.duration + 100);
+                setTimeout(() => {
+                    resolve();
+                    removeStyle(2);
+                }, anim.duration + ANIM_END_DELAY_MILLISECOND);
             });
         },
     };
@@ -125,7 +166,7 @@ function move() {
     };
     const anim: StyleAnimType = {
         duration: 500,
-        style: '',
+        removeStyle: () => {},
         animIn: (targetElement: HTMLElement, parentElement: HTMLElement) => {
             return new Promise<void>((resolve) => {
                 parentElement.appendChild(targetElement);
@@ -177,17 +218,16 @@ function move() {
 }
 
 function zoom(prefix: string): StyleAnimType {
-    const animationNameIn = `${prefix}-animation-zoom-in`;
-    const animationNameOut = `${prefix}-animation-zoom-out`;
+    const uniqueId = crypto.randomUUID();
+    const animationNameIn = `${prefix}-animation-zoom-${uniqueId}-in`;
+    const animationNameOut = `${prefix}-animation-zoom-${uniqueId}-out`;
     const createDiv = (targetElement: HTMLElement) => {
         const div = document.createElement('div');
         div.classList.add('zoom-container');
         div.appendChild(targetElement);
         return div;
     };
-    const anim: StyleAnimType = {
-        duration: 500,
-        style: `
+    const styleText = `
             .zoom-container {
                 position: absolute;
                 left: 0;
@@ -215,10 +255,16 @@ function zoom(prefix: string): StyleAnimType {
                     transform: scale(0.1);
                 }
             }
-        `,
+        `;
+    const { removeStyle, addStyle } = genStyleElement(styleText);
+    const anim: StyleAnimType = {
+        duration: 500,
+        removeStyle,
         animIn: (targetElement: HTMLElement, parentElement: HTMLElement) => {
             return new Promise((resolve) => {
+                addStyle(parentElement);
                 const div = createDiv(targetElement);
+                const backupAnimationName = targetElement.style.animationName;
                 Object.assign(div.style, {
                     ...genCssProps(anim.duration),
                     animationName: animationNameIn,
@@ -226,7 +272,14 @@ function zoom(prefix: string): StyleAnimType {
                     transform: 'scale(0.1)',
                 });
                 parentElement.appendChild(div);
-                setTimeout(resolve, anim.duration + 100);
+                setTimeout(() => {
+                    Object.assign(div.style, {
+                        animationName: backupAnimationName,
+                        opacity: 1,
+                        transform: 'scale(1)',
+                    });
+                    resolve();
+                }, anim.duration + ANIM_END_DELAY_MILLISECOND);
             });
         },
         animOut: (targetElement: HTMLElement) => {
@@ -234,11 +287,17 @@ function zoom(prefix: string): StyleAnimType {
                 if (!checkIsZoomContainer(targetElement)) {
                     return resolve();
                 }
+                if (targetElement.parentElement !== null) {
+                    addStyle(targetElement.parentElement);
+                }
                 Object.assign(targetElement.style, {
                     ...genCssProps(anim.duration),
                     animationName: animationNameOut,
                 });
-                setTimeout(resolve, anim.duration + 100);
+                setTimeout(() => {
+                    resolve();
+                    removeStyle(2);
+                }, anim.duration + ANIM_END_DELAY_MILLISECOND);
             });
         },
     };

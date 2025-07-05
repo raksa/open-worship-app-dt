@@ -2,11 +2,14 @@ import { CSSProperties } from 'react';
 
 import { DragTypeEnum, DroppedDataType } from '../../helper/DragInf';
 import { getImageDim, getVideoDim } from '../../helper/helpers';
-import { setSetting } from '../../helper/settingHelpers';
+import { getSetting, setSetting } from '../../helper/settingHelpers';
 import { genHtmlBackground } from '../ScreenBackgroundComp';
 import { getBackgroundSrcListOnScreenSetting } from '../screenHelpers';
 import { handleError } from '../../helper/errorHelpers';
-import { screenManagerSettingNames } from '../../helper/constants';
+import {
+    dirSourceSettingNames,
+    screenManagerSettingNames,
+} from '../../helper/constants';
 import ScreenEventHandler from './ScreenEventHandler';
 import ScreenManagerBase from './ScreenManagerBase';
 import ScreenEffectManager from './ScreenEffectManager';
@@ -21,13 +24,26 @@ import {
     ScreenMessageType,
     StyleAnimType,
 } from '../screenTypeHelpers';
+import {
+    ANIM_END_DELAY_MILLISECOND,
+    styleAnimList,
+} from '../transitionEffectHelpers';
 
 export type ScreenBackgroundManagerEventType = 'update';
+
+const FADING_DURATION_SECOND = 3;
+const FADING_DURATION_MILLISECOND = FADING_DURATION_SECOND * 1000;
+export const BACKGROUND_VIDEO_FADING_SETTING_NAME =
+    dirSourceSettingNames.BACKGROUND_VIDEO + '-fading-at-end';
+
+export function getIsFadingAtEndSetting() {
+    return getSetting(BACKGROUND_VIDEO_FADING_SETTING_NAME) !== 'false';
+}
 
 class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManagerEventType> {
     static readonly eventNamePrefix: string = 'screen-bg-m';
     private _backgroundSrc: BackgroundSrcType | null = null;
-    private _div: HTMLDivElement | null = null;
+    private _rootContainer: HTMLDivElement | null = null;
     backgroundEffectManager: ScreenEffectManager;
 
     constructor(
@@ -46,12 +62,12 @@ class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManager
         return this.backgroundSrc !== null;
     }
 
-    get div() {
-        return this._div;
+    get rootContainer() {
+        return this._rootContainer;
     }
 
-    set div(div: HTMLDivElement | null) {
-        this._div = div;
+    set rootContainer(rootContainer: HTMLDivElement | null) {
+        this._rootContainer = rootContainer;
         this.render();
     }
 
@@ -199,22 +215,54 @@ class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManager
         }
     }
 
-    render() {
-        if (this.div === null) {
+    _checkVideoFadingAtEnd(container: HTMLDivElement) {
+        const video = container.querySelector('video');
+        if (video !== null) {
+            const fadeOutListener = () => {
+                const duration = video.duration;
+                if (
+                    !(isNaN(duration) || duration === Infinity) &&
+                    duration - video.currentTime <= FADING_DURATION_SECOND
+                ) {
+                    if (!getIsFadingAtEndSetting()) {
+                        return;
+                    }
+                    video.removeEventListener('timeupdate', fadeOutListener);
+                    const animData = styleAnimList.fade('video-fade-at-end');
+                    animData.duration = FADING_DURATION_MILLISECOND - 100;
+                    animData.animOut = async () => {
+                        await new Promise<void>((resolve) => {
+                            setTimeout(() => {
+                                resolve();
+                                animData.removeStyle(5);
+                            }, animData.duration + ANIM_END_DELAY_MILLISECOND);
+                        });
+                    };
+                    this.render(animData);
+                }
+            };
+            video.addEventListener('timeupdate', fadeOutListener);
+        }
+    }
+
+    render(overrideAnimData?: StyleAnimType) {
+        if (this.rootContainer === null) {
             return;
         }
-        const aminData = this.backgroundEffectManager.styleAnim;
+        const aminData =
+            overrideAnimData ?? this.backgroundEffectManager.styleAnim;
         if (this.backgroundSrc !== null) {
             const newDiv = genHtmlBackground(this.screenId, this.backgroundSrc);
-            const childList = Array.from(this.div.children).filter(
+            const childList = Array.from(this.rootContainer.children).filter(
                 (element) => {
                     return element instanceof HTMLDivElement;
                 },
             );
-            aminData.animIn(newDiv, this.div);
+            this._checkVideoFadingAtEnd(newDiv);
+            aminData.animIn(newDiv, this.rootContainer);
             this.removeOldElements(aminData, childList);
-        } else if (this.div.lastChild !== null) {
-            const targetDiv = this.div.lastChild as HTMLDivElement;
+        } else if (this.rootContainer.lastChild !== null) {
+            const targetDiv = this.rootContainer.lastChild as HTMLDivElement;
             this.removeOldElements(aminData, [targetDiv]);
         }
     }

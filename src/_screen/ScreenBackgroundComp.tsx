@@ -23,7 +23,7 @@ export default function ScreenBackgroundComp() {
     const div = useRef<HTMLDivElement>(null);
     useAppEffect(() => {
         if (div.current) {
-            screenBackgroundManager.div = div.current;
+            screenBackgroundManager.rootContainer = div.current;
         }
     }, [div.current]);
     return (

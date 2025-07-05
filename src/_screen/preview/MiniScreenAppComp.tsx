@@ -2,7 +2,6 @@ import ScreenForegroundComp from '../ScreenForegroundComp';
 import ScreenBackgroundComp from '../ScreenBackgroundComp';
 import ScreenSlideComp from '../ScreenVaryAppDocumentComp';
 import ScreenBibleComp from '../ScreenBibleComp';
-import { RendStyle } from '../RenderTransitionEffectComp';
 import { getScreenManagerByScreenId } from '../managers/screenManagerHelpers';
 import { ScreenManagerBaseContext } from '../managers/screenManagerHooks';
 
@@ -20,14 +19,8 @@ export default function MiniScreenAppComp({
     if (screenManager === null) {
         return null;
     }
-    const {
-        varyAppDocumentEffectManager: slideEffectManager,
-        backgroundEffectManager,
-    } = screenManager;
     return (
         <ScreenManagerBaseContext value={screenManager}>
-            <RendStyle screenEffectManager={slideEffectManager} />
-            <RendStyle screenEffectManager={backgroundEffectManager} />
             <div
                 style={{
                     pointerEvents: 'none',

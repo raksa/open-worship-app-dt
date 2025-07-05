@@ -51,9 +51,6 @@ class ScreenEffectManager extends EventHandler<PTFEventType> {
     get styleAnim() {
         return styleAnimList[this.effectType](this.target);
     }
-    get style() {
-        return this.styleAnim.style;
-    }
     get duration() {
         return this.styleAnim.duration;
     }

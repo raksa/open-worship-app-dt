@@ -3,7 +3,6 @@ import ScreenBackgroundComp from './ScreenBackgroundComp';
 import ScreenSlideComp from './ScreenVaryAppDocumentComp';
 import ScreenForegroundComp from './ScreenForegroundComp';
 import ScreenBibleComp from './ScreenBibleComp';
-import { RendStyle } from './RenderTransitionEffectComp';
 import { createScreenManager } from './managers/screenManagerHelpers';
 import ScreenManager from './managers/ScreenManager';
 import { ScreenManagerBaseContext } from './managers/screenManagerHooks';
@@ -32,12 +31,6 @@ export default function ScreenAppComp() {
     }
     return (
         <ScreenManagerBaseContext value={screenManager}>
-            <RendStyle
-                screenEffectManager={screenManager.varyAppDocumentEffectManager}
-            />
-            <RendStyle
-                screenEffectManager={screenManager.backgroundEffectManager}
-            />
             <ScreenBackgroundComp />
             <ScreenSlideComp />
             <ScreenBibleComp />
