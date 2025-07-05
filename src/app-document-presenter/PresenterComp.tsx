@@ -110,16 +110,20 @@ function RenderToggleFullViewComp({
 function RenderForegroundTabComp({
     isActive,
     setIsActive,
+    isOnScreen,
 }: Readonly<{
     isActive: boolean;
     setIsActive: (isActive: boolean) => void;
+    isOnScreen: boolean;
 }>) {
     return (
         <ul className={'nav nav-tabs flex-fill d-flex justify-content-end'}>
             <li className={'nav-item '}>
                 <button
                     className={
-                        'btn btn-link nav-link' + ` ${isActive ? 'active' : ''}`
+                        'btn btn-link nav-link' +
+                        ` ${isActive ? 'active' : ''}` +
+                        (isOnScreen ? ' app-on-screen' : '')
                     }
                     onClick={() => {
                         setIsActive(!isActive);
@@ -140,6 +144,7 @@ const tabTypeList = [
 ] as const;
 type TabKeyType = (typeof tabTypeList)[number][0];
 export default function PresenterComp() {
+    const [isOnScreen, setIsOnScreen] = useState<boolean>(false);
     const [tabKey, setTabKey] = useStateSettingString<TabKeyType>(
         PRESENT_TAB_SETTING_NAME,
         'd',
@@ -181,7 +186,13 @@ export default function PresenterComp() {
                         return {
                             key,
                             title: name,
-                            checkIsOnScreen: checkIsOnScreen<TabKeyType>,
+                            checkIsOnScreen: async () => {
+                                const isOnScreen = await checkIsOnScreen(key);
+                                if (key === 'f') {
+                                    setIsOnScreen(isOnScreen);
+                                }
+                                return isOnScreen;
+                            },
                         };
                     })}
                     activeTab={tabKey}
@@ -191,6 +202,7 @@ export default function PresenterComp() {
                 <RenderForegroundTabComp
                     isActive={isForegroundActive}
                     setIsActive={setIsForegroundActive1}
+                    isOnScreen={isOnScreen}
                 />
                 <RenderToggleFullViewComp
                     isFullWidget={isFullWidget}
