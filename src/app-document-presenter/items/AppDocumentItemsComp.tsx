@@ -50,16 +50,12 @@ function useAppDocumentItems() {
         [varyAppDocumentItems],
         { setVaryAppDocumentItems },
     );
-    const startLoading = () => {
-        setVaryAppDocumentItems(undefined);
+    const refresh = async () => {
+        const newVaryAppDocumentItems = await selectedAppDocument.getSlides();
+        setVaryAppDocumentItems(newVaryAppDocumentItems);
     };
 
-    useFileSourceEvents(
-        ['update'],
-        startLoading,
-        [],
-        selectedAppDocument.filePath,
-    );
+    useFileSourceEvents(['update'], refresh, [], selectedAppDocument.filePath);
 
     const arrows: KeyboardType[] = [...allArrows, 'PageUp', 'PageDown', ' '];
     useKeyboardRegistering(
@@ -85,7 +81,12 @@ function useAppDocumentItems() {
         });
     }, [varyAppDocumentItems]);
 
-    return { varyAppDocumentItems, startLoading };
+    return {
+        varyAppDocumentItems,
+        startLoading: () => {
+            setVaryAppDocumentItems(undefined);
+        },
+    };
 }
 
 export default function AppDocumentItemsComp() {
