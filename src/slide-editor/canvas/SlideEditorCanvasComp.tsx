@@ -10,36 +10,7 @@ import {
     useCanvasItemsContext,
     useStopAllModes,
 } from './CanvasItem';
-
-export default function SlideEditorCanvasComp() {
-    const canvasController = useCanvasControllerContext();
-    const stopAllModes = useStopAllModes();
-    const { canvas } = canvasController;
-    const scale = useSlideCanvasScale();
-    useKeyboardRegistering([{ key: 'Escape' }], stopAllModes, []);
-    return (
-        <div className="editor-container w-100 h-100">
-            <div
-                className="overflow-hidden"
-                style={{
-                    width: `${canvas.width * scale + 20}px`,
-                    height: `${canvas.height * scale + 20}px`,
-                }}
-            >
-                <div
-                    className="w-100 h-100"
-                    style={{
-                        transform:
-                            `scale(${scale.toFixed(2)}) ` +
-                            'translate(50%, 50%)',
-                    }}
-                >
-                    <BodyRendererComp />
-                </div>
-            </div>
-        </div>
-    );
-}
+import SlideEditorCanvasScalingComp from './tools/SlideEditorCanvasScalingComp';
 
 function BodyRendererComp() {
     const canvasController = useCanvasControllerContext();
@@ -143,6 +114,41 @@ function BodyRendererComp() {
                     </CanvasItemContext>
                 );
             })}
+        </div>
+    );
+}
+
+export default function SlideEditorCanvasComp() {
+    const canvasController = useCanvasControllerContext();
+    const stopAllModes = useStopAllModes();
+    const { canvas } = canvasController;
+    const scale = useSlideCanvasScale();
+    useKeyboardRegistering([{ key: 'Escape' }], stopAllModes, []);
+    return (
+        <div className="card w-100 h-100">
+            <div className="card-body editor-container">
+                <div
+                    className="overflow-hidden"
+                    style={{
+                        width: `${canvas.width * scale + 20}px`,
+                        height: `${canvas.height * scale + 20}px`,
+                    }}
+                >
+                    <div
+                        className="w-100 h-100"
+                        style={{
+                            transform:
+                                `scale(${scale.toFixed(2)}) ` +
+                                'translate(50%, 50%)',
+                        }}
+                    >
+                        <BodyRendererComp />
+                    </div>
+                </div>
+            </div>
+            <div className="card-footer">
+                <SlideEditorCanvasScalingComp />
+            </div>
         </div>
     );
 }
