@@ -1,33 +1,31 @@
-export default class TimingController {
+export default class StopwatchController {
     readonly divContainer: HTMLDivElement;
-    readonly timezoneMinuteOffset: number;
+    readonly targetDateTime: Date;
     isRunning = true;
 
-    constructor(divContainer: HTMLDivElement, timezoneMinuteOffset: number) {
+    constructor(divContainer: HTMLDivElement, targetDateTime: Date) {
         this.divContainer = divContainer;
-        this.timezoneMinuteOffset = timezoneMinuteOffset;
+        this.targetDateTime = targetDateTime;
         this.setHtml(false);
     }
 
-    get date() {
-        const date = new Date();
-        const utcTime = date.getTime() + date.getTimezoneOffset() * 60 * 1000;
-        const localDate = new Date(
-            utcTime + this.timezoneMinuteOffset * 60 * 60 * 1000,
-        );
-        return localDate;
+    get timeDiff() {
+        const now = new Date();
+        return now.getTime() - this.targetDateTime.getTime();
     }
 
     get hours() {
-        return this.date.getHours();
+        return Math.floor(
+            (this.timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+        );
     }
 
     get minutes() {
-        return this.date.getMinutes();
+        return Math.floor((this.timeDiff % (1000 * 60 * 60)) / (1000 * 60));
     }
 
     get seconds() {
-        return this.date.getSeconds();
+        return Math.floor((this.timeDiff % (1000 * 60)) / 1000);
     }
 
     getDivChild(divId: string) {
@@ -63,14 +61,18 @@ export default class TimingController {
     }
 
     start() {
-        const updateTime = () => {
+        const update = () => {
             if (!this.isRunning) {
                 return;
             }
-            this.setHtml(false);
-            requestAnimationFrame(updateTime);
+            if (this.timeDiff > 0) {
+                this.setHtml(false);
+                requestAnimationFrame(update);
+            } else {
+                this.stop();
+            }
         };
-        requestAnimationFrame(updateTime);
+        requestAnimationFrame(update);
     }
 
     setHtml(isReset: boolean) {
@@ -88,7 +90,7 @@ export default class TimingController {
         this.setHtml(true);
     }
 
-    static init(divContainer: HTMLDivElement, timezoneMinuteOffset: number) {
-        return new this(divContainer, timezoneMinuteOffset);
+    static init(divContainer: HTMLDivElement, targetDate: Date) {
+        return new this(divContainer, targetDate);
     }
 }

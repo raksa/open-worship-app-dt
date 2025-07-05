@@ -1,7 +1,7 @@
 export default class CountdownController {
-    countdownInterval: any = null;
     readonly divContainer: HTMLDivElement;
     readonly targetDateTime: Date;
+    isRunning = true;
 
     constructor(divContainer: HTMLDivElement, targetDateTime: Date) {
         this.divContainer = divContainer;
@@ -60,16 +60,18 @@ export default class CountdownController {
     }
 
     start() {
-        this.countdownInterval = setInterval(() => {
-            if (this.countdownInterval === null) {
+        const update = () => {
+            if (!this.isRunning) {
                 return;
             }
             if (this.timeDiff > 0) {
                 this.setHtml(false);
+                requestAnimationFrame(update);
             } else {
                 this.stop();
             }
-        }, 1e3);
+        };
+        requestAnimationFrame(update);
     }
 
     setHtml(isReset: boolean) {
@@ -79,9 +81,7 @@ export default class CountdownController {
     }
 
     pause() {
-        const countdownInterval = this.countdownInterval;
-        this.countdownInterval = null;
-        clearInterval(countdownInterval);
+        this.isRunning = false;
     }
 
     stop() {

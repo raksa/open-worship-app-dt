@@ -79,6 +79,10 @@ export type ForegroundCountdownDataType = {
     dateTime: Date;
     extraStyle?: React.CSSProperties;
 };
+export type ForegroundStopwatchDataType = {
+    dateTime: Date;
+    extraStyle?: React.CSSProperties;
+};
 export type ForegroundTimeDataType = {
     timezoneMinuteOffset: number;
     title: string | null;
@@ -99,6 +103,7 @@ export type ForegroundCameraDataType = {
 };
 export type ForegroundDataType = {
     countdownData: ForegroundCountdownDataType | null;
+    stopwatchData: ForegroundStopwatchDataType | null;
     timeDataList: ForegroundTimeDataType[];
     marqueeData: ForegroundMarqueDataType | null;
     quickTextData: ForegroundQuickTextDataType | null;

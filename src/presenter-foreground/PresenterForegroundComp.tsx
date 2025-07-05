@@ -5,6 +5,7 @@ import ForegroundCountDownComp from './ForegroundCountDownComp';
 import ForegroundImagesSlideShowComp from './ForegroundImagesSlideShowComp';
 import ForegroundMarqueeComp from './ForegroundMarqueeComp';
 import ForegroundQuickTextComp from './ForegroundQuickTextComp';
+import ForegroundStopwatchComp from './ForegroundStopwatchComp';
 import ForegroundTimeComp from './ForegroundTimeComp';
 
 export default function PresenterForegroundComp() {
@@ -24,16 +25,11 @@ export default function PresenterForegroundComp() {
             <hr />
             <ForegroundCountDownComp />
             <hr />
+            <ForegroundStopwatchComp />
+            <hr />
             <ForegroundTimeComp />
             <hr />
             <ForegroundImagesSlideShowComp />
-            <hr />
-            {appProvider.systemUtils.isDev ? (
-                <>
-                    <hr />
-                    <div>TODO: Stopwatch</div>
-                </>
-            ) : null}
             <hr />
             <ForegroundCameraShowComp />
             {appProvider.systemUtils.isDev ? (

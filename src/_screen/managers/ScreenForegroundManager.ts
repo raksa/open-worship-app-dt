@@ -5,6 +5,7 @@ import {
     genHtmlForegroundCountdown,
     genHtmlForegroundMarquee,
     genHtmlForegroundQuickText,
+    genHtmlForegroundStopwatch,
     genHtmlForegroundTime,
     getAndShowMedia,
 } from '../screenForegroundHelpers';
@@ -22,6 +23,7 @@ import {
     ForegroundCountdownDataType,
     ForegroundTimeDataType,
     ForegroundQuickTextDataType,
+    ForegroundStopwatchDataType,
 } from '../screenTypeHelpers';
 import {
     checkAreObjectsEqual,
@@ -54,6 +56,7 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
             ScreenForegroundManager.parseAllForegroundData(foregroundData);
         this.rendererMap = new Map<string, (data: any) => void>([
             ['countdownData', this.renderCountdown.bind(this)],
+            ['stopwatchData', this.renderStopwatch.bind(this)],
             ['timeDataList', this.renderTime.bind(this)],
             ['marqueeData', this.renderMarquee.bind(this)],
             ['quickTextData', this.renderQuickText.bind(this)],
@@ -64,6 +67,7 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
             (data: any, isNoSyncGroup?: boolean) => void
         >([
             ['countdownData', this.setCountdownData.bind(this)],
+            ['stopwatchData', this.setStopwatchData.bind(this)],
             ['timeDataList', this.setTimeDataList.bind(this)],
             ['marqueeData', this.setMarqueeData.bind(this)],
             ['quickTextData', this.setQuickTextData.bind(this)],
@@ -76,8 +80,13 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
         if (countdownData !== null) {
             countdownData.dateTime = new Date(countdownData.dateTime);
         }
+        const stopwatchData = foregroundData['stopwatchData'] ?? null;
+        if (stopwatchData !== null) {
+            stopwatchData.dateTime = new Date(stopwatchData.dateTime);
+        }
         return {
             countdownData,
+            stopwatchData,
             timeDataList: foregroundData['timeDataList'] ?? [],
             marqueeData: foregroundData['marqueeData'] ?? null,
             quickTextData: foregroundData['quickTextData'] ?? null,
@@ -215,6 +224,41 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
                 const countdownData =
                     dateTime !== null ? { dateTime, extraStyle } : null;
                 screenForegroundManager.setCountdownData(countdownData);
+            },
+            isForceChoosing,
+        );
+    }
+
+    renderStopwatch(data: ForegroundStopwatchDataType) {
+        const { handleAdding, handleRemoving } =
+            genHtmlForegroundStopwatch(data);
+        const divContainer = this.createDivContainer(data, handleRemoving);
+        handleAdding(divContainer!);
+    }
+    setStopwatchData(
+        data: ForegroundStopwatchDataType | null,
+        isNoSyncGroup = false,
+    ) {
+        this.applyForegroundDataWithSyncGroup(
+            {
+                ...this.foregroundData,
+                stopwatchData: data,
+            },
+            isNoSyncGroup,
+        );
+    }
+    static async setStopwatch(
+        event: React.MouseEvent<HTMLElement, MouseEvent>,
+        dateTime: Date | null,
+        extraStyle: CSSProperties = {},
+        isForceChoosing = false,
+    ) {
+        this.setData(
+            event,
+            (screenForegroundManager) => {
+                const stopwatchData =
+                    dateTime !== null ? { dateTime, extraStyle } : null;
+                screenForegroundManager.setStopwatchData(stopwatchData);
             },
             isForceChoosing,
         );

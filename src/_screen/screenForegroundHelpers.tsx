@@ -9,9 +9,11 @@ import {
     ForegroundCountdownDataType,
     ForegroundMarqueDataType,
     ForegroundQuickTextDataType,
+    ForegroundStopwatchDataType,
     ForegroundTimeDataType,
 } from './screenTypeHelpers';
 import TimingController from './managers/TimingController';
+import StopwatchController from './managers/StopwatchController';
 
 export function genHtmlForegroundMarquee(
     { text, extraStyle = {} }: ForegroundMarqueDataType,
@@ -204,6 +206,61 @@ export function genHtmlForegroundCountdown({
         },
         handleRemoving: async () => {
             countDownHandler.pause();
+            await animData.animOut(element);
+        },
+    };
+}
+
+export function genHtmlForegroundStopwatch({
+    dateTime,
+    extraStyle,
+}: ForegroundStopwatchDataType) {
+    const uniqueClassname = `cn-${crypto.randomUUID()}`;
+    const htmlString = ReactDOMServer.renderToStaticMarkup(
+        <div
+            style={{
+                color: 'white',
+                backgroundColor: 'rgba(0, 12, 100, 0.7)',
+                backdropFilter: 'blur(5px)',
+                ...(extraStyle ?? {}),
+            }}
+        >
+            <style>{`
+                .${uniqueClassname} {
+                    display: flex;
+                    justify-content: center;
+                }
+                .${uniqueClassname} div {
+                    text-align: center;
+                    min-width: 2ch;
+                    font-variant-numeric: tabular-nums;
+                }
+                .${uniqueClassname} #second {
+                    text-align: left;
+                }
+            `}</style>
+            <div className={uniqueClassname}>
+                <span style={{ marginRight: '50px' }}>⏱️</span>
+                <div id="hour">00</div>:<div id="minute">00</div>:
+                <div id="second">00</div>
+            </div>
+        </div>,
+    );
+    const div = document.createElement('div');
+    div.innerHTML = htmlString;
+    const element = getHTMLChild<HTMLDivElement>(div, 'div');
+    const stopwatchHandler = StopwatchController.init(element, dateTime);
+    const animData = styleAnimList.fade('countdown');
+    return {
+        handleAdding: async (parentContainer: HTMLElement) => {
+            stopwatchHandler.start();
+            const style = document.createElement('style');
+            style.innerHTML = animData.style;
+            parentContainer.appendChild(style);
+            await animData.animIn(element, parentContainer);
+        },
+        handleRemoving: async () => {
+            stopwatchHandler.pause();
             await animData.animOut(element);
         },
     };
