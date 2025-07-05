@@ -88,14 +88,20 @@ export type ForegroundMarqueDataType = {
     text: string;
     extraStyle?: React.CSSProperties;
 };
+export type ForegroundQuickTextDataType = {
+    htmlText: string;
+    timeSecondToLive: number;
+    extraStyle?: React.CSSProperties;
+};
 export type ForegroundCameraDataType = {
     id: string;
     extraStyle?: React.CSSProperties;
 };
 export type ForegroundDataType = {
     countdownData: ForegroundCountdownDataType | null;
-    timeDataList: ForegroundTimeDataType[] | null;
+    timeDataList: ForegroundTimeDataType[];
     marqueeData: ForegroundMarqueDataType | null;
+    quickTextData: ForegroundQuickTextDataType | null;
     cameraData: ForegroundCameraDataType | null;
 };
 export type ForegroundSrcListType = {

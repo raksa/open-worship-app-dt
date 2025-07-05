@@ -3,18 +3,27 @@ import { getForegroundDataListOnScreenSetting } from '../_screen/screenHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { getScreenManagerBaseByKey } from '../_screen/managers/screenManagerBaseHelpers';
 import { screenManagerFromBase } from '../_screen/managers/screenManagerHelpers';
-import { ForegroundDataType } from '../_screen/screenTypeHelpers';
+import {
+    ForegroundDataType,
+    ForegroundSrcListType,
+} from '../_screen/screenTypeHelpers';
 
-export function getShowingScreenIdDataList(
-    filterFunc: (data: ForegroundDataType) => boolean,
+export function getForegroundShowingScreenIdDataList(
+    filterFunc: (
+        data: ForegroundDataType,
+        allForegroundDataList: ForegroundSrcListType,
+    ) => boolean,
 ) {
     const allForegroundDataList = getForegroundDataListOnScreenSetting();
     const showingScreenIdDataList = Object.entries(allForegroundDataList)
-        .filter(([_, data]) => {
-            return filterFunc(data);
-        })
         .map(([key, data]) => {
-            return [parseInt(key), data] as [number, ForegroundDataType];
+            return [
+                parseInt(key),
+                ScreenForegroundManager.parseAllForegroundData(data),
+            ] as [number, ForegroundDataType];
+        })
+        .filter(([_, data]) => {
+            return filterFunc(data, allForegroundDataList);
         });
     return showingScreenIdDataList;
 }

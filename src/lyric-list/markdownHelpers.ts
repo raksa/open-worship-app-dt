@@ -103,7 +103,8 @@ export type HTMLDataType = {
 };
 
 export const markdownCacheManager = new CacheManager<HTMLDataType>(10); // 10 second
-export async function renderMarkdown(
+
+export async function renderMarkdownMusic(
     text: string,
     options?: RenderMarkdownOptions,
 ) {
@@ -114,7 +115,7 @@ export async function renderMarkdown(
         };
     }
     const hashKey = appProvider.systemUtils.generateMD5(text);
-    return unlocking(`markdown-${hashKey}`, async () => {
+    return unlocking(`markdown-music-${hashKey}`, async () => {
         const cached = await markdownCacheManager.get(hashKey);
         if (cached) {
             return cached;
@@ -146,7 +147,41 @@ export async function renderMarkdown(
     });
 }
 
-export async function renderLyricSlideMarkdownTextList(lyric: Lyric) {
+export async function renderMarkdown(
+    text: string,
+    options?: RenderMarkdownOptions,
+) {
+    if (!text) {
+        return {
+            id: '',
+            html: '',
+        };
+    }
+    const hashKey = appProvider.systemUtils.generateMD5(text);
+    return unlocking(`markdown-${hashKey}`, async () => {
+        const cached = await markdownCacheManager.get(hashKey);
+        if (cached) {
+            return cached;
+        }
+        const MarkdownIt = (await import('markdown-it')).default;
+        const markdown = new MarkdownIt({ html: true });
+        if (options?.theme) {
+            (markdown as any).setTheme(options.theme);
+        }
+        let html = '';
+        try {
+            html = markdown.render(text);
+        } catch (error) {
+            handleError(error);
+            html = `<pre>${text}</pre>`;
+        }
+        const data = { id: hashKey, html };
+        await markdownCacheManager.set(hashKey, data);
+        return data;
+    });
+}
+
+export async function renderLyricSlideMarkdownMusicTextList(lyric: Lyric) {
     const content = await lyric.getContent();
     const contentList = content.split('---\n').map((item) => {
         return item.trim();
@@ -160,6 +195,6 @@ export async function renderLyricSlide(
 ) {
     return unlocking(`lyric-slides-${lyric.filePath}`, async () => {
         const content = await lyric.getContent();
-        return await renderMarkdown(content, options);
+        return await renderMarkdownMusic(content, options);
     });
 }

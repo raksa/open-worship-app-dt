@@ -10,6 +10,7 @@ import { getForegroundCommonProperties } from './ForegroundCommonPropertiesSetti
 
 const DEFAULT_FONT_SIZE = 100;
 const DEFAULT_WIDGET_WIDTH_PERCENTAGE = 50;
+const DEFAULT_WIDGET_SCALE = 1;
 const DEFAULT_WIDGET_OPACITY_PERCENTAGE = 100;
 const DEFAULT_ROUND_PERCENTAGE = 50;
 const DEFAULT_ROUND_SIZE_PIXEL = 5;
@@ -67,10 +68,22 @@ function genMinusCalc(n: number) {
     return `calc(-50% ${sign} ${abs}px)`;
 }
 
+function genTransformScale(settingName: string) {
+    const scale = parseFloat(
+        getSetting(settingName, DEFAULT_WIDGET_SCALE.toString()),
+    );
+    return `scale(${scale})`;
+}
+
+function genTransformRotate() {
+    return 'rotate(0deg)';
+}
+
 function genAlignmentExtraStyle(
     alignSettingName: string,
     offsetXSettingName: string,
     offsetYSettingName: string,
+    widgetScaleSettingName: string,
 ): React.CSSProperties {
     const widgetOffsetX = parseInt(
         getSetting(offsetXSettingName, DEFAULT_WIDGET_OFFSET_X.toString()),
@@ -82,12 +95,16 @@ function genAlignmentExtraStyle(
     const { horizontalAlignment = 'center', verticalAlignment = 'center' } =
         alignmentData;
     if (horizontalAlignment === 'center' && verticalAlignment === 'center') {
+        const translate =
+            `translate(${genMinusCalc(widgetOffsetX)},` +
+            ` ${genMinusCalc(widgetOffsetY)})`;
+        const transform =
+            `${translate} ${genTransformScale(widgetScaleSettingName)}` +
+            ` ${genTransformRotate()}`;
         const style = {
             left: '50%',
             top: '50%',
-            transform:
-                `translate(${genMinusCalc(widgetOffsetX)},` +
-                ` ${genMinusCalc(widgetOffsetY)})`,
+            transform,
         };
         return style;
     }
@@ -131,6 +148,8 @@ function PropertiesSettingComp({
     setAlignmentData,
     widgetWidthPercentage,
     setWidgetWidthPercentage,
+    widgetScale,
+    setWidgetScale,
     opacityPercentage,
     setOpacityPercentage,
     roundPercentage,
@@ -150,6 +169,8 @@ function PropertiesSettingComp({
     setAlignmentData: (data: string) => void;
     widgetWidthPercentage: number;
     setWidgetWidthPercentage: (value: number) => void;
+    widgetScale: number;
+    setWidgetScale: (value: number) => void;
     opacityPercentage: number;
     setOpacityPercentage: (value: number) => void;
     roundPercentage: number;
@@ -249,6 +270,21 @@ function PropertiesSettingComp({
                     />
                 </div>
                 <div className="d-flex app-border-white-round m-1">
+                    `Scale:
+                    <AppRangeComp
+                        value={widgetScale}
+                        title="`Scale"
+                        setValue={setWidgetScale}
+                        defaultSize={{
+                            size: widgetScale,
+                            min: 0.1,
+                            max: 3,
+                            step: 0.1,
+                        }}
+                        isShowValue
+                    />
+                </div>
+                <div className="d-flex app-border-white-round m-1">
                     `Opacity:
                     <AppRangeComp
                         value={opacityPercentage}
@@ -340,6 +376,7 @@ export function useForegroundPropsSetting({
 }>) {
     const widgetRoundPercentageSettingName = `${prefix}-setting-show-widget-round-percentage`;
     const widgetWidthPercentageSettingName = `${prefix}-setting-show-widget-width-percentage`;
+    const widgetScaleSettingName = `${prefix}-setting-show-widget-scale`;
     const opacityPercentageSettingName = `${prefix}-setting-show-widget-opacity-percentage`;
     const alignmentSettingName = `${prefix}-setting-show-widget-alignment-data`;
     const offsetXSettingName = `${prefix}-setting-show-widget-offset-x`;
@@ -362,6 +399,7 @@ export function useForegroundPropsSetting({
                 alignmentSettingName,
                 offsetXSettingName,
                 offsetYSettingName,
+                widgetScaleSettingName,
             ),
             ...getFontSizeStyle(fontSizeSettingName),
         } as React.CSSProperties;
@@ -403,6 +441,14 @@ export function useForegroundPropsSetting({
         );
     const setWidgetWidthPercentage1 = (value: number) => {
         setWidgetWidthPercentage(value);
+        onChange1();
+    };
+    const [widgetScale, setWidgetScale] = useStateSettingNumber(
+        widgetScaleSettingName,
+        DEFAULT_WIDGET_SCALE,
+    );
+    const setWidgetScale1 = (value: number) => {
+        setWidgetScale(value);
         onChange1();
     };
     const [opacityPercentage, setOpacityPercentage] = useStateSettingNumber(
@@ -449,6 +495,8 @@ export function useForegroundPropsSetting({
                 setAlignmentData={setAlignmentData1}
                 widgetWidthPercentage={widgetWidthPercentage}
                 setWidgetWidthPercentage={setWidgetWidthPercentage1}
+                widgetScale={widgetScale}
+                setWidgetScale={setWidgetScale1}
                 opacityPercentage={opacityPercentage}
                 setOpacityPercentage={setOpacityPercentage1}
                 roundPercentage={roundPercentage}

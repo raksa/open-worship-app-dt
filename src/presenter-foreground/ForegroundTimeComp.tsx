@@ -7,7 +7,7 @@ import {
 import ScreenForegroundManager from '../_screen/managers/ScreenForegroundManager';
 import {
     getScreenForegroundManagerInstances,
-    getShowingScreenIdDataList,
+    getForegroundShowingScreenIdDataList,
 } from './foregroundHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
 import { useScreenForegroundManagerEvents } from '../_screen/managers/screenEventHelpers';
@@ -69,7 +69,7 @@ function TimeInSetComp({
         );
     const handleTimeShowing = (event: any, isForceChoosing = false) => {
         if (!isForceChoosing) {
-            getShowingScreenIdDataList((data) => {
+            getForegroundShowingScreenIdDataList((data) => {
                 return (data.timeDataList ?? []).length > 0;
             }).forEach(([screenId, { timeDataList }]) => {
                 getScreenForegroundManagerInstances(
@@ -188,9 +188,11 @@ function refreshAllTimes(
 
 export default function ForegroundTimeComp() {
     useScreenForegroundManagerEvents(['update']);
-    const showingScreenIdDataList = getShowingScreenIdDataList((data) => {
-        return (data.timeDataList ?? []).length > 0;
-    }).reduce(
+    const showingScreenIdDataList = getForegroundShowingScreenIdDataList(
+        (data) => {
+            return (data.timeDataList ?? []).length > 0;
+        },
+    ).reduce(
         (acc, [screenId, { timeDataList }]) => {
             const dataList = (timeDataList ?? []).map((timeData) => {
                 return [screenId, timeData] as [number, ForegroundTimeDataType];

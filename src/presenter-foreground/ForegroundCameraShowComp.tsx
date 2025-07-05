@@ -5,7 +5,7 @@ import ScreenForegroundManager from '../_screen/managers/ScreenForegroundManager
 import { getAndShowMedia } from '../_screen/screenForegroundHelpers';
 import {
     getScreenForegroundManagerInstances,
-    getShowingScreenIdDataList,
+    getForegroundShowingScreenIdDataList,
 } from './foregroundHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
 import { useScreenForegroundManagerEvents } from '../_screen/managers/screenEventHelpers';
@@ -96,9 +96,11 @@ function refreshAllCameras(
 
 export default function ForegroundCameraShowComp() {
     useScreenForegroundManagerEvents(['update']);
-    const showingScreenIdDataList = getShowingScreenIdDataList((data) => {
-        return data.cameraData !== null;
-    }).map(([screenId, data]) => {
+    const showingScreenIdDataList = getForegroundShowingScreenIdDataList(
+        (data) => {
+            return data.cameraData !== null;
+        },
+    ).map(([screenId, data]) => {
         return [screenId, data.cameraData] as [
             number,
             ForegroundCameraDataType,

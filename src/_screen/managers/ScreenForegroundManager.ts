@@ -4,6 +4,7 @@ import { setSetting } from '../../helper/settingHelpers';
 import {
     genHtmlForegroundCountdown,
     genHtmlForegroundMarquee,
+    genHtmlForegroundQuickText,
     genHtmlForegroundTime,
     getAndShowMedia,
 } from '../screenForegroundHelpers';
@@ -20,6 +21,7 @@ import {
     ForegroundCameraDataType,
     ForegroundCountdownDataType,
     ForegroundTimeDataType,
+    ForegroundQuickTextDataType,
 } from '../screenTypeHelpers';
 import {
     checkAreObjectsEqual,
@@ -48,16 +50,13 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
 
         const allForegroundDataList = getForegroundDataListOnScreenSetting();
         const foregroundData = allForegroundDataList[this.key] ?? {};
-        this.foregroundData = {
-            countdownData: foregroundData['countdownData'] ?? null,
-            timeDataList: foregroundData['timeDataList'] ?? [],
-            marqueeData: foregroundData['marqueeData'] ?? null,
-            cameraData: foregroundData['cameraData'] ?? null,
-        };
+        this.foregroundData =
+            ScreenForegroundManager.parseAllForegroundData(foregroundData);
         this.rendererMap = new Map<string, (data: any) => void>([
             ['countdownData', this.renderCountdown.bind(this)],
             ['timeDataList', this.renderTime.bind(this)],
             ['marqueeData', this.renderMarquee.bind(this)],
+            ['quickTextData', this.renderQuickText.bind(this)],
             ['cameraData', this.renderCamera.bind(this)],
         ]);
         this.setterMap = new Map<
@@ -67,8 +66,23 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
             ['countdownData', this.setCountdownData.bind(this)],
             ['timeDataList', this.setTimeDataList.bind(this)],
             ['marqueeData', this.setMarqueeData.bind(this)],
+            ['quickTextData', this.setQuickTextData.bind(this)],
             ['cameraData', this.setCameraData.bind(this)],
         ]);
+    }
+
+    static parseAllForegroundData(foregroundData: any): ForegroundDataType {
+        const countdownData = foregroundData['countdownData'] ?? null;
+        if (countdownData !== null) {
+            countdownData.dateTime = new Date(countdownData.dateTime);
+        }
+        return {
+            countdownData,
+            timeDataList: foregroundData['timeDataList'] ?? [],
+            marqueeData: foregroundData['marqueeData'] ?? null,
+            quickTextData: foregroundData['quickTextData'] ?? null,
+            cameraData: foregroundData['cameraData'] ?? null,
+        };
     }
 
     get isShowing() {
@@ -217,10 +231,7 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
             handleAdding(divContainer!);
         }
     }
-    setTimeDataList(
-        dataList: ForegroundTimeDataType[] | null,
-        isNoSyncGroup = false,
-    ) {
+    setTimeDataList(dataList: ForegroundTimeDataType[], isNoSyncGroup = false) {
         this.applyForegroundDataWithSyncGroup(
             {
                 ...this.foregroundData,
@@ -233,18 +244,13 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
         if (checkIsItemInArray(data, this.foregroundData.timeDataList)) {
             return;
         }
-        const timeDataList = [
-            ...(this.foregroundData.timeDataList ?? []),
-            data,
-        ];
+        const timeDataList = [...this.foregroundData.timeDataList, data];
         this.setTimeDataList(timeDataList, isNoSyncGroup);
     }
     removeTimeData(data: ForegroundTimeDataType, isNoSyncGroup = false) {
-        const timeDataList = (this.foregroundData.timeDataList ?? []).filter(
-            (item) => {
-                return !checkAreObjectsEqual(item, data);
-            },
-        );
+        const timeDataList = this.foregroundData.timeDataList.filter((item) => {
+            return !checkAreObjectsEqual(item, data);
+        });
         this.setTimeDataList(timeDataList, isNoSyncGroup);
     }
     static async addTimeData(
@@ -305,6 +311,48 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
             (screenForegroundManager) => {
                 const marqueeData = text !== null ? { text, extraStyle } : null;
                 screenForegroundManager.setMarqueeData(marqueeData);
+            },
+            isForceChoosing,
+        );
+    }
+
+    renderQuickText(data: ForegroundQuickTextDataType) {
+        const { handleAdding, handleRemoving } = genHtmlForegroundQuickText(
+            data,
+            () => {
+                this.setQuickTextData(null);
+            },
+        );
+        const divContainer = this.createDivContainer(data, handleRemoving);
+        handleAdding(divContainer!);
+    }
+    setQuickTextData(
+        data: ForegroundQuickTextDataType | null,
+        isNoSyncGroup = false,
+    ) {
+        this.applyForegroundDataWithSyncGroup(
+            {
+                ...this.foregroundData,
+                quickTextData: data,
+            },
+            isNoSyncGroup,
+        );
+    }
+    static async setQuickText(
+        event: React.MouseEvent<HTMLElement, MouseEvent>,
+        htmlText: string | null,
+        timeSecondToLive: number,
+        extraStyle: CSSProperties = {},
+        isForceChoosing = false,
+    ) {
+        this.setData(
+            event,
+            (screenForegroundManager) => {
+                const quickTextData =
+                    htmlText !== null
+                        ? { htmlText, timeSecondToLive, extraStyle }
+                        : null;
+                screenForegroundManager.setQuickTextData(quickTextData);
             },
             isForceChoosing,
         );
@@ -398,12 +446,9 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
 
     clear() {
         this.applyForegroundDataWithSyncGroup(
-            Object.fromEntries(
-                Object.keys(this.foregroundData).map((key) => [key, null]),
-            ) as ForegroundDataType,
+            ScreenForegroundManager.parseAllForegroundData({}),
             true,
         );
-        this.div.innerHTML = '';
     }
 
     get containerStyle(): CSSProperties {

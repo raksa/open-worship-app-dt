@@ -12,8 +12,8 @@ import LyricSlide from './LyricSlide';
 import FileSource from '../helper/FileSource';
 import Lyric from './Lyric';
 import {
-    renderLyricSlideMarkdownTextList,
-    renderMarkdown,
+    renderLyricSlideMarkdownMusicTextList,
+    renderMarkdownMusic,
 } from './markdownHelpers';
 import { CanvasItemTextPropsType } from '../slide-editor/canvas/CanvasItemText';
 
@@ -44,7 +44,7 @@ export default class LyricAppDocument extends AppDocument {
         const lyric = Lyric.getInstance(
             LyricAppDocument.toLyricFilePath(this.filePath),
         );
-        let textList = (await renderLyricSlideMarkdownTextList(lyric)).map(
+        let textList = (await renderLyricSlideMarkdownMusicTextList(lyric)).map(
             (text) => {
                 return [text, text, undefined];
             },
@@ -55,7 +55,7 @@ export default class LyricAppDocument extends AppDocument {
                     if (!text) {
                         return [text, htmlText];
                     }
-                    const htmlData = await renderMarkdown(text, {
+                    const htmlData = await renderMarkdownMusic(text, {
                         isJustifyCenter: true,
                         isDisablePointerEvents: true,
                         theme: 'dark',

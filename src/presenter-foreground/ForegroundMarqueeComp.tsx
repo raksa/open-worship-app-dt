@@ -3,13 +3,13 @@ import ScreenForegroundManager from '../_screen/managers/ScreenForegroundManager
 import { useScreenForegroundManagerEvents } from '../_screen/managers/screenEventHelpers';
 import {
     getScreenForegroundManagerInstances,
-    getShowingScreenIdDataList,
+    getForegroundShowingScreenIdDataList,
 } from './foregroundHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
 import ForegroundLayoutComp from './ForegroundLayoutComp';
 import { getForegroundCommonProperties } from './ForegroundCommonPropertiesSettingComp';
 
-export default function ForegroundMessageComp() {
+export default function ForegroundMarqueeComp() {
     useScreenForegroundManagerEvents(['update']);
     const [text, setText] = useStateSettingString<string>(
         'foreground-marquee-setting',
@@ -17,10 +17,12 @@ export default function ForegroundMessageComp() {
             'the marquee scrolling effect properly.',
     );
 
-    const showingScreenIdDataList = getShowingScreenIdDataList((data) => {
-        return data.marqueeData !== null;
-    });
-    const handleMarqueeHiding = (screenId: number) => {
+    const showingScreenIdDataList = getForegroundShowingScreenIdDataList(
+        (data) => {
+            return data.marqueeData !== null;
+        },
+    );
+    const handleHiding = (screenId: number) => {
         getScreenForegroundManagerInstances(
             screenId,
             (screenForegroundManager) => {
@@ -28,7 +30,7 @@ export default function ForegroundMessageComp() {
             },
         );
     };
-    const handleMarqueeShowing = (event: any, isForceChoosing = false) => {
+    const handleShowing = (event: any, isForceChoosing = false) => {
         const extraStyle = getForegroundCommonProperties();
         ScreenForegroundManager.setMarquee(
             event,
@@ -38,20 +40,20 @@ export default function ForegroundMessageComp() {
         );
     };
     const handleContextMenuOpening = (event: any) => {
-        handleMarqueeShowing(event, true);
+        handleShowing(event, true);
     };
     const genHidingElement = (isMini: boolean) => (
         <ScreensRendererComp
             showingScreenIdDataList={showingScreenIdDataList}
             buttonTitle="`Hide Marquee"
-            handleForegroundHiding={handleMarqueeHiding}
+            handleForegroundHiding={handleHiding}
             isMini={isMini}
         />
     );
     return (
         <ForegroundLayoutComp
-            target="message"
-            fullChildHeaders={<h4>`Message</h4>}
+            target="marquee"
+            fullChildHeaders={<h4>`Marquee</h4>}
             childHeadersOnHidden={genHidingElement(true)}
         >
             <div>
@@ -87,7 +89,7 @@ export default function ForegroundMessageComp() {
                 <label htmlFor="marquee-textarea">Marquee</label>
                 <button
                     className="btn btn-secondary"
-                    onClick={handleMarqueeShowing}
+                    onClick={handleShowing}
                     onContextMenu={handleContextMenuOpening}
                 >
                     `Show Marquee

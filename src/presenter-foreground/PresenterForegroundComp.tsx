@@ -3,7 +3,8 @@ import ForegroundCameraShowComp from './ForegroundCameraShowComp';
 import ForegroundCommonPropertiesSettingComp from './ForegroundCommonPropertiesSettingComp';
 import ForegroundCountDownComp from './ForegroundCountDownComp';
 import ForegroundImagesSlideShowComp from './ForegroundImagesSlideShowComp';
-import ForegroundMessageComp from './ForegroundMessageComp';
+import ForegroundMarqueeComp from './ForegroundMarqueeComp';
+import ForegroundQuickTextComp from './ForegroundQuickTextComp';
 import ForegroundTimeComp from './ForegroundTimeComp';
 
 export default function PresenterForegroundComp() {
@@ -17,14 +18,9 @@ export default function PresenterForegroundComp() {
         >
             <ForegroundCommonPropertiesSettingComp />
             <hr />
-            <ForegroundMessageComp />
+            <ForegroundMarqueeComp />
             <hr />
-            {appProvider.systemUtils.isDev ? (
-                <>
-                    <hr />
-                    <div>TODO: Quick Alert</div>
-                </>
-            ) : null}
+            <ForegroundQuickTextComp />
             <hr />
             <ForegroundCountDownComp />
             <hr />

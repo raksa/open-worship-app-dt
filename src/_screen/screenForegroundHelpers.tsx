@@ -8,19 +8,19 @@ import {
     ForegroundCameraDataType,
     ForegroundCountdownDataType,
     ForegroundMarqueDataType,
+    ForegroundQuickTextDataType,
     ForegroundTimeDataType,
 } from './screenTypeHelpers';
 import TimingController from './managers/TimingController';
 
 export function genHtmlForegroundMarquee(
-    marqueeData: ForegroundMarqueDataType,
+    { text, extraStyle = {} }: ForegroundMarqueDataType,
     screenManagerBase: ScreenManagerBase,
 ) {
-    const { text } = marqueeData;
     const duration = text.length / 6;
     const scale = screenManagerBase.height / 768;
     const fontSize = 75 * scale;
-    const uniqueClassname = `m-${crypto.randomUUID()}`;
+    const uniqueClassname = `cn-${crypto.randomUUID()}`;
     const htmlString = ReactDOMServer.renderToStaticMarkup(
         <div
             style={{
@@ -28,7 +28,6 @@ export function genHtmlForegroundMarquee(
                 width: '100%',
                 left: '0px',
                 bottom: '0px',
-                ...(marqueeData.extraStyle ?? {}),
             }}
         >
             <style>{`
@@ -38,8 +37,6 @@ export function genHtmlForegroundMarquee(
                     margin: 0 auto;
                     overflow: hidden;
                     color: white;
-                    background-color: rgba(0, 12, 100, 0.5);
-                    backdrop-filter: blur(5px);
                     font-size: ${fontSize}px;
                     box-shadow: inset 0 0 10px lightblue;
                     will-change: transform;
@@ -81,7 +78,7 @@ export function genHtmlForegroundMarquee(
                     100% { transform: translateY(100%); }
                 }
             `}</style>
-            <p className={uniqueClassname}>
+            <p className={uniqueClassname} style={extraStyle}>
                 <span>{text}</span>
             </p>
         </div>,
@@ -117,18 +114,58 @@ export function genHtmlForegroundMarquee(
     };
 }
 
-export function genHtmlForegroundCountdown(
-    countdownData: ForegroundCountdownDataType,
+export function genHtmlForegroundQuickText(
+    {
+        htmlText,
+        timeSecondToLive,
+        extraStyle = {},
+    }: ForegroundQuickTextDataType,
+    remove: () => void,
 ) {
-    const { dateTime } = countdownData;
-    const uniqueClassname = `m-${crypto.randomUUID()}`;
+    const uniqueId = `id-${crypto.randomUUID()}`;
+    const htmlString = ReactDOMServer.renderToStaticMarkup(
+        <div style={extraStyle}>
+            <style>{`
+            #${uniqueId} * {
+                margin: 0.05em !important;
+            }
+            `}</style>
+            <div id={uniqueId} dangerouslySetInnerHTML={{ __html: htmlText }} />
+        </div>,
+    );
+    const div = document.createElement('div');
+    div.innerHTML = htmlString;
+    const element = getHTMLChild<HTMLDivElement>(div, 'div');
+    const animData = styleAnimList.fade('quick-text');
+    return {
+        handleAdding: async (parentContainer: HTMLElement) => {
+            const style = document.createElement('style');
+            style.innerHTML = animData.style;
+            parentContainer.appendChild(style);
+            await animData.animIn(element, parentContainer);
+            await new Promise<void>((resolve) => {
+                setTimeout(resolve, timeSecondToLive * 1000);
+            });
+            remove();
+        },
+        handleRemoving: async () => {
+            await animData.animOut(element);
+        },
+    };
+}
+
+export function genHtmlForegroundCountdown({
+    dateTime,
+    extraStyle,
+}: ForegroundCountdownDataType) {
+    const uniqueClassname = `cn-${crypto.randomUUID()}`;
     const htmlString = ReactDOMServer.renderToStaticMarkup(
         <div
             style={{
                 color: 'white',
                 backgroundColor: 'rgba(0, 12, 100, 0.7)',
                 backdropFilter: 'blur(5px)',
-                ...(countdownData.extraStyle ?? {}),
+                ...(extraStyle ?? {}),
             }}
         >
             <style>{`
@@ -138,12 +175,14 @@ export function genHtmlForegroundCountdown(
                 }
                 .${uniqueClassname} div {
                     text-align: center;
+                    min-width: 2ch;
+                    font-variant-numeric: tabular-nums;
                 }
                 .${uniqueClassname} #second {
                     text-align: left;
                 }
             `}</style>
-            <div className={`countdown ${uniqueClassname}`}>
+            <div className={uniqueClassname}>
                 <span style={{ marginRight: '50px' }}>⏳</span>
                 <div id="hour">00</div>:<div id="minute">00</div>:
                 <div id="second">00</div>
@@ -172,7 +211,7 @@ export function genHtmlForegroundCountdown(
 
 export function genHtmlForegroundTime(timeData: ForegroundTimeDataType) {
     const { timezoneMinuteOffset, title } = timeData;
-    const uniqueClassname = `m-${crypto.randomUUID()}`;
+    const uniqueClassname = `cn-${crypto.randomUUID()}`;
     const htmlString = ReactDOMServer.renderToStaticMarkup(
         <div
             style={{
@@ -182,6 +221,7 @@ export function genHtmlForegroundTime(timeData: ForegroundTimeDataType) {
                 ...(timeData.extraStyle ?? {}),
             }}
         >
+            {' '}
             <style>{`
                 .${uniqueClassname} {
                     display: flex;
@@ -189,16 +229,13 @@ export function genHtmlForegroundTime(timeData: ForegroundTimeDataType) {
                 }
                 .${uniqueClassname} div {
                     text-align: center;
+                    min-width: 2ch;
+                    font-variant-numeric: tabular-nums;
                 }
                 .${uniqueClassname} #second {
                     text-align: left;
                 }
             `}</style>
-            <div className={`countdown ${uniqueClassname}`}>
-                <span style={{ marginRight: '50px' }}>🕗</span>
-                <div id="hour">00</div>:<div id="minute">00</div>:
-                <div id="second">00</div>
-            </div>
             <div
                 style={{
                     textAlign: 'center',
@@ -208,13 +245,18 @@ export function genHtmlForegroundTime(timeData: ForegroundTimeDataType) {
             >
                 <small>{title}</small>
             </div>
+            <div className={uniqueClassname}>
+                <span style={{ marginRight: '50px' }}>🕗</span>
+                <div id="hour">00</div>:<div id="minute">00</div>:
+                <div id="second">00</div>
+            </div>
         </div>,
     );
     const div = document.createElement('div');
     div.innerHTML = htmlString;
     const element = getHTMLChild<HTMLDivElement>(div, 'div');
     const timingHandler = TimingController.init(element, timezoneMinuteOffset);
-    const animData = styleAnimList.fade('countdown');
+    const animData = styleAnimList.fade('time');
     return {
         handleAdding: async (parentContainer: HTMLElement) => {
             timingHandler.start();

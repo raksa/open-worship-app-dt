@@ -2,7 +2,7 @@ import { useStateSettingString } from '../helper/settingHelpers';
 import ScreenForegroundManager from '../_screen/managers/ScreenForegroundManager';
 import {
     getScreenForegroundManagerInstances,
-    getShowingScreenIdDataList,
+    getForegroundShowingScreenIdDataList,
 } from './foregroundHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
 import { useScreenForegroundManagerEvents } from '../_screen/managers/screenEventHelpers';
@@ -207,9 +207,11 @@ function refreshAllCountdowns(
 
 export default function ForegroundCountDownComp() {
     useScreenForegroundManagerEvents(['update']);
-    const showingScreenIdDataList = getShowingScreenIdDataList((data) => {
-        return data.countdownData !== null;
-    }).map(([screenId, data]) => {
+    const showingScreenIdDataList = getForegroundShowingScreenIdDataList(
+        (data) => {
+            return data.countdownData !== null;
+        },
+    ).map(([screenId, data]) => {
         return [screenId, data.countdownData] as [
             number,
             ForegroundCountdownDataType,

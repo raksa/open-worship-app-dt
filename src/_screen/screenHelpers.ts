@@ -130,24 +130,6 @@ export function getForegroundDataListOnScreenSetting(): ForegroundSrcListType {
             return {};
         }
         const json = JSON.parse(string);
-        Object.values(json).forEach((item: any) => {
-            const { countdownData } = item;
-            if (
-                !(
-                    item.marqueeData === null ||
-                    typeof item.marqueeData.text === 'string'
-                ) ||
-                !(
-                    countdownData === null ||
-                    typeof countdownData.dateTime === 'string'
-                )
-            ) {
-                throw new Error('Invalid foreground data');
-            }
-            if (countdownData?.dateTime) {
-                countdownData.dateTime = new Date(countdownData.dateTime);
-            }
-        });
         return getValidOnScreen(json);
     } catch (error) {
         handleError(error);
