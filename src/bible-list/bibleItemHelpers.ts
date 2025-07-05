@@ -11,7 +11,7 @@ export type BibleItemType = {
     metadata: AnyObjectType;
 };
 
-export function genDefaultBibleItemContextMenu(
+export function genBibleItemCopyingContextMenu(
     bibleItem: BibleItem,
 ): ContextMenuItemType[] {
     return [

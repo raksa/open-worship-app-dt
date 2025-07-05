@@ -10,7 +10,7 @@ import {
     removeDraggingClass,
 } from './readBibleHelpers';
 import { BibleViewTextComp, RenderHeaderComp } from './BibleViewExtra';
-import { genDefaultBibleItemContextMenu } from '../bible-list/bibleItemHelpers';
+import { genBibleItemCopyingContextMenu } from '../bible-list/bibleItemHelpers';
 import ScrollingHandlerComp from '../scrolling/ScrollingHandlerComp';
 import RenderBibleEditingHeader from '../bible-lookup/RenderBibleEditingHeader';
 import RenderBibleLookupBodyComp from '../bible-lookup/RenderBibleLookupBodyComp';
@@ -110,7 +110,7 @@ export default function BibleViewComp({
                   showAppContextMenu(
                       event,
                       [
-                          ...genDefaultBibleItemContextMenu(foundBibleItem),
+                          ...genBibleItemCopyingContextMenu(foundBibleItem),
                           ...(await viewController.genContextMenu(
                               event,
                               foundBibleItem,

@@ -17,6 +17,7 @@ import {
     presenterEventMapper,
     useFoundActionKeyboard,
 } from './bibleActionHelpers';
+import { RenderCopyBibleItemActionButtonsComp } from './RenderActionButtonsComp';
 
 export default function RenderEditingActionButtonsComp({
     bibleItem,
@@ -41,6 +42,7 @@ export default function RenderEditingActionButtonsComp({
     );
     return (
         <div className="btn-group mx-1">
+            <RenderCopyBibleItemActionButtonsComp bibleItem={bibleItem} />
             <button
                 type="button"
                 className="btn btn-sm btn-info"

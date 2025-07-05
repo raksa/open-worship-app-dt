@@ -26,7 +26,7 @@ import ScreenBibleManager from '../_screen/managers/ScreenBibleManager';
 import LookupBibleItemController from '../bible-reader/LookupBibleItemController';
 import { attachBackgroundManager } from '../others/AttachBackgroundManager';
 import { genShowOnScreensContextMenu } from '../others/FileItemHandlerComp';
-import { genDefaultBibleItemContextMenu } from './bibleItemHelpers';
+import { genBibleItemCopyingContextMenu } from './bibleItemHelpers';
 
 export const SelectedBibleKeyContext = createContext<string>('KJV');
 export function useBibleKeyContext() {
@@ -173,7 +173,7 @@ export async function openBibleItemContextMenu(
         return;
     }
     const menuItem: ContextMenuItemType[] = [
-        ...genDefaultBibleItemContextMenu(bibleItem),
+        ...genBibleItemCopyingContextMenu(bibleItem),
         ...(openBibleLookup !== null
             ? [
                   {

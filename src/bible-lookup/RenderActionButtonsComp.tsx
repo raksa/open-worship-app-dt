@@ -5,6 +5,28 @@ import { useBibleItemsViewControllerContext } from '../bible-reader/BibleItemsVi
 import LookupBibleItemController from '../bible-reader/LookupBibleItemController';
 import appProvider from '../server/appProvider';
 import { addBibleItemAndPresent } from './bibleActionHelpers';
+import { showAppContextMenu } from '../context-menu/appContextMenuHelpers';
+import { genBibleItemCopyingContextMenu } from '../bible-list/bibleItemHelpers';
+
+export function RenderCopyBibleItemActionButtonsComp({
+    bibleItem,
+}: Readonly<{ bibleItem: BibleItem }>) {
+    return (
+        <button
+            type="button"
+            className="btn btn-sm btn-success"
+            title="`Copy"
+            onClick={(event: any) => {
+                showAppContextMenu(
+                    event,
+                    genBibleItemCopyingContextMenu(bibleItem),
+                );
+            }}
+        >
+            <i className="bi bi-copy" />
+        </button>
+    );
+}
 
 export default function RenderActionButtonsComp({
     bibleItem,
@@ -15,10 +37,11 @@ export default function RenderActionButtonsComp({
     }, [viewController]);
     return (
         <div className="btn-group mx-1">
+            <RenderCopyBibleItemActionButtonsComp bibleItem={bibleItem} />
             <button
                 type="button"
                 className="btn btn-sm btn-info"
-                title={'Split horizontal'}
+                title="`Split horizontal"
                 onClick={() => {
                     viewController.addBibleItemLeft(bibleItem, bibleItem);
                 }}
@@ -28,7 +51,7 @@ export default function RenderActionButtonsComp({
             <button
                 type="button"
                 className="btn btn-sm btn-info"
-                title={'Split vertical'}
+                title="`Split vertical"
                 onClick={() => {
                     viewController.addBibleItemBottom(bibleItem, bibleItem);
                 }}
@@ -40,7 +63,7 @@ export default function RenderActionButtonsComp({
                     <button
                         type="button"
                         className="btn btn-sm btn-info"
-                        title={'Save bible item'}
+                        title="`Save bible item"
                         onClick={() => {
                             const lookupViewController =
                                 viewController as LookupBibleItemController;
@@ -56,7 +79,7 @@ export default function RenderActionButtonsComp({
                         <button
                             type="button"
                             className="btn btn-sm btn-info"
-                            title={'`Save bible item and show on screen'}
+                            title="`Save bible item and show on screen"
                             onClick={(event) => {
                                 const lookupViewController =
                                     viewController as LookupBibleItemController;

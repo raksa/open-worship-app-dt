@@ -4,7 +4,7 @@ import * as loggerHelpers from '../helper/loggerHelpers';
 import BibleItem from '../bible-list/BibleItem';
 import {
     BibleItemType,
-    genDefaultBibleItemContextMenu,
+    genBibleItemCopyingContextMenu,
 } from '../bible-list/bibleItemHelpers';
 import { LocaleType, sanitizeFindingText } from '../lang/langHelpers';
 import LookupBibleItemController from '../bible-reader/LookupBibleItemController';
@@ -213,7 +213,7 @@ export function openContextMenu(
             openInBibleLookup(event, viewController, bibleItem, true);
         },
     });
-    contextMenuItems.push(...genDefaultBibleItemContextMenu(bibleItem));
+    contextMenuItems.push(...genBibleItemCopyingContextMenu(bibleItem));
     contextMenuItems.push({
         childBefore: genContextMenuItemIcon('floppy'),
         menuElement: '`Save bible item',
