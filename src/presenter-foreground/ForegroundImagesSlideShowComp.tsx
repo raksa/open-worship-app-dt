@@ -212,7 +212,7 @@ export default function ForegroundImagesSlideShowComp() {
     return (
         <ForegroundLayoutComp
             target="camera"
-            fullChildHeaders={<h4>`Images Slide Show</h4>}
+            fullChildHeaders={<h4>`Background Images Slide Show</h4>}
             childHeadersOnHidden={genHeaderElements(true)}
             extraBodyStyle={{ maxHeight: '450px' }}
         >
