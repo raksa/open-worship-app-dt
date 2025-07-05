@@ -1,6 +1,8 @@
 import { tz } from 'moment-timezone';
 
 import {
+    getSetting,
+    setSetting,
     useStateSettingNumber,
     useStateSettingString,
 } from '../helper/settingHelpers';
@@ -8,6 +10,7 @@ import ScreenForegroundManager from '../_screen/managers/ScreenForegroundManager
 import {
     getScreenForegroundManagerInstances,
     getForegroundShowingScreenIdDataList,
+    getScreenForegroundManagerByDropped,
 } from './foregroundHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
 import { useScreenForegroundManagerEvents } from '../_screen/managers/screenEventHelpers';
@@ -16,6 +19,10 @@ import { genTimeoutAttempt } from '../helper/helpers';
 import { ForegroundTimeDataType } from '../_screen/screenTypeHelpers';
 import { showAppContextMenu } from '../context-menu/appContextMenuHelpers';
 import ForegroundLayoutComp from './ForegroundLayoutComp';
+import { useState } from 'react';
+import { useAppEffect } from '../helper/debuggerHelpers';
+import { handleError } from '../helper/errorHelpers';
+import { dragStore } from '../helper/dragHelpers';
 
 function getSystemTimezoneMinuteOffset() {
     const date = new Date();
@@ -54,38 +61,27 @@ function getMinuteOffsetFromCity(event: any) {
 }
 
 function TimeInSetComp({
+    id,
     genStyle,
 }: Readonly<{
+    id: string;
     genStyle: () => React.CSSProperties;
 }>) {
     const [cityName, setCityName] = useStateSettingString<string>(
-        'foreground-city-name-setting',
+        `foreground-city-name-setting-${id}`,
         '',
     );
     const [timezoneMinuteOffset, setTimezoneMinuteOffset] =
         useStateSettingNumber(
-            'foreground-timezone-minute-offset-setting',
+            `foreground-timezone-minute-offset-setting-${id}`,
             getSystemTimezoneMinuteOffset(),
         );
-    const handleTimeShowing = (event: any, isForceChoosing = false) => {
-        if (!isForceChoosing) {
-            getForegroundShowingScreenIdDataList((data) => {
-                return (data.timeDataList ?? []).length > 0;
-            }).forEach(([screenId, { timeDataList }]) => {
-                getScreenForegroundManagerInstances(
-                    screenId,
-                    (screenForegroundManager) => {
-                        for (const timeData of timeDataList ?? []) {
-                            screenForegroundManager.removeTimeData(timeData);
-                        }
-                    },
-                );
-            });
-        }
+    const handleShowing = (event: any, isForceChoosing = false) => {
         ScreenForegroundManager.addTimeData(
             event,
             {
-                timezoneMinuteOffset: timezoneMinuteOffset,
+                id,
+                timezoneMinuteOffset,
                 title: cityName || null,
                 extraStyle: genStyle(),
             },
@@ -93,7 +89,20 @@ function TimeInSetComp({
         );
     };
     const handleContextMenuOpening = (event: any) => {
-        handleTimeShowing(event, true);
+        handleShowing(event, true);
+    };
+    const handleByDropped = (event: any) => {
+        const screenForegroundManager =
+            getScreenForegroundManagerByDropped(event);
+        if (screenForegroundManager === null) {
+            return;
+        }
+        screenForegroundManager.addTimeData({
+            id,
+            timezoneMinuteOffset,
+            title: cityName || null,
+            extraStyle: genStyle(),
+        });
     };
     return (
         <div className="d-flex flex-column">
@@ -154,8 +163,12 @@ function TimeInSetComp({
                 <div>
                     <button
                         className="btn btn-secondary"
-                        onClick={handleTimeShowing}
+                        onClick={handleShowing}
                         onContextMenu={handleContextMenuOpening}
+                        draggable
+                        onDragStart={() => {
+                            dragStore.onDropped = handleByDropped;
+                        }}
                     >
                         `Show Time
                     </button>
@@ -186,60 +199,156 @@ function refreshAllTimes(
     });
 }
 
-export default function ForegroundTimeComp() {
-    useScreenForegroundManagerEvents(['update']);
+function handleHiding(screenId: number, timeData: ForegroundTimeDataType) {
+    getScreenForegroundManagerInstances(screenId, (screenForegroundManager) => {
+        screenForegroundManager.removeTimeData(timeData);
+    });
+}
+
+function getAllShowingScreenIdDataList() {
     const showingScreenIdDataList = getForegroundShowingScreenIdDataList(
-        (data) => {
-            return (data.timeDataList ?? []).length > 0;
+        ({ timeDataList }) => {
+            return timeDataList.length > 0;
         },
     ).reduce(
         (acc, [screenId, { timeDataList }]) => {
-            const dataList = (timeDataList ?? []).map((timeData) => {
-                return [screenId, timeData] as [number, ForegroundTimeDataType];
-            });
-            acc.push(...dataList);
-            return acc;
+            return acc.concat(
+                timeDataList.map((data) => {
+                    return [screenId, data];
+                }),
+            );
         },
         [] as [number, ForegroundTimeDataType][],
     );
+    return showingScreenIdDataList;
+}
+
+function ForegroundTimeItemComp({
+    id,
+    onRemove,
+}: Readonly<{ id: string; onRemove?: () => void }>) {
+    useScreenForegroundManagerEvents(['update']);
+    const showingScreenIdDataList = getAllShowingScreenIdDataList().filter(
+        ([, data]) => data.id === id,
+    );
     const { genStyle, element: propsSetting } = useForegroundPropsSetting({
-        prefix: 'time',
+        prefix: 'time-' + id,
         onChange: (extraStyle) => {
             refreshAllTimes(showingScreenIdDataList, extraStyle);
         },
         isFontSize: true,
     });
-    const handleTimeHiding = (
-        screenId: number,
-        timeData: ForegroundTimeDataType,
-    ) => {
-        getScreenForegroundManagerInstances(
-            screenId,
-            (screenForegroundManager) => {
-                screenForegroundManager.removeTimeData(timeData);
-            },
-        );
-    };
-    const genHidingElement = (isMini: boolean) => (
+    return (
+        <div className="app-border-white-round p-2">
+            {onRemove !== undefined ? (
+                <i
+                    className="bi bi-x-lg float-end app-caught-hover-pointer"
+                    style={{ color: 'red' }}
+                    onClick={() => {
+                        for (const [
+                            screenId,
+                            timeData,
+                        ] of showingScreenIdDataList) {
+                            handleHiding(screenId, timeData);
+                        }
+                        onRemove();
+                    }}
+                />
+            ) : null}
+            {propsSetting}
+            <hr />
+            <div>
+                <TimeInSetComp genStyle={genStyle} id={id} />
+            </div>
+            <div>
+                <ScreensRendererComp
+                    showingScreenIdDataList={showingScreenIdDataList}
+                    buttonText="`Hide Time"
+                    handleForegroundHiding={handleHiding}
+                    isMini={false}
+                />
+            </div>
+        </div>
+    );
+}
+
+function RenderShownMiniComp() {
+    useScreenForegroundManagerEvents(['update']);
+    const allShowingScreenIdDataList = getAllShowingScreenIdDataList();
+    return (
         <ScreensRendererComp
-            showingScreenIdDataList={showingScreenIdDataList}
-            buttonTitle="`Hide Time"
-            handleForegroundHiding={handleTimeHiding}
-            isMini={isMini}
+            showingScreenIdDataList={allShowingScreenIdDataList}
+            buttonText="`Hide Time"
+            genTitle={(data) => {
+                return `Time: ${data.id}`;
+            }}
+            handleForegroundHiding={handleHiding}
+            isMini
         />
     );
+}
+
+const ID_LIST_SETTING_NAME = 'foreground-time-id-list';
+function useIdList() {
+    const [idList, setIdList] = useState<string[]>([]);
+    const setIdList1 = (newIdList: string[]) => {
+        setIdList(newIdList);
+        setSetting(ID_LIST_SETTING_NAME, JSON.stringify(newIdList));
+    };
+    useAppEffect(() => {
+        const settingString = getSetting(ID_LIST_SETTING_NAME) ?? '';
+        try {
+            if (settingString.trim() !== '') {
+                setIdList(JSON.parse(settingString));
+                return;
+            }
+        } catch (error) {
+            handleError(error);
+        }
+        setIdList1([crypto.randomUUID()]);
+    }, []);
+    return [idList, setIdList1] as const;
+}
+
+export default function ForegroundTimeComp() {
+    const [idList, setIdList] = useIdList();
     return (
         <ForegroundLayoutComp
             target="time"
             fullChildHeaders={<h4>`Time</h4>}
-            childHeadersOnHidden={genHidingElement(true)}
+            childHeadersOnHidden={<RenderShownMiniComp />}
         >
-            {propsSetting}
-            <hr />
-            <div>
-                <TimeInSetComp genStyle={genStyle} />
+            <div className="d-flex flex-wrap gap-1">
+                {idList.map((id) => {
+                    return (
+                        <ForegroundTimeItemComp
+                            key={id}
+                            id={id}
+                            onRemove={
+                                idList.length > 1
+                                    ? () => {
+                                          setIdList(
+                                              idList.filter((item) => {
+                                                  return item !== id;
+                                              }),
+                                          );
+                                      }
+                                    : undefined
+                            }
+                        />
+                    );
+                })}
+                <button
+                    className="btn btn-outline-info"
+                    title="`Add Time"
+                    style={{ width: '20px', padding: '0' }}
+                    onClick={() => {
+                        setIdList([...idList, crypto.randomUUID()]);
+                    }}
+                >
+                    <i className="bi bi-plus" />
+                </button>
             </div>
-            <div>{genHidingElement(false)}</div>
         </ForegroundLayoutComp>
     );
 }

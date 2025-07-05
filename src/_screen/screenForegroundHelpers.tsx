@@ -119,6 +119,7 @@ export function genHtmlForegroundMarquee(
 export function genHtmlForegroundQuickText(
     {
         htmlText,
+        timeSecondDelay,
         timeSecondToLive,
         extraStyle = {},
     }: ForegroundQuickTextDataType,
@@ -144,6 +145,9 @@ export function genHtmlForegroundQuickText(
             const style = document.createElement('style');
             style.innerHTML = animData.style;
             parentContainer.appendChild(style);
+            await new Promise<void>((resolve) => {
+                setTimeout(resolve, timeSecondDelay * 1000);
+            });
             await animData.animIn(element, parentContainer);
             await new Promise<void>((resolve) => {
                 setTimeout(resolve, timeSecondToLive * 1000);
@@ -329,13 +333,13 @@ export function genHtmlForegroundTime(timeData: ForegroundTimeDataType) {
     };
 }
 
-export async function getAndShowMedia({
+export async function getCameraAndShowMedia({
     id,
     extraStyle,
     width,
-    container,
+    parentContainer,
 }: ForegroundCameraDataType & {
-    container: HTMLElement;
+    parentContainer: HTMLElement;
     width?: number;
 }) {
     const constraints = {
@@ -355,9 +359,14 @@ export async function getAndShowMedia({
             video.style.width = `${width}px`;
         }
         Object.assign(video.style, extraStyle ?? {});
-        container.innerHTML = '';
-        container.appendChild(video);
-        return () => {
+        parentContainer.innerHTML = '';
+        const animData = styleAnimList.fade('camera');
+        const style = document.createElement('style');
+        style.innerHTML = animData.style;
+        parentContainer.appendChild(style);
+        animData.animIn(video, parentContainer);
+        return async () => {
+            await animData.animOut(video);
             const tracks = mediaStream.getVideoTracks();
             tracks.forEach((track) => {
                 track.stop();

@@ -6,6 +6,7 @@ import ScreenForegroundManager from '../_screen/managers/ScreenForegroundManager
 import {
     getScreenForegroundManagerInstances,
     getForegroundShowingScreenIdDataList,
+    getScreenForegroundManagerByDropped,
 } from './foregroundHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
 import { useScreenForegroundManagerEvents } from '../_screen/managers/screenEventHelpers';
@@ -14,6 +15,7 @@ import { genTimeoutAttempt } from '../helper/helpers';
 import { ForegroundQuickTextDataType } from '../_screen/screenTypeHelpers';
 import ForegroundLayoutComp from './ForegroundLayoutComp';
 import { renderMarkdown } from '../lyric-list/markdownHelpers';
+import { dragStore } from '../helper/dragHelpers';
 
 const attemptTimeout = genTimeoutAttempt(500);
 function refreshAllQuickText(
@@ -36,11 +38,21 @@ function refreshAllQuickText(
     });
 }
 
+function handleHiding(screenId: number) {
+    getScreenForegroundManagerInstances(screenId, (screenForegroundManager) => {
+        screenForegroundManager.setQuickTextData(null);
+    });
+}
+
 export default function ForegroundQuickTextComp() {
     useScreenForegroundManagerEvents(['update']);
     const [markdownText, setMarkdownText] = useStateSettingString<string>(
         'foreground-quick-text-setting',
         '## This is Title\n\ntext **bold** and *italic*.',
+    );
+    const [timeSecondDelay, setTimeSecondDelay] = useStateSettingNumber(
+        'foreground-quick-text-time-delay',
+        0,
     );
     const [timeSecondToLive, setTimeSecondToLive] = useStateSettingNumber(
         'foreground-quick-text-time-to-live',
@@ -64,19 +76,15 @@ export default function ForegroundQuickTextComp() {
         },
         isFontSize: true,
     });
-    const handleHiding = (screenId: number) => {
-        getScreenForegroundManagerInstances(
-            screenId,
-            (screenForegroundManager) => {
-                screenForegroundManager.setQuickTextData(null);
-            },
-        );
+    const getRenderedHtml = async () => {
+        const htmlText = await renderMarkdown(markdownText);
+        return htmlText.html;
     };
     const handleShowing = async (event: any, isForceChoosing = false) => {
-        const htmlText = await renderMarkdown(markdownText);
         ScreenForegroundManager.setQuickText(
             event,
-            htmlText.html,
+            await getRenderedHtml(),
+            timeSecondDelay,
             timeSecondToLive,
             genStyle(),
             isForceChoosing,
@@ -85,10 +93,23 @@ export default function ForegroundQuickTextComp() {
     const handleContextMenuOpening = (event: any) => {
         handleShowing(event, true);
     };
+    const handleByDropped = async (event: any) => {
+        const screenForegroundManager =
+            getScreenForegroundManagerByDropped(event);
+        if (screenForegroundManager === null) {
+            return;
+        }
+        screenForegroundManager.setQuickTextData({
+            htmlText: await getRenderedHtml(),
+            timeSecondDelay,
+            timeSecondToLive,
+            extraStyle: genStyle(),
+        });
+    };
     const genHidingElement = (isMini: boolean) => (
         <ScreensRendererComp
             showingScreenIdDataList={showingScreenIdDataList}
-            buttonTitle="`Hide Quick Text"
+            buttonText="`Hide Quick Text"
             handleForegroundHiding={handleHiding}
             isMini={isMini}
         />
@@ -102,23 +123,47 @@ export default function ForegroundQuickTextComp() {
             {propsSetting}
             <hr />
             <div className="d-flex flex-column gap-1">
-                <div
-                    className="input-group input-group-sm"
-                    title="Stage number"
-                    style={{
-                        width: '250px',
-                    }}
-                >
-                    <small>`Time Second to Live:</small>
-                    <input
-                        className="form-control"
-                        type="number"
-                        min="1"
-                        value={timeSecondToLive}
-                        onChange={(e) => {
-                            setTimeSecondToLive(parseInt(e.target.value, 10));
+                <div className="d-flex flex-wrap gap-1">
+                    <div
+                        className="input-group input-group-sm"
+                        title="Stage number"
+                        style={{
+                            width: '250px',
                         }}
-                    />
+                    >
+                        <small>`Time Second Delay:</small>
+                        <input
+                            className="form-control"
+                            type="number"
+                            min="0"
+                            value={timeSecondDelay}
+                            onChange={(e) => {
+                                setTimeSecondDelay(
+                                    parseInt(e.target.value, 10),
+                                );
+                            }}
+                        />
+                    </div>
+                    <div
+                        className="input-group input-group-sm"
+                        title="Stage number"
+                        style={{
+                            width: '250px',
+                        }}
+                    >
+                        <small>`Time Second to Live:</small>
+                        <input
+                            className="form-control"
+                            type="number"
+                            min="1"
+                            value={timeSecondToLive}
+                            onChange={(e) => {
+                                setTimeSecondToLive(
+                                    parseInt(e.target.value, 10),
+                                );
+                            }}
+                        />
+                    </div>
                 </div>
                 <div className="form-floating">
                     <textarea
@@ -137,6 +182,10 @@ export default function ForegroundQuickTextComp() {
                         className="btn btn-secondary"
                         onClick={handleShowing}
                         onContextMenu={handleContextMenuOpening}
+                        draggable
+                        onDragStart={() => {
+                            dragStore.onDropped = handleByDropped;
+                        }}
                     >
                         `Show Quick Text
                     </button>

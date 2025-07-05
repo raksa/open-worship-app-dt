@@ -84,6 +84,7 @@ export type ForegroundStopwatchDataType = {
     extraStyle?: React.CSSProperties;
 };
 export type ForegroundTimeDataType = {
+    id: string;
     timezoneMinuteOffset: number;
     title: string | null;
     extraStyle?: React.CSSProperties;
@@ -94,6 +95,7 @@ export type ForegroundMarqueDataType = {
 };
 export type ForegroundQuickTextDataType = {
     htmlText: string;
+    timeSecondDelay: number;
     timeSecondToLive: number;
     extraStyle?: React.CSSProperties;
 };
@@ -107,7 +109,7 @@ export type ForegroundDataType = {
     timeDataList: ForegroundTimeDataType[];
     marqueeData: ForegroundMarqueDataType | null;
     quickTextData: ForegroundQuickTextDataType | null;
-    cameraData: ForegroundCameraDataType | null;
+    cameraDataList: ForegroundCameraDataType[];
 };
 export type ForegroundSrcListType = {
     [key: string]: ForegroundDataType;

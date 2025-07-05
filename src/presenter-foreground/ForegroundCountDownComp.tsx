@@ -3,6 +3,7 @@ import ScreenForegroundManager from '../_screen/managers/ScreenForegroundManager
 import {
     getScreenForegroundManagerInstances,
     getForegroundShowingScreenIdDataList,
+    getScreenForegroundManagerByDropped,
 } from './foregroundHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
 import { useScreenForegroundManagerEvents } from '../_screen/managers/screenEventHelpers';
@@ -10,6 +11,7 @@ import { useForegroundPropsSetting } from './propertiesSettingHelpers';
 import { genTimeoutAttempt } from '../helper/helpers';
 import { ForegroundCountdownDataType } from '../_screen/screenTypeHelpers';
 import ForegroundLayoutComp from './ForegroundLayoutComp';
+import { dragStore } from '../helper/dragHelpers';
 
 function useTiming() {
     const nowArray = () => {
@@ -37,6 +39,21 @@ function useTiming() {
     return { date, setDate, time, setTime, nowString, todayString };
 }
 
+const handleByDropped = (
+    dateTime: Date,
+    extraStyle: React.CSSProperties,
+    event: any,
+) => {
+    const screenForegroundManager = getScreenForegroundManagerByDropped(event);
+    if (screenForegroundManager === null) {
+        return;
+    }
+    screenForegroundManager.setCountdownData({
+        dateTime,
+        extraStyle,
+    });
+};
+
 function CountDownOnDatetimeComp({
     genStyle,
 }: Readonly<{
@@ -44,10 +61,13 @@ function CountDownOnDatetimeComp({
 }>) {
     const { date, setDate, time, setTime, nowString, todayString } =
         useTiming();
+    const getTargetDateTime = () => {
+        return new Date(date + ' ' + time);
+    };
     const handleDateTimeShowing = (event: any, isForceChoosing = false) => {
         ScreenForegroundManager.setCountdown(
             event,
-            new Date(date + ' ' + time),
+            getTargetDateTime(),
             genStyle(),
             isForceChoosing,
         );
@@ -97,6 +117,14 @@ function CountDownOnDatetimeComp({
                     className="btn btn-secondary"
                     onClick={handleDateTimeShowing}
                     onContextMenu={handleContextMenuOpening}
+                    draggable
+                    onDragStart={() => {
+                        dragStore.onDropped = handleByDropped.bind(
+                            null,
+                            getTargetDateTime(),
+                            genStyle(),
+                        );
+                    }}
                 >
                     `Start Countdown to DateTime
                 </button>
@@ -118,7 +146,7 @@ function CountDownInSetComp({
         'foreground-minutes-setting',
         '5',
     );
-    const handleCountdownShowing = (event: any, isForceChoosing = false) => {
+    const getTargetDateTime = () => {
         const targetDatetime = new Date();
         targetDatetime.setSeconds(
             targetDatetime.getSeconds() +
@@ -126,15 +154,18 @@ function CountDownInSetComp({
                 3600 * parseInt(hours) +
                 1,
         );
+        return targetDatetime;
+    };
+    const handleShowing = (event: any, isForceChoosing = false) => {
         ScreenForegroundManager.setCountdown(
             event,
-            targetDatetime,
+            getTargetDateTime(),
             genStyle(),
             isForceChoosing,
         );
     };
     const handleContextMenuOpening = (event: any) => {
-        handleCountdownShowing(event, true);
+        handleShowing(event, true);
     };
     return (
         <div className="d-flex">
@@ -174,8 +205,16 @@ function CountDownInSetComp({
             <div>
                 <button
                     className="btn btn-secondary"
-                    onClick={handleCountdownShowing}
+                    onClick={handleShowing}
                     onContextMenu={handleContextMenuOpening}
+                    draggable
+                    onDragStart={() => {
+                        dragStore.onDropped = handleByDropped.bind(
+                            null,
+                            getTargetDateTime(),
+                            genStyle(),
+                        );
+                    }}
                 >
                     `Start Countdown
                 </button>
@@ -205,6 +244,12 @@ function refreshAllCountdowns(
     });
 }
 
+function handleCountdownHiding(screenId: number) {
+    getScreenForegroundManagerInstances(screenId, (screenForegroundManager) => {
+        screenForegroundManager.setCountdownData(null);
+    });
+}
+
 export default function ForegroundCountDownComp() {
     useScreenForegroundManagerEvents(['update']);
     const showingScreenIdDataList = getForegroundShowingScreenIdDataList(
@@ -224,18 +269,10 @@ export default function ForegroundCountDownComp() {
         },
         isFontSize: true,
     });
-    const handleCountdownHiding = (screenId: number) => {
-        getScreenForegroundManagerInstances(
-            screenId,
-            (screenForegroundManager) => {
-                screenForegroundManager.setCountdownData(null);
-            },
-        );
-    };
     const genHidingElement = (isMini: boolean) => (
         <ScreensRendererComp
             showingScreenIdDataList={showingScreenIdDataList}
-            buttonTitle="`Hide Countdown"
+            buttonText="`Hide Countdown"
             handleForegroundHiding={handleCountdownHiding}
             isMini={isMini}
         />

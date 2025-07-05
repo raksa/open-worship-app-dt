@@ -2,6 +2,7 @@ import ScreenForegroundManager from '../_screen/managers/ScreenForegroundManager
 import {
     getScreenForegroundManagerInstances,
     getForegroundShowingScreenIdDataList,
+    getScreenForegroundManagerByDropped,
 } from './foregroundHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
 import { useScreenForegroundManagerEvents } from '../_screen/managers/screenEventHelpers';
@@ -9,6 +10,7 @@ import { useForegroundPropsSetting } from './propertiesSettingHelpers';
 import { genTimeoutAttempt } from '../helper/helpers';
 import { ForegroundStopwatchDataType } from '../_screen/screenTypeHelpers';
 import ForegroundLayoutComp from './ForegroundLayoutComp';
+import { dragStore } from '../helper/dragHelpers';
 
 const attemptTimeout = genTimeoutAttempt(500);
 function refreshAllStopwatches(
@@ -31,6 +33,12 @@ function refreshAllStopwatches(
     });
 }
 
+function handleHiding(screenId: number) {
+    getScreenForegroundManagerInstances(screenId, (screenForegroundManager) => {
+        screenForegroundManager.setStopwatchData(null);
+    });
+}
+
 export default function ForegroundStopwatchComp() {
     useScreenForegroundManagerEvents(['update']);
     const showingScreenIdDataList = getForegroundShowingScreenIdDataList(
@@ -50,23 +58,15 @@ export default function ForegroundStopwatchComp() {
         },
         isFontSize: true,
     });
-    const handleStopwatchHiding = (screenId: number) => {
-        getScreenForegroundManagerInstances(
-            screenId,
-            (screenForegroundManager) => {
-                screenForegroundManager.setStopwatchData(null);
-            },
-        );
-    };
     const genHidingElement = (isMini: boolean) => (
         <ScreensRendererComp
             showingScreenIdDataList={showingScreenIdDataList}
-            buttonTitle="`Hide Stopwatch"
-            handleForegroundHiding={handleStopwatchHiding}
+            buttonText="`Hide Stopwatch"
+            handleForegroundHiding={handleHiding}
             isMini={isMini}
         />
     );
-    const handleDateTimeShowing = (event: any, isForceChoosing = false) => {
+    const handleShowing = (event: any, isForceChoosing = false) => {
         ScreenForegroundManager.setStopwatch(
             event,
             new Date(),
@@ -75,7 +75,18 @@ export default function ForegroundStopwatchComp() {
         );
     };
     const handleContextMenuOpening = (event: any) => {
-        handleDateTimeShowing(event, true);
+        handleShowing(event, true);
+    };
+    const handleByDropped = (event: any) => {
+        const screenForegroundManager =
+            getScreenForegroundManagerByDropped(event);
+        if (screenForegroundManager === null) {
+            return;
+        }
+        screenForegroundManager.setStopwatchData({
+            dateTime: new Date(),
+            extraStyle: genStyle(),
+        });
     };
     return (
         <ForegroundLayoutComp
@@ -90,8 +101,12 @@ export default function ForegroundStopwatchComp() {
                     <div>
                         <button
                             className="btn btn-secondary"
-                            onClick={handleDateTimeShowing}
+                            onClick={handleShowing}
                             onContextMenu={handleContextMenuOpening}
+                            draggable
+                            onDragStart={() => {
+                                dragStore.onDropped = handleByDropped;
+                            }}
                         >
                             `Start Stopwatch
                         </button>

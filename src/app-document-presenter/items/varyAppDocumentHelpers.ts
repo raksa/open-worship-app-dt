@@ -1,7 +1,6 @@
 import ScreenVaryAppDocumentManager from '../../_screen/managers/ScreenVaryAppDocumentManager';
 import appProvider from '../../server/appProvider';
-import { getScreenManagerBase } from '../../_screen/managers/screenManagerBaseHelpers';
-import { screenManagerFromBase } from '../../_screen/managers/screenManagerHelpers';
+import { getScreenManagerByScreenId } from '../../_screen/managers/screenManagerHelpers';
 import { slidePreviewerMethods } from './AppDocumentPreviewerFooterComp';
 import { VaryAppDocumentItemType } from '../../app-document-list/appDocumentTypeHelpers';
 
@@ -116,9 +115,7 @@ export function handleNextItemSelecting({
     }
     for (let i = 0; i < foundList.length; i++) {
         const { item, screenId } = foundList[i];
-        const screenManager = screenManagerFromBase(
-            getScreenManagerBase(screenId),
-        );
+        const screenManager = getScreenManagerByScreenId(screenId);
         if (screenManager === null) {
             continue;
         }

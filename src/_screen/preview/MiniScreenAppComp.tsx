@@ -3,8 +3,7 @@ import ScreenBackgroundComp from '../ScreenBackgroundComp';
 import ScreenSlideComp from '../ScreenVaryAppDocumentComp';
 import ScreenBibleComp from '../ScreenBibleComp';
 import { RendStyle } from '../RenderTransitionEffectComp';
-import { getScreenManagerBase } from '../managers/screenManagerBaseHelpers';
-import { screenManagerFromBase } from '../managers/screenManagerHelpers';
+import { getScreenManagerByScreenId } from '../managers/screenManagerHelpers';
 import { ScreenManagerBaseContext } from '../managers/screenManagerHooks';
 
 const IMAGE_BACKGROUND = `linear-gradient(45deg, var(--bs-gray-700) 25%, var(--bs-gray-800) 25%),
@@ -17,7 +16,7 @@ export default function MiniScreenAppComp({
 }: Readonly<{
     screenId: number;
 }>) {
-    const screenManager = screenManagerFromBase(getScreenManagerBase(screenId));
+    const screenManager = getScreenManagerByScreenId(screenId);
     if (screenManager === null) {
         return null;
     }

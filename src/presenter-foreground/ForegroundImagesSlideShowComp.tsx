@@ -9,8 +9,7 @@ import { DragTypeEnum } from '../helper/DragInf';
 import FileSource from '../helper/FileSource';
 import { useStateSettingString } from '../helper/settingHelpers';
 import SlideAutoPlayComp from '../slide-auto-play/SlideAutoPlayComp';
-import { screenManagerFromBase } from '../_screen/managers/screenManagerHelpers';
-import { getScreenManagerBase } from '../_screen/managers/screenManagerBaseHelpers';
+import { getScreenManagerByScreenId } from '../_screen/managers/screenManagerHelpers';
 import { useScreenBackgroundManagerEvents } from '../_screen/managers/screenEventHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { FilePathLoadedContext } from '../others/RenderListComp';
@@ -74,9 +73,7 @@ export function handleNextItemSelecting({
     }
     for (let i = 0; i < foundList.length; i++) {
         const { src, screenId } = foundList[i];
-        const screenManager = screenManagerFromBase(
-            getScreenManagerBase(screenId),
-        );
+        const screenManager = getScreenManagerByScreenId(screenId);
         if (screenManager === null) {
             continue;
         }
@@ -195,7 +192,7 @@ export default function ForegroundImagesSlideShowComp() {
             scaleType,
         });
     };
-    const handleClicking = (event: any, fileSource: FileSource) => {
+    const handleShowing = (event: any, fileSource: FileSource) => {
         ScreenBackgroundManager.handleBackgroundSelecting(event, 'image', {
             src: fileSource.src,
             scaleType,
@@ -211,7 +208,7 @@ export default function ForegroundImagesSlideShowComp() {
     );
     return (
         <ForegroundLayoutComp
-            target="camera"
+            target="images-slide-show"
             fullChildHeaders={<h4>`Background Images Slide Show</h4>}
             childHeadersOnHidden={genHeaderElements(true)}
             extraBodyStyle={{ maxHeight: '450px' }}
@@ -233,7 +230,7 @@ export default function ForegroundImagesSlideShowComp() {
                         dragType={DragTypeEnum.BACKGROUND_IMAGE}
                         rendChild={rendChild.bind(null, scaleType)}
                         dirSourceSettingName={DIR_SOURCE_SETTING_NAME}
-                        onClick={handleClicking}
+                        onClick={handleShowing}
                     />
                 </FilePathLoadedContext>
                 {isAnyItemSelected ? (

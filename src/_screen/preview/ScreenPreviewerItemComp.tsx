@@ -2,7 +2,7 @@ import './CustomHTMLScreenPreviewer';
 
 import { useState } from 'react';
 
-import { extractDropData } from '../../helper/dragHelpers';
+import { dragStore, extractDropData } from '../../helper/dragHelpers';
 import { openContextMenu } from './screenPreviewerHelpers';
 import { useScreenManagerContext } from '../managers/screenManagerHooks';
 import { useAppEffect } from '../../helper/debuggerHelpers';
@@ -42,6 +42,8 @@ export default function ScreenPreviewerItemComp({
     return (
         <div
             key={screenManager.key}
+            data-screen-key={screenManager.screenId}
+            data-screen-manager-key={screenManager.key}
             title={`Screen: ${screenManager.screenId}`}
             className={`mini-screen card m-1 ${selectedCN}`}
             style={{
@@ -65,6 +67,7 @@ export default function ScreenPreviewerItemComp({
                 event.currentTarget.classList.remove(RECEIVING_DROP_CLASSNAME);
                 const droppedData = extractDropData(event);
                 if (droppedData === null) {
+                    dragStore.onDropped?.(event);
                     return;
                 }
                 screenManager.receiveScreenDropped(droppedData);

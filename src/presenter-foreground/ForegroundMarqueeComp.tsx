@@ -4,10 +4,18 @@ import { useScreenForegroundManagerEvents } from '../_screen/managers/screenEven
 import {
     getScreenForegroundManagerInstances,
     getForegroundShowingScreenIdDataList,
+    getScreenForegroundManagerByDropped,
 } from './foregroundHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
 import ForegroundLayoutComp from './ForegroundLayoutComp';
 import { getForegroundCommonProperties } from './ForegroundCommonPropertiesSettingComp';
+import { dragStore } from '../helper/dragHelpers';
+
+function handleHiding(screenId: number) {
+    getScreenForegroundManagerInstances(screenId, (screenForegroundManager) => {
+        screenForegroundManager.setMarqueeData(null);
+    });
+}
 
 export default function ForegroundMarqueeComp() {
     useScreenForegroundManagerEvents(['update']);
@@ -22,14 +30,6 @@ export default function ForegroundMarqueeComp() {
             return data.marqueeData !== null;
         },
     );
-    const handleHiding = (screenId: number) => {
-        getScreenForegroundManagerInstances(
-            screenId,
-            (screenForegroundManager) => {
-                screenForegroundManager.setMarqueeData(null);
-            },
-        );
-    };
     const handleShowing = (event: any, isForceChoosing = false) => {
         const extraStyle = getForegroundCommonProperties();
         ScreenForegroundManager.setMarquee(
@@ -42,10 +42,21 @@ export default function ForegroundMarqueeComp() {
     const handleContextMenuOpening = (event: any) => {
         handleShowing(event, true);
     };
+    const handleByDropped = (event: any) => {
+        const screenForegroundManager =
+            getScreenForegroundManagerByDropped(event);
+        if (screenForegroundManager === null) {
+            return;
+        }
+        screenForegroundManager.setMarqueeData({
+            text,
+            extraStyle: getForegroundCommonProperties(),
+        });
+    };
     const genHidingElement = (isMini: boolean) => (
         <ScreensRendererComp
             showingScreenIdDataList={showingScreenIdDataList}
-            buttonTitle="`Hide Marquee"
+            buttonText="`Hide Marquee"
             handleForegroundHiding={handleHiding}
             isMini={isMini}
         />
@@ -91,6 +102,13 @@ export default function ForegroundMarqueeComp() {
                     className="btn btn-secondary"
                     onClick={handleShowing}
                     onContextMenu={handleContextMenuOpening}
+                    draggable
+                    onDragStart={() => {
+                        dragStore.onDropped = handleByDropped;
+                    }}
+                    onDragEnd={() => {
+                        dragStore.onDropped = null;
+                    }}
                 >
                     `Show Marquee
                 </button>

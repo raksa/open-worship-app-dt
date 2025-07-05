@@ -1,5 +1,5 @@
 import appProvider from '../server/appProvider';
-import ForegroundCameraShowComp from './ForegroundCameraShowComp';
+import ForegroundCameraComp from './ForegroundCameraComp';
 import ForegroundCommonPropertiesSettingComp from './ForegroundCommonPropertiesSettingComp';
 import ForegroundCountDownComp from './ForegroundCountDownComp';
 import ForegroundImagesSlideShowComp from './ForegroundImagesSlideShowComp';
@@ -31,7 +31,7 @@ export default function PresenterForegroundComp() {
             <hr />
             <ForegroundImagesSlideShowComp />
             <hr />
-            <ForegroundCameraShowComp />
+            <ForegroundCameraComp />
             {appProvider.systemUtils.isDev ? (
                 <>
                     <hr />

@@ -17,6 +17,10 @@ import { stopDraggingState } from './helpers';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 import Slide from '../app-document-list/Slide';
 
+export const dragStore: {
+    onDropped?: ((event: any) => void) | null;
+} = {};
+
 export function handleDragStart(
     event: any,
     item: DragInf<any>,

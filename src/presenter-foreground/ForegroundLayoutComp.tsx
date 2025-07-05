@@ -1,3 +1,4 @@
+import { bringDomToNearestView } from '../helper/helpers';
 import { useStateSettingBoolean } from '../helper/settingHelpers';
 
 export default function ForegroundLayoutComp({
@@ -26,15 +27,15 @@ export default function ForegroundLayoutComp({
     return (
         <div className="card m-2">
             <div
-                className={
-                    'card-header d-flex pointer ' + (extraHeaderClassName ?? '')
-                }
+                className={'card-header d-flex' + (extraHeaderClassName ?? '')}
                 style={extraHeaderStyle}
-                onClick={() => {
-                    setIsOpened(!isOpened);
-                }}
             >
-                <div className="d-flex app-ellipsis">
+                <div
+                    className="d-flex app-ellipsis app-caught-hover-pointer flex-grow-1"
+                    onClick={() => {
+                        setIsOpened(!isOpened);
+                    }}
+                >
                     <i
                         className={
                             'app-caught-hover-pointer bi bi-chevron-' +
@@ -44,7 +45,7 @@ export default function ForegroundLayoutComp({
                     {fullChildHeaders}
                 </div>
                 {!isOpened ? (
-                    <div className="d-flex ms-auto">{childHeadersOnHidden}</div>
+                    <div className="d-flex">{childHeadersOnHidden}</div>
                 ) : null}
             </div>
             {isOpened ? (
@@ -53,6 +54,11 @@ export default function ForegroundLayoutComp({
                         'card-body app-inner-shadow p-2 ' +
                         (extraBodyClassName ?? '')
                     }
+                    ref={(div) => {
+                        if (div !== null) {
+                            bringDomToNearestView(div);
+                        }
+                    }}
                     style={extraBodyStyle}
                 >
                     {children}

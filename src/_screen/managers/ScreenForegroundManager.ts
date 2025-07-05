@@ -7,7 +7,7 @@ import {
     genHtmlForegroundQuickText,
     genHtmlForegroundStopwatch,
     genHtmlForegroundTime,
-    getAndShowMedia,
+    getCameraAndShowMedia,
 } from '../screenForegroundHelpers';
 import { getForegroundDataListOnScreenSetting } from '../screenHelpers';
 import { screenManagerSettingNames } from '../../helper/constants';
@@ -60,7 +60,7 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
             ['timeDataList', this.renderTime.bind(this)],
             ['marqueeData', this.renderMarquee.bind(this)],
             ['quickTextData', this.renderQuickText.bind(this)],
-            ['cameraData', this.renderCamera.bind(this)],
+            ['cameraDataList', this.renderCamera.bind(this)],
         ]);
         this.setterMap = new Map<
             string,
@@ -71,11 +71,11 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
             ['timeDataList', this.setTimeDataList.bind(this)],
             ['marqueeData', this.setMarqueeData.bind(this)],
             ['quickTextData', this.setQuickTextData.bind(this)],
-            ['cameraData', this.setCameraData.bind(this)],
+            ['cameraDataList', this.setCameraDataList.bind(this)],
         ]);
     }
 
-    static parseAllForegroundData(foregroundData: any): ForegroundDataType {
+    static parseAllForegroundData(foregroundData: any) {
         const countdownData = foregroundData['countdownData'] ?? null;
         if (countdownData !== null) {
             countdownData.dateTime = new Date(countdownData.dateTime);
@@ -84,14 +84,15 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
         if (stopwatchData !== null) {
             stopwatchData.dateTime = new Date(stopwatchData.dateTime);
         }
-        return {
+        const newForegroundData = {
             countdownData,
             stopwatchData,
             timeDataList: foregroundData['timeDataList'] ?? [],
             marqueeData: foregroundData['marqueeData'] ?? null,
             quickTextData: foregroundData['quickTextData'] ?? null,
-            cameraData: foregroundData['cameraData'] ?? null,
-        };
+            cameraDataList: foregroundData['cameraDataList'] ?? [],
+        } as ForegroundDataType;
+        return newForegroundData;
     }
 
     get isShowing() {
@@ -114,6 +115,7 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
             return;
         }
         const { removeHandler } = containerMapper.get(data)!;
+        containerMapper.delete(data);
         removeHandler();
     }
 
@@ -121,15 +123,10 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
         data: any,
         removingHandler?: (container: HTMLElement) => Promise<void> | void,
     ): HTMLElement | null {
-        if (data === null) {
-            return null;
-        }
-        this.removeDivContainer(data);
         const container = document.createElement('div');
         containerMapper.set(data, {
             container,
             removeHandler: async () => {
-                containerMapper.delete(data);
                 await removingHandler?.(container);
                 container.parentNode?.removeChild(container);
             },
@@ -138,16 +135,47 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
         return container;
     }
 
+    _getDiff(oldData: any, newData: any) {
+        const toRemoveDataList = [];
+        const toRenderDataList = [];
+        if (oldData !== newData) {
+            if (oldData === null && newData !== null) {
+                toRenderDataList.push(newData);
+            } else if (oldData !== null && newData === null) {
+                toRemoveDataList.push(oldData);
+            } else if (Array.isArray(oldData)) {
+                for (const newItem of newData) {
+                    if (!checkIsItemInArray(newItem, oldData)) {
+                        toRenderDataList.push(newItem);
+                    }
+                }
+                for (const oldItem of oldData) {
+                    if (!checkIsItemInArray(oldItem, newData)) {
+                        toRemoveDataList.push(oldItem);
+                    }
+                }
+            } else if (!checkAreObjectsEqual(oldData, newData)) {
+                toRemoveDataList.push(oldData);
+                toRenderDataList.push(newData);
+            }
+        }
+        return {
+            toRemoveDataList,
+            toRenderDataList,
+        };
+    }
     compareAndRender(oldData: any, newData: any, render: (data: any) => void) {
-        if (oldData === null && newData !== null) {
-            render(newData);
-            return newData;
-        } else if (oldData !== null && newData === null) {
-            this.removeDivContainer(oldData);
-            return null;
-        } else if (!checkAreObjectsEqual(oldData, newData)) {
-            this.removeDivContainer(oldData);
-            render(newData);
+        const { toRemoveDataList, toRenderDataList } = this._getDiff(
+            oldData,
+            newData,
+        );
+        for (const data of toRemoveDataList) {
+            this.removeDivContainer(data);
+        }
+        for (const data of toRenderDataList) {
+            render(data);
+        }
+        if (toRenderDataList.length > 0) {
             return newData;
         }
         return oldData;
@@ -221,9 +249,9 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
         this.setData(
             event,
             (screenForegroundManager) => {
-                const countdownData =
+                const data =
                     dateTime !== null ? { dateTime, extraStyle } : null;
-                screenForegroundManager.setCountdownData(countdownData);
+                screenForegroundManager.setCountdownData(data);
             },
             isForceChoosing,
         );
@@ -264,16 +292,10 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
         );
     }
 
-    renderTime(dataList: ForegroundTimeDataType[]) {
-        for (const oldData of this.foregroundData.timeDataList ?? []) {
-            this.removeDivContainer(oldData);
-        }
-        for (const data of dataList) {
-            const { handleAdding, handleRemoving } =
-                genHtmlForegroundTime(data);
-            const divContainer = this.createDivContainer(data, handleRemoving);
-            handleAdding(divContainer!);
-        }
+    renderTime(data: ForegroundTimeDataType) {
+        const { handleAdding, handleRemoving } = genHtmlForegroundTime(data);
+        const divContainer = this.createDivContainer(data, handleRemoving);
+        handleAdding(divContainer!);
     }
     setTimeDataList(dataList: ForegroundTimeDataType[], isNoSyncGroup = false) {
         this.applyForegroundDataWithSyncGroup(
@@ -288,37 +310,37 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
         if (checkIsItemInArray(data, this.foregroundData.timeDataList)) {
             return;
         }
-        const timeDataList = [...this.foregroundData.timeDataList, data];
-        this.setTimeDataList(timeDataList, isNoSyncGroup);
+        const dataList = [...this.foregroundData.timeDataList, data];
+        this.setTimeDataList(dataList, isNoSyncGroup);
     }
     removeTimeData(data: ForegroundTimeDataType, isNoSyncGroup = false) {
-        const timeDataList = this.foregroundData.timeDataList.filter((item) => {
+        const dataList = this.foregroundData.timeDataList.filter((item) => {
             return !checkAreObjectsEqual(item, data);
         });
-        this.setTimeDataList(timeDataList, isNoSyncGroup);
+        this.setTimeDataList(dataList, isNoSyncGroup);
     }
     static async addTimeData(
         event: React.MouseEvent<HTMLElement, MouseEvent>,
-        timeData: ForegroundTimeDataType,
+        data: ForegroundTimeDataType,
         isForceChoosing = false,
     ) {
         this.setData(
             event,
             (screenForegroundManager) => {
-                screenForegroundManager.addTimeData(timeData);
+                screenForegroundManager.addTimeData(data);
             },
             isForceChoosing,
         );
     }
     static async removeTimeData(
         event: React.MouseEvent<HTMLElement, MouseEvent>,
-        timeData: ForegroundTimeDataType,
+        data: ForegroundTimeDataType,
         isForceChoosing = false,
     ) {
         this.setData(
             event,
             (screenForegroundManager) => {
-                screenForegroundManager.removeTimeData(timeData);
+                screenForegroundManager.removeTimeData(data);
             },
             isForceChoosing,
         );
@@ -329,8 +351,8 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
             data,
             this.screenManagerBase,
         );
-        const divMarquee = this.createDivContainer(data, handleRemoving);
-        divMarquee!.appendChild(element);
+        const divContainer = this.createDivContainer(data, handleRemoving);
+        divContainer!.appendChild(element);
     }
     setMarqueeData(
         data: ForegroundMarqueDataType | null,
@@ -385,6 +407,7 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
     static async setQuickText(
         event: React.MouseEvent<HTMLElement, MouseEvent>,
         htmlText: string | null,
+        timeSecondDelay: number,
         timeSecondToLive: number,
         extraStyle: CSSProperties = {},
         isForceChoosing = false,
@@ -394,7 +417,12 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
             (screenForegroundManager) => {
                 const quickTextData =
                     htmlText !== null
-                        ? { htmlText, timeSecondToLive, extraStyle }
+                        ? {
+                              htmlText,
+                              timeSecondDelay,
+                              timeSecondToLive,
+                              extraStyle,
+                          }
                         : null;
                 screenForegroundManager.setQuickTextData(quickTextData);
             },
@@ -403,40 +431,66 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
     }
 
     renderCamera(data: ForegroundCameraDataType) {
-        const store = { clearCameraTracks: () => {} };
-        const divMarquee = this.createDivContainer(data, () => {
-            store.clearCameraTracks();
+        const store = {
+            clearCameraTracks: () => ({}) as OptionalPromise<void>,
+        };
+        const divContainer = this.createDivContainer(data, async () => {
+            await store.clearCameraTracks();
         });
-        getAndShowMedia({
-            container: divMarquee!,
+        getCameraAndShowMedia({
+            parentContainer: divContainer!,
             ...data,
         }).then((clearTracks) => {
             store.clearCameraTracks = clearTracks ?? (() => {});
         });
     }
-    setCameraData(
-        data: ForegroundCameraDataType | null,
+    setCameraDataList(
+        dataList: ForegroundCameraDataType[],
         isNoSyncGroup = false,
     ) {
         this.applyForegroundDataWithSyncGroup(
             {
                 ...this.foregroundData,
-                cameraData: data,
+                cameraDataList: dataList,
             },
             isNoSyncGroup,
         );
     }
-    static async setCamera(
+    addCameraData(data: ForegroundCameraDataType, isNoSyncGroup = false) {
+        if (checkIsItemInArray(data, this.foregroundData.cameraDataList)) {
+            return;
+        }
+        const dataList = [...this.foregroundData.cameraDataList, data];
+        this.setCameraDataList(dataList, isNoSyncGroup);
+    }
+    removeCameraData(data: ForegroundCameraDataType, isNoSyncGroup = false) {
+        const dataList = this.foregroundData.cameraDataList.filter((item) => {
+            return !checkAreObjectsEqual(item, data);
+        });
+        this.setCameraDataList(dataList, isNoSyncGroup);
+    }
+    static async addCameraData(
         event: React.MouseEvent<HTMLElement, MouseEvent>,
-        id: string | null,
-        extraStyle: CSSProperties = {},
+        data: ForegroundCameraDataType,
         isForceChoosing = false,
     ) {
         this.setData(
             event,
             (screenForegroundManager) => {
-                const cameraData = id !== null ? { id, extraStyle } : null;
-                screenForegroundManager.setCameraData(cameraData);
+                screenForegroundManager.addCameraData(data);
+            },
+            isForceChoosing,
+        );
+    }
+    static async removeCameraData(
+        event: React.MouseEvent<HTMLElement, MouseEvent>,
+        data: ForegroundCameraDataType,
+        isForceChoosing = false,
+    ) {
+        this.setData(
+            event,
+            (screenForegroundManager) => {
+                screenForegroundManager.removeCameraData(data);
             },
             isForceChoosing,
         );
@@ -453,7 +507,14 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
     render() {
         for (const [key, render] of this.rendererMap.entries()) {
             const data = this.foregroundData[key as keyof ForegroundDataType];
-            if (data !== null) {
+            if (data === null) {
+                continue;
+            }
+            if (Array.isArray(data)) {
+                for (const item of data) {
+                    render(item);
+                }
+            } else {
                 render(data);
             }
         }
@@ -469,20 +530,15 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
         if (!isNoSyncGroup) {
             ScreenForegroundManager.enableSyncGroup(this.screenId);
         }
-        for (const item of Object.entries(this.foregroundData)) {
-            const key = item[0];
-            let oldData = item[1];
+        for (const [key, oldData] of Object.entries(this.foregroundData)) {
+            const newData = newForegroundData[key as keyof ForegroundDataType];
             const render = this.rendererMap.get(key) ?? null;
             if (render === null) {
                 continue;
             }
-            oldData = this.compareAndRender(
-                oldData,
-                newForegroundData[key as keyof ForegroundDataType] ?? null,
-                render,
-            );
+            this.compareAndRender(oldData, newData, render);
             Object.assign(this.foregroundData, {
-                [key as keyof ForegroundDataType]: oldData,
+                [key as keyof ForegroundDataType]: newData,
             });
         }
         this.saveForegroundData();

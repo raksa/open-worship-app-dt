@@ -1,12 +1,16 @@
 import ShowingScreenIcon from '../_screen/preview/ShowingScreenIcon';
 
 export default function ScreensRendererComp<T>({
-    buttonTitle,
+    title,
+    genTitle,
+    buttonText,
     showingScreenIdDataList,
     handleForegroundHiding,
     isMini = false,
 }: Readonly<{
-    buttonTitle: string;
+    title?: string;
+    genTitle?: (data: T) => string;
+    buttonText: string;
     showingScreenIdDataList: [number, T][];
     handleForegroundHiding: (screenId: number, data: T) => void;
     isMini?: boolean;
@@ -15,11 +19,13 @@ export default function ScreensRendererComp<T>({
         return null;
     }
     return (
-        <div className="d-flex mt-2 p-1 app-border-white-round">
+        <div className="d-flex mt-2 p-1 app-border-white-round" title={title}>
             {showingScreenIdDataList.map(([screenId, data], i) => {
+                const itemTitle = genTitle ? genTitle(data) : undefined;
                 return (
                     <div
                         className="d-flex app-caught-hover-pointer"
+                        title={itemTitle}
                         key={screenId + '-' + i}
                         onClick={handleForegroundHiding.bind(
                             null,
@@ -29,7 +35,7 @@ export default function ScreensRendererComp<T>({
                     >
                         {!isMini ? (
                             <button className="btn btn-secondary">
-                                {buttonTitle}
+                                {buttonText}
                             </button>
                         ) : null}
                         <div className="input-group-text">
