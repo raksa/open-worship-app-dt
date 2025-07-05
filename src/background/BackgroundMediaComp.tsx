@@ -26,64 +26,6 @@ const backgroundTypeMapper: any = {
     [DragTypeEnum.BACKGROUND_SOUND]: 'sound',
 };
 
-export default function BackgroundMediaComp({
-    rendChild,
-    dragType,
-    onClick,
-    defaultFolderName,
-    dirSourceSettingName,
-    noDraggable = false,
-    isNameOnTop = false,
-}: Readonly<{
-    rendChild: RenderChildType;
-    dragType: DragTypeEnum;
-    onClick?: (event: any, fileSource: FileSource) => void;
-    defaultFolderName?: string;
-    dirSourceSettingName: string;
-    noDraggable?: boolean;
-    isNameOnTop?: boolean;
-}>) {
-    const backgroundType = backgroundTypeMapper[dragType];
-    const dirSource = useGenDirSource(dirSourceSettingName);
-    const handleBodyRendering = (filePaths: string[]) => {
-        const genBodyWithChild = genBody.bind(
-            null,
-            rendChild,
-            dragType,
-            onClick,
-            noDraggable,
-            isNameOnTop,
-        );
-        return (
-            <div className="d-flex justify-content-start flex-wrap">
-                {filePaths.map(genBodyWithChild)}
-            </div>
-        );
-    };
-    useScreenBackgroundManagerEvents(['update']);
-    if (dirSource === null) {
-        return null;
-    }
-    return (
-        <FileListHandlerComp
-            className={`app-background-${backgroundType}`}
-            mimetypeName={backgroundType}
-            defaultFolderName={defaultFolderName}
-            dirSource={dirSource}
-            bodyHandler={handleBodyRendering}
-            fileSelectionOption={
-                backgroundType === 'color'
-                    ? undefined
-                    : {
-                          windowTitle: `Select ${backgroundType} files`,
-                          dirPath: dirSource.dirPath,
-                          extensions: getMimetypeExtensions(backgroundType),
-                      }
-            }
-        />
-    );
-}
-
 function FileFullNameRenderer({
     fileFullName,
 }: Readonly<{
@@ -178,5 +120,68 @@ function genBody(
                 <FileFullNameRenderer fileFullName={fileSource.fileFullName} />
             )}
         </div>
+    );
+}
+
+export default function BackgroundMediaComp({
+    extraHeaderChild,
+    rendChild,
+    dragType,
+    onClick,
+    defaultFolderName,
+    dirSourceSettingName,
+    noDraggable = false,
+    isNameOnTop = false,
+}: Readonly<{
+    extraHeaderChild?: React.ReactNode;
+    rendChild: RenderChildType;
+    dragType: DragTypeEnum;
+    onClick?: (event: any, fileSource: FileSource) => void;
+    defaultFolderName?: string;
+    dirSourceSettingName: string;
+    noDraggable?: boolean;
+    isNameOnTop?: boolean;
+}>) {
+    const backgroundType = backgroundTypeMapper[dragType];
+    const dirSource = useGenDirSource(dirSourceSettingName);
+    const handleBodyRendering = (filePaths: string[]) => {
+        const genBodyWithChild = genBody.bind(
+            null,
+            rendChild,
+            dragType,
+            onClick,
+            noDraggable,
+            isNameOnTop,
+        );
+        return (
+            <div className="d-flex justify-content-start flex-wrap">
+                {filePaths.map(genBodyWithChild)}
+            </div>
+        );
+    };
+    useScreenBackgroundManagerEvents(['update']);
+    if (dirSource === null) {
+        return null;
+    }
+    return (
+        <>
+            {extraHeaderChild !== undefined ? extraHeaderChild : null}
+            <FileListHandlerComp
+                className={`app-background-${backgroundType}`}
+                mimetypeName={backgroundType}
+                defaultFolderName={defaultFolderName}
+                dirSource={dirSource}
+                bodyHandler={handleBodyRendering}
+                fileSelectionOption={
+                    backgroundType === 'color'
+                        ? undefined
+                        : {
+                              windowTitle: `Select ${backgroundType} files`,
+                              dirPath: dirSource.dirPath,
+                              extensions: getMimetypeExtensions(backgroundType),
+                          }
+                }
+            />
+        </>
     );
 }
