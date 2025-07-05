@@ -52,9 +52,12 @@ export default function RenderBibleEditingHeader() {
                     data-min-parent-width="550"
                 >
                     {viewController.isAlone ? null : (
-                        <button
-                            className="btn-close"
+                        <i
+                            className="bi bi-x-lg app-caught-hover-pointer"
                             title={`Close [${toShortcutKey(closeEventMapper)}]`}
+                            style={{
+                                color: 'var(--bs-danger-text-emphasis)',
+                            }}
                             onClick={() => {
                                 closeCurrentEditingBibleItem(viewController);
                             }}

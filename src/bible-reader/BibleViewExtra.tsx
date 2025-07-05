@@ -114,8 +114,11 @@ export function RenderHeaderComp({
                 className={`${HoverMotionHandler.lowClassname}-0`}
                 data-min-parent-width="550"
             >
-                <button
-                    className="btn-close"
+                <i
+                    className="bi bi-x-lg app-caught-hover-pointer"
+                    style={{
+                        color: 'var(--bs-danger-text-emphasis)',
+                    }}
                     onClick={() => {
                         viewController.deleteBibleItem(bibleItem);
                     }}
