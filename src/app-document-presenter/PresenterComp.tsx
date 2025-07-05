@@ -22,6 +22,7 @@ import LyricAppDocument from '../lyric-list/LyricAppDocument';
 import { getSelectedLyric } from '../lyric-list/lyricHelpers';
 import { tran } from '../lang/langHelpers';
 import ResizeActorComp from '../resize-actor/ResizeActorComp';
+import { getAllScreenManagers } from '../_screen/managers/screenManagerHelpers';
 
 const LazyAppDocumentPreviewerComp = lazy(() => {
     return import('./items/AppDocumentPreviewerComp');
@@ -71,6 +72,11 @@ async function checkIsOnScreen<T>(targeKey: T) {
         const isOnScreen =
             await checkIsVaryAppDocumentOnScreen(lyricAppDocument);
         return isOnScreen;
+    } else if (targeKey === 'f') {
+        const allScreenManager = getAllScreenManagers();
+        return allScreenManager.some((screenManager) => {
+            return screenManager.screenForegroundManager.isShowing;
+        });
     }
     return false;
 }

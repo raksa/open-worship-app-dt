@@ -97,6 +97,9 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
 
     get isShowing() {
         return Object.values(this.foregroundData).some((data) => {
+            if (Array.isArray(data)) {
+                return data.length > 0;
+            }
             return data !== null;
         });
     }
