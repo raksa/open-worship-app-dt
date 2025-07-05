@@ -73,7 +73,7 @@ export default function ColorPicker({
                 backgroundColor: 'var(--bs-gray-700)',
             }}
         >
-            <div className="p-3 overflow-hidden">
+            <div className="p-1 overflow-hidden">
                 <RenderColors
                     colors={colorList.main}
                     selectedColor={localColor}

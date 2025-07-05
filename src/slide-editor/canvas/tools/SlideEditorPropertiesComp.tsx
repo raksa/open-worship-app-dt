@@ -16,8 +16,14 @@ export default function SlideEditorPropertiesComp({
             }}
         >
             {canvasItems.length === 0 ? (
-                <div className="d-flex flex-fill justify-content-center">
-                    <span className="text-muted">No canvas item selected</span>
+                <div className="d-flex justify-content-center align-items-center h-100">
+                    <div>
+                        <h2 className="text-muted">`No canvas item selected</h2>
+                        <hr />
+                        <h3 className="text-muted">
+                            `Please select an item to edit
+                        </h3>
+                    </div>
                 </div>
             ) : null}
             {canvasItems.map((canvasItem) => {

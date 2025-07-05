@@ -30,13 +30,13 @@ export default function SlideEditorToolsTextComp() {
         canvasController.applyEditItem(canvasItem);
     };
     return (
-        <div className="d-flex flex-wrap">
+        <div className="d-flex flex-wrap app-inner-shadow">
             <SlideEditorToolsColorComp
                 color={canvasItem.props.color}
                 handleColorChanging={handleColorChanging}
             />
             <div
-                className="ps-2"
+                className="ps-1"
                 style={{
                     minWidth: '300px',
                 }}
