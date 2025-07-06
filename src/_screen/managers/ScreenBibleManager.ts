@@ -39,7 +39,6 @@ import {
     ScreenMessageType,
 } from '../screenTypeHelpers';
 
-let textStyle: AnyObjectType = {};
 class ScreenBibleManager extends ScreenEventHandler<ScreenBibleManagerEventType> {
     static readonly eventNamePrefix: string = 'screen-ft-m';
     private _screenViewData: BibleItemDataType | null = null;
@@ -58,23 +57,6 @@ class ScreenBibleManager extends ScreenEventHandler<ScreenBibleManagerEventType>
         if (appProvider.isPagePresenter) {
             const allBibleDataList = getBibleListOnScreenSetting();
             this._screenViewData = allBibleDataList[this.key] ?? null;
-
-            const str = getSetting(
-                `${SCREEN_BIBLE_SETTING_PREFIX}-style-text`,
-                '',
-            );
-            try {
-                if (isValidJson(str, true)) {
-                    const style = JSON.parse(str);
-                    if (typeof style !== 'object') {
-                        loggerHelpers.error(style);
-                        throw new Error('Invalid style data');
-                    }
-                    textStyle = style;
-                }
-            } catch (error) {
-                handleError(error);
-            }
         }
     }
 
@@ -342,13 +324,27 @@ class ScreenBibleManager extends ScreenEventHandler<ScreenBibleManagerEventType>
     }
 
     static get textStyle(): AnyObjectType {
-        return textStyle;
+        const str = getSetting(`${SCREEN_BIBLE_SETTING_PREFIX}-style-text`, '');
+        try {
+            if (isValidJson(str, true)) {
+                const style = JSON.parse(str);
+                if (typeof style !== 'object') {
+                    loggerHelpers.error(style);
+                    throw new Error('Invalid style data');
+                }
+                return style;
+            }
+        } catch (error) {
+            handleError(error);
+        }
+        return {};
     }
 
     static set textStyle(style: AnyObjectType) {
-        textStyle = style;
-        const str = JSON.stringify(style);
-        setSetting(`${SCREEN_BIBLE_SETTING_PREFIX}-style-text`, str);
+        setSetting(
+            `${SCREEN_BIBLE_SETTING_PREFIX}-style-text`,
+            JSON.stringify(style),
+        );
         this.sendSynTextStyle();
         this.addPropEvent('text-style');
     }
@@ -373,6 +369,8 @@ class ScreenBibleManager extends ScreenEventHandler<ScreenBibleManagerEventType>
 
     static receiveSyncTextStyle(message: ScreenMessageType) {
         const { data } = message;
+        console.log(data.textStyle);
+
         this.textStyle = data.textStyle;
     }
 
