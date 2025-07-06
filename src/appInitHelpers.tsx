@@ -21,7 +21,6 @@ import {
 } from './lang/langHelpers';
 import appProvider from './server/appProvider';
 import initCrypto from './_owa-crypto';
-import { useCheckSelectedDir } from './setting/directory-setting/directoryHelpers';
 import { createRoot } from 'react-dom/client';
 import { StrictMode } from 'react';
 import { getSetting, setSetting } from './helper/settingHelpers';
@@ -39,10 +38,35 @@ import {
 } from './helper/domHelpers';
 import { appLocalStorage } from './setting/directory-setting/appLocalStorage';
 import { unlocking } from './server/unlockingHelpers';
-import { checkForUpdateSilently } from './server/appHelpers';
+import {
+    checkDecidedBibleReaderHomePage,
+    checkForUpdateSilently,
+} from './server/appHelpers';
+import { useAppEffectAsync } from './helper/debuggerHelpers';
+import { goToGeneralSetting } from './setting/settingHelpers';
 
 const ERROR_DATETIME_SETTING_NAME = 'error-datetime-setting';
 const ERROR_DURATION = 1000 * 10; // 10 seconds;
+
+function useCheckSetting() {
+    useAppEffectAsync(async () => {
+        if (
+            !appProvider.isPageSetting &&
+            !(await appLocalStorage.getSelectedParentDirectory())
+        ) {
+            const isOk = await showAppConfirm(
+                '`No Parent Directory Selected',
+                '`You will be redirected to the General Settings page to ' +
+                    'select a parent directory.',
+            );
+            if (!isOk) {
+                return;
+            }
+            goToGeneralSetting();
+        }
+        checkDecidedBibleReaderHomePage();
+    }, []);
+}
 
 async function confirmLocalStorageErasing() {
     const isOk = await showAppConfirm(
@@ -155,7 +179,7 @@ export function RenderApp({
     children: React.ReactNode;
 }>) {
     useQuickExitBlock();
-    useCheckSelectedDir();
+    useCheckSetting();
     return (
         <div id="app" className="dark" data-bs-theme="dark">
             <StrictMode>{children}</StrictMode>

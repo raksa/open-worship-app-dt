@@ -1,7 +1,7 @@
 import { getSetting, useStateSettingBoolean } from '../helper/settingHelpers';
 import {
     HelpButtonComp,
-    QuickOrBackButtonComp,
+    QuitCurrentPageComp,
     SettingButtonComp,
 } from '../others/commonButtons';
 import appProvider from '../server/appProvider';
@@ -61,7 +61,10 @@ export default function RenderExtraButtonsRightComp({
             </button>
             {!appProvider.isPageReader ? null : (
                 <>
-                    <QuickOrBackButtonComp title="Quit Reader" />
+                    <QuitCurrentPageComp
+                        title="`Go Back to Presenter"
+                        pathname={appProvider.presenterHomePage}
+                    />
                     <SettingButtonComp />
                     <HelpButtonComp />
                 </>

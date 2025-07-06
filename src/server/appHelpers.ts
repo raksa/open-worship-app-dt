@@ -3,6 +3,7 @@ import { showSimpleToast } from '../toast/toastHelpers';
 import { handleError } from '../helper/errorHelpers';
 import { showAppConfirm } from '../popup-widget/popupWidgetHelpers';
 import { AnyObjectType, OptionalPromise } from '../helper/typeHelpers';
+import { goToPath } from '../router/routeHelpers';
 
 export function getFontListByNodeFont() {
     appProvider.messageUtils.sendData('main:app:get-font-list');
@@ -179,5 +180,35 @@ export async function checkForUpdateSilently() {
         }
     } catch (error) {
         handleError(error);
+    }
+}
+
+const DECIDED_BIBLE_READER_HOME_PAGE_SETTING_NAME = 'decided-reader-home-page';
+function setDecided() {
+    window.localStorage.setItem(
+        DECIDED_BIBLE_READER_HOME_PAGE_SETTING_NAME,
+        'true',
+    );
+}
+export function checkDecidedBibleReaderHomePage() {
+    if (appProvider.isPageSetting) {
+        return;
+    }
+    if (appProvider.isPageReader) {
+        setDecided();
+    }
+    const decided = window.localStorage.getItem(
+        DECIDED_BIBLE_READER_HOME_PAGE_SETTING_NAME,
+    );
+    if (decided !== null) {
+        return;
+    }
+    const isOk = window.confirm(
+        '`The application is started first time. ' +
+            '\nThis will set the home page to \n"📖 Bible Reader🔎"?',
+    );
+    setDecided();
+    if (isOk) {
+        goToPath(appProvider.readerHomePage);
     }
 }

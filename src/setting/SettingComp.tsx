@@ -4,7 +4,7 @@ import { lazy } from 'react';
 
 import { useStateSettingString } from '../helper/settingHelpers';
 import TabRenderComp, { genTabBody } from '../others/TabRenderComp';
-import { QuickOrBackButtonComp } from '../others/commonButtons';
+import { QuitCurrentPageComp } from '../others/commonButtons';
 import { SETTING_SETTING_NAME } from './settingHelpers';
 
 const LazySettingGeneralComp = lazy(() => {
@@ -48,7 +48,7 @@ export default function SettingComp() {
                         right: 0,
                     }}
                 >
-                    <QuickOrBackButtonComp title="Quit Setting" />
+                    <QuitCurrentPageComp title="Quit Setting" />
                 </div>
             </div>
             <div className="card-body overflow-hidden">

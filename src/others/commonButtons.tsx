@@ -11,26 +11,19 @@ import appProvider from '../server/appProvider';
 import { getAllLocalBibleInfoList } from '../helper/bible-helpers/bibleDownloadHelpers';
 import { showAppConfirm } from '../popup-widget/popupWidgetHelpers';
 
-export function QuickOrBackButtonComp({
+export function QuitCurrentPageComp({
     title,
-    defaultPage = appProvider.presenterHomePage,
+    pathname,
 }: Readonly<{
     title: string;
-    defaultPage?: string;
+    pathname?: string;
 }>) {
     return (
         <button
             className="btn btn-sm btn-outline-warning"
             title={title}
             onClick={() => {
-                if (
-                    document.referrer &&
-                    !document.referrer.includes(appProvider.currentHomePage)
-                ) {
-                    window.history.back();
-                } else {
-                    goToPath(defaultPage);
-                }
+                goToPath(pathname);
             }}
         >
             <i className="bi bi-escape" />

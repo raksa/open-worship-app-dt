@@ -12,13 +12,11 @@ import {
     defaultDataDirNames,
     dirSourceSettingNames,
 } from '../../helper/constants';
-import { useAppEffectAsync } from '../../helper/debuggerHelpers';
 import DirSource from '../../helper/DirSource';
 import { handleError } from '../../helper/errorHelpers';
 import { getSetting, setSetting } from '../../helper/settingHelpers';
 import { appLocalStorage } from './appLocalStorage';
 import FileSource from '../../helper/FileSource';
-import { goToGeneralSetting } from '../settingHelpers';
 
 export function getDefaultDataDir() {
     const desktopPath = getDesktopPath();
@@ -75,25 +73,6 @@ export async function checkShouldSelectChildDir() {
         return isValid;
     });
     return !isSomeValid;
-}
-
-export function useCheckSelectedDir() {
-    useAppEffectAsync(async () => {
-        if (
-            !appProvider.isPageSetting &&
-            !(await appLocalStorage.getSelectedParentDirectory())
-        ) {
-            const isOk = await showAppConfirm(
-                '`No Parent Directory Selected',
-                '`You will be redirected to the General Settings page to ' +
-                    'select a parent directory.',
-            );
-            if (!isOk) {
-                return;
-            }
-            goToGeneralSetting();
-        }
-    }, []);
 }
 
 export async function selectDefaultDataDirName(

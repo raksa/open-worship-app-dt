@@ -46,8 +46,21 @@ export const experimentTab: TabOptionType = {
     routePath: appProvider.experimentHomePage,
 };
 
-export function goToPath(pathname: string) {
+const PATH_NAME_SETTING_NAME = 'last-page-location';
+export function goToPath(pathname?: string) {
+    if (!pathname) {
+        pathname =
+            window.localStorage.getItem(PATH_NAME_SETTING_NAME) ||
+            appProvider.presenterHomePage;
+    }
+    if (pathname.startsWith(appProvider.currentHomePage)) {
+        pathname = appProvider.presenterHomePage;
+    }
     const url = new URL(window.location.href);
     url.pathname = pathname;
+    window.localStorage.setItem(
+        PATH_NAME_SETTING_NAME,
+        appProvider.currentHomePage,
+    );
     window.location.href = url.href;
 }

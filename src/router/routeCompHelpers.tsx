@@ -5,7 +5,7 @@ import appProvider from '../server/appProvider';
 import { TabOptionType, toTitleExternal } from './routeHelpers';
 
 export const editorTab: TabOptionType = {
-    title: toTitleExternal('Editor'),
+    title: toTitleExternal('Slide Editor'),
     routePath: appProvider.editorHomePage,
     preCheck: async () => {
         const varyAppDocument = await getSelectedVaryAppDocument();
