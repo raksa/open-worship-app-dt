@@ -212,3 +212,15 @@ export function checkDecidedBibleReaderHomePage() {
         goToPath(appProvider.readerHomePage);
     }
 }
+
+export function pasteTextToInput(inputElement: HTMLInputElement, text: string) {
+    inputElement.focus();
+    const value = inputElement.value;
+    inputElement.setRangeText(text, 0, value.length, 'end');
+    inputElement.dispatchEvent(
+        new Event('input', {
+            bubbles: true,
+            composed: true,
+        }),
+    );
+}

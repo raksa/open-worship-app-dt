@@ -4,6 +4,7 @@ import {
     showAppContextMenu,
 } from '../context-menu/appContextMenuHelpers';
 import KeyboardEventListener from '../event/KeyboardEventListener';
+import { pasteTextToInput } from '../server/appHelpers';
 import {
     MutationType,
     APP_FULL_VIEW_CLASSNAME,
@@ -216,20 +217,7 @@ export class InputContextMenuHandler {
                     childBefore: genContextMenuItemIcon('clipboard'),
                     menuElement: '`Paste',
                     onSelect: () => {
-                        inputElement.focus();
-                        const value = inputElement.value;
-                        inputElement.setRangeText(
-                            copiedText,
-                            inputElement.selectionStart ?? value.length,
-                            inputElement.selectionEnd ?? value.length,
-                            'end',
-                        );
-                        inputElement.dispatchEvent(
-                            new Event('input', {
-                                bubbles: true,
-                                composed: true,
-                            }),
-                        );
+                        pasteTextToInput(inputElement, copiedText);
                     },
                 });
             }
@@ -238,14 +226,7 @@ export class InputContextMenuHandler {
                     childBefore: genContextMenuItemIcon('x'),
                     menuElement: '`Clear',
                     onSelect: () => {
-                        inputElement.focus();
-                        inputElement.value = '';
-                        inputElement.dispatchEvent(
-                            new Event('input', {
-                                bubbles: true,
-                                composed: true,
-                            }),
-                        );
+                        pasteTextToInput(inputElement, '');
                     },
                 });
             }

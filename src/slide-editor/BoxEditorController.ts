@@ -478,7 +478,7 @@ export function useBoxEditorControllerContext() {
     if (context === null) {
         throw new Error(
             'useBoxEditorControllerContext must be used inside a ' +
-                'BoxEditorControllerContext.Provider',
+                'BoxEditorControllerContext',
         );
     }
     return context;

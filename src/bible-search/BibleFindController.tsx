@@ -26,6 +26,8 @@ import {
     showAppContextMenu,
 } from '../context-menu/appContextMenuHelpers';
 import { cumulativeOffset } from '../helper/helpers';
+import { unlocking } from '../server/unlockingHelpers';
+import { pasteTextToInput } from '../server/appHelpers';
 
 const DEFAULT_ROW_LIMIT = 20;
 
@@ -194,21 +196,40 @@ class DatabaseFindingHandler {
     }
 }
 
+const instanceCache: Record<string, BibleFindController | null> = {};
 export default class BibleFindController {
     onlineFindHandler: OnlineFindHandler | null = null;
     databaseFindHandler: DatabaseFindingHandler | null = null;
     private readonly _bibleKey: string;
     private _bookKey: string | null = null;
-    input: HTMLInputElement | null = null;
+    _input: HTMLInputElement | null = null;
     private _findText: string = '';
     locale: LocaleType;
     isAddedByEnter: boolean = false;
     onTextChange: () => void = () => {};
     private _oldInputText: string = '';
     menuControllerSession: AppContextMenuControlType | null = null;
+    static readonly findingContext: {
+        bibleKey: string | null;
+        findingText: string | null;
+    } = {
+        bibleKey: null,
+        findingText: null,
+    };
+
     constructor(bibleKey: string, locale: LocaleType) {
         this._bibleKey = bibleKey;
         this.locale = locale;
+    }
+
+    get input() {
+        return this._input;
+    }
+    set input(input: HTMLInputElement | null) {
+        this._input = input;
+        if (input !== null) {
+            input.value = this._findText || '';
+        }
     }
 
     get bookKey() {
@@ -222,8 +243,8 @@ export default class BibleFindController {
         return this._findText || (this.input?.value ?? '');
     }
     set findText(value: string | null) {
+        this._findText = value ?? '';
         if (this.input !== null) {
-            this._findText = value ?? '';
             this._oldInputText = this.input.value;
             this.input.value = value ?? '';
             this.input.focus();
@@ -297,16 +318,27 @@ export default class BibleFindController {
     }
 
     static async getInstant(bibleKey: string) {
-        const locale = await getBibleLocale(bibleKey);
-        const instance = new BibleFindController(bibleKey, locale);
-        const keysMap = await getAllXMLFileKeys();
-        if (keysMap[bibleKey] === undefined) {
-            return await BibleFindController.getOnlineInstant(instance);
-        }
-        return await BibleFindController.getXMLInstant(
-            instance,
-            keysMap[bibleKey],
-        );
+        return unlocking(`bible-find-controller-${bibleKey}`, async () => {
+            if (instanceCache[bibleKey]) {
+                return instanceCache[bibleKey];
+            }
+            const locale = await getBibleLocale(bibleKey);
+            let instance: BibleFindController | null = new this(
+                bibleKey,
+                locale,
+            );
+            const keysMap = await getAllXMLFileKeys();
+            if (keysMap[bibleKey] === undefined) {
+                instance = await this.getOnlineInstant(instance);
+            } else {
+                instance = await this.getXMLInstant(
+                    instance,
+                    keysMap[bibleKey],
+                );
+            }
+            instanceCache[bibleKey] = instance;
+            return instance as BibleFindController;
+        });
     }
 
     async loadSuggestionWords(
@@ -418,6 +450,20 @@ export default class BibleFindController {
         const sanitizedText = await sanitizeFindingText(this.locale, text);
         const lookupWord = (sanitizedText ?? '').split(' ').at(-1) ?? '';
         this.checkLookupWord(event, lookupWord);
+    }
+
+    static setFindingContext(bibleKey: string, findingText: string) {
+        for (const bibleFindController of Object.values(instanceCache)) {
+            if (
+                bibleFindController !== null &&
+                bibleFindController.input !== null
+            ) {
+                pasteTextToInput(bibleFindController.input, findingText);
+                return;
+            }
+        }
+        this.findingContext.bibleKey = bibleKey;
+        this.findingContext.findingText = findingText;
     }
 }
 

@@ -37,7 +37,7 @@ export function useBibleViewTitleMaterialContext() {
     if (context === null) {
         throw new Error(
             'useBibleViewTitleMaterialContext must be used within a ' +
-                'BibleViewTitleMaterialContext.Provider',
+                'BibleViewTitleMaterialContext',
         );
     }
     return context;
