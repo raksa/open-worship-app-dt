@@ -17,10 +17,6 @@ export default function ScreenForegroundComp() {
             ref={(div) => {
                 if (div !== null) {
                     screenForegroundManager.div = div;
-                    return () => {
-                        screenForegroundManager.clear();
-                        screenForegroundManager.div = null;
-                    };
                 }
             }}
             style={screenForegroundManager.containerStyle}
