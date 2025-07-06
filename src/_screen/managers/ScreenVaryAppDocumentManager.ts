@@ -43,14 +43,14 @@ class ScreenVaryAppDocumentManager extends ScreenEventHandler<ScreenVaryAppDocum
     private _varyAppDocumentItemData: VaryAppDocumentItemScreenDataType | null =
         null;
     private _div: HTMLDivElement | null = null;
-    slideEffectManager: ScreenEffectManager;
+    effectManager: ScreenEffectManager;
 
     constructor(
         screenManagerBase: ScreenManagerBase,
-        slideEffectManager: ScreenEffectManager,
+        effectManager: ScreenEffectManager,
     ) {
         super(screenManagerBase);
-        this.slideEffectManager = slideEffectManager;
+        this.effectManager = effectManager;
         if (appProvider.isPagePresenter) {
             const allSlideList = getAppDocumentListOnScreenSetting();
             this._varyAppDocumentItemData = allSlideList[this.key] ?? null;
@@ -247,7 +247,7 @@ class ScreenVaryAppDocumentManager extends ScreenEventHandler<ScreenVaryAppDocum
             return;
         }
         const targetDiv = div.lastChild as HTMLDivElement;
-        await this.slideEffectManager.styleAnim.animOut(targetDiv);
+        await this.effectManager.styleAnim.animOut(targetDiv);
         targetDiv.remove();
     }
 
@@ -272,9 +272,7 @@ class ScreenVaryAppDocumentManager extends ScreenEventHandler<ScreenVaryAppDocum
             return;
         }
         Array.from(div.children).forEach(async (child) => {
-            await this.slideEffectManager.styleAnim.animOut(
-                child as HTMLDivElement,
-            );
+            await this.effectManager.styleAnim.animOut(child as HTMLDivElement);
             child.remove();
         });
         divHaftScale.appendChild(target.content);
@@ -284,7 +282,7 @@ class ScreenVaryAppDocumentManager extends ScreenEventHandler<ScreenVaryAppDocum
             height: `${this.screenManagerBase.height}px`,
             transform: `scale(${target.scale},${target.scale}) translate(50%, 50%)`,
         });
-        this.slideEffectManager.styleAnim.animIn(divContainer, div);
+        this.effectManager.styleAnim.animIn(divContainer, div);
     }
 
     get containerStyle(): CSSProperties {

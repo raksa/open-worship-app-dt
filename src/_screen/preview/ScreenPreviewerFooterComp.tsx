@@ -29,15 +29,19 @@ export default function ScreenPreviewerFooterComp() {
                 </div>
                 <div>
                     <div
-                        className="input-group input-group-sm"
+                        className="d-flex input-group input-group-sm"
                         title="Stage number"
+                        style={{
+                            minWidth: '100px',
+                        }}
                     >
                         <small>`Stage:</small>
                         <input
                             className="form-control"
                             type="number"
                             style={{
-                                width: '50px',
+                                width: '30px',
+                                height: '20px',
                             }}
                             min="0"
                             value={stageNumber}

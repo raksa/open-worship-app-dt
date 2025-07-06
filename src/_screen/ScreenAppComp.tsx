@@ -30,12 +30,16 @@ export default function ScreenAppComp() {
             true,
         );
     }
-    const { varyAppDocumentEffectManager, backgroundEffectManager } =
-        screenManager;
+    const {
+        varyAppDocumentEffectManager,
+        backgroundEffectManager,
+        foregroundEffectManager,
+    } = screenManager;
     return (
         <ScreenManagerBaseContext value={screenManager}>
             {genStyleRendering(varyAppDocumentEffectManager)}
             {genStyleRendering(backgroundEffectManager)}
+            {genStyleRendering(foregroundEffectManager)}
             <ScreenBackgroundComp />
             <ScreenSlideComp />
             <ScreenBibleComp />

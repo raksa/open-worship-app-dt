@@ -21,19 +21,24 @@ export default class ScreenManager extends ScreenManagerBase {
     readonly screenVaryAppDocumentManager: ScreenVaryAppDocumentManager;
     readonly screenBibleManager: ScreenBibleManager;
     readonly screenForegroundManager: ScreenForegroundManager;
-    readonly varyAppDocumentEffectManager: ScreenEffectManager;
     readonly backgroundEffectManager: ScreenEffectManager;
+    readonly varyAppDocumentEffectManager: ScreenEffectManager;
+    readonly foregroundEffectManager: ScreenEffectManager;
     private readonly registeredEventListeners: RegisteredEventType<any, any>[];
 
     constructor(screenId: number) {
         super(screenId);
+        this.backgroundEffectManager = new ScreenEffectManager(
+            this,
+            'background',
+        );
         this.varyAppDocumentEffectManager = new ScreenEffectManager(
             this,
             'vary-app-document',
         );
-        this.backgroundEffectManager = new ScreenEffectManager(
+        this.foregroundEffectManager = new ScreenEffectManager(
             this,
-            'background',
+            'foreground',
         );
         this.screenBackgroundManager = new ScreenBackgroundManager(
             this,
@@ -44,7 +49,10 @@ export default class ScreenManager extends ScreenManagerBase {
             this.varyAppDocumentEffectManager,
         );
         this.screenBibleManager = new ScreenBibleManager(this);
-        this.screenForegroundManager = new ScreenForegroundManager(this);
+        this.screenForegroundManager = new ScreenForegroundManager(
+            this,
+            this.foregroundEffectManager,
+        );
         this.registeredEventListeners = [];
         this.registeredEventListeners.push(
             ...this.screenVaryAppDocumentManager.registerEventListener(

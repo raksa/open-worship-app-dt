@@ -41,14 +41,14 @@ class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManager
     static readonly eventNamePrefix: string = 'screen-bg-m';
     private _backgroundSrc: BackgroundSrcType | null = null;
     private _rootContainer: HTMLDivElement | null = null;
-    backgroundEffectManager: ScreenEffectManager;
+    effectManager: ScreenEffectManager;
 
     constructor(
         screenManagerBase: ScreenManagerBase,
-        backgroundEffectManager: ScreenEffectManager,
+        effectManager: ScreenEffectManager,
     ) {
         super(screenManagerBase);
-        this.backgroundEffectManager = backgroundEffectManager;
+        this.effectManager = effectManager;
         if (appProvider.isPagePresenter) {
             const allBackgroundSrcList = getBackgroundSrcListOnScreenSetting();
             this._backgroundSrc = allBackgroundSrcList[this.key] ?? null;
@@ -226,7 +226,7 @@ class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManager
                     }
                     video.removeEventListener('timeupdate', fadeOutListener);
                     this.render({
-                        ...this.backgroundEffectManager.styleAnimList.fade,
+                        ...this.effectManager.styleAnimList.fade,
                         animOut: async () => {
                             const duration =
                                 FADING_DURATION_MILLISECOND +
@@ -250,7 +250,7 @@ class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManager
             return;
         }
         const aminData =
-            overrideAnimData ?? this.backgroundEffectManager.styleAnim;
+            overrideAnimData ?? this.effectManager.styleAnim;
         if (this.backgroundSrc !== null) {
             const newDiv = genHtmlBackground(this.screenId, this.backgroundSrc);
             const childList = Array.from(this.rootContainer.children).filter(

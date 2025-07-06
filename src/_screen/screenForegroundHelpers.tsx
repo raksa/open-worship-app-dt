@@ -3,7 +3,6 @@ import CountdownController from './managers/CountdownController';
 import { getHTMLChild } from '../helper/helpers';
 import ScreenManagerBase from './managers/ScreenManagerBase';
 import { handleError } from '../helper/errorHelpers';
-import { styleAnimList } from './transitionEffectHelpers';
 import {
     ForegroundCameraDataType,
     ForegroundCountdownDataType,
@@ -11,6 +10,7 @@ import {
     ForegroundQuickTextDataType,
     ForegroundStopwatchDataType,
     ForegroundTimeDataType,
+    StyleAnimType,
 } from './screenTypeHelpers';
 import TimingController from './managers/TimingController';
 import StopwatchController from './managers/StopwatchController';
@@ -123,6 +123,7 @@ export function genHtmlForegroundQuickText(
         timeSecondToLive,
         extraStyle = {},
     }: ForegroundQuickTextDataType,
+    animData: StyleAnimType,
     remove: () => void,
 ) {
     const uniqueId = `id-${crypto.randomUUID()}`;
@@ -139,7 +140,6 @@ export function genHtmlForegroundQuickText(
     const div = document.createElement('div');
     div.innerHTML = htmlString;
     const element = getHTMLChild<HTMLDivElement>(div, 'div');
-    const animData = styleAnimList.fade('quick-text');
     return {
         handleAdding: async (parentContainer: HTMLElement) => {
             await new Promise<void>((resolve) => {
@@ -157,10 +157,10 @@ export function genHtmlForegroundQuickText(
     };
 }
 
-export function genHtmlForegroundCountdown({
-    dateTime,
-    extraStyle,
-}: ForegroundCountdownDataType) {
+export function genHtmlForegroundCountdown(
+    { dateTime, extraStyle }: ForegroundCountdownDataType,
+    animData: StyleAnimType,
+) {
     const uniqueClassname = `cn-${crypto.randomUUID()}`;
     const htmlString = ReactDOMServer.renderToStaticMarkup(
         <div
@@ -196,7 +196,6 @@ export function genHtmlForegroundCountdown({
     div.innerHTML = htmlString;
     const element = getHTMLChild<HTMLDivElement>(div, 'div');
     const countDownHandler = CountdownController.init(element, dateTime);
-    const animData = styleAnimList.fade('countdown');
     return {
         handleAdding: async (parentContainer: HTMLElement) => {
             countDownHandler.start();
@@ -209,10 +208,10 @@ export function genHtmlForegroundCountdown({
     };
 }
 
-export function genHtmlForegroundStopwatch({
-    dateTime,
-    extraStyle,
-}: ForegroundStopwatchDataType) {
+export function genHtmlForegroundStopwatch(
+    { dateTime, extraStyle }: ForegroundStopwatchDataType,
+    animData: StyleAnimType,
+) {
     const uniqueClassname = `cn-${crypto.randomUUID()}`;
     const htmlString = ReactDOMServer.renderToStaticMarkup(
         <div
@@ -248,7 +247,6 @@ export function genHtmlForegroundStopwatch({
     div.innerHTML = htmlString;
     const element = getHTMLChild<HTMLDivElement>(div, 'div');
     const stopwatchHandler = StopwatchController.init(element, dateTime);
-    const animData = styleAnimList.fade('countdown');
     return {
         handleAdding: async (parentContainer: HTMLElement) => {
             stopwatchHandler.start();
@@ -261,7 +259,10 @@ export function genHtmlForegroundStopwatch({
     };
 }
 
-export function genHtmlForegroundTime(timeData: ForegroundTimeDataType) {
+export function genHtmlForegroundTime(
+    timeData: ForegroundTimeDataType,
+    animData: StyleAnimType,
+) {
     const { timezoneMinuteOffset, title } = timeData;
     const uniqueClassname = `cn-${crypto.randomUUID()}`;
     const htmlString = ReactDOMServer.renderToStaticMarkup(
@@ -308,7 +309,6 @@ export function genHtmlForegroundTime(timeData: ForegroundTimeDataType) {
     div.innerHTML = htmlString;
     const element = getHTMLChild<HTMLDivElement>(div, 'div');
     const timingHandler = TimingController.init(element, timezoneMinuteOffset);
-    const animData = styleAnimList.fade('time');
     return {
         handleAdding: async (parentContainer: HTMLElement) => {
             timingHandler.start();
@@ -321,15 +321,18 @@ export function genHtmlForegroundTime(timeData: ForegroundTimeDataType) {
     };
 }
 
-export async function getCameraAndShowMedia({
-    id,
-    extraStyle,
-    width,
-    parentContainer,
-}: ForegroundCameraDataType & {
-    parentContainer: HTMLElement;
-    width?: number;
-}) {
+export async function getCameraAndShowMedia(
+    {
+        id,
+        extraStyle,
+        width,
+        parentContainer,
+    }: ForegroundCameraDataType & {
+        parentContainer: HTMLElement;
+        width?: number;
+    },
+    animData: StyleAnimType,
+) {
     const constraints = {
         audio: false,
         video: { width },
@@ -348,7 +351,6 @@ export async function getCameraAndShowMedia({
         }
         Object.assign(video.style, extraStyle ?? {});
         parentContainer.innerHTML = '';
-        const animData = styleAnimList.fade('camera');
         animData.animIn(video, parentContainer);
         return async () => {
             await animData.animOut(video);

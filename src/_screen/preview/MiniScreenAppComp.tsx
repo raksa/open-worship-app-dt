@@ -28,12 +28,16 @@ export default function MiniScreenAppComp({
     if (screenManager === null) {
         return null;
     }
-    const { varyAppDocumentEffectManager, backgroundEffectManager } =
-        screenManager;
+    const {
+        varyAppDocumentEffectManager,
+        backgroundEffectManager,
+        foregroundEffectManager,
+    } = screenManager;
     return (
         <ScreenManagerBaseContext value={screenManager}>
-            {genStyleRendering(varyAppDocumentEffectManager)}
             {genStyleRendering(backgroundEffectManager)}
+            {genStyleRendering(varyAppDocumentEffectManager)}
+            {genStyleRendering(foregroundEffectManager)}
             <div
                 style={{
                     pointerEvents: 'none',

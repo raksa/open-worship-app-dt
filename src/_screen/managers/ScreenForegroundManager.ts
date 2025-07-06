@@ -30,6 +30,7 @@ import {
     checkIsItemInArray,
 } from '../../server/comparisonHelpers';
 import { OptionalPromise } from '../../helper/typeHelpers';
+import ScreenEffectManager from './ScreenEffectManager';
 
 export type ScreenForegroundEventType = 'update';
 
@@ -46,9 +47,14 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
     foregroundData: ForegroundDataType;
     rendererMap: Map<string, (data: any) => void>;
     setterMap: Map<string, (data: any, isNoSyncGroup?: boolean) => void>;
+    effectManager: ScreenEffectManager;
 
-    constructor(screenManagerBase: ScreenManagerBase) {
+    constructor(
+        screenManagerBase: ScreenManagerBase,
+        effectManager: ScreenEffectManager,
+    ) {
         super(screenManagerBase);
+        this.effectManager = effectManager;
 
         const allForegroundDataList = getForegroundDataListOnScreenSetting();
         const foregroundData = allForegroundDataList[this.key] ?? {};
@@ -73,6 +79,10 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
             ['quickTextData', this.setQuickTextData.bind(this)],
             ['cameraDataList', this.setCameraDataList.bind(this)],
         ]);
+    }
+
+    get styleAnimFade() {
+        return this.effectManager.styleAnimList.fade;
     }
 
     static parseAllForegroundData(foregroundData: any) {
@@ -230,8 +240,10 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
     }
 
     renderCountdown(data: ForegroundCountdownDataType) {
-        const { handleAdding, handleRemoving } =
-            genHtmlForegroundCountdown(data);
+        const { handleAdding, handleRemoving } = genHtmlForegroundCountdown(
+            data,
+            this.styleAnimFade,
+        );
         const divContainer = this.createDivContainer(data, handleRemoving);
         handleAdding(divContainer!);
     }
@@ -265,8 +277,10 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
     }
 
     renderStopwatch(data: ForegroundStopwatchDataType) {
-        const { handleAdding, handleRemoving } =
-            genHtmlForegroundStopwatch(data);
+        const { handleAdding, handleRemoving } = genHtmlForegroundStopwatch(
+            data,
+            this.styleAnimFade,
+        );
         const divContainer = this.createDivContainer(data, handleRemoving);
         handleAdding(divContainer!);
     }
@@ -300,7 +314,10 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
     }
 
     renderTime(data: ForegroundTimeDataType) {
-        const { handleAdding, handleRemoving } = genHtmlForegroundTime(data);
+        const { handleAdding, handleRemoving } = genHtmlForegroundTime(
+            data,
+            this.styleAnimFade,
+        );
         const divContainer = this.createDivContainer(data, handleRemoving);
         handleAdding(divContainer!);
     }
@@ -392,6 +409,7 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
     renderQuickText(data: ForegroundQuickTextDataType) {
         const { handleAdding, handleRemoving } = genHtmlForegroundQuickText(
             data,
+            this.styleAnimFade,
             () => {
                 this.setQuickTextData(null);
             },
@@ -444,10 +462,13 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
         const divContainer = this.createDivContainer(data, async () => {
             await store.clearCameraTracks();
         });
-        getCameraAndShowMedia({
-            parentContainer: divContainer!,
-            ...data,
-        }).then((clearTracks) => {
+        getCameraAndShowMedia(
+            {
+                parentContainer: divContainer!,
+                ...data,
+            },
+            this.styleAnimFade,
+        ).then((clearTracks) => {
             store.clearCameraTracks = clearTracks ?? (() => {});
         });
     }
