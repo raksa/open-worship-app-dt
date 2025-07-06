@@ -109,6 +109,9 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
     }
 
     set div(div: HTMLDivElement | null) {
+        if (this._div === div) {
+            return;
+        }
         this._div = div;
         this.render();
     }
@@ -127,6 +130,7 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
         removingHandler?: (container: HTMLElement) => Promise<void> | void,
     ): HTMLElement | null {
         const container = document.createElement('div');
+        this.removeDivContainer(data);
         containerMapper.set(data, {
             container,
             removeHandler: async () => {
@@ -178,7 +182,7 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
         for (const data of toRenderDataList) {
             render(data);
         }
-        if (toRenderDataList.length > 0) {
+        if (toRemoveDataList.length + toRenderDataList.length > 0) {
             return newData;
         }
         return oldData;
@@ -534,12 +538,12 @@ export default class ScreenForegroundManager extends ScreenEventHandler<ScreenFo
             ScreenForegroundManager.enableSyncGroup(this.screenId);
         }
         for (const [key, oldData] of Object.entries(this.foregroundData)) {
-            const newData = newForegroundData[key as keyof ForegroundDataType];
+            let newData = newForegroundData[key as keyof ForegroundDataType];
             const render = this.rendererMap.get(key) ?? null;
             if (render === null) {
                 continue;
             }
-            this.compareAndRender(oldData, newData, render);
+            newData = this.compareAndRender(oldData, newData, render);
             Object.assign(this.foregroundData, {
                 [key as keyof ForegroundDataType]: newData,
             });
