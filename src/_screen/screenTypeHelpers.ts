@@ -13,7 +13,7 @@ export type CustomElement<T, K extends string> = Partial<
 >;
 
 export type StyleAnimType = {
-    removeStyle: (delaySecond?:number) => void;
+    styleText: string;
     animIn: (
         targetElement: HTMLElement,
         parentElement: HTMLElement,

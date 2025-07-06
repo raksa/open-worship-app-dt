@@ -156,9 +156,7 @@ export default function BackgroundMediaComp({
         return (
             <div className="">
                 {extraHeaderChild !== undefined ? (
-                    <>
-                        {extraHeaderChild}
-                    </>
+                    <>{extraHeaderChild}</>
                 ) : null}
                 <div className="d-flex justify-content-start flex-wrap">
                     {filePaths.map(genBodyWithChild)}

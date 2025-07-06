@@ -24,10 +24,7 @@ import {
     ScreenMessageType,
     StyleAnimType,
 } from '../screenTypeHelpers';
-import {
-    ANIM_END_DELAY_MILLISECOND,
-    styleAnimList,
-} from '../transitionEffectHelpers';
+import { ANIM_END_DELAY_MILLISECOND } from '../transitionEffectHelpers';
 
 export type ScreenBackgroundManagerEventType = 'update';
 
@@ -218,7 +215,7 @@ class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManager
     _checkVideoFadingAtEnd(container: HTMLDivElement) {
         const video = container.querySelector('video');
         if (video !== null) {
-            const fadeOutListener = () => {
+            const fadeOutListener = async () => {
                 const duration = video.duration;
                 if (
                     !(isNaN(duration) || duration === Infinity) &&
@@ -228,17 +225,20 @@ class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManager
                         return;
                     }
                     video.removeEventListener('timeupdate', fadeOutListener);
-                    const animData = styleAnimList.fade('video-fade-at-end');
-                    animData.duration = FADING_DURATION_MILLISECOND - 100;
-                    animData.animOut = async () => {
-                        await new Promise<void>((resolve) => {
-                            setTimeout(() => {
-                                resolve();
-                                animData.removeStyle(5);
-                            }, animData.duration + ANIM_END_DELAY_MILLISECOND);
-                        });
-                    };
-                    this.render(animData);
+                    this.render({
+                        ...this.backgroundEffectManager.styleAnimList.fade,
+                        animOut: async () => {
+                            const duration =
+                                FADING_DURATION_MILLISECOND +
+                                ANIM_END_DELAY_MILLISECOND;
+                            await new Promise<void>((resolve) => {
+                                setTimeout(() => {
+                                    resolve();
+                                }, duration);
+                            });
+                        },
+                        duration: FADING_DURATION_MILLISECOND,
+                    });
                 }
             };
             video.addEventListener('timeupdate', fadeOutListener);

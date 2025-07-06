@@ -43,28 +43,6 @@ function genCssProps(duration: number) {
     return cssProps;
 }
 
-function genStyleElement(styleText: string) {
-    const style = document.createElement('style');
-    style.innerHTML = styleText;
-    const removeStyle = (delaySecond?: number) => {
-        if (delaySecond === undefined) {
-            style.parentElement?.removeChild(style);
-        } else {
-            setTimeout(() => {
-                style.parentElement?.removeChild(style);
-            }, delaySecond * 1000);
-        }
-    };
-    const addStyle = (container: HTMLElement) => {
-        if (style.parentElement === container) {
-            return;
-        }
-        style.parentElement?.removeChild(style);
-        container.appendChild(style);
-    };
-    return { style, removeStyle, addStyle };
-}
-
 function fade(prefix: string) {
     const uniqueId = crypto.randomUUID();
     const animationNameIn = `${prefix}-animation-fade-${uniqueId}-in`;
@@ -87,14 +65,12 @@ function fade(prefix: string) {
                 }
             }
         `;
-    const { removeStyle, addStyle } = genStyleElement(styleText);
     const anim: StyleAnimType = {
         duration: 1000,
-        removeStyle,
+        styleText,
         animIn: (targetElement: HTMLElement, parentElement: HTMLElement) => {
             return new Promise((resolve) => {
-                addStyle(parentElement);
-                const backupAnimationName = targetElement.style.animationName;
+                parentElement.appendChild(targetElement);
                 Object.assign(targetElement.style, {
                     ...genCssProps(anim.duration),
                     animationName: animationNameIn,
@@ -102,11 +78,7 @@ function fade(prefix: string) {
                 });
                 parentElement.appendChild(targetElement);
                 setTimeout(() => {
-                    Object.assign(targetElement.style, {
-                        ...genCssProps(anim.duration),
-                        animationName: backupAnimationName,
-                        opacity: 1,
-                    });
+                    targetElement.style.opacity = '1';
                     resolve();
                 }, anim.duration + ANIM_END_DELAY_MILLISECOND);
             });
@@ -116,16 +88,14 @@ function fade(prefix: string) {
                 if (checkIsZoomContainer(targetElement)) {
                     return resolve();
                 }
-                if (targetElement.parentElement !== null) {
-                    addStyle(targetElement.parentElement);
-                }
                 Object.assign(targetElement.style, {
                     ...genCssProps(anim.duration),
                     animationName: animationNameOut,
+                    opacity: 1,
                 });
                 setTimeout(() => {
+                    targetElement.style.opacity = '0';
                     resolve();
-                    removeStyle(2);
                 }, anim.duration + ANIM_END_DELAY_MILLISECOND);
             });
         },
@@ -166,7 +136,7 @@ function move() {
     };
     const anim: StyleAnimType = {
         duration: 500,
-        removeStyle: () => {},
+        styleText: '',
         animIn: (targetElement: HTMLElement, parentElement: HTMLElement) => {
             return new Promise<void>((resolve) => {
                 parentElement.appendChild(targetElement);
@@ -256,15 +226,12 @@ function zoom(prefix: string): StyleAnimType {
                 }
             }
         `;
-    const { removeStyle, addStyle } = genStyleElement(styleText);
     const anim: StyleAnimType = {
         duration: 500,
-        removeStyle,
+        styleText,
         animIn: (targetElement: HTMLElement, parentElement: HTMLElement) => {
             return new Promise((resolve) => {
-                addStyle(parentElement);
                 const div = createDiv(targetElement);
-                const backupAnimationName = targetElement.style.animationName;
                 Object.assign(div.style, {
                     ...genCssProps(anim.duration),
                     animationName: animationNameIn,
@@ -274,7 +241,6 @@ function zoom(prefix: string): StyleAnimType {
                 parentElement.appendChild(div);
                 setTimeout(() => {
                     Object.assign(div.style, {
-                        animationName: backupAnimationName,
                         opacity: 1,
                         transform: 'scale(1)',
                     });
@@ -287,16 +253,18 @@ function zoom(prefix: string): StyleAnimType {
                 if (!checkIsZoomContainer(targetElement)) {
                     return resolve();
                 }
-                if (targetElement.parentElement !== null) {
-                    addStyle(targetElement.parentElement);
-                }
                 Object.assign(targetElement.style, {
                     ...genCssProps(anim.duration),
                     animationName: animationNameOut,
+                    opacity: 1,
+                    transform: 'scale(1)',
                 });
                 setTimeout(() => {
+                    Object.assign(targetElement.style, {
+                        opacity: 0,
+                        transform: 'scale(0.1)',
+                    });
                     resolve();
-                    removeStyle(2);
                 }, anim.duration + ANIM_END_DELAY_MILLISECOND);
             });
         },

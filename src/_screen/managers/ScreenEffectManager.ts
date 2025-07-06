@@ -5,6 +5,7 @@ import {
     PTFEventType,
     ScreenMessageType,
     ScreenTransitionEffectType,
+    StyleAnimType,
     transitionEffect,
 } from '../screenTypeHelpers';
 import { styleAnimList } from '../transitionEffectHelpers';
@@ -15,11 +16,18 @@ class ScreenEffectManager extends EventHandler<PTFEventType> {
     screenManagerBase: ScreenManagerBase;
     readonly target: string;
     private _effectType: ScreenTransitionEffectType;
+    styleAnimList: Record<string, StyleAnimType>;
+
     constructor(screenManagerBase: ScreenManagerBase, target: string) {
         super();
         this.screenManagerBase = screenManagerBase;
         this.target = target;
         const effectType = getSetting(this.settingName, '');
+        this.styleAnimList = Object.fromEntries(
+            Object.entries(styleAnimList).map(([key, value]) => {
+                return [key, value(this.target)];
+            }),
+        );
         this._effectType = Object.keys(transitionEffect).includes(effectType)
             ? (effectType as ScreenTransitionEffectType)
             : 'fade';
@@ -46,10 +54,9 @@ class ScreenEffectManager extends EventHandler<PTFEventType> {
         setSetting(this.settingName, value);
         this.sendSyncScreen();
         this.addPropEvent('update');
-        this.screenManagerBase.fireRefreshEvent();
     }
     get styleAnim() {
-        return styleAnimList[this.effectType](this.target);
+        return this.styleAnimList[this.effectType];
     }
     get duration() {
         return this.styleAnim.duration;
