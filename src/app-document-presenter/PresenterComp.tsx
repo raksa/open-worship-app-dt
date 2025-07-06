@@ -23,6 +23,11 @@ import { getSelectedLyric } from '../lyric-list/lyricHelpers';
 import { tran } from '../lang/langHelpers';
 import ResizeActorComp from '../resize-actor/ResizeActorComp';
 import { getAllScreenManagers } from '../_screen/managers/screenManagerHelpers';
+import BibleItemsViewController, {
+    useBibleItemsViewControllerContext,
+    useBibleItemViewControllerUpdateEvent,
+} from '../bible-reader/BibleItemsViewController';
+import ScreenBibleManager from '../_screen/managers/ScreenBibleManager';
 
 const LazyAppDocumentPreviewerComp = lazy(() => {
     return import('./items/AppDocumentPreviewerComp');
@@ -49,7 +54,10 @@ export function getIsShowingBiblePreviewer() {
     return getSetting(PRESENT_TAB_SETTING_NAME) === 'f';
 }
 
-async function checkIsOnScreen<T>(targeKey: T) {
+async function checkIsOnScreen<T>(
+    targeKey: T,
+    viewController: BibleItemsViewController,
+) {
     if (targeKey === 'd') {
         const varyAppDocument = await getSelectedVaryAppDocument();
         if (varyAppDocument === null) {
@@ -76,6 +84,31 @@ async function checkIsOnScreen<T>(targeKey: T) {
         const allScreenManager = getAllScreenManagers();
         return allScreenManager.some((screenManager) => {
             return screenManager.screenForegroundManager.isShowing;
+        });
+    } else if (targeKey === 'b') {
+        const allScreenManager = getAllScreenManagers();
+        const bibleItems = viewController.straightBibleItems;
+        const titleList = await Promise.all(
+            bibleItems.map((bibleItem) => {
+                return bibleItem.toTitle();
+            }),
+        );
+        return allScreenManager.some(({ screenBibleManager }) => {
+            for (const bibleItemDataList of Object.values(
+                screenBibleManager.screenViewData?.bibleItemData ?? {},
+            )) {
+                if (
+                    Array.isArray(bibleItemDataList) &&
+                    bibleItemDataList.length > 0
+                ) {
+                    for (const bibleItemData of bibleItemDataList) {
+                        if (titleList.includes(bibleItemData.title)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
         });
     }
     return false;
@@ -170,6 +203,10 @@ export default function PresenterComp() {
     useBibleItemShowing(() => setTabKey('b'), []);
     useVaryAppDocumentSelecting(() => setTabKey('d'));
     useAppDocumentItemSelecting(() => setTabKey('d'));
+    const viewController = useBibleItemsViewControllerContext();
+    useBibleItemViewControllerUpdateEvent(() => {
+        ScreenBibleManager.fireUpdateEvent();
+    });
     const normalPresenterChild = tabTypeList.map(([type, _, target]) => {
         return genTabBody<TabKeyType>(tabKey, [type, target]);
     });
@@ -187,7 +224,10 @@ export default function PresenterComp() {
                             key,
                             title: name,
                             checkIsOnScreen: async () => {
-                                const isOnScreen = await checkIsOnScreen(key);
+                                const isOnScreen = await checkIsOnScreen(
+                                    key,
+                                    viewController,
+                                );
                                 if (key === 'f') {
                                     setIsOnScreen(isOnScreen);
                                 }

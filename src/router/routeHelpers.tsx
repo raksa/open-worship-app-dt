@@ -29,9 +29,16 @@ export const presenterTab: TabOptionType = {
     routePath: appProvider.presenterHomePage,
 };
 export const readerTab: TabOptionType = {
-    title: toTitleExternal('Reader', {
-        color: 'var(--app-color-reader)',
-    }),
+    title: (
+        <span
+            style={{
+                color: 'var(--app-color-reader)',
+            }}
+        >
+            <i className="bi bi-book px-1" />
+            {toTitleExternal('Bible Reader')}
+        </span>
+    ),
     routePath: appProvider.readerHomePage,
 };
 export const experimentTab: TabOptionType = {

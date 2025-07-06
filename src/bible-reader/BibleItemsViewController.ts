@@ -801,13 +801,14 @@ export function useBibleItemsViewControllerContext() {
     return viewController;
 }
 
-export function useBibleItemViewControllerUpdateEvent() {
+export function useBibleItemViewControllerUpdateEvent(callback?: () => void) {
     const viewController = useBibleItemsViewControllerContext();
     const [nestedBibleItems, setNestedBibleItems] = useState(
         viewController.nestedBibleItems,
     );
     useAppEffect(() => {
         const update = () => {
+            callback?.();
             setNestedBibleItems(viewController.nestedBibleItems);
         };
         const instanceEvents = viewController.registerEventListener(

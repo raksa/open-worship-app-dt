@@ -249,8 +249,7 @@ class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManager
         if (this.rootContainer === null) {
             return;
         }
-        const aminData =
-            overrideAnimData ?? this.effectManager.styleAnim;
+        const aminData = overrideAnimData ?? this.effectManager.styleAnim;
         if (this.backgroundSrc !== null) {
             const newDiv = genHtmlBackground(this.screenId, this.backgroundSrc);
             const childList = Array.from(this.rootContainer.children).filter(

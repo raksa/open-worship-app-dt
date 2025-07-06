@@ -126,9 +126,9 @@ export function BibleLookupButtonComp() {
             }}
         >
             <span className="btn-label">
-                <i className="bi bi-book" />
+                <i className="bi bi-book px-1" />
+                {tran('bible-lookup')}
             </span>
-            {tran('bible-lookup')}
         </button>
     );
 }

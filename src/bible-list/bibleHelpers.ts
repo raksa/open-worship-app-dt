@@ -190,6 +190,7 @@ export async function openBibleItemContextMenu(
                           await viewController.setLookupContentFromBibleItem(
                               bibleItem,
                           );
+                          openBibleLookup();
                       },
                   },
               ]
