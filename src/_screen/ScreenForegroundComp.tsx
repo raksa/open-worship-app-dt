@@ -1,8 +1,5 @@
 import './ScreenForegroundComp.scss';
 
-import { useRef } from 'react';
-
-import { useAppEffect } from '../helper/debuggerHelpers';
 import {
     useScreenManagerContext,
     useScreenManagerEvents,
@@ -13,17 +10,19 @@ export default function ScreenForegroundComp() {
     useScreenManagerEvents(['refresh'], screenManager, () => {
         screenManager.screenForegroundManager.render();
     });
-    const div = useRef<HTMLDivElement>(null);
     const { screenForegroundManager } = screenManager;
-    useAppEffect(() => {
-        if (div.current) {
-            screenForegroundManager.div = div.current;
-        }
-    }, [div.current]);
     return (
         <div
             id="foreground"
-            ref={div}
+            ref={(div) => {
+                if (div !== null) {
+                    screenForegroundManager.div = div;
+                    return () => {
+                        screenForegroundManager.clear();
+                        screenForegroundManager.div = null;
+                    };
+                }
+            }}
             style={screenForegroundManager.containerStyle}
         />
     );
