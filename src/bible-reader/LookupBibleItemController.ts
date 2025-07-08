@@ -177,7 +177,7 @@ class LookupBibleItemController extends BibleItemsViewController {
         }
     }
     get inputText() {
-        return getSetting(this.toSettingName('-input-text'), '');
+        return getSetting(this.toSettingName('-input-text')) ?? '';
     }
     _setInputText(inputText: string) {
         setSetting(this.toSettingName('-input-text'), inputText);

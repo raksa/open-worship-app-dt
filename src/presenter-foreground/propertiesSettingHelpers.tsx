@@ -22,7 +22,7 @@ function getWidgetRoundExtraStyle(
     settingNamePercentage: string,
 ): React.CSSProperties {
     const roundSizePixel = parseInt(
-        getSetting(settingNamePixel, DEFAULT_ROUND_SIZE_PIXEL.toString()),
+        getSetting(settingNamePixel) ?? DEFAULT_ROUND_SIZE_PIXEL.toString(),
     );
     if (roundSizePixel > 0) {
         return {
@@ -30,7 +30,8 @@ function getWidgetRoundExtraStyle(
         };
     }
     const percentage = parseInt(
-        getSetting(settingNamePercentage, DEFAULT_ROUND_PERCENTAGE.toString()),
+        getSetting(settingNamePercentage) ??
+            DEFAULT_ROUND_PERCENTAGE.toString(),
     );
     const roundPercentage = Math.ceil(
         Math.max(0, Math.min(100, percentage)) / 2,
@@ -42,7 +43,7 @@ function getWidgetRoundExtraStyle(
 
 function genWidgetWidthExtraStyle(settingName: string): React.CSSProperties {
     const widthScale = parseInt(
-        getSetting(settingName, DEFAULT_WIDGET_WIDTH_PERCENTAGE.toString()),
+        getSetting(settingName) ?? DEFAULT_WIDGET_WIDTH_PERCENTAGE.toString(),
     );
     return {
         width: `${Math.max(1, Math.min(100, widthScale))}%`,
@@ -52,7 +53,7 @@ function genWidgetWidthExtraStyle(settingName: string): React.CSSProperties {
 
 function genWidgetOpacityExtraStyle(settingName: string): React.CSSProperties {
     const opacityScale = parseInt(
-        getSetting(settingName, DEFAULT_WIDGET_OPACITY_PERCENTAGE.toString()),
+        getSetting(settingName) ?? DEFAULT_WIDGET_OPACITY_PERCENTAGE.toString(),
     );
     return {
         opacity: Math.max(0, Math.min(100, opacityScale)) / 100,
@@ -70,7 +71,7 @@ function genMinusCalc(n: number) {
 
 function genTransformScale(settingName: string) {
     const scale = parseFloat(
-        getSetting(settingName, DEFAULT_WIDGET_SCALE.toString()),
+        getSetting(settingName) ?? DEFAULT_WIDGET_SCALE.toString(),
     );
     return `scale(${scale})`;
 }
@@ -86,12 +87,12 @@ function genAlignmentExtraStyle(
     widgetScaleSettingName: string,
 ): React.CSSProperties {
     const widgetOffsetX = parseInt(
-        getSetting(offsetXSettingName, DEFAULT_WIDGET_OFFSET_X.toString()),
+        getSetting(offsetXSettingName) ?? DEFAULT_WIDGET_OFFSET_X.toString(),
     );
     const widgetOffsetY = parseInt(
-        getSetting(offsetYSettingName, DEFAULT_WIDGET_OFFSET_Y.toString()),
+        getSetting(offsetYSettingName) ?? DEFAULT_WIDGET_OFFSET_Y.toString(),
     );
-    const alignmentData = JSON.parse(getSetting(alignSettingName, '{}'));
+    const alignmentData = JSON.parse(getSetting(alignSettingName) ?? '{}');
     const { horizontalAlignment = 'center', verticalAlignment = 'center' } =
         alignmentData;
     if (horizontalAlignment === 'center' && verticalAlignment === 'center') {
@@ -136,7 +137,7 @@ function genAlignmentExtraStyle(
 
 function getFontSizeStyle(fontSizeSettingName: string): React.CSSProperties {
     const fontSize = parseInt(
-        getSetting(fontSizeSettingName, DEFAULT_FONT_SIZE.toString()),
+        getSetting(fontSizeSettingName) ?? DEFAULT_FONT_SIZE.toString(),
     );
     return {
         fontSize: `${fontSize}px`,

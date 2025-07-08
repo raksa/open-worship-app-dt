@@ -22,7 +22,7 @@ class ScreenEffectManager extends EventHandler<PTFEventType> {
         super();
         this.screenManagerBase = screenManagerBase;
         this.target = target;
-        const effectType = getSetting(this.settingName, '');
+        const effectType = getSetting(this.settingName) ?? '';
         this.styleAnimList = Object.fromEntries(
             Object.entries(styleAnimList).map(([key, value]) => {
                 return [key, value(this.target)];

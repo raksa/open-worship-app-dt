@@ -22,7 +22,7 @@ export async function getSelectedFilePath(
     settingName: string,
     baseDirSettingName: string,
 ) {
-    let selectedFilePath = getSetting(settingName, '');
+    let selectedFilePath = getSetting(settingName) ?? '';
     if (selectedFilePath) {
         const baseDirFileSource = new BaseDirFileSource(
             baseDirSettingName,

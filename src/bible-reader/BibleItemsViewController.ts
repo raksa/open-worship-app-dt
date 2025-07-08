@@ -286,9 +286,10 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
     }
 
     get bibleCrossReferenceVerseKey() {
-        const verseKey = getSetting(this.toSettingName('-bible-verse-key'), '');
+        const verseKey =
+            getSetting(this.toSettingName('-bible-verse-key')) ?? '';
         // (KJV) GEN 1:2-3
-        if (verseKey.startsWith('(')) {
+        if (verseKey?.startsWith('(')) {
             return verseKey;
         }
         return '';

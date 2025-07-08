@@ -464,7 +464,8 @@ export async function setSelectedVaryAppDocument(
 }
 
 export async function getSelectedEditingSlideFilePath() {
-    const selectedKey = getSetting(SELECTED_APP_DOCUMENT_ITEM_SETTING_NAME, '');
+    const selectedKey =
+        getSetting(SELECTED_APP_DOCUMENT_ITEM_SETTING_NAME) ?? '';
     const [filePath, idString] = selectedKey.split(KEY_SEPARATOR);
     const selectedAppDocument = await getSelectedVaryAppDocument();
     const isValid =

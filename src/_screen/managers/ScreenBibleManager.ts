@@ -324,7 +324,8 @@ class ScreenBibleManager extends ScreenEventHandler<ScreenBibleManagerEventType>
     }
 
     static get textStyle(): AnyObjectType {
-        const str = getSetting(`${SCREEN_BIBLE_SETTING_PREFIX}-style-text`, '');
+        const str =
+            getSetting(`${SCREEN_BIBLE_SETTING_PREFIX}-style-text`) ?? '';
         try {
             if (isValidJson(str, true)) {
                 const style = JSON.parse(str);

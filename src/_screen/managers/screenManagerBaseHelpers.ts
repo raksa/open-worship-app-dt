@@ -21,7 +21,7 @@ export function setScreenManagerBaseCache(
 }
 
 export function getScreenManagersInstanceSetting(): TypeScreenManagerSettingType[] {
-    const settingString = getSetting(screenManagerSettingNames.MANAGERS, '');
+    const settingString = getSetting(screenManagerSettingNames.MANAGERS) ?? '';
     if (isValidJson(settingString, true)) {
         const json = JSON.parse(settingString);
         let instanceSettingList = json.filter(({ screenId }: any) => {

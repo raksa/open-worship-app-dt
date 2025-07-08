@@ -291,7 +291,7 @@ export function checkIsValidLocale(text: string) {
     return !!(allLocalesMap as any)[text];
 }
 export function getCurrentLocale(): LocaleType {
-    const locale = getSetting(LANGUAGE_LOCALE_SETTING_NAME, 'en-US');
+    const locale = getSetting(LANGUAGE_LOCALE_SETTING_NAME) ?? 'en-US';
     if (checkIsValidLocale(locale)) {
         return locale as LocaleType;
     }

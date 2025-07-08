@@ -247,7 +247,7 @@ export default class Bible
     }
 
     static async getDefault() {
-        const dir = getSetting(Bible.getDirSourceSettingName(), '');
+        const dir = getSetting(Bible.getDirSourceSettingName()) ?? '';
         if (!dir) {
             return null;
         }

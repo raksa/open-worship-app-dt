@@ -13,7 +13,7 @@ const TEXT_COLOR_SETTING_NAME = 'foreground-common-color';
 const BACKGROUND_COLOR_SETTING_NAME = 'foreground-common-background-color';
 const BACKDROP_FILTER_SETTING_NAME = 'foreground-common-backdrop-filter';
 const DEFAULT_TEXT_COLOR = '#ffffff';
-const DEFAULT_BACKGROUND_COLOR = '#000c64';
+const DEFAULT_BACKGROUND_COLOR = '#000080AA';
 const DEFAULT_BACKDROP_FILTER = 5;
 
 export function getForegroundCommonProperties() {

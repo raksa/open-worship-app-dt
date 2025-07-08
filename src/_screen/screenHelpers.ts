@@ -124,7 +124,7 @@ export function genScreenMouseEvent(event?: any): MouseEvent {
 }
 
 export function getForegroundDataListOnScreenSetting(): ForegroundSrcListType {
-    const string = getSetting(screenManagerSettingNames.FOREGROUND, '');
+    const string = getSetting(screenManagerSettingNames.FOREGROUND) ?? '';
     try {
         if (!isValidJson(string, true)) {
             return {};
@@ -138,7 +138,7 @@ export function getForegroundDataListOnScreenSetting(): ForegroundSrcListType {
 }
 
 export function getBackgroundSrcListOnScreenSetting(): BackgroundSrcListType {
-    const str = getSetting(screenManagerSettingNames.BACKGROUND, '');
+    const str = getSetting(screenManagerSettingNames.BACKGROUND) ?? '';
     if (isValidJson(str, true)) {
         const json = JSON.parse(str);
         const items = Object.values(json);
@@ -172,7 +172,7 @@ const validateBible = ({ renderedList, bibleItem }: any) => {
 };
 
 export function getBibleListOnScreenSetting(): BibleListType {
-    const str = getSetting(screenManagerSettingNames.FULL_TEXT, '');
+    const str = getSetting(screenManagerSettingNames.FULL_TEXT) ?? '';
     try {
         if (!isValidJson(str, true)) {
             return {};

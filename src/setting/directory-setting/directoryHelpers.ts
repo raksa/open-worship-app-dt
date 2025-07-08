@@ -66,7 +66,7 @@ export async function selectPathForChildDir(parentDirPath: string) {
 export async function checkShouldSelectChildDir() {
     const validList = await Promise.all(
         Object.values(dirSourceSettingNames).map((settingName) => {
-            return fsCheckDirExist(getSetting(settingName));
+            return fsCheckDirExist(getSetting(settingName) ?? 'none');
         }),
     );
     const isSomeValid = validList.some((isValid) => {

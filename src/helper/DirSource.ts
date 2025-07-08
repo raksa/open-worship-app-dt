@@ -45,7 +45,7 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
     }
 
     static dirPathBySettingName(settingName: string) {
-        const dirPath = getSetting(settingName, '');
+        const dirPath = getSetting(settingName) ?? '';
         if (!dirPath) {
             return null;
         }
@@ -62,7 +62,7 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
     }
 
     static toCacheKey(settingName: string) {
-        const cacheKey = `${settingName}-${getSetting(settingName, '')}`;
+        const cacheKey = `${settingName}-${getSetting(settingName) ?? ''}`;
         fileCacheKeys.push(cacheKey);
         return cacheKey;
     }

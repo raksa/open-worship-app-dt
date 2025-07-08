@@ -184,7 +184,7 @@ export default class BibleItem
     }
     static getBiblePresenterSetting() {
         try {
-            const str = getSetting(BIBLE_PRESENT_SETTING_NAME, '');
+            const str = getSetting(BIBLE_PRESENT_SETTING_NAME) ?? '';
             if (isValidJson(str, true)) {
                 return JSON.parse(str).map((item: any) => {
                     return this.fromJson(item);

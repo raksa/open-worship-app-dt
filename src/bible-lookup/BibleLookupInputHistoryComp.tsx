@@ -19,10 +19,8 @@ import { genContextMenuItemIcon } from '../context-menu/AppContextMenuComp';
 
 const HISTORY_TEXT_LIST_SETTING_NAME = 'history-text-list';
 function useHistoryTextList(maxHistoryCount: number) {
-    const historyTextListJson = getSetting(
-        HISTORY_TEXT_LIST_SETTING_NAME,
-        '[]',
-    );
+    const historyTextListJson =
+        getSetting(HISTORY_TEXT_LIST_SETTING_NAME) ?? '[]';
     const defaultHistoryTextList = JSON.parse(historyTextListJson) as string[];
     const [historyTextList, setHistoryTextList] = useState<string[]>(
         defaultHistoryTextList,
