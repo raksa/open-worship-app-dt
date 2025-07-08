@@ -666,9 +666,7 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
                 menuElement: 'Toggle Widget Full View',
                 onSelect: () => {
                     document
-                        .querySelector(
-                            `#uuid-${uuid} .${BIBLE_VIEW_TEXT_CLASS}`,
-                        )
+                        .querySelector(`#uuid-${uuid}`)
                         ?.classList.toggle(APP_FULL_VIEW_CLASSNAME);
                 },
             },

@@ -59,10 +59,10 @@ function useCheckSetting() {
                 '`You will be redirected to the General Settings page to ' +
                     'select a parent directory.',
             );
-            if (!isOk) {
-                return;
+            if (isOk) {
+                goToGeneralSetting();
             }
-            goToGeneralSetting();
+            return;
         }
         checkDecidedBibleReaderHomePage();
     }, []);
