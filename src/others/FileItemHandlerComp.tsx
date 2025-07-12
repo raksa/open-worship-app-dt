@@ -1,9 +1,9 @@
 import { lazy, useState } from 'react';
 
 import FileReadErrorComp from './FileReadErrorComp';
-import { copyToClipboard, showExplorer, trashFile } from '../server/appHelpers';
+import { copyToClipboard, showExplorer } from '../server/appHelpers';
 import FileSource from '../helper/FileSource';
-import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
+import { AppDocumentSourceAbs } from '../helper/AppEditableDocumentSourceAbs';
 import appProvider from '../server/appProvider';
 import { useFileSourceRefreshEvents } from '../helper/dirSourceHelpers';
 import { showAppConfirm } from '../popup-widget/popupWidgetHelpers';
@@ -13,6 +13,7 @@ import {
     ContextMenuItemType,
     showAppContextMenu,
 } from '../context-menu/appContextMenuHelpers';
+import { useFileSourceIsOnScreen } from './otherHelpers';
 const LazyRenderRenamingComp = lazy(() => {
     return import('./RenderRenamingComp');
 });
@@ -63,7 +64,7 @@ function genContextMenu(
 
 export function genTrashContextMenu(
     filePath: string,
-    onTrashed?: () => void,
+    onTrashed: () => void,
 ): ContextMenuItemType[] {
     return [
         {
@@ -76,8 +77,9 @@ export function genTrashContextMenu(
                         `"${fileSource.fileFullName}" to trash?`,
                 );
                 if (isOk) {
-                    await trashFile(filePath);
-                    onTrashed?.();
+                    const fileSource = FileSource.getInstance(filePath);
+                    await fileSource.trashFile();
+                    onTrashed();
                 }
             },
         },
@@ -109,11 +111,12 @@ export default function FileItemHandlerComp({
     onClick,
     renderChild,
     isPointer,
-    onTrashed,
+    preDelete,
     isDisabledColorNote,
     userClassName,
     isSelected,
     renamedCallback,
+    checkIsOnScreen,
 }: Readonly<{
     data: AppDocumentSourceAbs | null | undefined;
     reload: () => void;
@@ -125,12 +128,22 @@ export default function FileItemHandlerComp({
     onClick?: () => void;
     renderChild: (data: AppDocumentSourceAbs) => any;
     isPointer?: boolean;
-    onTrashed?: () => void;
+    preDelete?: () => void;
     isDisabledColorNote?: boolean;
     userClassName?: string;
     isSelected: boolean;
     renamedCallback?: (newFileSource: FileSource) => void;
+    checkIsOnScreen?: (filePath: string) => Promise<boolean>;
 }>) {
+    const isOnScreen = useFileSourceIsOnScreen(
+        [filePath],
+        async (filePaths) => {
+            if (checkIsOnScreen === undefined) {
+                return false;
+            }
+            return await checkIsOnScreen(filePaths[0]);
+        },
+    );
     const [isRenaming, setIsRenaming] = useState(false);
     useFileSourceRefreshEvents(['select']);
     const applyClick = () => {
@@ -138,7 +151,11 @@ export default function FileItemHandlerComp({
         onClick?.();
     };
     const selfContextMenu = genContextMenu(filePath, setIsRenaming, reload);
-    selfContextMenu.push(...genTrashContextMenu(filePath, onTrashed));
+    const preDelete1 = () => {
+        data?.preDelete();
+        preDelete?.();
+    };
+    selfContextMenu.push(...genTrashContextMenu(filePath, preDelete1));
 
     const handleContextMenuOpening = (event: any) => {
         showAppContextMenu(event, selfContextMenu);
@@ -202,7 +219,13 @@ export default function FileItemHandlerComp({
                 />
             ) : (
                 <>
-                    {renderChild(data)}
+                    <div
+                        className={
+                            'd-flex ' + (isOnScreen ? 'app-on-screen' : '')
+                        }
+                    >
+                        {renderChild(data)}
+                    </div>
                     {!isDisabledColorNote && (
                         <div className="color-note-container">
                             <ItemColorNoteComp item={fileSource} />

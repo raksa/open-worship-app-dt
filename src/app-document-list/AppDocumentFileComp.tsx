@@ -11,23 +11,22 @@ import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 import { editorTab, goToPath } from '../router/routeHelpers';
 import { previewPdf } from '../server/appHelpers';
 import { removePdfImagesPreview } from '../helper/pdfHelpers';
-import EditingHistoryManager, {
-    useEditingHistoryStatus,
-} from '../others/EditingHistoryManager';
+import EditingHistoryManager from '../editing-manager/EditingHistoryManager';
 import {
     VaryAppDocumentDynamicType,
     varyAppDocumentFromFilePath,
     useSelectedAppDocumentSetterContext,
     SelectedVaryAppDocumentContext,
     VaryAppDocumentType,
+    checkIsVaryAppDocumentOnScreen,
 } from './appDocumentHelpers';
 import PdfAppDocument from './PdfAppDocument';
-import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
-import { attachBackgroundManager } from '../others/AttachBackgroundManager';
+import { AppDocumentSourceAbs } from '../helper/AppEditableDocumentSourceAbs';
+import { useEditingHistoryStatus } from '../editing-manager/editingHelpers';
 
 function genContextMenuItems(
     varyAppDocument: VaryAppDocumentDynamicType,
-    setSelectedSlide: (value: VaryAppDocumentType | null) => void,
+    setSelectedDocument: (value: VaryAppDocumentType | null) => void,
 ): ContextMenuItemType[] {
     if (PdfAppDocument.checkIsThisType(varyAppDocument)) {
         return [
@@ -51,7 +50,7 @@ function genContextMenuItems(
             menuElement: 'Edit',
             onSelect: () => {
                 if (varyAppDocument) {
-                    setSelectedSlide(varyAppDocument);
+                    setSelectedDocument(varyAppDocument);
                     goToPath(editorTab.routePath);
                 }
             },
@@ -59,11 +58,11 @@ function genContextMenuItems(
     ];
 }
 
-function SlideFilePreviewNormalComp({
-    slide,
-}: Readonly<{ slide: AppDocument }>) {
-    const fileSource = FileSource.getInstance(slide.filePath);
-    const { canSave } = useEditingHistoryStatus(slide.filePath);
+function FilePreviewAppDocumentNormalComp({
+    varyAppDocument,
+}: Readonly<{ varyAppDocument: AppDocumentSourceAbs }>) {
+    const fileSource = FileSource.getInstance(varyAppDocument.filePath);
+    const { canSave } = useEditingHistoryStatus(varyAppDocument.filePath);
     return (
         <div className="w-100 h-100 app-ellipsis">
             <i className="bi bi-file-earmark-slides" />
@@ -73,16 +72,22 @@ function SlideFilePreviewNormalComp({
     );
 }
 
-function SlideFilePreviewPdfComp({
-    pdfSlide,
-}: Readonly<{ pdfSlide: PdfAppDocument }>) {
-    const fileSource = FileSource.getInstance(pdfSlide.filePath);
+function FilePreviewPdfAppDocumentComp({
+    pdfAppDocument,
+}: Readonly<{ pdfAppDocument: PdfAppDocument }>) {
+    const fileSource = FileSource.getInstance(pdfAppDocument.filePath);
     return (
         <div className="w-100 h-100 app-ellipsis">
             <i className="bi bi-filetype-pdf" />
             {fileSource.name}
         </div>
     );
+}
+
+async function checkIsOnScreen(filePath: string) {
+    const varyAppDocument = varyAppDocumentFromFilePath(filePath);
+    const isOnScreen = await checkIsVaryAppDocumentOnScreen(varyAppDocument);
+    return isOnScreen;
 }
 
 export default function AppDocumentFileComp({
@@ -121,27 +126,27 @@ export default function AppDocumentFileComp({
         if (!varyAppDocument) {
             return;
         }
-        if (selectedContext && !getIsShowingVaryAppDocumentPreviewer()) {
-            previewingEventListener.showVaryAppDocument(varyAppDocument);
-            return;
-        }
         setSelectedAppDocument(varyAppDocument);
+        if (!getIsShowingVaryAppDocumentPreviewer()) {
+            previewingEventListener.showVaryAppDocument(varyAppDocument);
+        }
     };
     const handleChildRendering = (varyAppDocument: AppDocumentSourceAbs) => {
         if (AppDocument.checkIsThisType(varyAppDocument)) {
-            return <SlideFilePreviewNormalComp slide={varyAppDocument} />;
+            return (
+                <FilePreviewAppDocumentNormalComp
+                    varyAppDocument={varyAppDocument}
+                />
+            );
         }
         if (PdfAppDocument.checkIsThisType(varyAppDocument)) {
-            return <SlideFilePreviewPdfComp pdfSlide={varyAppDocument} />;
+            return (
+                <FilePreviewPdfAppDocumentComp
+                    pdfAppDocument={varyAppDocument}
+                />
+            );
         }
         return null;
-    };
-    const handleSlideDeleting = () => {
-        EditingHistoryManager.getInstance(filePath).discard();
-        if (PdfAppDocument.checkIsThisType(varyAppDocument)) {
-            removePdfImagesPreview(filePath);
-        }
-        attachBackgroundManager.deleteMetaDataFile(filePath);
     };
     const handleRenaming = async (newFileSource: FileSource) => {
         await EditingHistoryManager.moveFilePath(
@@ -169,9 +174,9 @@ export default function AppDocumentFileComp({
                 varyAppDocument,
                 setSelectedAppDocument,
             )}
-            onTrashed={handleSlideDeleting}
             renamedCallback={handleRenaming}
             isSelected={isSelected}
+            checkIsOnScreen={checkIsOnScreen}
         />
     );
 }

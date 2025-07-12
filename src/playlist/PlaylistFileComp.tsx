@@ -7,7 +7,7 @@ import FileItemHandlerComp from '../others/FileItemHandlerComp';
 import Playlist from './Playlist';
 import BibleItemRenderComp from '../bible-list/BibleItemRenderComp';
 import PlaylistItem from './PlaylistItem';
-import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
+import { AppDocumentSourceAbs } from '../helper/AppEditableDocumentSourceAbs';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import FileSource from '../helper/FileSource';
 import AppSuspenseComp from '../others/AppSuspenseComp';

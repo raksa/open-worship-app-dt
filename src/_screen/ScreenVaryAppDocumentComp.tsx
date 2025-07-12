@@ -8,7 +8,7 @@ import {
 
 export default function ScreenSlideComp() {
     const screenManager = useScreenManagerContext();
-    useScreenManagerEvents(['resize'], screenManager, () => {
+    useScreenManagerEvents(['refresh'], screenManager, () => {
         screenManager.screenVaryAppDocumentManager.render();
     });
     const div = useRef<HTMLDivElement>(null);

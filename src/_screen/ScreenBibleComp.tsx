@@ -110,7 +110,7 @@ const styleText = `
 
 export default function ScreenBibleComp() {
     const screenManager = useScreenManagerContext();
-    useScreenManagerEvents(['resize'], screenManager, () => {
+    useScreenManagerEvents(['refresh'], screenManager, () => {
         screenManager.screenBibleManager.render();
     });
     useScreenBibleManagerEvents(['text-style']);

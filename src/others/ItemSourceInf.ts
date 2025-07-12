@@ -10,11 +10,11 @@ export default interface ItemSourceInf<T> extends ItemSourceInfBasic<T> {
     getMetadata(): OptionalPromise<AnyObjectType>;
     setMetadata(metaData: AnyObjectType): OptionalPromise<void>;
 
-    getItems(): OptionalPromise<T[]>;
-    setItems(items: T[]): OptionalPromise<void>;
+    getSlides(): OptionalPromise<T[]>;
+    setSlides(items: T[]): OptionalPromise<void>;
 
-    getItemByIndex(index: number): OptionalPromise<T | null>;
+    getSlideByIndex(index: number): OptionalPromise<T | null>;
 
     showContextMenu(event: any): OptionalPromise<void>;
-    showItemContextMenu(event: any, item: T): OptionalPromise<void>;
+    showSlideContextMenu(event: any, item: T): OptionalPromise<void>;
 }

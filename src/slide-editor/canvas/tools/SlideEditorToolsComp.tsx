@@ -44,13 +44,11 @@ const tabTypeList = [
     ['p', 'Properties'],
     ['c', 'Canvas Items'],
 ] as const;
-type TabType = (typeof tabTypeList)[number][0];
-
+type TabKeyType = (typeof tabTypeList)[number][0];
 export default function SlideEditorToolsComp() {
     const { canvasItems: selectedCanvasItems } =
         useSelectedCanvasItemsAndSetterContext();
-
-    const [tabType, setTabType] = useStateSettingString<TabType>(
+    const [tabKey, setTabKey] = useStateSettingString<TabKeyType>(
         'editor-tools-tab',
         'p',
     );
@@ -61,12 +59,15 @@ export default function SlideEditorToolsComp() {
             }
         >
             <div className="tools-header d-flex">
-                <TabRenderComp<TabType>
-                    tabs={tabTypeList.map(([type, name]) => {
-                        return [type, name];
+                <TabRenderComp<TabKeyType>
+                    tabs={tabTypeList.map(([key, name]) => {
+                        return {
+                            key,
+                            title: name,
+                        };
                     })}
-                    activeTab={tabType}
-                    setActiveTab={setTabType}
+                    activeTab={tabKey}
+                    setActiveTab={setTabKey}
                 />
                 <ScalingComp />
             </div>
@@ -76,12 +77,12 @@ export default function SlideEditorToolsComp() {
                     overflow: 'auto',
                 }}
             >
-                {tabType === 'p' ? (
+                {tabKey === 'p' ? (
                     <SlideEditorPropertiesComp
                         canvasItems={selectedCanvasItems}
                     />
                 ) : null}
-                {genTabBody<TabType>(tabType, ['c', LazyToolCanvasItemsComp])}
+                {genTabBody<TabKeyType>(tabKey, ['c', LazyToolCanvasItemsComp])}
             </div>
         </div>
     );

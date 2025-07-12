@@ -85,6 +85,7 @@ function BookOptionsComp({
                     OPTION_CLASS,
                     OPTION_SELECTED_CLASS,
                     event.key as KeyboardType,
+                    event,
                 );
             },
             [],

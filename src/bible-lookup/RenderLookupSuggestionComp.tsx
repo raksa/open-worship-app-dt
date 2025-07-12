@@ -9,6 +9,7 @@ import {
 } from '../bible-reader/LookupBibleItemController';
 import RenderVerseOptionsComp from './RenderVerseOptionsComp';
 import { use } from 'react';
+import { goToBibleSetting } from '../setting/SettingComp';
 
 export default function RenderLookupSuggestionComp({
     applyChapterSelection,
@@ -84,14 +85,24 @@ export function BibleNotAvailableComp({
     };
 
     return (
-        <div id="bible-lookup-popup" className="shadow card">
-            <div className="body card-body w-100">
+        <div id="bible-lookup-popup" className="card">
+            <div className="body card-body w-100 p-3">
                 <h2>Bible key "{bibleKey}" is not available!</h2>
                 Please change bible key here:{' '}
                 <BibleSelectionMiniComp
                     bibleKey={bibleKey + '??'}
                     onBibleKeyChange={handleBibleKeyChanging}
                 />
+                <hr />
+                <button
+                    className="btn btn-primary"
+                    onClick={() => {
+                        goToBibleSetting();
+                    }}
+                >
+                    <span>`Go to Bible Setting </span>
+                    <i className="bi bi-gear-wide-connected" />
+                </button>
             </div>
         </div>
     );

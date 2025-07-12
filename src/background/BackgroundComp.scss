@@ -1,18 +1,11 @@
 @use '../others/variables.scss' as *;
 
 .background {
-  .app-nav-highlight-selected {
-    .btn::after {
-      content: '*';
-      color: $hight-light-color;
-    }
-  }
-
-  & > .background-header {
+  & > .header {
     height: $header-height;
   }
 
-  & > .background-body {
+  & > .body {
     background-color: var(--bs-gray-900);
     overflow-y: auto;
     padding: 1px;

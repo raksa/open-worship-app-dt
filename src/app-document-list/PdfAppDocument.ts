@@ -1,7 +1,10 @@
-import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
+import { AppDocumentSourceAbs } from '../helper/AppEditableDocumentSourceAbs';
 import { MimetypeNameType } from '../server/fileHelpers';
 import ItemSourceInf from '../others/ItemSourceInf';
-import { genPdfImagesPreview } from '../helper/pdfHelpers';
+import {
+    genPdfImagesPreview,
+    removePdfImagesPreview,
+} from '../helper/pdfHelpers';
 import PdfSlide from './PdfSlide';
 import { AnyObjectType } from '../helper/helpers';
 import { OptionalPromise } from '../others/otherHelpers';
@@ -13,7 +16,8 @@ export default class PdfAppDocument
     extends AppDocumentSourceAbs
     implements ItemSourceInf<PdfSlide>
 {
-    static readonly mimetypeName: MimetypeNameType = 'slide';
+    static readonly mimetypeName: MimetypeNameType = 'pdf';
+    isEditable = false;
 
     constructor(filePath: string) {
         super(filePath);
@@ -22,14 +26,14 @@ export default class PdfAppDocument
     setMetadata(_metaData: AnyObjectType): OptionalPromise<void> {
         throw new Error('Method not implemented.');
     }
-    setItems(_items: PdfSlide[]): OptionalPromise<void> {
+    setSlides(_items: PdfSlide[]): OptionalPromise<void> {
         throw new Error('Method not implemented.');
     }
     setItemById(_id: number, _item: PdfSlide): OptionalPromise<void> {
         throw new Error('Method not implemented.');
     }
 
-    showItemContextMenu(
+    showSlideContextMenu(
         event: any,
         item: PdfSlide,
         extraMenuItems: ContextMenuItemType[] = [],
@@ -45,7 +49,7 @@ export default class PdfAppDocument
         return {};
     }
 
-    async getItems() {
+    async getSlides() {
         try {
             const imageFileInfoList = await genPdfImagesPreview(this.filePath);
             if (imageFileInfoList === null) {
@@ -67,19 +71,19 @@ export default class PdfAppDocument
         return [];
     }
 
-    async getItemByIndex(index: number) {
-        const items = await this.getItems();
+    async getSlideByIndex(index: number) {
+        const items = await this.getSlides();
         return items[index] ?? null;
     }
 
     async getItemById(id: number) {
-        const items = await this.getItems();
+        const items = await this.getSlides();
         return items.find((item) => item.id === id) ?? null;
     }
 
     static getInstance(filePath: string) {
         return this._getInstance(filePath, () => {
-            return new PdfAppDocument(filePath);
+            return new this(filePath);
         });
     }
 
@@ -95,5 +99,10 @@ export default class PdfAppDocument
 
     toJson(): AnyObjectType {
         throw new Error('Method not implemented.');
+    }
+
+    async preDelete() {
+        super.preDelete();
+        removePdfImagesPreview(this.filePath);
     }
 }

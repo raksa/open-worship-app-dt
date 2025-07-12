@@ -1,7 +1,4 @@
-import { useState } from 'react';
-
 import { handleError } from '../helper/errorHelpers';
-import { useAppEffect } from '../helper/debuggerHelpers';
 import {
     fsCheckDirExist,
     fsCheckFileExist,
@@ -14,11 +11,10 @@ import {
     pathBasename,
     pathJoin,
 } from '../server/fileHelpers';
-import { unlocking } from '../server/appHelpers';
-import GarbageCollectableCacher from './GarbageCollectableCacher';
+import GarbageCollectableCacher from '../others/GarbageCollectableCacher';
 import FileSource from '../helper/FileSource';
-import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { parsePatch, reversePatch, applyPatch, createPatch } from 'diff';
+import { unlocking } from '../server/unlockingHelpers';
 
 const CURRENT_FILE_SIGN = '-head';
 export class FileLineHandler {
@@ -144,7 +140,7 @@ export class FileLineHandler {
         if (originalContent === false) {
             return false;
         }
-        return await FileSource.saveFileData(filePath, originalContent);
+        return await FileSource.writeFileData(filePath, originalContent);
     }
 
     async changeCurrent(fileFullPath: string) {
@@ -179,7 +175,7 @@ export class FileLineHandler {
                 lastContent,
                 currentContent,
             );
-            return await FileSource.saveFileData(lastFilePath, patchedText);
+            return await FileSource.writeFileData(lastFilePath, patchedText);
         });
     }
 
@@ -193,7 +189,7 @@ export class FileLineHandler {
                 const currentFileIndex = this.toFileIndex(currentFilePath);
                 await this.clearNextHistories(currentFileIndex);
                 currentFilePath = this.toFileFullPath(currentFileIndex + 1);
-                const isSuccess = await FileSource.saveFileData(
+                const isSuccess = await FileSource.writeFileData(
                     currentFilePath,
                     dataText,
                 );
@@ -360,7 +356,7 @@ export default class EditingHistoryManager {
             return false;
         }
         const isSuccess =
-            await this.fileLineHandler.fileSource.saveFileData(lastHistory);
+            await this.fileLineHandler.fileSource.writeFileData(lastHistory);
         if (!isSuccess) {
             return false;
         }
@@ -390,26 +386,4 @@ export default class EditingHistoryManager {
     static genFolderPath(filePath: string) {
         return `${filePath}.histories`;
     }
-}
-
-export function useEditingHistoryStatus(filePath: string) {
-    const [status, setStatus] = useState({
-        canUndo: false,
-        canRedo: false,
-        canSave: false,
-    });
-    const update = async () => {
-        const editingHistoryManager = new EditingHistoryManager(filePath);
-        const canUndo = await editingHistoryManager.checkCanUndo();
-        const canRedo = await editingHistoryManager.checkCanRedo();
-        const historyText = await editingHistoryManager.getCurrentHistory();
-        const text = await editingHistoryManager.getOriginalData();
-        const canSave = historyText !== null && historyText !== text;
-        setStatus({ canUndo, canRedo, canSave });
-    };
-    useFileSourceEvents(['update'], update, [], filePath);
-    useAppEffect(() => {
-        update();
-    }, [filePath]);
-    return status;
 }

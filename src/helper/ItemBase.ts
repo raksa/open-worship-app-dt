@@ -56,7 +56,7 @@ export abstract class ItemBase implements ColorNoteInf {
 
     abstract clone(): ItemBase;
 
-    toJson() {
+    toJson(): AnyObjectType {
         throw new Error('Method not implemented.');
     }
     static fromJson(_json: AnyObjectType, _filePath?: string): any {

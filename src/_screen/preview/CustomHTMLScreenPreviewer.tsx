@@ -62,7 +62,7 @@ export default class CustomHTMLScreenPreviewer extends HTMLElement {
         if (screenManagerBase === null) {
             return;
         }
-        screenManagerBase.registerEventListener(['resize'], () => {
+        screenManagerBase.registerEventListener(['refresh'], () => {
             this.setMountPointScale(screenManagerBase);
             this.attemptTimeout(() => {
                 this.setMountPointScale(screenManagerBase);

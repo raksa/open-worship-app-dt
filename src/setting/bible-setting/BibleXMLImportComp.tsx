@@ -99,72 +99,79 @@ export default function BibleXMLImportComp({
                 </div>
             )}
             <form onSubmit={handleFormSubmitting}>
-                <div className="app-border-white-round p-2">
-                    {isValidUrl ? null : (
+                <div className="p-1">
+                    <div
+                        className="input-group"
+                        style={{
+                            opacity: isValidUrl ? 0.5 : 1,
+                            pointerEvents: isValidUrl ? 'none' : 'auto',
+                        }}
+                    >
+                        <input
+                            className="form-control"
+                            type="file"
+                            name="file"
+                            onChange={() => {
+                                setIsFileSelected(true);
+                            }}
+                        />
+                        {isFileSelected ? (
+                            <button
+                                type="button"
+                                title="Cancel selection"
+                                className="btn btn-sm btn-danger"
+                                onClick={(event) => {
+                                    const form = event.currentTarget.form;
+                                    handleFileCanceling(form);
+                                }}
+                            >
+                                <i className="bi bi-x-lg" />
+                            </button>
+                        ) : null}
+                    </div>
+                    <div
+                        style={{
+                            opacity: isFileSelected ? 0.5 : 1,
+                            pointerEvents: isFileSelected ? 'none' : 'auto',
+                        }}
+                    >
+                        <span>or</span>
                         <div className="input-group">
+                            <div className="input-group-text">URL:</div>
                             <input
-                                className="form-control"
-                                type="file"
-                                name="file"
-                                onChange={() => {
-                                    setIsFileSelected(true);
+                                className={
+                                    'form-control' +
+                                    (!urlText || isValidUrl
+                                        ? ''
+                                        : ' is-invalid')
+                                }
+                                title={isValidUrl ? '' : 'Invalid URL'}
+                                type="text"
+                                name="url"
+                                placeholder="http://example.com/file.xml"
+                                value={urlText}
+                                onChange={(event: any) => {
+                                    setUrlText(event.target.value);
                                 }}
                             />
-                            {isFileSelected ? (
+                            {isValidUrl ? (
                                 <button
                                     type="button"
-                                    title="Cancel selection"
+                                    title="Clear url"
                                     className="btn btn-sm btn-danger"
-                                    onClick={(event) => {
-                                        const form = event.currentTarget.form;
-                                        handleFileCanceling(form);
+                                    onClick={() => {
+                                        setUrlText('');
                                     }}
                                 >
                                     <i className="bi bi-x-lg" />
                                 </button>
                             ) : null}
                         </div>
-                    )}
-                    {isFileSelected ? null : (
-                        <>
-                            <span>or</span>
-                            <div className="input-group">
-                                <div className="input-group-text">URL:</div>
-                                <input
-                                    className={
-                                        'form-control' +
-                                        (!urlText || isValidUrl
-                                            ? ''
-                                            : ' is-invalid')
-                                    }
-                                    title={isValidUrl ? '' : 'Invalid URL'}
-                                    type="text"
-                                    name="url"
-                                    placeholder="http://example.com/file.xml"
-                                    value={urlText}
-                                    onChange={(event: any) => {
-                                        setUrlText(event.target.value);
-                                    }}
-                                />
-                                {isValidUrl ? (
-                                    <button
-                                        type="button"
-                                        title="Clear url"
-                                        className="btn btn-sm btn-danger"
-                                        onClick={() => {
-                                            setUrlText('');
-                                        }}
-                                    >
-                                        <i className="bi bi-x-lg" />
-                                    </button>
-                                ) : null}
-                            </div>
-                        </>
-                    )}
+                    </div>
                 </div>
                 <div>
                     <input
-                        className="form-control"
+                        className="form-control btn btn-primary"
                         type="submit"
                         value="Import"
                         disabled={isPending || !(isFileSelected || isValidUrl)}

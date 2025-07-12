@@ -14,7 +14,7 @@ import AttachBackgroundManager, {
 } from '../others/AttachBackgroundManager';
 import { useAppEffectAsync } from './debuggerHelpers';
 import { useFileSourceEvents } from './dirSourceHelpers';
-import { changeDragEventStyle } from './helpers';
+import { stopDraggingState } from './helpers';
 import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 
 export function handleDragStart(
@@ -27,7 +27,6 @@ export function handleDragStart(
 }
 
 export function extractDropData(event: any) {
-    event.preventDefault();
     const data = event.dataTransfer.getData('text');
     if (!data) {
         return null;
@@ -66,13 +65,11 @@ async function deserializeDragData({
     return { type, item };
 }
 
-export async function onDropHandling(
+export async function handleAttachBackgroundDrop(
     event: React.DragEvent<HTMLElement>,
     item: { filePath: string; id?: number },
 ) {
-    event.preventDefault();
-    event.stopPropagation();
-    changeDragEventStyle(event, 'opacity', '1');
+    stopDraggingState(event);
     const droppedData = await extractDropData(event);
     if (
         droppedData !== null &&
@@ -85,12 +82,15 @@ export async function onDropHandling(
         await attachBackgroundManager.attachDroppedBackground(
             droppedData,
             item.filePath,
-            item.id?.toString(),
+            item.id,
         );
     }
 }
 
-export function useAttachedBackgroundData(filePath: string, id?: string) {
+export function useAttachedBackgroundData(
+    filePath: string,
+    id?: string | number,
+) {
     const [droppedData, setDroppedData] = useState<
         DroppedDataType | null | undefined
     >(undefined);
@@ -122,7 +122,7 @@ export function useAttachedBackgroundData(filePath: string, id?: string) {
 
 export function genRemovingAttachedBackgroundMenu(
     filePath: string,
-    id?: string,
+    id?: string | number,
 ): ContextMenuItemType[] {
     return [
         {

@@ -4,14 +4,13 @@ import { DroppedDataType } from '../../helper/DragInf';
 import { getSetting, setSetting } from '../../helper/settingHelpers';
 import { SlideType } from '../../app-document-list/Slide';
 import { genPdfSlide } from '../../app-document-presenter/items/PdfSlideRenderComp';
-import { genHtmlSlide } from '../../app-document-presenter/items/SlideRendererComp';
+import { genSlideHtml } from '../../app-document-presenter/items/SlideRendererComp';
 import {
     BasicScreenMessageType,
     ScreenMessageType,
     VaryAppDocumentItemScreenDataType,
 } from '../screenHelpers';
 import { screenManagerSettingNames } from '../../helper/constants';
-import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
 import ScreenManagerBase from './ScreenManagerBase';
 import ScreenEffectManager from './ScreenEffectManager';
@@ -24,6 +23,8 @@ import {
 import PdfSlide, { PdfSlideType } from '../../app-document-list/PdfSlide';
 import appProvider from '../../server/appProvider';
 import { applyAttachBackground } from './screenBackgroundHelpers';
+import { unlocking } from '../../server/unlockingHelpers';
+import { checkAreObjectsEqual } from '../../server/comparisonHelpers';
 
 export type ScreenVaryAppDocumentManagerEventType = 'update';
 
@@ -84,14 +85,20 @@ class ScreenVaryAppDocumentManager extends ScreenEventHandler<ScreenVaryAppDocum
     set varyAppDocumentItemData(
         appDocumentItemData: VaryAppDocumentItemScreenDataType | null,
     ) {
-        if (this.screenManagerBase.checkIsLockedWithMessage()) {
+        if (
+            this.screenManagerBase.checkIsLockedWithMessage() ||
+            checkAreObjectsEqual(
+                this._varyAppDocumentItemData,
+                appDocumentItemData,
+            )
+        ) {
             return;
         }
         if (appDocumentItemData !== null && appDocumentItemData.itemJson) {
             applyAttachBackground(
                 this.screenId,
                 appDocumentItemData.filePath,
-                appDocumentItemData.itemJson.id.toString(),
+                appDocumentItemData.itemJson.id,
             );
         }
         this._varyAppDocumentItemData = appDocumentItemData;
@@ -223,7 +230,7 @@ class ScreenVaryAppDocumentManager extends ScreenEventHandler<ScreenVaryAppDocum
     }
 
     renderAppDocument(divHaftScale: HTMLDivElement, itemJson: SlideType) {
-        const content = genHtmlSlide(itemJson.canvasItems);
+        const content = genSlideHtml(itemJson.canvasItems);
         this.cleanupSlideContent(content);
         const { width, height } = itemJson.metadata;
         Object.assign(divHaftScale.style, {
@@ -270,7 +277,6 @@ class ScreenVaryAppDocumentManager extends ScreenEventHandler<ScreenVaryAppDocum
             );
             child.remove();
         });
-        div.appendChild(divContainer);
         divHaftScale.appendChild(target.content);
         Object.assign(divContainer.style, {
             position: 'absolute',
@@ -278,7 +284,7 @@ class ScreenVaryAppDocumentManager extends ScreenEventHandler<ScreenVaryAppDocum
             height: `${this.screenManagerBase.height}px`,
             transform: `scale(${target.scale},${target.scale}) translate(50%, 50%)`,
         });
-        this.slideEffectManager.styleAnim.animIn(divContainer);
+        this.slideEffectManager.styleAnim.animIn(divContainer, div);
     }
 
     get containerStyle(): CSSProperties {

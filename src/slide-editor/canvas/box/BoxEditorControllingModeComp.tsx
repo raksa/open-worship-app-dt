@@ -6,7 +6,10 @@ import {
     useSetEditingCanvasItem,
 } from '../CanvasItem';
 import { BoxEditorNormalImageRender } from './BoxEditorNormalViewImageModeComp';
-import { BoxEditorNormalTextRender } from './BoxEditorNormalViewTextModeComp';
+import {
+    BoxEditorNormalHtmlRender,
+    BoxEditorNormalTextRender,
+} from './BoxEditorNormalViewTextModeComp';
 import { BoxEditorNormalBibleRender } from './BoxEditorNormalViewBibleModeComp';
 import { useCanvasControllerContext } from '../CanvasController';
 import { BoxEditorNormalVideoRender } from './BoxEditorNormalViewVideoModeComp';
@@ -23,6 +26,8 @@ function BoxEditorCanvasItemRender() {
             return <BoxEditorNormalVideoRender />;
         case 'text':
             return <BoxEditorNormalTextRender />;
+        case 'html':
+            return <BoxEditorNormalHtmlRender />;
         case 'bible':
             return <BoxEditorNormalBibleRender />;
         default:

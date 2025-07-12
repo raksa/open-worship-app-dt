@@ -1,29 +1,19 @@
 @use '../others/variables.scss' as *;
 
 #app-setting {
-  .setting-header {
-    height: $header-height;
-  }
+  .lang {
+    .options {
+      background-color: var(--bs-gray-800);
+      max-height: 200px;
+      overflow-y: auto;
+    }
 
-  .setting-body {
-    padding: 5px;
-    background-color: var(--bs-gray-700);
-    overflow-y: auto;
+    .item {
+      margin: 5px;
 
-    .lang {
-      .options {
-        background-color: var(--bs-gray-800);
-        max-height: 200px;
-        overflow-y: auto;
-      }
-
-      .item {
-        margin: 5px;
-
-        .icon {
-          float: left;
-          width: 20px;
-        }
+      .icon {
+        float: left;
+        width: 20px;
       }
     }
   }

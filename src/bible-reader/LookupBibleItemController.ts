@@ -28,9 +28,9 @@ import {
 } from '../bible-list/bibleRenderHelpers';
 import { createContext } from 'react';
 import CacheManager from '../others/CacheManager';
-import { unlocking } from '../server/appHelpers';
 import { AnyObjectType } from '../helper/helpers';
 import { OptionalPromise } from '../others/otherHelpers';
+import { unlocking } from '../server/unlockingHelpers';
 
 export const closeEventMapper: EventMapper = {
     wControlKey: ['Ctrl'],

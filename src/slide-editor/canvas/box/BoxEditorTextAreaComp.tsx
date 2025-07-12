@@ -35,11 +35,12 @@ export default function BoxEditorTextAreaComp({
     return (
         <textarea
             style={{
+                width: '100%',
+                height: '100%',
                 ...style,
                 ...calcAlignmentStyle(props),
                 overflow: 'auto',
             }}
-            className="w-100 h-100"
             value={localText}
             autoFocus
             onFocus={(event) => {

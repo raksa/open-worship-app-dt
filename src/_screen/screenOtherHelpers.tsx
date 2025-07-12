@@ -2,6 +2,7 @@ import ReactDOMServer from 'react-dom/server';
 import CountdownController from './managers/CountdownController';
 import { getHTMLChild } from '../helper/helpers';
 import ScreenManagerBase from './managers/ScreenManagerBase';
+import { handleError } from '../helper/errorHelpers';
 
 const _alertTypeList = ['countdown', 'marquee', 'camera', 'toast'] as const;
 export type AlertType = (typeof _alertTypeList)[number];
@@ -38,8 +39,9 @@ export function genHtmlAlertMarquee(
                     padding: 3px 0px;
                     margin: 0 auto;
                     overflow: hidden;
-                    background-color: blue;
                     color: white;
+                    background-color: rgba(0, 12, 100, 0.5);
+                    backdrop-filter: blur(5px);
                     font-size: ${fontSize}px;
                     box-shadow: inset 0 0 10px lightblue;
                     will-change: transform;
@@ -88,40 +90,29 @@ export function genHtmlAlertMarquee(
     return getHTMLChild<HTMLDivElement>(div, 'div');
 }
 
-export function genHtmlAlertCountdown(
-    countdownData: { dateTime: Date },
-    screenManagerBase: ScreenManagerBase,
-) {
+export function genHtmlAlertCountdown(countdownData: {
+    dateTime: Date;
+    extraStyle?: React.CSSProperties;
+}) {
     const { dateTime } = countdownData;
-    const scale = screenManagerBase.height / 768;
-    const fontSize = 100 * scale;
-    const chunkSize = Math.floor(fontSize / 10);
     const actorClass = classNameMapper.countdown;
     const htmlString = ReactDOMServer.renderToStaticMarkup(
         <div
             data-alert-cn={actorClass}
             style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                fontSize: `${fontSize}px`,
                 color: 'white',
+                backgroundColor: 'rgba(0, 12, 100, 0.7)',
+                backdropFilter: 'blur(5px)',
+                ...(countdownData.extraStyle ?? {}),
             }}
         >
             <style>{`
                 .${actorClass} {
-                    background-color: blue;
-                    box-shadow:
-                        0 0 0 ${chunkSize}px hsl(0, 0%, 80%),
-                        0 0 0 ${chunkSize}px hsl(0, 0%, 90%);
                     display: flex;
                     justify-content: center;
-                    padding: ${chunkSize}px;
                 }
                 .${actorClass} div {
                     text-align: center;
-                    width: ${fontSize * 1.3}px;
                 }
                 .${actorClass} #second {
                     text-align: left;
@@ -176,7 +167,7 @@ export function checkIsCountdownDatesEq(
     return toString(date1) === toString(date2);
 }
 
-export function getAndShowMedia({
+export async function getAndShowMedia({
     id,
     width,
     extraStyle,
@@ -192,30 +183,27 @@ export function getAndShowMedia({
         video: { width },
         id,
     };
-
-    navigator.mediaDevices
-        .getUserMedia(constraints)
-        .then((mediaStream) => {
-            const video = document.createElement('video');
-            video.srcObject = mediaStream;
-            video.onloadedmetadata = () => {
-                video.play();
-            };
-            if (width !== undefined) {
-                video.style.width = `${width}px`;
-            }
-            Object.assign(video.style, extraStyle ?? {});
-            container.innerHTML = '';
-            container.appendChild(video);
-            return () => {
-                const tracks = mediaStream.getVideoTracks();
-                tracks.forEach((track) => {
-                    track.stop();
-                });
-            };
-        })
-        .catch((err) => {
-            // always check for errors at the end.
-            console.error(`${err.name}: ${err.message}`);
-        });
+    try {
+        const mediaStream =
+            await navigator.mediaDevices.getUserMedia(constraints);
+        const video = document.createElement('video');
+        video.srcObject = mediaStream;
+        video.onloadedmetadata = () => {
+            video.play();
+        };
+        if (width !== undefined) {
+            video.style.width = `${width}px`;
+        }
+        Object.assign(video.style, extraStyle ?? {});
+        container.innerHTML = '';
+        container.appendChild(video);
+        return () => {
+            const tracks = mediaStream.getVideoTracks();
+            tracks.forEach((track) => {
+                track.stop();
+            });
+        };
+    } catch (error) {
+        handleError(error);
+    }
 }

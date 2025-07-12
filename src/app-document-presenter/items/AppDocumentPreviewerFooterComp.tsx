@@ -6,10 +6,10 @@ import {
     MAX_THUMBNAIL_SCALE,
     THUMBNAIL_SCALE_STEP,
     selectSlide,
-    useSelectedVaryAppDocumentContext,
     useSelectedAppDocumentSetterContext,
     VaryAppDocumentItemType,
     toKeyByFilePath,
+    useVaryAppDocumentContext,
 } from '../../app-document-list/appDocumentHelpers';
 import AppRangeComp from '../../others/AppRangeComp';
 import { useAppDocumentItemThumbnailSizeScale } from '../../event/VaryAppDocumentEventListener';
@@ -79,9 +79,13 @@ export const defaultRangeSize = {
     max: MAX_THUMBNAIL_SCALE,
     step: THUMBNAIL_SCALE_STEP,
 };
-export default function AppDocumentPreviewerFooterComp() {
-    const selectedVaryAppDocument = useSelectedVaryAppDocumentContext();
-    const setSelectedSlide = useSelectedAppDocumentSetterContext();
+export default function AppDocumentPreviewerFooterComp({
+    isDisableChanging,
+}: Readonly<{
+    isDisableChanging?: boolean;
+}>) {
+    const selectedVaryAppDocument = useVaryAppDocumentContext();
+    const setSelectedDocument = useSelectedAppDocumentSetterContext();
     const [thumbnailSizeScale, setThumbnailSizeScale] =
         useAppDocumentItemThumbnailSizeScale();
     const handleSlideChoosing = async (event: any) => {
@@ -95,7 +99,7 @@ export default function AppDocumentPreviewerFooterComp() {
                 'No other slide found in the slide directory',
             );
         } else {
-            setSelectedSlide(slide);
+            setSelectedDocument(slide);
         }
     };
     return (
@@ -111,7 +115,9 @@ export default function AppDocumentPreviewerFooterComp() {
                     <PathPreviewerComp
                         dirPath={selectedVaryAppDocument.filePath}
                         isShowingNameOnly
-                        onClick={handleSlideChoosing}
+                        onClick={
+                            isDisableChanging ? undefined : handleSlideChoosing
+                        }
                     />
                 </div>
                 {appProvider.isPagePresenter ? (

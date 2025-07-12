@@ -7,7 +7,7 @@ import CanvasItem, {
 import { getHTMLChild } from '../../helper/helpers';
 import Canvas from '../../slide-editor/canvas/Canvas';
 
-export function genHtmlSlide(canvasItemsJson: CanvasItemPropsType[]) {
+export function genSlideHtml(canvasItemsJson: CanvasItemPropsType[]) {
     const htmlString = ReactDOMServer.renderToStaticMarkup(
         <SlideRendererComp
             width={'100%'}

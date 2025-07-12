@@ -44,8 +44,20 @@ export function useScreenManagerEvents(
         screenManagerBase,
         callback,
     );
-    useScreenBackgroundManagerEvents(['update']);
-    useScreenVaryAppDocumentManagerEvents(['update']);
-    useScreenBibleManagerEvents(['update']);
-    useScreenOtherManagerEvents(['update']);
+}
+
+export function useScreenUpdateEvents(
+    screenManagerBase?: ScreenManagerBase,
+    callback?: () => void,
+) {
+    useScreenEvents(
+        ['update'],
+        ScreenManagerBase as any,
+        screenManagerBase,
+        callback,
+    );
+    useScreenBackgroundManagerEvents(['update'], undefined, callback);
+    useScreenVaryAppDocumentManagerEvents(['update'], undefined, callback);
+    useScreenBibleManagerEvents(['update'], undefined, callback);
+    useScreenOtherManagerEvents(['update'], undefined, callback);
 }

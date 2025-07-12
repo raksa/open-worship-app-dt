@@ -1,9 +1,65 @@
-import { LazyExoticComponent } from 'react';
+import { LazyExoticComponent, useMemo } from 'react';
 
 import { tran } from '../lang';
 import AppSuspenseComp from './AppSuspenseComp';
+import { OptionalPromise } from './otherHelpers';
+import { useAppStateAsync } from '../helper/debuggerHelpers';
+import { useScreenUpdateEvents } from '../_screen/managers/screenManagerHooks';
 
-export type TabHeaderPropsType<T> = [T, string, string?];
+export type TabHeaderPropsType<T> = {
+    key: T;
+    title: string;
+    className?: string;
+    checkIsOnScreen?: (key: T) => OptionalPromise<boolean>;
+};
+
+function useIsOnScreen<T>(tab: TabHeaderPropsType<T>) {
+    const [isOnScreen, setIsOnScreen] = useAppStateAsync(() => {
+        if (tab.checkIsOnScreen === undefined) {
+            return false;
+        }
+        return tab.checkIsOnScreen(tab.key);
+    }, [tab.key]);
+    useScreenUpdateEvents(undefined, async () => {
+        if (tab.checkIsOnScreen === undefined) {
+            return;
+        }
+        const isOnScreen = await tab.checkIsOnScreen(tab.key);
+        setIsOnScreen(isOnScreen);
+    });
+    return isOnScreen;
+}
+
+function RendTabComp<T>({
+    tab,
+    setActiveTab,
+    activeTab,
+}: Readonly<{
+    tab: TabHeaderPropsType<T>;
+    setActiveTab?: (key: T) => void;
+    activeTab: T;
+}>) {
+    const activeClass = useMemo(() => {
+        return activeTab === tab.key ? 'active' : '';
+    }, [activeTab, tab.key]);
+    const isOnScreen = useIsOnScreen(tab);
+    return (
+        <li key={tab.title} className={'nav-item ' + (tab.className ?? '')}>
+            <button
+                className={
+                    `btn btn-link nav-link ${activeClass}` +
+                    (isOnScreen ? ' app-on-screen' : '')
+                }
+                onClick={() => {
+                    setActiveTab?.(tab.key);
+                }}
+            >
+                {tran(tab.title)}
+            </button>
+        </li>
+    );
+}
+
 export default function TabRenderComp<T extends string>({
     tabs,
     activeTab,
@@ -12,7 +68,7 @@ export default function TabRenderComp<T extends string>({
 }: Readonly<{
     tabs: TabHeaderPropsType<T>[];
     activeTab: T;
-    setActiveTab?: (t: T) => void;
+    setActiveTab?: (key: T) => void;
     className?: string;
 }>) {
     return (
@@ -23,22 +79,14 @@ export default function TabRenderComp<T extends string>({
                 overflowX: 'auto',
             }}
         >
-            {tabs.map(([tab, title, tabClassName]) => {
-                const activeClass = activeTab === tab ? 'active' : '';
+            {tabs.map((tab) => {
                 return (
-                    <li
-                        key={title}
-                        className={'nav-item ' + (tabClassName ?? '')}
-                    >
-                        <button
-                            className={`btn btn-link nav-link ${activeClass}`}
-                            onClick={() => {
-                                setActiveTab?.(tab);
-                            }}
-                        >
-                            {tran(title)}
-                        </button>
-                    </li>
+                    <RendTabComp
+                        key={tab.key}
+                        tab={tab}
+                        activeTab={activeTab}
+                        setActiveTab={setActiveTab}
+                    />
                 );
             })}
         </ul>

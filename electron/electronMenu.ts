@@ -49,7 +49,7 @@ export function initMenu(appController: ElectronAppController) {
                 { role: 'copy' },
                 { role: 'paste' },
                 {
-                    label: `find`,
+                    label: `Find`,
                     click: () => {
                         appController.finderController.open(
                             appController.mainWin,
