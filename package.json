@@ -21,7 +21,6 @@
         "pack:linux": "npm run build && electron-builder build --linux",
         "pack:win": "npm run build && electron-builder build --win --x64",
         "pack:win32": "electron-builder build --win --ia32",
-        "pack:ubuntu": "npm run build && electron-builder build --linux",
         "vite:dev": "vite",
         "vite:build": "vite build",
         "react-devtools": "react-devtools",
