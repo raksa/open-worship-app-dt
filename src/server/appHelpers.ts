@@ -190,7 +190,7 @@ function setDecided() {
         'true',
     );
 }
-export function checkDecidedBibleReaderHomePage() {
+export async function checkDecidedBibleReaderHomePage() {
     if (appProvider.isPageSetting) {
         return;
     }
@@ -203,9 +203,9 @@ export function checkDecidedBibleReaderHomePage() {
     if (decided !== null) {
         return;
     }
-    const isOk = window.confirm(
-        '`The application is started first time. ' +
-            '\nThis will set the home page to \n"📖 Bible Reader🔎"?',
+    const isOk = await showAppConfirm(
+        'The application is started first time',
+        'This will set the home page to "📖 Bible Reader🔎"?',
     );
     setDecided();
     if (isOk) {
@@ -224,3 +224,13 @@ export function pasteTextToInput(inputElement: HTMLInputElement, text: string) {
         }),
     );
 }
+
+(window as any).getSlidesCount = (
+    powerPointFilePath: string,
+    dotNetRootDir?: string,
+) => {
+    return appProvider.messageUtils.sendDataSync('main:app:get-slide-count', {
+        powerPointFilePath,
+        dotNetRootDir,
+    });
+};

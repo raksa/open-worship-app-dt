@@ -2,7 +2,12 @@ import electron, { FileFilter, shell } from 'electron';
 import fontList from 'font-list';
 
 import ElectronAppController from './ElectronAppController';
-import { attemptClosing, goDownload, tarExtract } from './electronHelpers';
+import {
+    attemptClosing,
+    getSlidesCount,
+    goDownload,
+    tarExtract,
+} from './electronHelpers';
 import ElectronScreenController from './ElectronScreenController';
 import { officeFileToPdf } from './electronOfficeHelpers';
 import { getPagesCount, pdfToImages } from './pdfToImagesHelpers';
@@ -329,4 +334,12 @@ export function initEventOther(appController: ElectronAppController) {
     ipcMain.on('main:app:go-download', () => {
         goDownload();
     });
+
+    ipcMain.on(
+        'main:app:get-slide-count',
+        (event, { powerPointFilePath, dotNetRootDir }) => {
+            const count = getSlidesCount(powerPointFilePath, dotNetRootDir);
+            event.returnValue = count;
+        },
+    );
 }

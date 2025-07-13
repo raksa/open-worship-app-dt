@@ -1,3 +1,4 @@
+import { resolve } from 'node:path';
 import { app, shell } from 'electron';
 import { x as tarX } from 'tar';
 
@@ -20,6 +21,9 @@ interface ClosableInt {
     close: () => void;
 }
 
+export function toUnpackedPath(path: string) {
+    return path.replace('app.asar', 'app.asar.unpacked');
+}
 export function attemptClosing(win?: ClosableInt | null) {
     try {
         win?.close();
@@ -98,4 +102,46 @@ export function goDownload() {
     const url = new URL(`${appInfo.homepage}/download`);
     url.searchParams.set('mv', app.getVersion());
     shell.openExternal(url.toString());
+}
+
+let timeOutId: NodeJS.Timeout | null = null;
+let powerPoint: any = null;
+function scheduleRelease() {
+    if (timeOutId !== null) {
+        clearTimeout(timeOutId);
+    }
+    timeOutId = setTimeout(() => {
+        if (timeOutId === null) {
+            return;
+        }
+        timeOutId = null;
+        powerPoint = null;
+    }, 10e3); // 10 seconds timeout
+}
+export function getSlidesCount(
+    powerPointFilePath: string,
+    dotNetRoot?: string,
+) {
+    if (powerPoint === null) {
+        if (dotNetRoot) {
+            process.env.DOTNET_ROOT = dotNetRoot;
+        }
+        let modulePath = 'node-api-dotnet/net8.0';
+        if (app.isPackaged) {
+            modulePath = toUnpackedPath(
+                resolve(app.getAppPath(), 'node_modules', modulePath),
+            );
+        }
+        console.log(__dirname);
+        console.log(`Unpacked path: ${modulePath}`);
+        const dotnet = require(modulePath);
+        const binaryPath = toUnpackedPath(
+            resolve(__dirname, '../powerpoint-helper/net8.0/PowerPoint'),
+        );
+        console.log(`Binary path: ${binaryPath}`);
+        powerPoint = dotnet.require(binaryPath);
+        scheduleRelease();
+    }
+    const count = powerPoint.Helper.countSlides(powerPointFilePath);
+    return count;
 }

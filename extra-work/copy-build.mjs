@@ -1,6 +1,13 @@
 'use strict';
 /* eslint-disable */
-import { copyFileSync, existsSync, mkdirSync, unlinkSync } from 'node:fs';
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  unlinkSync,
+  readdirSync,
+  statSync,
+} from 'node:fs';
 import { join, resolve } from 'node:path';
 import process from 'node:process';
 
@@ -31,7 +38,7 @@ function genFileName(baseName) {
   }
   return {
     fts5FileName: `${baseName}${suffix}.${ext}`,
-    destFileName: baseName,
+    destFileName: `${baseName}.${ext}`,
   };
 }
 
@@ -54,3 +61,27 @@ function copy(fileFullName, destFileFullName) {
   console.log('Copy:', fts5FileName, destFileName);
   copy(fts5FileName, destFileName);
 });
+
+function checkIsFile(filePath) {
+  const stats = existsSync(filePath) ? statSync(filePath) : null;
+  return stats && stats.isFile();
+}
+function copyAllChildren(source, dest) {
+  if (!existsSync(dest)) {
+    mkdirSync(dest, { recursive: true });
+  }
+  const children = readdirSync(source);
+  for (const child of children) {
+    const sourceChild = join(source, child);
+    const destChild = join(dest, child);
+    if (checkIsFile(sourceChild)) {
+      copyFileSync(sourceChild, destChild);
+    } else {
+      copyAllChildren(sourceChild, destChild);
+    }
+  }
+}
+const powerPointHelperSource = resolve('./extra-work/powerpoint-helper/dist');
+const powerPointHelperDest = resolve('./electron-build/powerpoint-helper');
+copyAllChildren(powerPointHelperSource, powerPointHelperDest);
+console.log('Copied PowerPoint helper files to:', powerPointHelperDest);
