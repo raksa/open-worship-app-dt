@@ -225,12 +225,15 @@ export function pasteTextToInput(inputElement: HTMLInputElement, text: string) {
     );
 }
 
-(window as any).getSlidesCount = (
+(window as any).getSlidesCount = async (
     powerPointFilePath: string,
     dotNetRootDir?: string,
 ) => {
-    return appProvider.messageUtils.sendDataSync('main:app:get-slide-count', {
-        powerPointFilePath,
-        dotNetRootDir,
-    });
+    const powerPointHelper =
+        await appProvider.powerPointUtils.getPowerPointHelper(dotNetRootDir);
+    if (powerPointHelper === null) {
+        console.log('PowerPoint helper is not available');
+        return null;
+    }
+    return powerPointHelper.countSlides(powerPointFilePath);
 };

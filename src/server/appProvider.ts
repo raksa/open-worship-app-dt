@@ -122,6 +122,10 @@ export type SQLiteDatabaseType = {
     close: () => void;
 };
 
+type PowerPointHelperType = {
+    countSlides: (filePath: string) => number | null;
+};
+
 export type AppProviderType = Readonly<
     PagePropsType & {
         appType: AppTypeEnum;
@@ -155,6 +159,11 @@ export type AppProviderType = Readonly<
         presenterHomePage: string;
         readerHomePage: string;
         currentHomePage: string;
+        powerPointUtils: {
+            getPowerPointHelper: (
+                dotNetRoot?: string,
+            ) => Promise<PowerPointHelperType | null>;
+        };
     }
 >;
 

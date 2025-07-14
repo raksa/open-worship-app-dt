@@ -1,4 +1,3 @@
-import { resolve } from 'node:path';
 import { app, shell } from 'electron';
 import { x as tarX } from 'tar';
 
@@ -104,54 +103,19 @@ export function goDownload() {
     shell.openExternal(url.toString());
 }
 
-let timeOutId: NodeJS.Timeout | null = null;
-let powerPoint: any = null;
-function scheduleRelease() {
-    if (timeOutId !== null) {
-        clearTimeout(timeOutId);
-    }
-    timeOutId = setTimeout(() => {
-        if (timeOutId === null) {
-            return;
-        }
-        timeOutId = null;
-        powerPoint = null;
-    }, 10e3); // 10 seconds timeout
-}
-export function getSlidesCount(
-    powerPointFilePath: string,
-    dotNetRoot?: string,
+const lockSet = new Set<string>();
+export async function unlocking<T>(
+    key: string,
+    callback: () => Promise<T> | T,
 ) {
-    try {
-        if (powerPoint === null) {
-            if (dotNetRoot) {
-                process.env.DOTNET_ROOT = dotNetRoot;
-            } else {
-                process.env.DOTNET_ROOT = toUnpackedPath(
-                    resolve(__dirname, '../powerpoint-helper/bin'),
-                );
-            }
-            console.log('***', process.env.DOTNET_ROOT);
-            let modulePath = 'node-api-dotnet/net8.0';
-            if (app.isPackaged) {
-                modulePath = toUnpackedPath(
-                    resolve(app.getAppPath(), 'node_modules', modulePath),
-                );
-            }
-            console.log(__dirname);
-            console.log(`Unpacked path: ${modulePath}`);
-            const dotnet = require(modulePath);
-            const binaryPath = toUnpackedPath(
-                resolve(__dirname, '../powerpoint-helper/net8.0/PowerPoint'),
-            );
-            console.log(`Binary path: ${binaryPath}`);
-            powerPoint = dotnet.require(binaryPath);
-            scheduleRelease();
-        }
-        const count = powerPoint.Helper.countSlides(powerPointFilePath);
-        return count;
-    } catch (error) {
-        console.error('Error in getSlidesCount:', error);
+    if (lockSet.has(key)) {
+        await new Promise((resolve) => {
+            setTimeout(resolve, 100);
+        });
+        return unlocking(key, callback);
     }
-    return null;
+    lockSet.add(key);
+    const data = await callback();
+    lockSet.delete(key);
+    return data;
 }
