@@ -122,26 +122,36 @@ export function getSlidesCount(
     powerPointFilePath: string,
     dotNetRoot?: string,
 ) {
-    if (powerPoint === null) {
-        if (dotNetRoot) {
-            process.env.DOTNET_ROOT = dotNetRoot;
-        }
-        let modulePath = 'node-api-dotnet/net8.0';
-        if (app.isPackaged) {
-            modulePath = toUnpackedPath(
-                resolve(app.getAppPath(), 'node_modules', modulePath),
+    try {
+        if (powerPoint === null) {
+            if (dotNetRoot) {
+                process.env.DOTNET_ROOT = dotNetRoot;
+            } else {
+                process.env.DOTNET_ROOT = toUnpackedPath(
+                    resolve(__dirname, '../powerpoint-helper/bin'),
+                );
+            }
+            console.log('***', process.env.DOTNET_ROOT);
+            let modulePath = 'node-api-dotnet/net8.0';
+            if (app.isPackaged) {
+                modulePath = toUnpackedPath(
+                    resolve(app.getAppPath(), 'node_modules', modulePath),
+                );
+            }
+            console.log(__dirname);
+            console.log(`Unpacked path: ${modulePath}`);
+            const dotnet = require(modulePath);
+            const binaryPath = toUnpackedPath(
+                resolve(__dirname, '../powerpoint-helper/net8.0/PowerPoint'),
             );
+            console.log(`Binary path: ${binaryPath}`);
+            powerPoint = dotnet.require(binaryPath);
+            scheduleRelease();
         }
-        console.log(__dirname);
-        console.log(`Unpacked path: ${modulePath}`);
-        const dotnet = require(modulePath);
-        const binaryPath = toUnpackedPath(
-            resolve(__dirname, '../powerpoint-helper/net8.0/PowerPoint'),
-        );
-        console.log(`Binary path: ${binaryPath}`);
-        powerPoint = dotnet.require(binaryPath);
-        scheduleRelease();
+        const count = powerPoint.Helper.countSlides(powerPointFilePath);
+        return count;
+    } catch (error) {
+        console.error('Error in getSlidesCount:', error);
     }
-    const count = powerPoint.Helper.countSlides(powerPointFilePath);
-    return count;
+    return null;
 }

@@ -11,14 +11,31 @@ import {
 import { join, resolve } from 'node:path';
 import process from 'node:process';
 
+const { platform, arch } = process;
 const systemUtils = {
-  isWindows: process.platform === 'win32',
-  isMac: process.platform === 'darwin',
-  isLinux: process.platform === 'linux',
-  is64System: process.arch === 'x64',
-  isArm64: process.arch === 'arm64',
+  isWindows: platform === 'win32',
+  isMac: platform === 'darwin',
+  isLinux: platform === 'linux',
+  is64System: process.env.FORCE_ARCH_32 == 'true' ? false : arch === 'x64',
+  isArm64: arch === 'arm64',
+  isMacUniversal: process.env.FORCE_UNIVERSAL == 'true',
 };
 
+function getFileSuffix() {
+  let suffix = '';
+  if (systemUtils.isMac) {
+    if (systemUtils.isMacUniversal || !systemUtils.isArm64) {
+      suffix = '-int';
+    }
+  } else {
+    if (systemUtils.isArm64) {
+      suffix = '-arm64';
+    } else if (!systemUtils.is64System) {
+      suffix = '-i386';
+    }
+  }
+  return suffix;
+}
 function genFileName(baseName) {
   let ext;
   if (systemUtils.isWindows) {
@@ -28,14 +45,7 @@ function genFileName(baseName) {
   } else {
     ext = 'so';
   }
-  let suffix = '';
-  if (systemUtils.isMac) {
-    if (!systemUtils.isArm64) {
-      suffix = '-int';
-    }
-  } else if (!systemUtils.is64System) {
-    suffix = '-i386';
-  }
+  const suffix = getFileSuffix();
   return {
     fts5FileName: `${baseName}${suffix}.${ext}`,
     destFileName: `${baseName}.${ext}`,
@@ -81,7 +91,19 @@ function copyAllChildren(source, dest) {
     }
   }
 }
-const powerPointHelperSource = resolve('./extra-work/powerpoint-helper/dist');
-const powerPointHelperDest = resolve('./electron-build/powerpoint-helper');
+
+const powerPointHelperSource = resolve(
+  './extra-work/powerpoint-helper/dist/net8.0',
+);
+const powerPointHelperDest = resolve(
+  './electron-build/powerpoint-helper/net8.0',
+);
 copyAllChildren(powerPointHelperSource, powerPointHelperDest);
-console.log('Copied PowerPoint helper files to:', powerPointHelperDest);
+console.log('Copied PowerPoint lib files to:', powerPointHelperDest);
+
+const binSource = resolve(
+  `./extra-work/powerpoint-helper/dist/bin${getFileSuffix()}`,
+);
+const binDest = resolve('./electron-build/powerpoint-helper/bin');
+copyAllChildren(binSource, binDest);
+console.log('Copied PowerPoint bin files to:', binDest);
