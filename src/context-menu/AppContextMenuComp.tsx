@@ -42,8 +42,8 @@ function ContextMenuItemComp({
                     return;
                 }
                 setTimeout(() => {
-                    onSelect(event as any);
                     onClose();
+                    onSelect(event as any);
                 }, 0);
             }}
         >

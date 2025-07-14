@@ -239,7 +239,7 @@ export function handBibleInfoContextMenuOpening(
 ) {
     const contextMenuItems: ContextMenuItemType[] = [
         {
-            menuElement: 'Chose Locale',
+            menuElement: 'Choose Locale',
             onSelect: () => {
                 showAppContextMenu(
                     event,
