@@ -36,7 +36,7 @@ function getFileSuffix() {
   }
   return suffix;
 }
-function genFileName(baseName) {
+function genLibFileName(baseName) {
   let ext;
   if (systemUtils.isWindows) {
     ext = 'dll';
@@ -47,17 +47,23 @@ function genFileName(baseName) {
   }
   const suffix = getFileSuffix();
   return {
-    fts5FileName: `${baseName}${suffix}.${ext}`,
+    sourceFileName: `${baseName}${suffix}.${ext}`,
+    destFileName: `${baseName}.${ext}`,
+  };
+}
+function genBinFileName(baseName) {
+  let ext = '';
+  if (systemUtils.isWindows) {
+    ext = 'exe';
+  }
+  const suffix = getFileSuffix();
+  return {
+    sourceFileName: `${baseName}${suffix}.${ext}`,
     destFileName: `${baseName}.${ext}`,
   };
 }
 
-const basePath = {
-  source: resolve('./extra-work/db-exts'),
-  destination: resolve('./electron-build/db-exts'),
-};
-
-function copy(fileFullName, destFileFullName) {
+function copyFile(basePath, fileFullName, destFileFullName) {
   if (!existsSync(basePath.destination)) {
     mkdirSync(basePath.destination, { recursive: true });
   }
@@ -66,10 +72,14 @@ function copy(fileFullName, destFileFullName) {
   copyFileSync(join(basePath.source, fileFullName), destFilePath);
 }
 
+const basePath = {
+  source: resolve('./extra-work/db-exts'),
+  destination: resolve('./electron-build/db-exts'),
+};
 ['fts5', 'spellfix1'].forEach((baseName) => {
-  const { fts5FileName, destFileName } = genFileName(baseName);
-  console.log('Copy:', fts5FileName, destFileName);
-  copy(fts5FileName, destFileName);
+  const { sourceFileName, destFileName } = genLibFileName(baseName);
+  console.log('Copy:', sourceFileName, destFileName);
+  copyFile(basePath, sourceFileName, destFileName);
 });
 
 function checkIsFile(filePath) {
@@ -92,18 +102,27 @@ function copyAllChildren(source, dest) {
   }
 }
 
-const powerPointHelperSource = resolve(
-  './extra-work/powerpoint-helper/dist/net8.0',
-);
-const powerPointHelperDest = resolve(
-  './electron-build/powerpoint-helper/net8.0',
-);
-copyAllChildren(powerPointHelperSource, powerPointHelperDest);
-console.log('Copied PowerPoint lib files to:', powerPointHelperDest);
+const binHelperSourceRootDir = resolve('./extra-work/bin-helper/dist');
+const binHelperDestRootDir = resolve('./electron-build/bin-helper');
 
-const binSource = resolve(
-  `./extra-work/powerpoint-helper/dist/bin${getFileSuffix()}`,
+copyAllChildren(
+  resolve(binHelperSourceRootDir, 'net8.0'),
+  resolve(binHelperDestRootDir, 'net8.0'),
 );
-const binDest = resolve('./electron-build/powerpoint-helper/bin');
-copyAllChildren(binSource, binDest);
-console.log('Copied PowerPoint bin files to:', binDest);
+console.log('PowerPoint lib files are copied');
+copyAllChildren(
+  resolve(binHelperSourceRootDir, `bin${getFileSuffix()}`),
+  resolve(binHelperDestRootDir, 'bin'),
+);
+console.log('PowerPoint bin files are copied');
+
+const { sourceFileName, destFileName } = genBinFileName('yt-dlp');
+copyFile(
+  {
+    source: resolve(binHelperSourceRootDir, 'yt'),
+    destination: resolve(binHelperDestRootDir, 'yt'),
+  },
+  sourceFileName,
+  destFileName,
+);
+console.log('yt-dlp file is copied');

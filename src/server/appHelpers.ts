@@ -4,6 +4,7 @@ import { handleError } from '../helper/errorHelpers';
 import { showAppConfirm } from '../popup-widget/popupWidgetHelpers';
 import { AnyObjectType, OptionalPromise } from '../helper/typeHelpers';
 import { goToPath } from '../router/routeHelpers';
+import { pathResolve } from './fileHelpers';
 
 export function getFontListByNodeFont() {
     appProvider.messageUtils.sendData('main:app:get-font-list');
@@ -236,4 +237,48 @@ export function pasteTextToInput(inputElement: HTMLInputElement, text: string) {
         return null;
     }
     return powerPointHelper.countSlides(powerPointFilePath);
+};
+
+(window as any).ytDownload = async (videoUrl: string, outputDir: string) => {
+    return new Promise<string | null>(async (resolve, reject) => {
+        appProvider.ytUtils.getYTHelper().then((ytDlpWrap) => {
+            let filePath: string | null = null;
+            const ytDlpEventEmitter = ytDlpWrap
+                .exec([
+                    videoUrl,
+                    '-o',
+                    pathResolve(`${outputDir}/%(title)s.%(ext)s`),
+                ])
+                .on('progress', (progress) =>
+                    console.log(
+                        progress.percent,
+                        progress.totalSize,
+                        progress.currentSpeed,
+                        progress.eta,
+                    ),
+                )
+                .on('ytDlpEvent', (eventType, eventData) => {
+                    console.log(eventType, eventData);
+                    if (eventType === 'download') {
+                        eventData = eventData.trim();
+                        const startString = 'Downloading video: ';
+                        const endString = ' has already been downloaded';
+                        if (eventData.startsWith(startString)) {
+                            filePath = eventData.split(startString)[1];
+                        } else if (eventData.endsWith(endString)) {
+                            filePath = eventData.split(endString)[0];
+                        }
+                    }
+                })
+                .on('error', (error) => {
+                    console.error(error);
+                    reject(new Error('Download failed: ' + error.message));
+                })
+                .on('close', () => {
+                    console.log('all done');
+                    resolve(filePath);
+                });
+            console.log('Process id:', ytDlpEventEmitter.ytDlpProcess.pid);
+        });
+    });
 };

@@ -29,7 +29,7 @@
         "dc:err": "depcruise src --include-only \"^src\" --output-type err-html > dc-dependency-graph/errors.html",
         "ts:err:check": "tsc --noEmit --skipLibCheck",
         "release": "bash extra-work/release.sh",
-        "install": "bash extra-work/powerpoint-helper/build.sh"
+        "install": "bash extra-work/bin-helper/build.sh"
     },
     "browserslist": {
         "production": [
@@ -54,7 +54,8 @@
             "package.json"
         ],
         "asarUnpack": [
-            "electron-build/**/*"
+            "electron-build/**/*",
+            "node_modules/**/*"
         ],
         "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
         "dmg": {
@@ -143,6 +144,7 @@
         "libreoffice-convert": "^1.6.1",
         "mupdf": "^1.26.2",
         "node-api-dotnet": "^0.9.12",
-        "tar": "^7.4.3"
+        "tar": "^7.4.3",
+        "yt-dlp-wrap": "^2.3.12"
     }
 }
