@@ -261,7 +261,7 @@ export function pasteTextToInput(inputElement: HTMLInputElement, text: string) {
                     console.log(eventType, eventData);
                     if (eventType === 'download') {
                         eventData = eventData.trim();
-                        const startString = 'Downloading video: ';
+                        const startString = 'Destination: ';
                         const endString = ' has already been downloaded';
                         if (eventData.startsWith(startString)) {
                             filePath = eventData.split(startString)[1];
