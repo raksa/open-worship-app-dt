@@ -1,4 +1,3 @@
-import { ipcRenderer } from 'electron';
 import { isWindows, toUnpackedPath, unlocking } from '../electronHelpers';
 import { resolve } from 'node:path';
 
@@ -22,15 +21,7 @@ async function getYTHelper() {
         if (ytDlpWrap !== null) {
             return ytDlpWrap;
         }
-        let modulePath = 'yt-dlp-wrap';
-        const isPackaged = await ipcRenderer.invoke('get-is-packaged');
-        if (isPackaged) {
-            const appPath = await ipcRenderer.invoke('get-app-path');
-            modulePath = toUnpackedPath(
-                resolve(appPath, 'node_modules', modulePath),
-            );
-        }
-        const YTDlpWrap = require(modulePath).default;
+        const YTDlpWrap = require('yt-dlp-wrap').default;
         const binaryPath = toUnpackedPath(
             resolve(
                 __dirname,

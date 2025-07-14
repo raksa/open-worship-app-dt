@@ -26,17 +26,17 @@ dist_dir="./dist"
 rm -rf $dist_dir
 mkdir -p $dist_dir
 if [ "$is_debug" = true ]; then
-    cp ./bin/Debug/net8.0/ $dist_dir -r
+    dir_name="Debug"
 else
-    cp ./bin/Release/net8.0/ $dist_dir -r
+    dir_name="Release"
 fi
+cp -r ./bin/$dir_name/net8.0/ $dist_dir/net8.0
 if [ $? -ne 0 ]; then
     echo "Failed to copy build output to distribution directory."
     exit 1
 fi
 echo "Build and copy completed successfully."
 
-# https://github.com/yt-dlp/yt-dlp/releases/download/2025.06.30/yt-dlp_x86.exe
 yt_prefix_url="https://github.com/yt-dlp/yt-dlp/releases/download/2025.06.30/"
 download_yt_dlp() {
     local url="$yt_prefix_url$1"
@@ -55,6 +55,7 @@ download_yt_dlp() {
         echo "$file_name already exists, skipping download."
     fi
     cp "$file_name" "$output"
+    chmod +x "$output"
 }
 
 dn_prefix_url="https://builds.dotnet.microsoft.com/dotnet/Runtime/8.0.18/dotnet-runtime-8.0.18-"
@@ -62,6 +63,7 @@ download_dotnet(){
     local url="$dn_prefix_url$1"
     local output="$dist_dir/bin$2"
     local file_name=$(basename "$url")
+    mkdir -p "$output"
     if [ ! -f "$file_name" ]; then
         echo "Downloading $url to $output"
         curl -L "$url" -o "$file_name"
@@ -83,11 +85,6 @@ download_dotnet(){
     fi
 }
 
-# win64 yt-dlp.exe
-# win32 yt-dlp_x86.exe
-# linux64 yt-dlp_linux
-# linuxarm64 yt-dlp_linux_aarch64
-# mac yt-dlp_macos
 if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]]; then
     if [[ "$PROCESSOR_ARCHITECTURE" == "ARM64" ]]; then
         # TODO: update to arm64 version when available
@@ -99,18 +96,15 @@ if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]]; t
         download_dotnet win-x64.zip
         download_dotnet win-x86.zip "-i386"
     fi
-elif [[ "$OSTYPE" == "darwin" ]]; then
-    if [[ "$PROCESSOR_ARCHITECTURE" == "arm64" ]]; then
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    if [[ "$(uname -m)" == "arm64" ]]; then
         download_yt_dlp yt-dlp_macos
-        download_yt_dlp yt-dlp_macos "-int"
         download_dotnet osx-arm64.tar.gz
-        download_dotnet osx-x64.tar.gz "-int"
-    else
-        download_yt_dlp yt-dlp_macos "-int"
-        download_dotnet osx-x64.tar.gz "-int"
     fi
+    download_yt_dlp yt-dlp_macos "-int"
+    download_dotnet osx-x64.tar.gz "-int"
 elif [[ "$OSTYPE" == "linux-gnu" ]]; then
-    if [[ "$PROCESSOR_ARCHITECTURE" == "ARM64" ]]; then
+    if [[ "$(uname -m)" == "aarch64" ]]; then
         download_yt_dlp yt-dlp_linux_aarch64 "-arm64"
         download_dotnet linux-arm64.tar.gz "-arm64"
     else

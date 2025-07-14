@@ -54,12 +54,12 @@ function genLibFileName(baseName) {
 function genBinFileName(baseName) {
   let ext = '';
   if (systemUtils.isWindows) {
-    ext = 'exe';
+    ext = '.exe';
   }
   const suffix = getFileSuffix();
   return {
-    sourceFileName: `${baseName}${suffix}.${ext}`,
-    destFileName: `${baseName}.${ext}`,
+    sourceFileName: `${baseName}${suffix}${ext}`,
+    destFileName: `${baseName}${ext}`,
   };
 }
 

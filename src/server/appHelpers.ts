@@ -239,16 +239,24 @@ export function pasteTextToInput(inputElement: HTMLInputElement, text: string) {
     return powerPointHelper.countSlides(powerPointFilePath);
 };
 
-(window as any).ytDownload = async (videoUrl: string, outputDir: string) => {
-    return new Promise<string | null>(async (resolve, reject) => {
+(window as any).ytDownload = async (
+    videoUrl: string,
+    outputDir: string,
+    ffmpegPath?: string,
+) => {
+    return new Promise<string | null>((resolve, reject) => {
         appProvider.ytUtils.getYTHelper().then((ytDlpWrap) => {
             let filePath: string | null = null;
+            const args = [
+                videoUrl,
+                '-o',
+                pathResolve(`${outputDir}/%(title)s.%(ext)s`),
+            ];
+            if (ffmpegPath !== undefined) {
+                args.push('--ffmpeg-location', ffmpegPath);
+            }
             const ytDlpEventEmitter = ytDlpWrap
-                .exec([
-                    videoUrl,
-                    '-o',
-                    pathResolve(`${outputDir}/%(title)s.%(ext)s`),
-                ])
+                .exec(args)
                 .on('progress', (progress) =>
                     console.log(
                         progress.percent,
