@@ -9,13 +9,10 @@ import {
     PlatformEnum,
     useKeyboardRegistering,
 } from './event/KeyboardEventListener';
-import { getAllLocalBibleInfoList } from './helper/bible-helpers/bibleDownloadHelpers';
 import { handleError } from './helper/errorHelpers';
 import FileSourceMetaManager from './helper/FileSourceMetaManager';
 import {
     getCurrentLangAsync,
-    getLangAsync,
-    defaultLocale,
     getCurrentLocale,
     getFontFamily,
 } from './lang/langHelpers';
@@ -127,15 +124,10 @@ export async function initApp() {
     };
 
     await initCrypto();
-    const localBibleInfoList = await getAllLocalBibleInfoList();
     const promises = [
         FileSourceMetaManager.checkAllColorNotes(),
         getCurrentLangAsync(),
-        getLangAsync(defaultLocale),
     ];
-    for (const bibleInfo of localBibleInfoList) {
-        promises.push(getLangAsync(bibleInfo.locale));
-    }
     await Promise.all(promises);
 }
 

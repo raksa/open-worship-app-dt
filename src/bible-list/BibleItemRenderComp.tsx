@@ -145,7 +145,7 @@ export default function BibleItemRenderComp({
     };
     return (
         <li
-            className="list-group-item item app-caught-hover-pointer px-1"
+            className="list-group-item item app-caught-hover-pointer px-3"
             title="Double click to view"
             data-index={index + 1}
             draggable
@@ -166,7 +166,7 @@ export default function BibleItemRenderComp({
             }}
             onContextMenu={handleContextMenuOpening}
         >
-            <div className="d-flex">
+            <div className="d-flex ps-1">
                 <ItemColorNoteComp item={bibleItem} />
                 <div className="d-flex flex-fill">
                     <div className="px-1">
