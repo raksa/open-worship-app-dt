@@ -304,8 +304,8 @@ function _fsUnlink(filePath: string) {
     return fsFilePromise<void>(appProvider.fileUtils.unlink, filePath);
 }
 
-export function fsCloneFile(src: File | string, dest: string) {
-    if (src instanceof File) {
+export function fsCloneFile(file: File | string, dest: string) {
+    if (file instanceof File) {
         return new Promise<void>((resolve, reject) => {
             const writeStream = fsCreateWriteStream(dest);
             const writableStream = new WritableStream({
@@ -320,10 +320,10 @@ export function fsCloneFile(src: File | string, dest: string) {
                 },
             });
             writeStream.once('close', resolve);
-            src.stream().pipeTo(writableStream).catch(reject);
+            file.stream().pipeTo(writableStream).catch(reject);
         });
     }
-    return fsFilePromise<void>(appProvider.fileUtils.copyFile, src, dest);
+    return fsFilePromise<void>(appProvider.fileUtils.copyFile, file, dest);
 }
 
 async function _fsCheckExist(

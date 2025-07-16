@@ -48,11 +48,12 @@ function BodyRendererComp() {
                 );
             } else {
                 canvasController
-                    .genNewMediaItemFromFilePath((file as any).path, event)
+                    .genNewImageItemFromBlob(file, event)
                     .then((newCanvasItem) => {
-                        if (newCanvasItem) {
-                            canvasController.addNewItem(newCanvasItem);
+                        if (!newCanvasItem) {
+                            return;
                         }
+                        canvasController.addNewItem(newCanvasItem);
                     });
             }
         });
