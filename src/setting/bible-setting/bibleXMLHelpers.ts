@@ -386,7 +386,7 @@ export async function deleteBibleXML(bibleKey: string) {
     await bibleDataReader.clearBibleDatabaseData(bibleKey);
     const filePath = await bibleKeyToFilePath(bibleKey);
     const fileSource = FileSource.getInstance(filePath);
-    await fileSource.trashFile();
+    await fileSource.trash();
 }
 
 export async function getBibleXMLDataFromKey(bibleKey: string) {

@@ -628,7 +628,7 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
                 id: splitHorizontalId,
             },
             {
-                menuElement: 'Split Horizontal To',
+                menuElement: 'Split Horizontal to',
                 onSelect: (event1: any) => {
                     showBibleOption(event1, (newBibleKey: string) => {
                         const newBibleItem = ReadIdOnlyBibleItem.fromJson(
@@ -648,7 +648,7 @@ class BibleItemsViewController extends EventHandler<UpdateEventType> {
                 id: splitVerticalId,
             },
             {
-                menuElement: 'Split Vertical To',
+                menuElement: 'Split Vertical to',
                 onSelect: (event2: any) => {
                     showBibleOption(event2, (newBibleKey: string) => {
                         const newBibleItem = ReadIdOnlyBibleItem.fromJson(

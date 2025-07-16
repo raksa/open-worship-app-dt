@@ -138,7 +138,7 @@ export class BaseDirFileSource {
                     this.intFileSource.basePath,
                 )
             ) {
-                return this.intFileSource.fileFullName;
+                return this.intFileSource.fullName;
             }
             return this.intFileSource.filePath;
         }

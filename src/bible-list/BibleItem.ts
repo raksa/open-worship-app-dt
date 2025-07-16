@@ -20,11 +20,19 @@ export default class BibleItem
     private originalJson: BibleItemType;
     _id: number;
     filePath?: string;
-    constructor(id: number, json: BibleItemType, filePath?: string) {
+    bible: (ItemSourceInfBasic<BibleItem> & DocumentInf) | null = null;
+
+    constructor(
+        id: number,
+        json: BibleItemType,
+        filePath?: string,
+        bible?: (ItemSourceInfBasic<BibleItem> & DocumentInf) | null,
+    ) {
         super();
         this._id = id;
         this.filePath = filePath;
         this.originalJson = cloneJson(json);
+        this.bible = bible ?? null;
     }
     get id() {
         return this._id;
@@ -143,8 +151,8 @@ export default class BibleItem
         }
         return Class.fromJson(this.toJson(), this.filePath);
     }
-    async save(bible: ItemSourceInfBasic<BibleItem> & DocumentInf) {
-        if (this.filePath === null) {
+    async save(bible = this.bible): Promise<boolean> {
+        if (bible === null) {
             return false;
         }
         const bibleItem = bible.getItemById(this.id) as BibleItem | null;

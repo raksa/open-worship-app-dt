@@ -11,7 +11,6 @@ import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
 import { goToPath } from '../router/routeHelpers';
 import { previewPdf } from '../server/appHelpers';
 import { removePdfImagesPreview } from '../helper/pdfHelpers';
-import EditingHistoryManager from '../editing-manager/EditingHistoryManager';
 import {
     varyAppDocumentFromFilePath,
     useSelectedAppDocumentSetterContext,
@@ -152,10 +151,6 @@ export default function AppDocumentFileComp({
         return null;
     };
     const handleRenaming = async (newFileSource: FileSource) => {
-        await EditingHistoryManager.moveFilePath(
-            filePath,
-            newFileSource.filePath,
-        );
         if (isSelected) {
             const newVaryAppDocument = varyAppDocumentFromFilePath(
                 newFileSource.filePath,

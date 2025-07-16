@@ -37,7 +37,7 @@ export default class FileSource
 {
     static readonly eventNamePrefix: string = 'file-source';
     basePath: string;
-    fileFullName: string;
+    fullName: string;
     filePath: string;
     src: string;
     colorNote: string | null = null;
@@ -50,13 +50,13 @@ export default class FileSource
     ) {
         super();
         this.basePath = basePath;
-        this.fileFullName = fileFullName;
+        this.fullName = fileFullName;
         this.filePath = filePath;
         this.src = src;
     }
 
     get isAppFile() {
-        return !checkIsAppFile(this.fileFullName);
+        return !checkIsAppFile(this.fullName);
     }
 
     getSrcData() {
@@ -93,15 +93,15 @@ export default class FileSource
     }
 
     get metadata() {
-        return getFileMetaData(this.fileFullName);
+        return getFileMetaData(this.fullName);
     }
 
     get name() {
-        return getFileName(this.fileFullName);
+        return getFileName(this.fullName);
     }
 
     get dotExtension() {
-        return getFileDotExtension(this.fileFullName);
+        return getFileDotExtension(this.fullName);
     }
 
     get extension() {
@@ -229,7 +229,7 @@ export default class FileSource
         try {
             await fsRenameFile(
                 this.basePath,
-                this.fileFullName,
+                this.fullName,
                 newName + this.dotExtension,
             );
             const newFilePath = pathJoin(
@@ -312,7 +312,7 @@ export default class FileSource
         );
     }
 
-    async trashFile() {
+    async trash() {
         await electronSendAsync<void>('main:app:trash-path', {
             path: this.filePath,
         });

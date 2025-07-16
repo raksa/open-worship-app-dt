@@ -4,7 +4,8 @@ import { handleError } from '../helper/errorHelpers';
 import { showAppConfirm } from '../popup-widget/popupWidgetHelpers';
 import { AnyObjectType, OptionalPromise } from '../helper/typeHelpers';
 import { goToPath } from '../router/routeHelpers';
-import { pathResolve } from './fileHelpers';
+import { fsCheckFileExist, pathJoin, pathResolve } from './fileHelpers';
+import FileSource from '../helper/FileSource';
 
 export function getFontListByNodeFont() {
     appProvider.messageUtils.sendData('main:app:get-font-list');
@@ -222,6 +223,45 @@ export function pasteTextToInput(inputElement: HTMLInputElement, text: string) {
         new Event('input', {
             bubbles: true,
             composed: true,
+        }),
+    );
+}
+
+const FILE_EXTENSIONS = ['.bg.json', '.preview.bg.json'];
+export async function renameAllMaterialFiles(
+    oldFileSource: FileSource,
+    newBaseFileName: string,
+) {
+    await Promise.all(
+        FILE_EXTENSIONS.map(async (ext) => {
+            const currentPath = pathJoin(
+                oldFileSource.basePath,
+                `${oldFileSource.fullName}${ext}`,
+            );
+            if (!(await fsCheckFileExist(currentPath))) {
+                return;
+            }
+            const currentFileSource = FileSource.getInstance(currentPath);
+            const newFileName = currentFileSource.name.replace(
+                oldFileSource.name,
+                newBaseFileName,
+            );
+            await currentFileSource.renameTo(newFileName);
+        }),
+    );
+}
+export async function trashAllMaterialFiles(fileSource: FileSource) {
+    await Promise.all(
+        FILE_EXTENSIONS.map(async (ext) => {
+            const currentPath = pathJoin(
+                fileSource.basePath,
+                `${fileSource.fullName}${ext}`,
+            );
+            if (!(await fsCheckFileExist(currentPath))) {
+                return;
+            }
+            const currentFileSource = FileSource.getInstance(currentPath);
+            await currentFileSource.trash();
         }),
     );
 }

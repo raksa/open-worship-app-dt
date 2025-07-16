@@ -132,11 +132,7 @@ export default class LyricAppDocument extends AppDocument {
     }
 
     static toAppDocumentFilePath(lyricFilePath: string) {
-        const extensions = getMimetypeExtensions(this.mimetypeName);
-        if (extensions.length === 0) {
-            throw new Error('No extensions found for appDocument mimetype');
-        }
-        const filePath = `${lyricFilePath}.preview.${extensions[0]}`;
+        const filePath = `${lyricFilePath}.preview`;
         return filePath;
     }
 
@@ -145,10 +141,7 @@ export default class LyricAppDocument extends AppDocument {
         if (extensions.length === 0) {
             throw new Error('No extensions found for appDocument mimetype');
         }
-        const filePath = appDocumentFilePath.replace(
-            new RegExp(`\\.preview\\.${extensions[0]}$`),
-            '',
-        );
+        const filePath = appDocumentFilePath.replace(/\.preview$/, '');
         return filePath;
     }
 

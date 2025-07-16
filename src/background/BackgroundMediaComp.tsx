@@ -76,7 +76,7 @@ function genBody(
     };
     return (
         <div
-            key={fileSource.fileFullName}
+            key={fileSource.fullName}
             className={`${backgroundType}-thumbnail card ${selectedCN}`}
             title={title}
             draggable={!noDraggable}
@@ -104,7 +104,7 @@ function genBody(
         >
             {!isNameOnTop ? null : (
                 <div className="app-ellipsis-left pe-4">
-                    {fileSource.fileFullName}
+                    {fileSource.fullName}
                 </div>
             )}
             {rendChild(filePath, selectedBackgroundSrcList)}
@@ -117,7 +117,7 @@ function genBody(
                 <ItemColorNoteComp item={fileSource} />
             </div>
             {isNameOnTop ? null : (
-                <FileFullNameRenderer fileFullName={fileSource.fileFullName} />
+                <FileFullNameRenderer fileFullName={fileSource.fullName} />
             )}
         </div>
     );

@@ -57,7 +57,9 @@ export default class Bible
     get items() {
         return this.originalJson.items.map((json) => {
             try {
-                return BibleItem.fromJson(json, this.filePath);
+                const bibleItem = BibleItem.fromJson(json, this.filePath);
+                bibleItem.bible = this;
+                return bibleItem;
             } catch (error: any) {
                 showSimpleToast('Instantiating Bible Item', error.message);
             }
