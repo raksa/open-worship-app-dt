@@ -25,10 +25,13 @@ const bibleScreenHelper = {
         }
         const bibleRenderingLangList = await Promise.all(
             bibleRenderingList.map(async (item) => {
-                const langData = (await getLangAsync(item.locale, true))!;
+                let langData = await getLangAsync(item.locale, true);
+                if (langData === null) {
+                    langData = await getLangAsync('en-US', true);
+                }
                 return {
                     ...item,
-                    langData,
+                    langData: langData!,
                 };
             }),
         );
