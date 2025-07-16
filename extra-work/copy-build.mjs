@@ -127,6 +127,7 @@ copyFile(
 );
 console.log('yt-dlp file is copied');
 
+// TODO: copy only needed files
 copyAllChildren(
   resolve('./node_modules/node-api-dotnet'),
   resolve('./electron-build/bin-helper/node-api-dotnet'),
