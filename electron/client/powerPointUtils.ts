@@ -1,6 +1,5 @@
 import { resolve } from 'node:path';
 import { toUnpackedPath, unlocking } from '../electronHelpers';
-import { ipcRenderer } from 'electron';
 
 let timeOutId: NodeJS.Timeout | null = null;
 let powerPoint: any = null;
@@ -30,14 +29,9 @@ async function getPowerPointHelper(dotNetRoot?: string) {
                     resolve(__dirname, '../../bin-helper/bin'),
                 );
             }
-            let modulePath = 'node-api-dotnet/net8.0';
-            const isPackaged = await ipcRenderer.invoke('get-is-packaged');
-            if (isPackaged) {
-                const appPath = await ipcRenderer.invoke('get-app-path');
-                modulePath = toUnpackedPath(
-                    resolve(appPath, 'node_modules', modulePath),
-                );
-            }
+            const modulePath = toUnpackedPath(
+                resolve(__dirname, '../../bin-helper/node-api-dotnet/net8.0'),
+            );
             const dotnet = require(modulePath);
             const binaryPath = toUnpackedPath(
                 resolve(__dirname, '../../bin-helper/net8.0/PowerPoint'),
