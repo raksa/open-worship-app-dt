@@ -113,7 +113,7 @@
         "@types/react": "^19.1.8",
         "@types/react-dom": "^19.1.6",
         "@types/tar": "^6.1.13",
-        "@vitejs/plugin-basic-ssl": "^2.0.0",
+        "@vitejs/plugin-basic-ssl": "^2.1.0",
         "@vitejs/plugin-react-swc": "^3.10.2",
         "bootstrap": "^5.3.3",
         "bootstrap-icons": "^1.11.3",
@@ -136,7 +136,7 @@
         "sass": "^1.89.2",
         "typescript": "^5.8.2",
         "typescript-eslint": "^8.26.1",
-        "vite": "^6.3.5"
+        "vite": "^7.0.5"
     },
     "dependencies": {
         "font-list": "^1.5.1",
