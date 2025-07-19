@@ -20,8 +20,8 @@ import { useStateSettingBoolean } from '../helper/settingHelpers';
 import DirSource from '../helper/DirSource';
 import { handleError } from '../helper/errorHelpers';
 import {
-    showProgressBard,
-    hideProgressBard,
+    showProgressBar,
+    hideProgressBar,
 } from '../progress-bar/progressBarHelpers';
 import { fsCheckFileExist, fsDeleteFile, fsMove } from '../server/fileHelpers';
 import { getDefaultDataDir } from '../setting/directory-setting/directoryHelpers';
@@ -106,29 +106,21 @@ async function genAudioDownloadContextMenuItems(dirSource: DirSource) {
                     '`Download From URL',
                     `Downloading audio from "${audioUrl}", please wait...`,
                 );
-                showProgressBard(audioUrl);
+                showProgressBar(audioUrl);
                 const defaultPath = getDefaultDataDir();
-                const audioFilePath = await downloadVideoOrAudio(
+                const { filePath, fileFullName } = await downloadVideoOrAudio(
                     audioUrl,
                     defaultPath,
                     false,
                 );
-                if (audioFilePath === null) {
-                    showSimpleToast(
-                        '`Download From URL',
-                        'Cannot download audio, please check the URL again',
-                    );
-                    return;
-                }
-                const sourceFileSource = FileSource.getInstance(audioFilePath);
                 const destFileSource = FileSource.getInstance(
                     dirSource.dirPath,
-                    sourceFileSource.fullName,
+                    fileFullName,
                 );
                 if (await fsCheckFileExist(destFileSource.filePath)) {
                     await fsDeleteFile(destFileSource.filePath);
                 }
-                await fsMove(audioFilePath, destFileSource.filePath);
+                await fsMove(filePath, destFileSource.filePath);
                 showSimpleToast(
                     '`Download From URL',
                     `Audio downloaded successfully, file path: "${destFileSource.filePath}"`,
@@ -140,7 +132,7 @@ async function genAudioDownloadContextMenuItems(dirSource: DirSource) {
                     'Error occurred during downloading video',
                 );
             } finally {
-                hideProgressBard(audioUrl);
+                hideProgressBar(audioUrl);
             }
         },
     );

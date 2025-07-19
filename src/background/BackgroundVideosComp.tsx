@@ -15,8 +15,8 @@ import VideoHeaderSettingComp from './VideoHeaderSettingComp';
 import { genContextMenuItems } from './downloadHelper';
 import { handleError } from '../helper/errorHelpers';
 import {
-    showProgressBard,
-    hideProgressBard,
+    showProgressBar,
+    hideProgressBar,
 } from '../progress-bar/progressBarHelpers';
 import { downloadVideoOrAudio } from '../server/appHelpers';
 import { fsCheckFileExist, fsDeleteFile, fsMove } from '../server/fileHelpers';
@@ -81,28 +81,20 @@ async function genVideoDownloadContextMenuItems(dirSource: DirSource) {
                     '`Download From URL',
                     `Downloading video from "${videoUrl}", please wait...`,
                 );
-                showProgressBard(videoUrl);
+                showProgressBar(videoUrl);
                 const defaultPath = getDefaultDataDir();
-                const videoFilePath = await downloadVideoOrAudio(
+                const { filePath, fileFullName } = await downloadVideoOrAudio(
                     videoUrl,
                     defaultPath,
                 );
-                if (videoFilePath === null) {
-                    showSimpleToast(
-                        '`Download From URL',
-                        'Cannot download video, please check the URL again',
-                    );
-                    return;
-                }
-                const sourceFileSource = FileSource.getInstance(videoFilePath);
                 const destFileSource = FileSource.getInstance(
                     dirSource.dirPath,
-                    sourceFileSource.fullName,
+                    fileFullName,
                 );
                 if (await fsCheckFileExist(destFileSource.filePath)) {
                     await fsDeleteFile(destFileSource.filePath);
                 }
-                await fsMove(videoFilePath, destFileSource.filePath);
+                await fsMove(filePath, destFileSource.filePath);
                 showSimpleToast(
                     '`Download From URL',
                     `Video downloaded successfully, file path: "${destFileSource.filePath}"`,
@@ -114,7 +106,7 @@ async function genVideoDownloadContextMenuItems(dirSource: DirSource) {
                     'Error occurred during downloading video',
                 );
             } finally {
-                hideProgressBard(videoUrl);
+                hideProgressBar(videoUrl);
             }
         },
     );

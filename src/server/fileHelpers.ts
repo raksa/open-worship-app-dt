@@ -15,8 +15,8 @@ import mimeVideoList from './mime/video-types.json';
 import mimeSoundList from './mime/sound-types.json';
 import { showAppConfirm } from '../popup-widget/popupWidgetHelpers';
 import {
-    hideProgressBard,
-    showProgressBard,
+    hideProgressBar,
+    showProgressBar,
 } from '../progress-bar/progressBarHelpers';
 import { cloneJson, freezeObject } from '../helper/helpers';
 
@@ -540,7 +540,7 @@ export async function fsCopyFilePathToPath(
     fileFullName?: string,
 ) {
     const progressKey = 'Copying File';
-    showProgressBard(progressKey);
+    showProgressBar(progressKey);
     fileFullName = fileFullName ?? getFileFullName(file);
     const targetPath = pathJoin(destinationPath, fileFullName);
     try {
@@ -555,7 +555,7 @@ export async function fsCopyFilePathToPath(
             }
         }
         await fsCloneFile(file, targetPath);
-        hideProgressBard(progressKey);
+        hideProgressBar(progressKey);
         return targetPath;
     } catch (error: any) {
         if (error.message !== 'Canceled by user') {
@@ -568,7 +568,7 @@ export async function fsCopyFilePathToPath(
             }
         }
     }
-    hideProgressBard(progressKey);
+    hideProgressBar(progressKey);
     return null;
 }
 

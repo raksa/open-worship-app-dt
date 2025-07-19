@@ -8,8 +8,8 @@ import {
     getBibleXMLDataFromKey,
 } from '../../setting/bible-setting/bibleXMLHelpers';
 import {
-    hideProgressBard,
-    showProgressBard,
+    hideProgressBar,
+    showProgressBar,
 } from '../../progress-bar/progressBarHelpers';
 
 export async function checkIsBookAvailable(bibleKey: string, bookKey: string) {
@@ -134,9 +134,9 @@ export async function getBibleInfo(bibleKey: string, isForce = false) {
     const info = await bibleDataReader.readBibleData(bibleKey, '_info');
     if (info === null || checkIsBooksAvailableMissing(info)) {
         bibleInfoMap.delete(bibleKey);
-        showProgressBard(bibleKey);
+        showProgressBar(bibleKey);
         const bibleInfo = await getBibleInfoXML(bibleKey);
-        hideProgressBard(bibleKey);
+        hideProgressBar(bibleKey);
         if (bibleInfo) {
             return await getBibleInfo(bibleKey, true);
         }
