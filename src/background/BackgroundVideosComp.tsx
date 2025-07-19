@@ -1,6 +1,6 @@
 import './BackgroundVideosComp.scss';
 
-import { createRef, useState } from 'react';
+import { createRef } from 'react';
 
 import { RenderScreenIds } from './BackgroundComp';
 import FileSource from '../helper/FileSource';
@@ -12,16 +12,17 @@ import {
 } from '../helper/constants';
 import { BackgroundSrcType } from '../_screen/screenTypeHelpers';
 import VideoHeaderSettingComp from './VideoHeaderSettingComp';
-import { showSimpleToast } from '../toast/toastHelpers';
-import { ContextMenuItemType } from '../context-menu/appContextMenuHelpers';
-import DirSource from '../helper/DirSource';
-import { showAppInput } from '../popup-widget/popupWidgetHelpers';
-import { downloadVideo, readTextFromClipboard } from '../server/appHelpers';
+import { genContextMenuItems } from './downloadHelper';
 import { handleError } from '../helper/errorHelpers';
 import {
-    hideProgressBard,
     showProgressBard,
+    hideProgressBard,
 } from '../progress-bar/progressBarHelpers';
+import { downloadVideoOrAudio } from '../server/appHelpers';
+import { fsCheckFileExist, fsDeleteFile, fsMove } from '../server/fileHelpers';
+import { getDefaultDataDir } from '../setting/directory-setting/directoryHelpers';
+import { showSimpleToast } from '../toast/toastHelpers';
+import DirSource from '../helper/DirSource';
 
 function rendChild(
     filePath: string,
@@ -67,90 +68,56 @@ function RendBody({
     );
 }
 
-function InputVideoUrlComp({
-    defaultVideoUrl,
-    onChange,
-}: Readonly<{ defaultVideoUrl: string; onChange: (newUrl: string) => void }>) {
-    const [videoUrl, setVideoUrl] = useState(defaultVideoUrl);
-    const invalidMessage = videoUrl.trim() === '' ? 'Cannot be empty' : '';
-    return (
-        <div className="w-100 h-100">
-            <div className="input-group" title={invalidMessage}>
-                <div className="input-group-text">Video URL:</div>
-                <input
-                    className={
-                        'form-control' + (invalidMessage ? ' is-invalid' : '')
-                    }
-                    type="text"
-                    value={videoUrl}
-                    onChange={(e) => {
-                        setVideoUrl(e.target.value);
-                        onChange(e.target.value);
-                    }}
-                />
-            </div>
-        </div>
-    );
-}
-async function genContextMenuItems(dirSource: DirSource) {
-    if (dirSource.dirPath === '') {
-        return [];
-    }
-    const contextMenuItems: ContextMenuItemType[] = [
+async function genVideoDownloadContextMenuItems(dirSource: DirSource) {
+    return genContextMenuItems(
         {
-            menuElement: '`Download From URL',
-            onSelect: async () => {
-                let videoUrl = '';
-                const clipboardText = await readTextFromClipboard();
-                if (
-                    clipboardText !== null &&
-                    clipboardText.trim().startsWith('http')
-                ) {
-                    videoUrl = clipboardText.trim();
-                }
-                const isConfirmInput = await showAppInput(
-                    '`Download Video From URL',
-                    <InputVideoUrlComp
-                        defaultVideoUrl={videoUrl}
-                        onChange={(newUrl) => {
-                            videoUrl = newUrl;
-                        }}
-                    />,
-                );
-                if (!isConfirmInput) {
-                    return;
-                }
-                if (!videoUrl.trim().startsWith('http')) {
-                    showSimpleToast('`Download From URL', 'Invalid URL');
-                    return;
-                }
-                try {
-                    showSimpleToast(
-                        '`Download From URL',
-                        `Downloading video from "${videoUrl}", please wait...`,
-                    );
-                    showProgressBard(videoUrl);
-                    const videoFilePath = await downloadVideo(
-                        videoUrl,
-                        dirSource.dirPath,
-                    );
-                    showSimpleToast(
-                        '`Download From URL',
-                        `Video downloaded successfully, file path: "${videoFilePath}"`,
-                    );
-                } catch (error) {
-                    handleError(error);
-                    showSimpleToast(
-                        '`Download From URL',
-                        'Error occurred during downloading video',
-                    );
-                } finally {
-                    hideProgressBard(videoUrl);
-                }
-            },
+            title: '`Download From URL',
+            subTitle: 'Video URL:',
         },
-    ];
-    return contextMenuItems;
+        dirSource,
+        async (videoUrl) => {
+            try {
+                showSimpleToast(
+                    '`Download From URL',
+                    `Downloading video from "${videoUrl}", please wait...`,
+                );
+                showProgressBard(videoUrl);
+                const defaultPath = getDefaultDataDir();
+                const videoFilePath = await downloadVideoOrAudio(
+                    videoUrl,
+                    defaultPath,
+                );
+                if (videoFilePath === null) {
+                    showSimpleToast(
+                        '`Download From URL',
+                        'Cannot download video, please check the URL again',
+                    );
+                    return;
+                }
+                const sourceFileSource = FileSource.getInstance(videoFilePath);
+                const destFileSource = FileSource.getInstance(
+                    dirSource.dirPath,
+                    sourceFileSource.fullName,
+                );
+                if (await fsCheckFileExist(destFileSource.filePath)) {
+                    await fsDeleteFile(destFileSource.filePath);
+                }
+                await fsMove(videoFilePath, destFileSource.filePath);
+                showSimpleToast(
+                    '`Download From URL',
+                    `Video downloaded successfully, file path: "${destFileSource.filePath}"`,
+                );
+            } catch (error) {
+                handleError(error);
+                showSimpleToast(
+                    '`Download From URL',
+                    'Error occurred during downloading video',
+                );
+            } finally {
+                hideProgressBard(videoUrl);
+            }
+        },
+    );
 }
 
 export default function BackgroundVideosComp() {
@@ -161,7 +128,7 @@ export default function BackgroundVideosComp() {
             dragType={DragTypeEnum.BACKGROUND_VIDEO}
             rendChild={rendChild}
             dirSourceSettingName={dirSourceSettingNames.BACKGROUND_VIDEO}
-            genContextMenuItems={genContextMenuItems}
+            genContextMenuItems={genVideoDownloadContextMenuItems}
         />
     );
 }

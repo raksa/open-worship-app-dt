@@ -296,8 +296,12 @@ function _fsWriteFile(filePath: string, data: string, options?: any) {
     );
 }
 
-export function fsMove(oldPath: string, newPath: string) {
-    return fsFilePromise<void>(appProvider.fileUtils.rename, oldPath, newPath);
+export function fsMove(oldFullPath: string, newFullPath: string) {
+    return fsFilePromise<void>(
+        appProvider.fileUtils.rename,
+        oldFullPath,
+        newFullPath,
+    );
 }
 
 function _fsUnlink(filePath: string) {

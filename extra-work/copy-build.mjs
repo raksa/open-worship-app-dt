@@ -133,3 +133,14 @@ copyAllChildren(
   resolve('./electron-build/bin-helper/node-api-dotnet'),
 );
 console.log('node-api-dotnet files are copied');
+
+if (systemUtils.isMac) {
+  copyAllChildren(
+    resolve(
+      './extra-work/ffmpeg/mac' +
+        (systemUtils.isMacUniversal || !systemUtils.isArm64 ? '-intel' : ''),
+    ),
+    resolve('./electron-build/bin-helper/ffmpeg/bin'),
+  );
+  console.log('ffmpeg file is copied');
+}

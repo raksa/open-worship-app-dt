@@ -39,21 +39,20 @@ export default class FileSource
     static readonly eventNamePrefix: string = 'file-source';
     basePath: string;
     fullName: string;
-    filePath: string;
-    src: string;
     colorNote: string | null = null;
 
-    constructor(
-        basePath: string,
-        fileFullName: string,
-        filePath: string,
-        src: string,
-    ) {
+    constructor(baseFullPath: string, fileFullName: string) {
         super();
-        this.basePath = basePath;
+        this.basePath = baseFullPath;
         this.fullName = fileFullName;
-        this.filePath = filePath;
-        this.src = src;
+    }
+
+    get filePath() {
+        return pathJoin(this.basePath, this.fullName);
+    }
+
+    get src() {
+        return pathToFileURL(this.filePath);
     }
 
     get isAppFile() {
@@ -194,21 +193,15 @@ export default class FileSource
     }
 
     static getInstanceNoCache(filePath: string, fileFullName?: string) {
-        let basePath;
+        let baseFullPath;
         if (fileFullName) {
-            basePath = filePath;
-            filePath = pathJoin(filePath, fileFullName);
+            baseFullPath = filePath;
         } else {
             const index = filePath.lastIndexOf(pathSeparator);
-            basePath = filePath.substring(0, index);
+            baseFullPath = filePath.substring(0, index);
             fileFullName = pathBasename(filePath);
         }
-        return new FileSource(
-            basePath,
-            fileFullName,
-            filePath,
-            pathToFileURL(filePath),
-        );
+        return new FileSource(baseFullPath, fileFullName);
     }
 
     static getInstance(

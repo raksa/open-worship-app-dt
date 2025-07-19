@@ -284,9 +284,10 @@ export async function trashAllMaterialFiles(fileSource: FileSource) {
     return powerPointHelper.countSlides(powerPointFilePath);
 };
 
-export function downloadVideo(
+export function downloadVideoOrAudio(
     videoUrl: string,
     outputDir: string,
+    isVideo: boolean = true,
     ffmpegPath?: string,
 ) {
     return new Promise<string | null>((resolve, reject) => {
@@ -297,8 +298,18 @@ export function downloadVideo(
                 '-o',
                 pathResolve(`${outputDir}/%(title)s.%(ext)s`),
             ];
-            if (ffmpegPath !== undefined) {
-                args.push('--ffmpeg-location', ffmpegPath);
+            args.push(
+                '--ffmpeg-location',
+                ffmpegPath ?? appProvider.ytUtils.ffmpegBinPath,
+            );
+            if (!isVideo) {
+                args.push(
+                    '-x',
+                    '--audio-format',
+                    'mp3',
+                    '--audio-quality',
+                    '0',
+                );
             }
             const ytDlpEventEmitter = ytDlpWrap
                 .exec(args)
@@ -312,7 +323,20 @@ export function downloadVideo(
                 )
                 .on('ytDlpEvent', (eventType, eventData) => {
                     console.log(eventType, eventData);
-                    if (eventType === 'download') {
+                    // ExtractAudio  Destination: /Users/raksa/Desktop/open-worship-data/Redux in 100 Seconds.mp3
+                    if (eventType === 'ExtractAudio') {
+                        const regex = /Destination: (.+)$/;
+                        const match = eventData.match(regex);
+                        if (match && match[1]) {
+                            filePath = match[1];
+                        }
+                    } else if (eventType === 'Merger') {
+                        const regex = /Merging formats into "(.+?)"/;
+                        const match = eventData.match(regex);
+                        if (match[1]) {
+                            filePath = match[1];
+                        }
+                    } else if (eventType === 'download') {
                         eventData = eventData.trim();
                         const startString = 'Destination: ';
                         const endString = ' has already been downloaded';
@@ -335,7 +359,6 @@ export function downloadVideo(
         });
     });
 }
-(window as any).ytDownload = downloadVideo;
 
 function checkClipboardHasImage(clipboardItem: ClipboardItem) {
     return clipboardItem.types.some((type) => {
