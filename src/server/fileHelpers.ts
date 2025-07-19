@@ -604,3 +604,23 @@ export function getDesktopPath(): string {
 export function getTempPath(): string {
     return appProvider.messageUtils.sendDataSync('main:app:get-temp-path');
 }
+
+export function writeFileFromBase64(filePath: string, base64: string) {
+    return appProvider.fileUtils.writeFileFromBase64(filePath, base64);
+}
+
+export function getDotExtensionFromBase64Data(base64Data: string) {
+    const mimeRegex = /^data:([a-zA-Z0-9+]+\/[a-zA-Z0-9+]+);base64,/;
+    const mimeMatch = mimeRegex.exec(base64Data);
+    if (mimeMatch) {
+        const mimeType = mimeMatch[1].toLowerCase();
+        const allMimeTypes = Object.values(mimeTypesMapper).flat();
+        const foundMime = allMimeTypes.find((mt) => {
+            return mt.mimetypeSignature === mimeType;
+        });
+        if (foundMime) {
+            return foundMime.extensions[0];
+        }
+    }
+    return null;
+}

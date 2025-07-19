@@ -12,6 +12,7 @@ import {
     pathJoin,
     pathSeparator,
     getFileName,
+    writeFileFromBase64,
 } from '../server/fileHelpers';
 import { isValidJson } from './helpers';
 import { pathToFileURL } from '../server/helpers';
@@ -162,9 +163,24 @@ export default class FileSource
         );
     }
 
-    static async writeFileData(filePath: string, data: string) {
+    async writeFileBase64Data(srcData: SrcData) {
+        try {
+            writeFileFromBase64(this.filePath, srcData);
+            return true;
+        } catch (error) {
+            handleError(error);
+        }
+        return false;
+    }
+
+    static async writeFilePlainText(filePath: string, plainText: string) {
         const fileSource = this.getInstance(filePath);
-        return await fileSource.writeFileData(data);
+        return await fileSource.writeFileData(plainText);
+    }
+
+    static async writeFileBase64Data(filePath: string, base64Data: SrcData) {
+        const fileSource = this.getInstance(filePath);
+        return await fileSource.writeFileBase64Data(base64Data);
     }
 
     async readFileJsonData() {
@@ -317,5 +333,18 @@ export default class FileSource
             path: this.filePath,
         });
         FileSource.getInstance(this.filePath).fireDeleteEvent();
+    }
+
+    static getSrcDataFromBlob(blob: Blob) {
+        return new Promise<SrcData | null>((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                resolve(reader.result as SrcData);
+            };
+            reader.onerror = () => {
+                resolve(null);
+            };
+            reader.readAsDataURL(blob);
+        });
     }
 }

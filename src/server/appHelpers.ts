@@ -4,7 +4,12 @@ import { handleError } from '../helper/errorHelpers';
 import { showAppConfirm } from '../popup-widget/popupWidgetHelpers';
 import { AnyObjectType, OptionalPromise } from '../helper/typeHelpers';
 import { goToPath } from '../router/routeHelpers';
-import { fsCheckFileExist, pathJoin, pathResolve } from './fileHelpers';
+import {
+    fsCheckFileExist,
+    isSupportedMimetype,
+    pathJoin,
+    pathResolve,
+} from './fileHelpers';
 import FileSource from '../helper/FileSource';
 
 export function getFontListByNodeFont() {
@@ -330,3 +335,29 @@ export async function trashAllMaterialFiles(fileSource: FileSource) {
         });
     });
 };
+
+function checkClipboardHasImage(clipboardItem: ClipboardItem) {
+    return clipboardItem.types.some((type) => {
+        return isSupportedMimetype(type, 'image');
+    });
+}
+
+export async function checkIsImagesInClipboard() {
+    const clipboardItems = await navigator.clipboard.read();
+    const isPastingImage = clipboardItems.some((clipboardItem) => {
+        return checkClipboardHasImage(clipboardItem);
+    });
+    return isPastingImage;
+}
+
+export async function* readImagesFromClipboard() {
+    const clipboardItems = await navigator.clipboard.read();
+    for (const clipboardItem of clipboardItems) {
+        for (const type of clipboardItem.types) {
+            if (isSupportedMimetype(type, 'image')) {
+                const blob = await clipboardItem.getType(type);
+                yield blob;
+            }
+        }
+    }
+}
