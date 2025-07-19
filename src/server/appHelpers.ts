@@ -284,11 +284,11 @@ export async function trashAllMaterialFiles(fileSource: FileSource) {
     return powerPointHelper.countSlides(powerPointFilePath);
 };
 
-(window as any).ytDownload = async (
+export function downloadVideo(
     videoUrl: string,
     outputDir: string,
     ffmpegPath?: string,
-) => {
+) {
     return new Promise<string | null>((resolve, reject) => {
         appProvider.ytUtils.getYTHelper().then((ytDlpWrap) => {
             let filePath: string | null = null;
@@ -334,7 +334,8 @@ export async function trashAllMaterialFiles(fileSource: FileSource) {
             console.log('Process id:', ytDlpEventEmitter.ytDlpProcess.pid);
         });
     });
-};
+}
+(window as any).ytDownload = downloadVideo;
 
 function checkClipboardHasImage(clipboardItem: ClipboardItem) {
     return clipboardItem.types.some((type) => {
@@ -359,5 +360,15 @@ export async function* readImagesFromClipboard() {
                 yield blob;
             }
         }
+    }
+}
+
+export async function readTextFromClipboard() {
+    try {
+        const text = await navigator.clipboard.readText();
+        return text;
+    } catch (error) {
+        handleError(error);
+        return null;
     }
 }
