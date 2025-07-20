@@ -5,6 +5,7 @@ import { ToolingBoxType } from '../canvasHelpers';
 import { useCanvasItemContext } from '../CanvasItem';
 import { AppColorType } from '../../../others/color/colorHelpers';
 import SlideEditorToolsColorComp from './SlideEditorToolsColorComp';
+import ShapePropertiesComp from './ShapePropertiesComp';
 
 function SizingComp() {
     const canvasController = useCanvasControllerContext();
@@ -112,13 +113,16 @@ export default function SlideEditorToolsBoxComp() {
         canvasItem.applyBoxData(parentDimension, newData);
         canvasController.applyEditItem(canvasItem);
     };
+    const { props } = canvasItem;
     return (
         <div className="d-flex flex-wrap app-inner-shadow">
-            <SlideEditorToolsColorComp
-                color={canvasItem.props.backgroundColor}
-                handleNoColoring={handleNoColoring}
-                handleColorChanging={handleColorChanging}
-            />
+            <div className="p-1">
+                <SlideEditorToolsColorComp
+                    color={props.backgroundColor}
+                    handleNoColoring={handleNoColoring}
+                    handleColorChanging={handleColorChanging}
+                />
+            </div>
             <div
                 className="ps-1"
                 style={{
@@ -126,7 +130,16 @@ export default function SlideEditorToolsBoxComp() {
                 }}
             >
                 <SlideEditorToolTitleComp title="Box Alignment">
-                    <SlideEditorToolAlignComp onData={handleDataEvent} />
+                    <SlideEditorToolAlignComp
+                        data={props}
+                        onData={handleDataEvent}
+                    />
+                </SlideEditorToolTitleComp>
+                <SlideEditorToolTitleComp title="Shape Properties">
+                    <ShapePropertiesComp
+                        data={props}
+                        onData={handleDataEvent}
+                    />
                 </SlideEditorToolTitleComp>
                 <LayerComp />
                 <SizingComp />

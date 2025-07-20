@@ -29,12 +29,15 @@ export default function SlideEditorToolsTextComp() {
         canvasItem.applyTextData(newData);
         canvasController.applyEditItem(canvasItem);
     };
+    const { props } = canvasItem;
     return (
         <div className="d-flex flex-wrap app-inner-shadow">
-            <SlideEditorToolsColorComp
-                color={canvasItem.props.color}
-                handleColorChanging={handleColorChanging}
-            />
+            <div className="p-1">
+                <SlideEditorToolsColorComp
+                    color={props.color}
+                    handleColorChanging={handleColorChanging}
+                />
+            </div>
             <div
                 className="ps-1"
                 style={{
@@ -42,7 +45,14 @@ export default function SlideEditorToolsTextComp() {
                 }}
             >
                 <SlideEditorToolTitleComp title="Text Alignment">
-                    <SlideEditorToolAlignComp isText onData={handleDataEvent} />
+                    <SlideEditorToolAlignComp
+                        isText
+                        data={{
+                            horizontalAlignment: props.textHorizontalAlignment,
+                            verticalAlignment: props.textVerticalAlignment,
+                        }}
+                        onData={handleDataEvent}
+                    />
                 </SlideEditorToolTitleComp>
                 <hr />
                 <ToolsTextFontControlComp />

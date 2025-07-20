@@ -26,6 +26,10 @@ body {
     user-select: none;
   }
 
+  .btn {
+    border: 1px solid var(--bs-gray-600);
+  }
+
   .app-not-selectable-text {
     user-select: none !important;
   }

@@ -73,6 +73,7 @@ export default class LyricAppDocument extends AppDocument {
                 canvasItems: text
                     ? [
                           {
+                              id: 0,
                               text,
                               htmlText,
                               color: '#FFFFFFFF',
@@ -81,10 +82,10 @@ export default class LyricAppDocument extends AppDocument {
                               fontWeight: null,
                               textHorizontalAlignment: 'center',
                               textVerticalAlignment: 'center',
-                              id: 0,
                               top,
                               left,
                               backgroundColor: '#0000008B',
+                              backdropFilter: 5,
                               width: Math.floor(
                                   display.bounds.width - left * 2,
                               ),

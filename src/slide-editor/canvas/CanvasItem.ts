@@ -29,6 +29,9 @@ export type CanvasItemPropsType = {
     horizontalAlignment: HAlignmentType;
     verticalAlignment: VAlignmentType;
     backgroundColor: AppColorType | null;
+    backdropFilter: number | null;
+    roundSizePercentage: number | null;
+    roundSizePixel: number | null;
     type: CanvasItemKindType;
 };
 
