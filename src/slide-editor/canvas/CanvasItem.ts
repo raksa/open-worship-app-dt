@@ -62,6 +62,12 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType>
     abstract getStyle(): CSSProperties;
 
     static genBoxStyle(props: CanvasItemPropsType): CSSProperties {
+        let borderRadius: string | number = 0;
+        if (props.roundSizePixel !== null) {
+            borderRadius = props.roundSizePixel;
+        } else if (props.roundSizePercentage !== null) {
+            borderRadius = `${props.roundSizePercentage / 2}%`;
+        }
         const style: CSSProperties = {
             display: 'flex',
             top: `${props.top}px`,
@@ -71,6 +77,11 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType>
             height: `${props.height}px`,
             position: 'absolute',
             backgroundColor: props.backgroundColor ?? 'transparent',
+            backdropFilter: props.backdropFilter
+                ? `blur(${props.backdropFilter}px)`
+                : undefined,
+            borderRadius: borderRadius,
+            boxSizing: 'border-box',
         };
         return style;
     }

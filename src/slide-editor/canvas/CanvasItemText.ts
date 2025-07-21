@@ -47,15 +47,6 @@ export type ToolingTextType = {
 };
 class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> {
     static genStyle(props: CanvasItemTextPropsType) {
-        let borderRadius: string | undefined;
-        if (props.roundSizePixel) {
-            borderRadius = `${props.roundSizePixel}px`;
-        } else if (props.roundSizePercentage) {
-            borderRadius = `${props.roundSizePercentage / 2}%`;
-        } else {
-            borderRadius = undefined;
-        }
-
         const style: CSSProperties = {
             display: 'flex',
             width: '100%',
@@ -67,11 +58,6 @@ class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> {
             alignItems: props.textVerticalAlignment,
             justifyContent: props.textHorizontalAlignment,
             padding: `${props.fontSize / 10}px`,
-            backdropFilter: props.backdropFilter
-                ? `blur(${props.backdropFilter}px)`
-                : undefined,
-            borderRadius: borderRadius,
-            boxSizing: 'border-box',
         };
         return style;
     }

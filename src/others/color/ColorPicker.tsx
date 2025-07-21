@@ -32,12 +32,15 @@ export default function ColorPicker({
     color,
     onColorChange,
     onNoColor,
+    isCollapsable = false,
 }: Readonly<{
     defaultColor: AppColorType;
     color: AppColorType | null;
     onColorChange?: (color: AppColorType, event: MouseEvent) => void;
     onNoColor?: (color: AppColorType, event: MouseEvent) => void;
+    isCollapsable?: boolean;
 }>) {
+    const [isOpened, setIsOpened] = useState(false);
     const [localColor, setLocalColor] = useState(color);
     const opacity = localColor !== null ? colorToTransparent(localColor) : 255;
     useAppEffect(() => {
@@ -66,6 +69,30 @@ export default function ColorPicker({
         const newColor = setOpacity(localColor, value);
         applyNewColor(newColor, event);
     };
+    if (isCollapsable && !isOpened) {
+        return (
+            <div
+                className="flex-item color-picker app-caught-hover-pointer "
+                style={{
+                    border: '1px solid var(--bs-gray-700)',
+                }}
+                onClick={() => {
+                    setIsOpened(true);
+                }}
+            >
+                <i className="bi bi-chevron-right" />
+                <div
+                    className="h-100 px-1 app-ellipsis"
+                    style={{
+                        backgroundColor: color ?? 'transparent',
+                        width: 'calc(100% - 10px)',
+                    }}
+                >
+                    {color}
+                </div>
+            </div>
+        );
+    }
     return (
         <div
             className="flex-item color-picker"
@@ -73,6 +100,14 @@ export default function ColorPicker({
                 backgroundColor: 'var(--bs-gray-700)',
             }}
         >
+            {isCollapsable ? (
+                <i
+                    className="app-caught-hover-pointer bi bi-chevron-down"
+                    onClick={() => {
+                        setIsOpened(false);
+                    }}
+                />
+            ) : null}
             <div className="p-1 overflow-hidden">
                 <RenderColors
                     colors={colorList.main}

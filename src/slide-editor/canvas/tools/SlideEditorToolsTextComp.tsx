@@ -33,10 +33,12 @@ export default function SlideEditorToolsTextComp() {
     return (
         <div className="d-flex flex-wrap app-inner-shadow">
             <div className="p-1">
-                <SlideEditorToolsColorComp
-                    color={props.color}
-                    handleColorChanging={handleColorChanging}
-                />
+                <SlideEditorToolTitleComp title="Color">
+                    <SlideEditorToolsColorComp
+                        color={props.color}
+                        handleColorChanging={handleColorChanging}
+                    />
+                </SlideEditorToolTitleComp>
             </div>
             <div
                 className="ps-1"

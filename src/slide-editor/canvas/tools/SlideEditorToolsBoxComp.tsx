@@ -1,8 +1,10 @@
 import SlideEditorToolTitleComp from './SlideEditorToolTitleComp';
 import SlideEditorToolAlignComp from './SlideEditorToolAlignComp';
-import { useCanvasControllerContext } from '../CanvasController';
+import CanvasController, {
+    useCanvasControllerContext,
+} from '../CanvasController';
 import { ToolingBoxType } from '../canvasHelpers';
-import { useCanvasItemContext } from '../CanvasItem';
+import CanvasItem, { useCanvasItemContext } from '../CanvasItem';
 import { AppColorType } from '../../../others/color/colorHelpers';
 import SlideEditorToolsColorComp from './SlideEditorToolsColorComp';
 import ShapePropertiesComp from './ShapePropertiesComp';
@@ -34,17 +36,28 @@ function SizingComp() {
     );
 }
 
+function applyEditorBoxData(
+    canvasController: CanvasController,
+    parentDimension: { parentWidth: number; parentHeight: number },
+    canvasItem: CanvasItem<any>,
+    newData: ToolingBoxType,
+) {
+    canvasItem.applyBoxData(parentDimension, newData);
+    canvasController.applyEditItem(canvasItem);
+}
+
 function LayerComp() {
     const canvasController = useCanvasControllerContext();
     const canvasItem = useCanvasItemContext();
-    const parentDimension = {
-        parentWidth: canvasController.canvas.width,
-        parentHeight: canvasController.canvas.height,
-    };
-    const applyBoxData = (newData: ToolingBoxType) => {
-        canvasItem.applyBoxData(parentDimension, newData);
-        canvasController.applyEditItem(canvasItem);
-    };
+    const applyBoxData = applyEditorBoxData.bind(
+        null,
+        canvasController,
+        {
+            parentWidth: canvasController.canvas.width,
+            parentHeight: canvasController.canvas.height,
+        },
+        canvasItem,
+    );
     return (
         <div className="ps-2">
             <div className="d-flex">
@@ -105,23 +118,26 @@ export default function SlideEditorToolsBoxComp() {
             backgroundColor: newColor,
         });
     };
-    const parentDimension = {
-        parentWidth: canvasController.canvas.width,
-        parentHeight: canvasController.canvas.height,
-    };
-    const applyBoxData = (newData: ToolingBoxType) => {
-        canvasItem.applyBoxData(parentDimension, newData);
-        canvasController.applyEditItem(canvasItem);
-    };
+    const applyBoxData = applyEditorBoxData.bind(
+        null,
+        canvasController,
+        {
+            parentWidth: canvasController.canvas.width,
+            parentHeight: canvasController.canvas.height,
+        },
+        canvasItem,
+    );
     const { props } = canvasItem;
     return (
         <div className="d-flex flex-wrap app-inner-shadow">
             <div className="p-1">
-                <SlideEditorToolsColorComp
-                    color={props.backgroundColor}
-                    handleNoColoring={handleNoColoring}
-                    handleColorChanging={handleColorChanging}
-                />
+                <SlideEditorToolTitleComp title="Background Color">
+                    <SlideEditorToolsColorComp
+                        color={props.backgroundColor}
+                        handleNoColoring={handleNoColoring}
+                        handleColorChanging={handleColorChanging}
+                    />
+                </SlideEditorToolTitleComp>
             </div>
             <div
                 className="ps-1"
