@@ -62,7 +62,7 @@ export default function SlideEditorToolAlignComp({
     data,
     isText,
 }: Readonly<{
-    data?: AlignmentDataType;
+    data: AlignmentDataType;
     onData: (data: AlignmentDataType) => void;
     isText?: boolean;
 }>) {
@@ -76,7 +76,7 @@ export default function SlideEditorToolAlignComp({
                         ['bi-align-bottom', 'end'],
                     ],
                     dataKey: 'verticalAlignment',
-                    data: data ?? {},
+                    data: data,
                     onData,
                 })}
             </div>
@@ -89,7 +89,7 @@ export default function SlideEditorToolAlignComp({
                             ['bi-text-right', 'right'],
                         ],
                         dataKey: 'horizontalAlignment',
-                        data: data ?? {},
+                        data: data,
                         onData,
                     })}
                 </div>
@@ -102,7 +102,7 @@ export default function SlideEditorToolAlignComp({
                             ['bi-align-end', 'right'],
                         ],
                         dataKey: 'horizontalAlignment',
-                        data: data ?? {},
+                        data: data,
                         onData,
                     })}
                 </div>

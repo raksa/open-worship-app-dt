@@ -74,8 +74,10 @@ export default class LyricAppDocument extends AppDocument {
                     ? [
                           {
                               id: 0,
+                              type: 'html',
                               text,
                               htmlText,
+
                               color: '#FFFFFFFF',
                               fontSize: 90,
                               fontFamily: this.lyricEditingProps.fontFamily,
@@ -95,7 +97,8 @@ export default class LyricAppDocument extends AppDocument {
                               rotate: 0,
                               horizontalAlignment: 'center',
                               verticalAlignment: 'center',
-                              type: 'html',
+                              roundSizePixel: 0,
+                              roundSizePercentage: 0,
                           } as CanvasItemTextPropsType,
                       ]
                     : [],

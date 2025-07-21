@@ -1,34 +1,27 @@
 import AppRangeComp from '../../../others/AppRangeComp';
+import { useCanvasItemPropsSetterContext } from '../CanvasItem';
 
-type ShapePropertiesTye = {
-    backdropFilter?: string;
-    roundSizePercentage?: number;
-    roundSizePixel?: number;
-};
-
-export default function ShapePropertiesComp({
-    onData,
-    data,
-}: Readonly<{
-    data?: ShapePropertiesTye;
-    onData: (data: ShapePropertiesTye) => void;
-}>) {
-    const roundSizePixel = data?.roundSizePixel ?? 0;
+export default function ShapePropertiesComp() {
+    const [props, setProps] = useCanvasItemPropsSetterContext();
+    const roundSizePixel = props.roundSizePixel ?? 0;
     const roundSizePercentage =
-        roundSizePixel > 0 ? 0 : (data?.roundSizePercentage ?? 0);
+        roundSizePixel > 0 ? 0 : (props.roundSizePercentage ?? 0);
     return (
         <div>
             <div className="d-flex">
                 <span className="pe-2">Glass Effect:</span>
                 <input
                     className="form-control form-control-sm"
-                    type="text"
+                    type="number"
+                    min={0}
                     style={{
                         width: '80px',
                     }}
-                    value={data?.backdropFilter ?? '0'}
+                    value={props.backdropFilter}
                     onChange={(e) => {
-                        onData({ backdropFilter: e.target.value });
+                        setProps({
+                            backdropFilter: parseInt(e.target.value, 10),
+                        });
                     }}
                 />
                 <span className="ps-1">px</span>
@@ -50,7 +43,7 @@ export default function ShapePropertiesComp({
                             : '`Round (%)'
                     }
                     setValue={(value) => {
-                        onData({ roundSizePercentage: value });
+                        setProps({ roundSizePercentage: value });
                     }}
                     defaultSize={{
                         size: roundSizePercentage,
@@ -72,7 +65,7 @@ export default function ShapePropertiesComp({
                     value={roundSizePixel}
                     onChange={(event) => {
                         const value = parseInt(event.target.value, 10) || 0;
-                        onData({
+                        setProps({
                             roundSizePixel: value,
                             roundSizePercentage: 0,
                         });

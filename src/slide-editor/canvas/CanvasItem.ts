@@ -28,10 +28,10 @@ export type CanvasItemPropsType = {
     height: number;
     horizontalAlignment: HAlignmentType;
     verticalAlignment: VAlignmentType;
-    backgroundColor: AppColorType | null;
-    backdropFilter: number | null;
-    roundSizePercentage: number | null;
-    roundSizePixel: number | null;
+    backgroundColor: AppColorType;
+    backdropFilter: number;
+    roundSizePercentage: number;
+    roundSizePixel: number;
     type: CanvasItemKindType;
 };
 
@@ -44,7 +44,20 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType>
     props: T;
     constructor(props: T) {
         super();
-        this.props = cloneJson(props);
+        this.props = {
+            ...props,
+            top: props.top ?? 0,
+            left: props.left ?? 0,
+            rotate: props.rotate ?? 0,
+            width: props.width ?? 0,
+            height: props.height ?? 0,
+            horizontalAlignment: props.horizontalAlignment ?? 'center',
+            verticalAlignment: props.verticalAlignment ?? 'middle',
+            backgroundColor: props.backgroundColor ?? '#00000000',
+            backdropFilter: props.backdropFilter ?? 0,
+            roundSizePercentage: props.roundSizePercentage ?? 0,
+            roundSizePixel: props.roundSizePixel ?? 0,
+        };
     }
 
     get id() {
@@ -61,27 +74,35 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType>
 
     abstract getStyle(): CSSProperties;
 
-    static genBoxStyle(props: CanvasItemPropsType): CSSProperties {
-        let borderRadius: string | number = 0;
-        if (props.roundSizePixel !== null) {
+    static genShapeBoxStyle(props: CanvasItemPropsType): CSSProperties {
+        let borderRadius: string | number | undefined = undefined;
+        if (props.roundSizePixel) {
             borderRadius = props.roundSizePixel;
-        } else if (props.roundSizePercentage !== null) {
+        } else if (props.roundSizePercentage) {
             borderRadius = `${props.roundSizePercentage / 2}%`;
         }
+        const shapeStyle: CSSProperties = {
+            width: `${props.width}px`,
+            height: `${props.height}px`,
+            backgroundColor: props.backgroundColor ?? 'transparent',
+            backdropFilter: props.backdropFilter
+                ? `blur(${props.backdropFilter}px)`
+                : undefined,
+            ...(borderRadius !== undefined
+                ? { borderRadius: borderRadius, boxSizing: 'border-box' }
+                : {}),
+        };
+        return shapeStyle;
+    }
+
+    static genBoxStyle(props: CanvasItemPropsType): CSSProperties {
         const style: CSSProperties = {
             display: 'flex',
             top: `${props.top}px`,
             left: `${props.left}px`,
             transform: `rotate(${props.rotate}deg)`,
-            width: `${props.width}px`,
-            height: `${props.height}px`,
             position: 'absolute',
-            backgroundColor: props.backgroundColor ?? 'transparent',
-            backdropFilter: props.backdropFilter
-                ? `blur(${props.backdropFilter}px)`
-                : undefined,
-            borderRadius: borderRadius,
-            boxSizing: 'border-box',
+            ...this.genShapeBoxStyle(props),
         };
         return style;
     }
@@ -270,7 +291,7 @@ export const CanvasItemContext = createContext<CanvasItem<any> | null>(null);
 export function useCanvasItemContext() {
     const context = use(CanvasItemContext);
     if (context === null) {
-        throw new Error('CanvasItemContext not found');
+        throw new Error('CanvasItem not provided in context');
     }
     return context;
 }
@@ -287,6 +308,23 @@ export function useCanvasItemPropsContext<T extends CanvasItemPropsType>() {
         });
     }, [canvasItem]);
     return props as T;
+}
+
+export const CanvasItemPropsSetterContext = createContext<{
+    props: CanvasItemPropsType;
+    setProps: (anyProps: any) => void;
+} | null>(null);
+export function useCanvasItemPropsSetterContext<
+    T extends CanvasItemPropsType,
+>() {
+    const context = use(CanvasItemPropsSetterContext);
+    if (context === null) {
+        throw new Error('CanvasItem not provided in context');
+    }
+    return [
+        context.props as T,
+        (props: AnyObjectType) => context.setProps(props),
+    ] as const;
 }
 
 export function useIsCanvasItemSelected() {
