@@ -59,10 +59,10 @@ function genElements({
 
 export default function SlideEditorToolAlignComp({
     onData,
-    data,
+    data = {},
     isText,
 }: Readonly<{
-    data: AlignmentDataType;
+    data?: AlignmentDataType;
     onData: (data: AlignmentDataType) => void;
     isText?: boolean;
 }>) {

@@ -40,7 +40,7 @@ function CanvasItemPropsEditorComp({
                 setProps: setProps1,
             }}
         >
-            <div className="card m-1">
+            <div className="card">
                 <div className="card-header">
                     <strong>Item ID: {canvasItem.id}</strong>
                 </div>

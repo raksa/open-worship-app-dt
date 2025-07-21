@@ -328,11 +328,12 @@ function PropertiesSettingComp({
                     className="d-flex input-group m-1"
                     style={{ width: '260px', height: '35px' }}
                 >
-                    <div className="input-group-text">`Round size pixel:</div>
+                    <div className="input-group-text">`Round Size Pixel:</div>
                     <input
                         type="number"
                         className="form-control"
                         value={roundSizePixel}
+                        min={0}
                         onChange={(event) => {
                             setRoundSizePixel(
                                 parseInt(event.target.value) || 0,

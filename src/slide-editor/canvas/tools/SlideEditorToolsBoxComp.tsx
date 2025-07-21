@@ -111,7 +111,7 @@ export default function SlideEditorToolsBoxComp() {
                 }}
             >
                 <SlideEditorToolTitleComp title="Box Alignment">
-                    <SlideEditorToolAlignComp data={props} onData={setProps} />
+                    <SlideEditorToolAlignComp onData={setProps} />
                 </SlideEditorToolTitleComp>
                 <SlideEditorToolTitleComp title="Shape Properties">
                     <ShapePropertiesComp />

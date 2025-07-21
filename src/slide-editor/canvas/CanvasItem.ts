@@ -26,8 +26,8 @@ export type CanvasItemPropsType = {
     rotate: number;
     width: number;
     height: number;
-    horizontalAlignment: HAlignmentType;
-    verticalAlignment: VAlignmentType;
+    horizontalAlignment?: HAlignmentType;
+    verticalAlignment?: VAlignmentType;
     backgroundColor: AppColorType;
     backdropFilter: number;
     roundSizePercentage: number;

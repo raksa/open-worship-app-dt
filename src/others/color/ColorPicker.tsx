@@ -12,6 +12,11 @@ import OpacitySlider from './OpacitySlider';
 import RenderColors from './RenderColors';
 import { useAppEffect } from '../../helper/debuggerHelpers';
 import { freezeObject } from '../../helper/helpers';
+import {
+    ContextMenuItemType,
+    showAppContextMenu,
+} from '../../context-menu/appContextMenuHelpers';
+import { copyToClipboard } from '../../server/appHelpers';
 
 freezeObject(colorList);
 
@@ -69,10 +74,27 @@ export default function ColorPicker({
         const newColor = setOpacity(localColor, value);
         applyNewColor(newColor, event);
     };
+    const handleContextMenuOpening = (event: any) => {
+        if (!localColor) {
+            return;
+        }
+        const contextMenuItems: ContextMenuItemType[] = [];
+        // TODO: paste color
+        if (localColor) {
+            contextMenuItems.push({
+                menuElement: 'Copy Color',
+                onSelect: () => {
+                    copyToClipboard(localColor);
+                },
+            });
+        }
+        showAppContextMenu(event, contextMenuItems);
+    };
     if (isCollapsable && !isOpened) {
         return (
             <div
                 className="flex-item color-picker app-caught-hover-pointer "
+                onContextMenu={handleContextMenuOpening}
                 style={{
                     border: '1px solid var(--bs-gray-700)',
                 }}
@@ -86,6 +108,8 @@ export default function ColorPicker({
                     style={{
                         backgroundColor: color ?? 'transparent',
                         width: 'calc(100% - 10px)',
+                        textShadow:
+                            '0 0 2px var(--bs-gray-900), 0 0 2px var(--bs-gray-900)',
                     }}
                 >
                     {color}
@@ -96,6 +120,7 @@ export default function ColorPicker({
     return (
         <div
             className="flex-item color-picker"
+            onContextMenu={handleContextMenuOpening}
             style={{
                 backgroundColor: 'var(--bs-gray-700)',
             }}
