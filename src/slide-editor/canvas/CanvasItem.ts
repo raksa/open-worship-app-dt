@@ -9,9 +9,7 @@ import {
     genTextDefaultBoxStyle,
     CanvasItemKindType,
     hAlignmentList,
-    HAlignmentType,
     vAlignmentList,
-    VAlignmentType,
 } from './canvasHelpers';
 import EventHandler from '../../event/EventHandler';
 import { useAppEffect } from '../../helper/debuggerHelpers';
@@ -26,8 +24,6 @@ export type CanvasItemPropsType = {
     rotate: number;
     width: number;
     height: number;
-    horizontalAlignment?: HAlignmentType;
-    verticalAlignment?: VAlignmentType;
     backgroundColor: AppColorType;
     backdropFilter: number;
     roundSizePercentage: number;
@@ -51,8 +47,6 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType>
             rotate: props.rotate ?? 0,
             width: props.width ?? 0,
             height: props.height ?? 0,
-            horizontalAlignment: props.horizontalAlignment ?? 'center',
-            verticalAlignment: props.verticalAlignment ?? 'middle',
             backgroundColor: props.backgroundColor ?? '#00000000',
             backdropFilter: props.backdropFilter ?? 0,
             roundSizePercentage: props.roundSizePercentage ?? 0,
@@ -122,12 +116,15 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType>
         },
         boxData: ToolingBoxType,
     ) {
-        const boxProps = tooling2BoxProps(boxData, {
-            width: this.props.width,
-            height: this.props.height,
-            parentWidth: parentDim.parentWidth,
-            parentHeight: parentDim.parentHeight,
-        });
+        const boxProps = tooling2BoxProps(
+            { ...this.props, ...boxData },
+            {
+                width: this.props.width,
+                height: this.props.height,
+                parentWidth: parentDim.parentWidth,
+                parentHeight: parentDim.parentHeight,
+            },
+        );
         const newProps = {
             ...boxData,
             ...boxProps,

@@ -44,7 +44,7 @@ function LayerComp() {
             <div className="d-flex">
                 <SlideEditorToolTitleComp title="Box Layer">
                     <button
-                        className="btn btn-info"
+                        className="btn btn-outline-info"
                         onClick={() => {
                             canvasController.applyOrderingData(
                                 canvasItem,
@@ -55,7 +55,7 @@ function LayerComp() {
                         <i className="bi bi-layer-backward" />
                     </button>
                     <button
-                        className="btn btn-info"
+                        className="btn btn-outline-info"
                         onClick={() => {
                             canvasController.applyOrderingData(
                                 canvasItem,
@@ -68,14 +68,14 @@ function LayerComp() {
                 </SlideEditorToolTitleComp>
                 <SlideEditorToolTitleComp title="Rotate">
                     <button
-                        className="btn btn-info"
+                        className="btn btn-outline-info"
                         onClick={() => {
                             setProps({
                                 rotate: 0,
                             });
                         }}
                     >
-                        UnRotate
+                        `Reset Rotate
                     </button>
                 </SlideEditorToolTitleComp>
             </div>

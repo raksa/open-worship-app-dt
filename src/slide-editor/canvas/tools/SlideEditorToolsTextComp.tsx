@@ -8,6 +8,10 @@ import { useCanvasItemPropsSetterContext } from '../CanvasItem';
 export default function SlideEditorToolsTextComp() {
     const [props, setProps] =
         useCanvasItemPropsSetterContext<CanvasItemTextPropsType>();
+    const textAlignmentData = {
+        horizontalAlignment: props.textHorizontalAlignment,
+        verticalAlignment: props.textVerticalAlignment,
+    };
     return (
         <div className="d-flex flex-wrap app-inner-shadow">
             <div className="p-1">
@@ -31,15 +35,17 @@ export default function SlideEditorToolsTextComp() {
                 <SlideEditorToolTitleComp title="Text Alignment">
                     <SlideEditorToolAlignComp
                         isText
-                        data={{
-                            horizontalAlignment: props.textHorizontalAlignment,
-                            verticalAlignment: props.textVerticalAlignment,
-                        }}
+                        data={textAlignmentData}
                         onData={(data) => {
+                            const newData = {
+                                ...textAlignmentData,
+                                ...data,
+                            };
                             setProps({
                                 textHorizontalAlignment:
-                                    data.horizontalAlignment,
-                                textVerticalAlignment: data.verticalAlignment,
+                                    newData.horizontalAlignment,
+                                textVerticalAlignment:
+                                    newData.verticalAlignment,
                             });
                         }}
                     />

@@ -1,6 +1,7 @@
 import { SrcData } from '../../helper/FileSource';
 import { AppColorType } from '../../others/color/colorHelpers';
 import { AnyObjectType } from '../../helper/typeHelpers';
+import { CanvasItemPropsType } from './CanvasItem';
 
 export type CanvasControllerEventType = 'update' | 'scale';
 
@@ -34,23 +35,26 @@ export function tooling2BoxProps(
         height: number;
     },
 ) {
-    const boxProps: { top?: number; left?: number } = {};
-    if (boxData) {
-        if (boxData.verticalAlignment === 'start') {
-            boxProps.top = 0;
-        } else if (boxData.verticalAlignment === 'center') {
-            boxProps.top = (state.parentHeight - state.height) / 2;
-        } else if (boxData.verticalAlignment === 'end') {
-            boxProps.top = state.parentHeight - state.height;
-        }
-        if (boxData.horizontalAlignment === 'left') {
-            boxProps.left = 0;
-        } else if (boxData.horizontalAlignment === 'center') {
-            boxProps.left = (state.parentWidth - state.width) / 2;
-        } else if (boxData.horizontalAlignment === 'right') {
-            boxProps.left = state.parentWidth - state.width;
-        }
+    const boxProps = {
+        top: boxData.top ?? 0,
+        left: boxData.left ?? 0,
+    };
+    if (boxData.verticalAlignment === 'start') {
+        boxProps.top = 0;
+    } else if (boxData.verticalAlignment === 'center') {
+        boxProps.top = (state.parentHeight - state.height) / 2;
+    } else if (boxData.verticalAlignment === 'end') {
+        boxProps.top = state.parentHeight - state.height;
     }
+    if (boxData.horizontalAlignment === 'left') {
+        boxProps.left = 0;
+    } else if (boxData.horizontalAlignment === 'center') {
+        boxProps.left = (state.parentWidth - state.width) / 2;
+    } else if (boxData.horizontalAlignment === 'right') {
+        boxProps.left = state.parentWidth - state.width;
+    }
+    delete boxData.horizontalAlignment;
+    delete boxData.verticalAlignment;
     return boxProps;
 }
 
@@ -59,6 +63,8 @@ export type ToolingBoxType = {
     rotate?: number;
     horizontalAlignment?: HAlignmentType;
     verticalAlignment?: VAlignmentType;
+    top?: number;
+    left?: number;
 };
 export const canvasItemList = [
     'text',
