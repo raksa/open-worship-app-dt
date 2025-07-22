@@ -403,7 +403,11 @@ export function jsonToXMLText(jsonData: BibleJsonType) {
     );
 
     const bible = xmlDoc.getElementsByTagName('bible')[0];
-    for (const [key, value] of Object.entries(info)) {
+    const bibleInfoKey = Object.keys(info).filter((key) => {
+        return !['filePath'].includes(key);
+    });
+    for (const key of bibleInfoKey) {
+        const value = info[key as keyof typeof info];
         bible.setAttribute(key, value.toString());
     }
     const map = xmlDoc.createElement(tagNamesMap.map[0]);
@@ -469,14 +473,20 @@ export async function xmlToJson(xmlText: string) {
     return { info: bibleInfo, books: bibleBooks } as BibleJsonType;
 }
 
-export async function bibleKeyToFilePath(bibleKey: string) {
+export async function bibleKeyToFilePath(
+    bibleKey: string,
+    isFromFileName = false,
+) {
+    if (isFromFileName) {
+        const dirPath = await bibleDataReader.getWritableBiblePath();
+        const filePath = pathJoin(dirPath, `${bibleKey}.xml`);
+        return filePath;
+    }
     const bibleKeyFilePathMap = await getAllXMLFileKeys();
     const filePath = bibleKeyFilePathMap[bibleKey];
     if (filePath) {
         return filePath;
     }
-    console.log(bibleKey, bibleKeyFilePathMap);
-
     showSimpleToast(
         'Fail to get Bible file path',
         `Unable to find file path for: "${bibleKey}"`,

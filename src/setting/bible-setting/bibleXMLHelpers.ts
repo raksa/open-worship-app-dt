@@ -217,7 +217,7 @@ export async function getBibleXMLCacheInfoList() {
 }
 
 export async function saveXMLText(bibleKey: string, xmlText: string) {
-    const filePath = await bibleKeyToFilePath(bibleKey);
+    const filePath = await bibleKeyToFilePath(bibleKey, true);
     if (filePath === null) {
         return false;
     }
