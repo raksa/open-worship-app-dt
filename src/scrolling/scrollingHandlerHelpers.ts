@@ -52,6 +52,7 @@ function checkElement(parent: HTMLElement, element: HTMLElement) {
     }
 }
 export function applyToTheTop(element: HTMLElement) {
+    element.title = 'Click or Double Click to scroll to the top';
     const parent = element.parentElement;
     if (parent === null) {
         return;
@@ -60,7 +61,8 @@ export function applyToTheTop(element: HTMLElement) {
         checkElement(parent, element);
     });
     parent.addEventListener('scroll', scrollCallback);
-    element.onclick = () => {
+    const bringToTop = (event: any) => {
+        preventEvent(event);
         const targetElement = parent.querySelector<HTMLElement>(
             '.' + PLAY_TO_BOTTOM_CLASSNAME,
         );
@@ -72,6 +74,16 @@ export function applyToTheTop(element: HTMLElement) {
                 behavior: 'smooth',
             });
         }
+    };
+    element.ondblclick = bringToTop;
+    element.onclick = (event: any) => {
+        const playingElement = parent.querySelector(
+            `.${PLAY_TO_BOTTOM_CLASSNAME}[data-speed]:not([data-speed=""])`,
+        );
+        if (playingElement !== null) {
+            return;
+        }
+        bringToTop(event);
     };
     checkElement(parent, element);
 }

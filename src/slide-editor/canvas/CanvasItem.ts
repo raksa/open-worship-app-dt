@@ -8,8 +8,7 @@ import {
     canvasItemList,
     genTextDefaultBoxStyle,
     CanvasItemKindType,
-    hAlignmentList,
-    vAlignmentList,
+    cleanupProps,
 } from './canvasHelpers';
 import EventHandler from '../../event/EventHandler';
 import { useAppEffect } from '../../helper/debuggerHelpers';
@@ -52,6 +51,7 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType>
             roundSizePercentage: props.roundSizePercentage ?? 0,
             roundSizePixel: props.roundSizePixel ?? 0,
         };
+        cleanupProps(this.props);
     }
 
     get id() {
@@ -143,6 +143,7 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType>
         Object.entries(props).forEach(([key, value]) => {
             propsAny[key] = value;
         });
+        cleanupProps(props);
     }
 
     clone() {
@@ -165,8 +166,6 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType>
             typeof json.rotate !== 'number' ||
             typeof json.width !== 'number' ||
             typeof json.height !== 'number' ||
-            !hAlignmentList.includes(json.horizontalAlignment) ||
-            !vAlignmentList.includes(json.verticalAlignment) ||
             (json.backgroundColor !== null &&
                 typeof json.backgroundColor !== 'string') ||
             !canvasItemList.includes(json.type)
@@ -293,17 +292,30 @@ export function useCanvasItemContext() {
     return context;
 }
 
+export function useCanvasItemEditEvent(
+    canvasItem: CanvasItem<any>,
+    callback: () => void,
+) {
+    useAppEffect(() => {
+        const registeredEvent = canvasItem.registerEventListener(
+            ['edit'],
+            callback,
+        );
+        return () => {
+            canvasItem.unregisterEventListener(registeredEvent);
+        };
+    }, [canvasItem]);
+}
+
 export function useCanvasItemPropsContext<T extends CanvasItemPropsType>() {
     const canvasItem = useCanvasItemContext();
     const [props, setProps] = useOptimistic(cloneJson(canvasItem.props));
     const { startTransaction } = useProgressBarComp();
-    useAppEffect(() => {
-        canvasItem.registerEventListener(['edit'], () => {
-            startTransaction(() => {
-                setProps(cloneJson(canvasItem.props));
-            });
+    useCanvasItemEditEvent(canvasItem, () => {
+        startTransaction(() => {
+            setProps(cloneJson(canvasItem.props));
         });
-    }, [canvasItem]);
+    });
     return props as T;
 }
 

@@ -3,11 +3,12 @@ import SlideEditorToolsBoxComp from './SlideEditorToolsBoxComp';
 import CanvasItem, {
     CanvasItemContext,
     CanvasItemPropsSetterContext,
+    useCanvasItemEditEvent,
 } from '../CanvasItem';
 import SlideEditorToolTitleComp from './SlideEditorToolTitleComp';
 import { useCanvasControllerContext } from '../CanvasController';
 import { useMemo, useState } from 'react';
-import { genTimeoutAttempt } from '../../../helper/helpers';
+import { cloneJson, genTimeoutAttempt } from '../../../helper/helpers';
 
 function CanvasItemPropsEditorComp({
     canvasItem,
@@ -33,6 +34,9 @@ function CanvasItemPropsEditorComp({
             canvasController.applyEditItem(canvasItem);
         });
     };
+    useCanvasItemEditEvent(canvasItem, () => {
+        setProps(cloneJson(canvasItem.props));
+    });
     return (
         <CanvasItemPropsSetterContext
             value={{

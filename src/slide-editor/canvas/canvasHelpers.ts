@@ -1,7 +1,6 @@
 import { SrcData } from '../../helper/FileSource';
 import { AppColorType } from '../../others/color/colorHelpers';
 import { AnyObjectType } from '../../helper/typeHelpers';
-import { CanvasItemPropsType } from './CanvasItem';
 
 export type CanvasControllerEventType = 'update' | 'scale';
 
@@ -25,6 +24,11 @@ export const hAlignmentList = ['left', 'center', 'right'] as const;
 export type HAlignmentType = (typeof hAlignmentList)[number];
 export const vAlignmentList = ['start', 'center', 'end'] as const;
 export type VAlignmentType = (typeof vAlignmentList)[number];
+
+export function cleanupProps(props: AnyObjectType) {
+    delete props.horizontalAlignment;
+    delete props.verticalAlignment;
+}
 
 export function tooling2BoxProps(
     boxData: ToolingBoxType,
@@ -53,8 +57,6 @@ export function tooling2BoxProps(
     } else if (boxData.horizontalAlignment === 'right') {
         boxProps.left = state.parentWidth - state.width;
     }
-    delete boxData.horizontalAlignment;
-    delete boxData.verticalAlignment;
     return boxProps;
 }
 

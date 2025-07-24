@@ -38,12 +38,14 @@ export default function ColorPicker({
     onColorChange,
     onNoColor,
     isCollapsable = false,
+    isNoImmediate = false,
 }: Readonly<{
     defaultColor: AppColorType;
     color: AppColorType | null;
     onColorChange?: (color: AppColorType, event: MouseEvent) => void;
     onNoColor?: (color: AppColorType, event: MouseEvent) => void;
     isCollapsable?: boolean;
+    isNoImmediate?: boolean;
 }>) {
     const [isOpened, setIsOpened] = useState(false);
     const [localColor, setLocalColor] = useState(color);
@@ -138,6 +140,7 @@ export default function ColorPicker({
                     colors={colorList.main}
                     selectedColor={localColor}
                     onColorChange={handleColorChanging}
+                    isNoImmediate={isNoImmediate}
                 />
                 {localColor !== null && (
                     <OpacitySlider
